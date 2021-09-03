@@ -495,8 +495,8 @@ void Run()
                 sprintf(tmp, "%03d", frames);
                 dsPrintValue(0,0,0,tmp);
             }
-            sprintf(tmp, "%4d %4d", debug1, debug2);
-            dsPrintValue(0,1,0,tmp);
+            //sprintf(tmp, "%4d %4d", debug1, debug2);
+            //dsPrintValue(0,1,0,tmp);
             frames=0;
         }
     }
