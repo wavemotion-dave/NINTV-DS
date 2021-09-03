@@ -43,6 +43,7 @@ HandController::HandController(INT32 id, const CHAR* n)
 : InputConsumer(id),
   name(n)
 {
+      controllerID = id;
 }
 
 HandController::~HandController()
@@ -59,8 +60,8 @@ InputConsumerObject* HandController::getInputConsumerObject(INT32 i)
     return NULL;
 }
 
-int ds_key_input[16] = {0};   // Set to '1' if pressed... 0 if released
-int ds_disc_input[16] = {0};  // Set to '1' if pressed... 0 if released.
+int ds_key_input[3][16] = {0};   // Set to '1' if pressed... 0 if released
+int ds_disc_input[3][16] = {0};  // Set to '1' if pressed... 0 if released.
 
 void HandController::evaluateInputs()
 {
@@ -68,24 +69,21 @@ void HandController::evaluateInputs()
     bool keypad_active = false;
 
     // TODO: this is a bit of a hack... setup 2 sets of inputs or don't instantiate the 2nd controller...
-    if (strcmp(name, "Hand Controller #1") == 0)
+    for (UINT16 i = 0; i < 15; i++) 
     {
-        for (UINT16 i = 0; i < 15; i++) 
+        if (ds_key_input[controllerID][i]) 
         {
-            if (ds_key_input[i]) 
-            {
-                if (i <= 11) keypad_active=true;
-                inputValue |= BUTTON_OUTPUT_VALUES[i];
-            }
+            if (i <= 11) keypad_active=true;
+            inputValue |= BUTTON_OUTPUT_VALUES[i];
         }
+    }
 
-        // Keypad has priority over disc...
-        if (!keypad_active)
+    // Keypad has priority over disc...
+    if (!keypad_active)
+    {
+        for (UINT16 i = 0; i < 16; i++) 
         {
-            for (UINT16 i = 0; i < 16; i++) 
-            {
-                if (ds_disc_input[i]) inputValue |= DIRECTION_OUTPUT_VALUES[i];
-            }
+            if (ds_disc_input[controllerID][i]) inputValue |= DIRECTION_OUTPUT_VALUES[i];
         }
     }
 

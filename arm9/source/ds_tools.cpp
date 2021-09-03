@@ -31,12 +31,13 @@ typedef enum _RunState
     Quit
 } RunState;
 
-static short key_A_map = 12;
-static short key_B_map = 12;
-static short key_X_map = 13;
-static short key_Y_map = 14;
-static short key_L_map = 0;
-static short key_R_map = 1;
+static UINT16 frame_skip_opt=1;
+static UINT16 key_A_map = 12;
+static UINT16 key_B_map = 12;
+static UINT16 key_X_map = 13;
+static UINT16 key_Y_map = 14;
+static UINT16 key_L_map = 0;
+static UINT16 key_R_map = 1;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -167,7 +168,7 @@ ITCM_CODE void VideoBusDS::render()
     frames++;
 	VideoBus::render();
 
-    if (frames & 1) return;
+    if (frames & frame_skip_opt) return;
     UINT32 *ds_video=(UINT32*)0x06000000;
     UINT32 *source_video = (UINT32*)pixelBuffer;
     
@@ -202,10 +203,16 @@ BOOL LoadCart(const CHAR* filename)
         {
             return FALSE;
         }
+    }
+    else if (strcmpi(extStart, ".rom") == 0)    // .rom files contain the loading info...
+    {
+        //load the bin file as a Rip
+        currentRip = Rip::LoadRom(filename);
+        if (currentRip == NULL)
+        {
+            return FALSE;
+        }
 
-        CHAR fileSubname[MAX_PATH];
-        strcpy(fileSubname, filename);
-        strcat(fileSubname, ".rip");
     }
     else 
     {
@@ -299,44 +306,45 @@ BOOL InitializeEmulator(void)
     return TRUE;
 }
 
+UINT16 controllerId = 0;
 char newFile[256];
 void pollInputs(void)
 {
-    extern int ds_key_input[16];   // Set to '1' if pressed... 0 if released
-    extern int ds_disc_input[16];  // Set to '1' if pressed... 0 if released.
+    extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
+    extern int ds_disc_input[3][16];  // Set to '1' if pressed... 0 if released.
     unsigned short keys_pressed = keysCurrent();
     
-    for (int i=0; i<15; i++) ds_key_input[i] = 0;
-    for (int i=0; i<16; i++) ds_disc_input[i] = 0;
+    for (int i=0; i<15; i++) ds_key_input[controllerId][i] = 0;
+    for (int i=0; i<16; i++) ds_disc_input[controllerId][i] = 0;
     
     // Handle 8 directions on keypad... best we can do...
     if (keys_pressed & KEY_UP)    
     {
-        if (keys_pressed & KEY_RIGHT)     ds_disc_input[2]  = 1;
-        else if (keys_pressed & KEY_LEFT) ds_disc_input[14] = 1;
-        else ds_disc_input[0]  = 1;
+        if (keys_pressed & KEY_RIGHT)     ds_disc_input[controllerId][2]  = 1;
+        else if (keys_pressed & KEY_LEFT) ds_disc_input[controllerId][14] = 1;
+        else ds_disc_input[controllerId][0]  = 1;
     }
     else if (keys_pressed & KEY_DOWN)
     {
-        if (keys_pressed & KEY_RIGHT)     ds_disc_input[6]  = 1;
-        else if (keys_pressed & KEY_LEFT) ds_disc_input[10] = 1;
-        else ds_disc_input[8]  = 1;
+        if (keys_pressed & KEY_RIGHT)     ds_disc_input[controllerId][6]  = 1;
+        else if (keys_pressed & KEY_LEFT) ds_disc_input[controllerId][10] = 1;
+        else ds_disc_input[controllerId][8]  = 1;
     }
     else if (keys_pressed & KEY_RIGHT)
     {
-        ds_disc_input[4]  = 1;
+        ds_disc_input[controllerId][4]  = 1;
     }
     else if (keys_pressed & KEY_LEFT)
     {
-        ds_disc_input[12] = 1;
+        ds_disc_input[controllerId][12] = 1;
     }
     
-    if (keys_pressed & KEY_A)    ds_key_input[key_A_map]  = 1;
-    if (keys_pressed & KEY_B)    ds_key_input[key_B_map]  = 1;
-    if (keys_pressed & KEY_X)    ds_key_input[key_X_map]  = 1;
-    if (keys_pressed & KEY_Y)    ds_key_input[key_Y_map]  = 1;
-    if (keys_pressed & KEY_L)    ds_key_input[key_L_map] = 1;
-    if (keys_pressed & KEY_R)    ds_key_input[key_R_map] = 1;
+    if (keys_pressed & KEY_A)    ds_key_input[controllerId][key_A_map]  = 1;
+    if (keys_pressed & KEY_B)    ds_key_input[controllerId][key_B_map]  = 1;
+    if (keys_pressed & KEY_X)    ds_key_input[controllerId][key_X_map]  = 1;
+    if (keys_pressed & KEY_Y)    ds_key_input[controllerId][key_Y_map]  = 1;
+    if (keys_pressed & KEY_L)    ds_key_input[controllerId][key_L_map] = 1;
+    if (keys_pressed & KEY_R)    ds_key_input[controllerId][key_R_map] = 1;
     
     if (keys_pressed & KEY_START)
     {
@@ -362,21 +370,21 @@ void pollInputs(void)
         //sprintf(tmp, "%3d %3d", touch.px, touch.py);
         //dsPrintValue(0,1,0,tmp);
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 30 && touch.py < 60)    ds_key_input[0] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 30 && touch.py < 60)    ds_key_input[1] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 30 && touch.py < 60)    ds_key_input[2] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 30 && touch.py < 60)   ds_key_input[controllerId][0] = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 30 && touch.py < 60)   ds_key_input[controllerId][1] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 30 && touch.py < 60)   ds_key_input[controllerId][2] = 1;
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 65 && touch.py < 95)   ds_key_input[3] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 65 && touch.py < 95)   ds_key_input[4] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 65 && touch.py < 95)   ds_key_input[5] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 65 && touch.py < 95)   ds_key_input[controllerId][3] = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 65 && touch.py < 95)   ds_key_input[controllerId][4] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 65 && touch.py < 95)   ds_key_input[controllerId][5] = 1;
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 101 && touch.py < 135)   ds_key_input[6] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 101 && touch.py < 135)   ds_key_input[7] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 101 && touch.py < 135)   ds_key_input[8] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 101 && touch.py < 135)   ds_key_input[controllerId][6] = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 101 && touch.py < 135)   ds_key_input[controllerId][7] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 101 && touch.py < 135)   ds_key_input[controllerId][8] = 1;
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 140 && touch.py < 175)   ds_key_input[9]  = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 140 && touch.py < 175)   ds_key_input[10] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 140 && touch.py < 175)   ds_key_input[11] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 140 && touch.py < 175)   ds_key_input[controllerId][9]  = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 140 && touch.py < 175)   ds_key_input[controllerId][10] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 140 && touch.py < 175)   ds_key_input[controllerId][11] = 1;
 
     
         // RESET
@@ -681,6 +689,11 @@ void vcsFindFiles(void)
             strcpy(vcsromlist[countvcs].filename,filenametmp);
             countvcs++;
           }
+          if ( (strcasecmp(strrchr(filenametmp, '.'), ".rom") == 0) )  {
+            vcsromlist[countvcs].directory = false;
+            strcpy(vcsromlist[countvcs].filename,filenametmp);
+            countvcs++;
+          }
         }
       }
     }
@@ -975,6 +988,7 @@ bool dsWaitOnQuit(void)
   return bRet;
 }
 
+UINT16 sound_clock_div = 3;
 // -----------------------------------------------------------------------------
 // Options are handled here... we have a number of things the user can tweak
 // and these options are applied immediately. The user can also save off 
@@ -987,18 +1001,21 @@ struct options_t
 {
     const char  *label;
     const char  *option[16];
-    short *option_val;
-    short  option_max;
+    UINT16 *option_val;
+    UINT16 option_max;
 };
 
 const struct options_t Option_Table[] =
 {
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_A_map,   15},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_B_map,   15},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_X_map,   15},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_Y_map,   15},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_L_map,   15},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_R_map,   15},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_A_map,        15},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_B_map,        15},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_X_map,        15},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_Y_map,        15},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_L_map,        15},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_R_map,        15},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &controllerId,     3},
+    {"FRAMESKIP",   {"OFF", "ON"},                                                                                                                               &frame_skip_opt,   2},   
+    {"SOUND DIV",   {"1", "2", "4", "8", "16", "32"},                                                                                                            &sound_clock_div,  6},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 
@@ -1031,7 +1048,7 @@ void dsChooseOptions(void)
         if (Option_Table[idx].label == NULL) break;
     }
 
-    dsPrintValue(2,23, 0, (char *)"A=TOGGLE, B=SAVE+EXIT");
+    dsPrintValue(0,23, 0, (char *)"D-PAD LEFT/RIGHT TOGGLE. A=EXIT");
     optionHighlighted = 0;
     while (!bDone)
     {
@@ -1056,9 +1073,18 @@ void dsChooseOptions(void)
                 dsPrintValue(1,5+optionHighlighted,1, strBuf);
             }
 
-            if (keysCurrent() & KEY_A)  // Toggle option
+            if (keysCurrent() & KEY_RIGHT)  // Toggle option clockwise
             {
                 *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) + 1) % Option_Table[optionHighlighted].option_max;
+                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                dsPrintValue(1,5+optionHighlighted,1, strBuf);
+            }
+            if (keysCurrent() & KEY_LEFT)  // Toggle option counterclockwise
+            {
+                if ((*(Option_Table[optionHighlighted].option_val)) == 0)
+                    *(Option_Table[optionHighlighted].option_val) = Option_Table[optionHighlighted].option_max -1;
+                else
+                    *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) - 1) % Option_Table[optionHighlighted].option_max;
                 sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,1, strBuf);
             }
@@ -1066,13 +1092,18 @@ void dsChooseOptions(void)
             {
                 // TODO: write them out... dsWriteConfig();
             }
-            if (keysCurrent() & KEY_B)  // Exit options
+            if ((keysCurrent() & KEY_B) || (keysCurrent() & KEY_A))  // Exit options
             {
                 break;
             }
         }
         swiWaitForVBlank();
     }
+    
+    // Change the sound div if needed... affects sound quality and speed 
+    extern  INT32 clockDivisor;
+    static UINT32 sound_divs[] = {1,2,4,8,16,32};
+    clockDivisor = sound_divs[sound_clock_div];
 
     // Restore original bottom graphic
     dsShowScreenMain(false);

@@ -34,6 +34,7 @@ class HandController : public AY38914_InputOutput, public InputConsumer
 
     private:
         const CHAR* name;
+        UINT16 controllerID;
 
         InputConsumerObject* inputConsumerObjects[NUM_HAND_CONTROLLER_OBJECTS];
         UINT16            inputValue;

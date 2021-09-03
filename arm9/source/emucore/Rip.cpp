@@ -85,59 +85,6 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
-Rip* Rip::LoadA52(const CHAR* filename)
-{
-    Rip* rip = new Rip(ID_SYSTEM_ATARI5200);
-    if (rip == NULL)
-        return NULL;
-
-    //load the data into the rip
-    FILE* file = fopen(filename, "rb");
-    if (file == NULL) {
-        delete rip;
-        return NULL;
-    }
-
-    //obtain the file size
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    rewind(file);
-
-    //add an appropriate ROM to the rip
-    ROM* rom = new ROM("Cartridge ROM", "", 0, 1, (UINT16)size, (UINT16)(0xC000-size));
-    rip->AddROM(rom);
-
-    //load in the file image
-    UINT8* image = new UINT8[size];
-    UINT32 count = 0;
-    while (count < size)
-        image[count++] = (UINT8)fgetc(file);
-    fclose(file);
-
-    //parse the file image into the rip
-    UINT32 offset = 0;
-    UINT16 romCount = rip->GetROMCount();
-    for (UINT16 i = 0; i < romCount; i++) 
-    {
-        if (offset >= size) {
-            //something is wrong, the file we're trying to load isn't large enough
-            //getting here indicates a likely incorrect memory map in knowncarts.cfg
-            delete[] image;
-            delete rip;
-            return NULL;
-        }
-        ROM* nextRom = rip->GetROM(i);
-        nextRom->load(image+offset);
-        offset += nextRom->getByteWidth() * nextRom->getReadSize();
-    }
-
-    delete[] image;
-
-    rip->SetFileName(filename);
-    rip->crc = CRC32::getCrc(filename);
-
-    return rip;
-}
 
 Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
 {

@@ -457,8 +457,6 @@ ITCM_CODE void AY38900::renderBorders()
 {
     static int dampen_border_render = 0;
     
-    if (++dampen_border_render & 3) return;
-    
     //draw the top and bottom borders
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
@@ -685,27 +683,6 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
         }
         nextSourcePixel += 160;
     }
-#if 0
-    int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
-    int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
-
-    int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) +
-	((blockTop ? (8 - verticalOffset) : 0) * 160);
-
-    for (int y = 0; y < sourceHeightY; y++) {
-		UINT32* nextPixelStore0 = (UINT32*)pixelBuffer;
-		nextPixelStore0 += (y*pixelBufferRowSize)>>1;
-		if (blockTop) nextPixelStore0 += pixelBufferRowSize<<1;
-		if (blockLeft) nextPixelStore0 += 4;
-		UINT32* nextPixelStore1 = nextPixelStore0 + pixelBufferRowSize/4;
-        for (int x = 0; x < sourceWidthX; x++) {
-			UINT32 nextColor = backgroundBuffer[nextSourcePixel+x];
-			*nextPixelStore0++ = nextColor;
-			*nextPixelStore1++ = nextColor;
-        }
-        nextSourcePixel += 160;
-    }
-#endif
 }
 
 //copy the offscreen mob buffers to the staging area
@@ -724,8 +701,11 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
 
         INT16 leftX = (INT16)(r->x + horizontalOffset);
         INT16 nextY = (INT16)((r->y + verticalOffset) << 1);
-        for (UINT8 y = 0; y < mobPixelHeight; y++) {
-            for (UINT8 x = 0; x < r->width; x++) {
+        for (UINT8 y = 0; y < mobPixelHeight; y++) 
+        {
+            UINT16 zzz = (r->x+0)+ ((r->y+(y/2))*160);
+            for (UINT8 x = 0; x < r->width; x++) 
+            {
                 //if this mob pixel is not on, then our life has no meaning
                 if ((mobBuffers[i][y] & (0x8000 >> x)) == 0)
                     continue;
@@ -740,13 +720,15 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
                 }
 
                 //check for foreground collision
-                UINT8 currentPixel = backgroundBuffer[(r->x+x)+ ((r->y+(y/2))*160)];
-                if ((currentPixel & FOREGROUND_BIT) != 0) {
+                UINT8 currentPixel = backgroundBuffer[zzz+x];
+                if ((currentPixel & FOREGROUND_BIT) != 0) 
+                {
                     foregroundCollision = TRUE;
                     if (mobs[i].behindForeground)
                         continue;
                 }
-                if (mobs[i].isVisible) {
+                if (mobs[i].isVisible) 
+                {
 					UINT8* nextPixel = (UINT8*)pixelBuffer;
 					nextPixel += leftX - (blockLeft ? 4 : 0) + x;
 					nextPixel += (nextY - (blockTop ? 8 : 0)) * (pixelBufferRowSize);
