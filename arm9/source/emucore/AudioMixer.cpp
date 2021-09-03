@@ -110,12 +110,15 @@ INT32 AudioMixer::getClockSpeed()
 
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
-	// TODO: assert if sampleCount >= sampleSize
-
-    for (int totalTicks = 0; totalTicks < minimum; totalTicks++) {
+    extern int sp_idle;
+    UINT8 apc = (sp_idle ? 1:audioProducerCount);
+    debug1=apc;
+    for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
+    {
         //mix and flush the sample buffers
         INT64 totalSample = 0;
-        for (UINT32 i = 0; i < audioProducerCount; i++) {
+        for (UINT32 i = 0; i < apc; i++) 
+        {
             AudioOutputLine* nextLine = audioProducers[i]->audioOutputLine;
 
             INT64 missingClocks = (this->commonClocksPerTick - nextLine->commonClockCounter);
@@ -139,8 +142,9 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             nextLine->commonClockCounter = -missingClocks;
         }
 
-        if (audioProducerCount > 1) {
-            totalSample = totalSample / audioProducerCount;
+        if (apc > 1) 
+        {
+            totalSample = totalSample / apc;
         }
 
         sampleBuffer[sampleCount++] = totalSample;

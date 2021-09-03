@@ -5,7 +5,11 @@
 INT32 amplitudes16Bit[16] __attribute__((section(".dtcm"))) = 
 {
     0x003C, 0x0055, 0x0079, 0x00AB, 0x00F1, 0x0155, 0x01E3, 0x02AA,
+#if 0    
     0x03C5, 0x0555, 0x078B, 0x0AAB, 0x0F16, 0x1555, 0x1E2B, 0x2AAA
+#else
+    0x03C5, 0x0555, 0x068B, 0x0900, 0x0A00, 0xE00, 0x1000, 0x1200
+#endif
 };
 
 struct Channel_t channel0 __attribute__((section(".dtcm")));
@@ -176,7 +180,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
             channel2.isDirty = (channel2.isDirty | !channel2.noiseDisabled);
         }
     }
-
+        
     //iterate the tone generator for channel 0
     channel0.toneCounter -= clockDivisor;
     if (channel0.toneCounter <= 0) {
@@ -252,9 +256,9 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
 
         //apply the saturation clipping to correctly model the
         //cross-channel modulation that occurs on a real Intellivision
-        cachedTotalOutput <<= 1;
-        if (cachedTotalOutput > 0x6000)
-            cachedTotalOutput = 0x6000 + ((cachedTotalOutput - 0x6000)/6);
+//        cachedTotalOutput <<= 1;
+//        if (cachedTotalOutput > 0x6000)
+//            cachedTotalOutput = 0x6000 + ((cachedTotalOutput - 0x6000)/6);
     }
 
     audioOutputLine->playSample((INT16)cachedTotalOutput);

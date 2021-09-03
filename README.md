@@ -30,6 +30,13 @@ Check updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V0.6 : 03-Sep-2021 by wavemotion-dave
+  * More speedup and polish - especially for intellivoice games.
+  * New config options for frameskip, sound quality
+  * New overlays for MINOTAUR and ADVENTURE (in Config settings)
+  * New dual-action controller support (in Config settings)
+  * Can now map START and SELECT buttons
+
 V0.5 : 02-Sep-2021 by wavemotion-dave
   * First pass release. 
 

@@ -68,7 +68,7 @@ void HandController::evaluateInputs()
     inputValue = 0;
     bool keypad_active = false;
 
-    // TODO: this is a bit of a hack... setup 2 sets of inputs or don't instantiate the 2nd controller...
+    // Check the keypad and side-buttons first...
     for (UINT16 i = 0; i < 15; i++) 
     {
         if (ds_key_input[controllerID][i]) 

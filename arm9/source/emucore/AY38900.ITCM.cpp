@@ -422,6 +422,13 @@ void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 
 ITCM_CODE void AY38900::renderFrame()
 {
+    extern UINT16 frame_skip_opt;
+    static int dampen_frame_render=0;
+    
+    if (frame_skip_opt == 2)    // Is agressive skip?
+    {
+        if (++dampen_frame_render & 0x01) return;
+    }
     //render the next frame
     renderBackground();
     renderMOBs();

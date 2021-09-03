@@ -12,6 +12,8 @@
 
 #include "ds_tools.h"
 #include "bgBottom.h"
+#include "bgBottom-treasure.h"
+#include "bgBottom-cloudy.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
 #include "bgOptions.h"
@@ -31,13 +33,16 @@ typedef enum _RunState
     Quit
 } RunState;
 
-static UINT16 frame_skip_opt=1;
+UINT16 frame_skip_opt=1;
+static UINT16 overlay_selected = 0;
 static UINT16 key_A_map = 12;
 static UINT16 key_B_map = 12;
 static UINT16 key_X_map = 13;
 static UINT16 key_Y_map = 14;
 static UINT16 key_L_map = 0;
 static UINT16 key_R_map = 1;
+static UINT16 key_START_map  = 2;
+static UINT16 key_SELECT_map = 3;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -168,7 +173,11 @@ ITCM_CODE void VideoBusDS::render()
     frames++;
 	VideoBus::render();
 
-    if (frames & frame_skip_opt) return;
+    // Any level of frame skip will skip the render()
+    if (frame_skip_opt > 0)
+    {
+        if (frames & 1) return;
+    }
     UINT32 *ds_video=(UINT32*)0x06000000;
     UINT32 *source_video = (UINT32*)pixelBuffer;
     
@@ -306,60 +315,63 @@ BOOL InitializeEmulator(void)
     return TRUE;
 }
 
-UINT16 controllerId = 0;
+UINT16 controller_type = 0;
 char newFile[256];
 void pollInputs(void)
 {
+    UINT16 ctrl_disc, ctrl_keys;
     extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
     extern int ds_disc_input[3][16];  // Set to '1' if pressed... 0 if released.
     unsigned short keys_pressed = keysCurrent();
+
+    for (int j=0; j<3; j++)
+    {
+        for (int i=0; i<15; i++) ds_key_input[j][i] = 0;
+        for (int i=0; i<16; i++) ds_disc_input[j][i] = 0;
+    }
     
-    for (int i=0; i<15; i++) ds_key_input[controllerId][i] = 0;
-    for (int i=0; i<16; i++) ds_disc_input[controllerId][i] = 0;
+    // Check for Dual Action
+    if (controller_type == 2)
+    {
+        ctrl_disc = 0;
+        ctrl_keys = 1;
+    }
+    else
+    {
+        ctrl_disc = controller_type;
+        ctrl_keys = controller_type;
+    }
     
     // Handle 8 directions on keypad... best we can do...
     if (keys_pressed & KEY_UP)    
     {
-        if (keys_pressed & KEY_RIGHT)     ds_disc_input[controllerId][2]  = 1;
-        else if (keys_pressed & KEY_LEFT) ds_disc_input[controllerId][14] = 1;
-        else ds_disc_input[controllerId][0]  = 1;
+        if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
+        else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
+        else ds_disc_input[ctrl_disc][0]  = 1;
     }
     else if (keys_pressed & KEY_DOWN)
     {
-        if (keys_pressed & KEY_RIGHT)     ds_disc_input[controllerId][6]  = 1;
-        else if (keys_pressed & KEY_LEFT) ds_disc_input[controllerId][10] = 1;
-        else ds_disc_input[controllerId][8]  = 1;
+        if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
+        else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
+        else ds_disc_input[ctrl_disc][8]  = 1;
     }
     else if (keys_pressed & KEY_RIGHT)
     {
-        ds_disc_input[controllerId][4]  = 1;
+        ds_disc_input[ctrl_disc][4]  = 1;
     }
     else if (keys_pressed & KEY_LEFT)
     {
-        ds_disc_input[controllerId][12] = 1;
+        ds_disc_input[ctrl_disc][12] = 1;
     }
     
-    if (keys_pressed & KEY_A)    ds_key_input[controllerId][key_A_map]  = 1;
-    if (keys_pressed & KEY_B)    ds_key_input[controllerId][key_B_map]  = 1;
-    if (keys_pressed & KEY_X)    ds_key_input[controllerId][key_X_map]  = 1;
-    if (keys_pressed & KEY_Y)    ds_key_input[controllerId][key_Y_map]  = 1;
-    if (keys_pressed & KEY_L)    ds_key_input[controllerId][key_L_map] = 1;
-    if (keys_pressed & KEY_R)    ds_key_input[controllerId][key_R_map] = 1;
-    
-    if (keys_pressed & KEY_START)
-    {
-        if (bFirstGameLoaded) currentEmu->Reset();
-    }
-    if (keys_pressed & KEY_SELECT)
-    {
-        fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-        if (dsWaitForRom(newFile))
-        {
-            LoadCart(newFile); 
-            InitializeEmulator();
-        }
-        fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
-    }
+    if (keys_pressed & KEY_A)       ds_key_input[ctrl_keys][key_A_map]  = 1;
+    if (keys_pressed & KEY_B)       ds_key_input[ctrl_keys][key_B_map]  = 1;
+    if (keys_pressed & KEY_X)       ds_key_input[ctrl_keys][key_X_map]  = 1;
+    if (keys_pressed & KEY_Y)       ds_key_input[ctrl_keys][key_Y_map]  = 1;
+    if (keys_pressed & KEY_L)       ds_key_input[ctrl_keys][key_L_map] = 1;
+    if (keys_pressed & KEY_R)       ds_key_input[ctrl_keys][key_R_map] = 1;
+    if (keys_pressed & KEY_START)   ds_key_input[ctrl_keys][key_START_map] = 1; 
+    if (keys_pressed & KEY_SELECT)  ds_key_input[ctrl_keys][key_SELECT_map] = 1;
     
     // Now handle the on-screen Intellivision keypad... 
     if (keys_pressed & KEY_TOUCH)
@@ -370,21 +382,21 @@ void pollInputs(void)
         //sprintf(tmp, "%3d %3d", touch.px, touch.py);
         //dsPrintValue(0,1,0,tmp);
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 30 && touch.py < 60)   ds_key_input[controllerId][0] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 30 && touch.py < 60)   ds_key_input[controllerId][1] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 30 && touch.py < 60)   ds_key_input[controllerId][2] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 30 && touch.py < 60)   ds_key_input[ctrl_keys][0] = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 30 && touch.py < 60)   ds_key_input[ctrl_keys][1] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 30 && touch.py < 60)   ds_key_input[ctrl_keys][2] = 1;
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 65 && touch.py < 95)   ds_key_input[controllerId][3] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 65 && touch.py < 95)   ds_key_input[controllerId][4] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 65 && touch.py < 95)   ds_key_input[controllerId][5] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 65 && touch.py < 95)   ds_key_input[ctrl_keys][3] = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 65 && touch.py < 95)   ds_key_input[ctrl_keys][4] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 65 && touch.py < 95)   ds_key_input[ctrl_keys][5] = 1;
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 101 && touch.py < 135)   ds_key_input[controllerId][6] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 101 && touch.py < 135)   ds_key_input[controllerId][7] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 101 && touch.py < 135)   ds_key_input[controllerId][8] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 101 && touch.py < 135)   ds_key_input[ctrl_keys][6] = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 101 && touch.py < 135)   ds_key_input[ctrl_keys][7] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 101 && touch.py < 135)   ds_key_input[ctrl_keys][8] = 1;
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 140 && touch.py < 175)   ds_key_input[controllerId][9]  = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 140 && touch.py < 175)   ds_key_input[controllerId][10] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 140 && touch.py < 175)   ds_key_input[controllerId][11] = 1;
+        if (touch.px > 120  && touch.px < 155 && touch.py > 140 && touch.py < 175)   ds_key_input[ctrl_keys][9]  = 1;
+        if (touch.px > 158  && touch.px < 192 && touch.py > 140 && touch.py < 175)   ds_key_input[ctrl_keys][10] = 1;
+        if (touch.px > 195  && touch.px < 230 && touch.py > 140 && touch.py < 175)   ds_key_input[ctrl_keys][11] = 1;
 
     
         // RESET
@@ -483,8 +495,8 @@ void Run()
                 sprintf(tmp, "%03d", frames);
                 dsPrintValue(0,0,0,tmp);
             }
-            //sprintf(tmp, "%4d %4d", debug1, debug2);
-            //dsPrintValue(0,1,0,tmp);
+            sprintf(tmp, "%4d %4d", debug1, debug2);
+            dsPrintValue(0,1,0,tmp);
             frames=0;
         }
     }
@@ -507,11 +519,30 @@ void dsShowScreenMain(bool bFull)
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
   }
 
-  decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-  decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-  dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
-  unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-  dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    if (overlay_selected == 1) // Treasure of Tarmin
+    {
+      decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (overlay_selected == 2) // Cloudy Mountain
+    {
+      decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else
+    {
+      decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
 
   REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
     
@@ -1007,14 +1038,18 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
+ 
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE"},                                                                                                        &overlay_selected,  3},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_A_map,        15},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_B_map,        15},
     {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_X_map,        15},
     {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_Y_map,        15},
     {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_L_map,        15},
     {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_R_map,        15},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &controllerId,     3},
-    {"FRAMESKIP",   {"OFF", "ON"},                                                                                                                               &frame_skip_opt,   2},   
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_START_map,    15},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_SELECT_map,   15},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &controller_type,  3},
+    {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &frame_skip_opt,   3},   
     {"SOUND DIV",   {"1", "2", "4", "8", "16", "32"},                                                                                                            &sound_clock_div,  6},
     {NULL,          {"",            ""},                                NULL,                   2},
 };

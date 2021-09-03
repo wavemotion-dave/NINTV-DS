@@ -93,17 +93,20 @@ void SP0256::resetProcessor()
     }
 }
 
-INT32 SP0256::tick(INT32 minimum)
+int sp_idle;
+ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
-    if (idle) {
+    if (idle) 
+    {
         //for (int i = 0; i < minimum; i++)
           //  audioOutputLine->playSample(0);
+        sp_idle = 1;
         return minimum;
-    }
+    } else sp_idle=0;
 
     INT32 totalTicks = 0;
     do {
-
+        debug1++;
         if (!speaking) {
             speaking = TRUE;
             lrqHigh = TRUE;
