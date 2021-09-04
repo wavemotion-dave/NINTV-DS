@@ -106,7 +106,6 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 
     INT32 totalTicks = 0;
     do {
-        debug1++;
         if (!speaking) {
             speaking = TRUE;
             lrqHigh = TRUE;

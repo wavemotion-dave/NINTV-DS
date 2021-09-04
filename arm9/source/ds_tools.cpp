@@ -33,18 +33,138 @@ typedef enum _RunState
     Quit
 } RunState;
 
-UINT16 frame_skip_opt=1;
-static UINT16 overlay_selected = 0;
-static UINT16 key_A_map = 12;
-static UINT16 key_B_map = 12;
-static UINT16 key_X_map = 13;
-static UINT16 key_Y_map = 14;
-static UINT16 key_L_map = 0;
-static UINT16 key_R_map = 1;
-static UINT16 key_START_map  = 2;
-static UINT16 key_SELECT_map = 3;
+#define SOUND_SIZE  (734)
+UINT16 soundBuf[SOUND_SIZE] = {0};
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
+
+RunState             runState;
+Emulator             *currentEmu;
+Rip                  *currentRip = NULL;
+VideoBus             *videoBus;
+AudioMixer           *audioMixer;
+
+
+struct Config_t  myConfig;
+struct Config_t  allConfigs[MAX_CONFIGS];
+
+UINT16 frame_skip_opt = 1;
+void SetDefaultConfig(void)
+{
+    myConfig.crc                = 0x00000000;
+    myConfig.frame_skip_opt     = 1;
+    myConfig.overlay_selected   = 0;
+    myConfig.key_A_map          = 12;
+    myConfig.key_B_map          = 12;
+    myConfig.key_X_map          = 13;
+    myConfig.key_Y_map          = 14;
+    myConfig.key_L_map          = 0;
+    myConfig.key_R_map          = 1;
+    myConfig.key_START_map      = 2;
+    myConfig.key_SELECT_map     = 3;
+    myConfig.controller_type    = 0;
+    myConfig.sound_clock_div    = 3;
+    myConfig.show_fps           = 0;
+    myConfig.spare0             = 0;
+    myConfig.spare1             = 0;
+    myConfig.spare2             = 0;
+    myConfig.spare3             = 0;
+    myConfig.spare4             = 0;
+    myConfig.spare5             = 0;
+    myConfig.spare6             = 1;
+    myConfig.spare7             = 1;
+    myConfig.spare8             = 1;
+    myConfig.spare9             = 2;
+}
+
+// ---------------------------------------------------------------------------
+// Write out the XEGS.DAT configuration file to capture the settings for
+// each game.
+// ---------------------------------------------------------------------------
+void SaveConfig(bool bShow)
+{
+    FILE *fp;
+    int slot = 0;
+    
+    if (currentRip == NULL) return;
+
+    if (bShow) dsPrintValue(0,2,0, (char*)"SAVE CONFIG");
+    
+    myConfig.crc = currentRip->GetCRC();
+    
+    // Find the slot we should save into...
+    for (slot=0; slot<MAX_CONFIGS; slot++)
+    {
+        if (allConfigs[slot].crc == myConfig.crc)  // Got a match?!
+        {
+            break;                           
+        }
+        if (allConfigs[slot].crc == 0x00000000)  // End of useful list...
+        {
+            break;                           
+        }
+    }
+    
+    memcpy(&allConfigs[slot], &myConfig, sizeof(struct Config_t));
+
+
+    DIR* dir = opendir("/data");
+    if (dir)
+    {
+        closedir(dir);  // Directory exists.
+    }
+    else
+    {
+        mkdir("/data", 0777);   // Doesn't exist - make it...
+    }
+    fp = fopen("/data/NINTV-DS.DAT", "wb+");
+    if (fp != NULL)
+    {
+        fwrite(&allConfigs, sizeof(allConfigs), 1, fp);
+        fclose(fp);
+    } else dsPrintValue(0,2,0, (char*)"   ERROR   ");
+
+    if (bShow) 
+    {
+        WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(0,2,0, (char*)"           ");
+    }
+}
+
+
+void FindAndLoadConfig(void)
+{
+    FILE *fp;
+
+    SetDefaultConfig();
+    fp = fopen("/data/NINTV-DS.DAT", "rb");
+    if (fp != NULL)
+    {
+        fread(&allConfigs, sizeof(allConfigs), 1, fp);
+        fclose(fp);
+        
+        if (currentRip != NULL)
+        {
+            for (int slot=0; slot<MAX_CONFIGS; slot++)
+            {
+                if (allConfigs[slot].crc == currentRip->GetCRC())  // Got a match?!
+                {
+                    memcpy(&myConfig, &allConfigs[slot], sizeof(struct Config_t));
+                    break;                           
+                }
+            }
+        }
+        else
+        {
+            SetDefaultConfig();
+        }
+    }
+    else    // Not found... init the entire database...
+    {
+        memset(&allConfigs, 0x00, sizeof(allConfigs));
+        SaveConfig(FALSE);
+    }
+}
 
 int bg0, bg0b, bg1b;
 bool bFirstGameLoaded = false;
@@ -87,8 +207,8 @@ public:
 	void release();
 
 	UINT16* outputBuffer;
-	UINT32  outputBufferSize;
-	UINT32  outputBufferWritePosition;
+	UINT16  outputBufferSize;
+	UINT16  outputBufferWritePosition;
 };
 
 AudioMixerDS::AudioMixerDS(UINT16* buffer)
@@ -98,7 +218,7 @@ AudioMixerDS::AudioMixerDS(UINT16* buffer)
 {
 	this->outputBuffer = buffer;
 	this->outputBufferWritePosition = 0;
-	this->outputBufferSize = 2048;
+	this->outputBufferSize = SOUND_SIZE;
 }
 
 void AudioMixerDS::resetProcessor()
@@ -133,9 +253,14 @@ void AudioMixerDS::flushAudio()
 		return;
 	}
 
-    // Write to DS ARM7 audio buffer?
-    memcpy(outputBuffer, this->sampleBuffer, this->sampleBufferSize);
-    
+    UINT32 *dest = (UINT32*)soundBuf;
+    UINT32 *src = (UINT32*)this->sampleBuffer;
+    // Write to DS ARM7 audio buffer
+    for (int i=0; i<SOUND_SIZE/2; i++)
+    {
+        *dest++ = *src++;
+    }
+   
 	// clear the sample count
 	AudioMixer::flushAudio();
 }
@@ -174,7 +299,7 @@ ITCM_CODE void VideoBusDS::render()
 	VideoBus::render();
 
     // Any level of frame skip will skip the render()
-    if (frame_skip_opt > 0)
+    if (myConfig.frame_skip_opt > 0)
     {
         if (frames & 1) return;
     }
@@ -188,12 +313,6 @@ ITCM_CODE void VideoBusDS::render()
         source_video += 40;
     }    
 }
-
-RunState             runState;
-Emulator             *currentEmu;
-Rip                  *currentRip;
-VideoBus             *videoBus;
-AudioMixer           *audioMixer;
 
 
 BOOL LoadCart(const CHAR* filename)
@@ -233,8 +352,10 @@ BOOL LoadCart(const CHAR* filename)
         }
     }
 
+    FindAndLoadConfig();
     dsShowScreenEmu();
-    bFirstGameLoaded = TRUE;
+    dsShowScreenMain(false);
+    bFirstGameLoaded = TRUE;    
     
     return TRUE;
 }
@@ -315,7 +436,6 @@ BOOL InitializeEmulator(void)
     return TRUE;
 }
 
-UINT16 controller_type = 0;
 char newFile[256];
 void pollInputs(void)
 {
@@ -331,15 +451,15 @@ void pollInputs(void)
     }
     
     // Check for Dual Action
-    if (controller_type == 2)
+    if (myConfig.controller_type == 2)
     {
         ctrl_disc = 0;
         ctrl_keys = 1;
     }
     else
     {
-        ctrl_disc = controller_type;
-        ctrl_keys = controller_type;
+        ctrl_disc = myConfig.controller_type;
+        ctrl_keys = myConfig.controller_type;
     }
     
     // Handle 8 directions on keypad... best we can do...
@@ -364,14 +484,14 @@ void pollInputs(void)
         ds_disc_input[ctrl_disc][12] = 1;
     }
     
-    if (keys_pressed & KEY_A)       ds_key_input[ctrl_keys][key_A_map]  = 1;
-    if (keys_pressed & KEY_B)       ds_key_input[ctrl_keys][key_B_map]  = 1;
-    if (keys_pressed & KEY_X)       ds_key_input[ctrl_keys][key_X_map]  = 1;
-    if (keys_pressed & KEY_Y)       ds_key_input[ctrl_keys][key_Y_map]  = 1;
-    if (keys_pressed & KEY_L)       ds_key_input[ctrl_keys][key_L_map] = 1;
-    if (keys_pressed & KEY_R)       ds_key_input[ctrl_keys][key_R_map] = 1;
-    if (keys_pressed & KEY_START)   ds_key_input[ctrl_keys][key_START_map] = 1; 
-    if (keys_pressed & KEY_SELECT)  ds_key_input[ctrl_keys][key_SELECT_map] = 1;
+    if (keys_pressed & KEY_A)       ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
+    if (keys_pressed & KEY_B)       ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
+    if (keys_pressed & KEY_X)       ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
+    if (keys_pressed & KEY_Y)       ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
+    if (keys_pressed & KEY_L)       ds_key_input[ctrl_keys][myConfig.key_L_map] = 1;
+    if (keys_pressed & KEY_R)       ds_key_input[ctrl_keys][myConfig.key_R_map] = 1;
+    if (keys_pressed & KEY_START)   ds_key_input[ctrl_keys][myConfig.key_START_map] = 1; 
+    if (keys_pressed & KEY_SELECT)  ds_key_input[ctrl_keys][myConfig.key_SELECT_map] = 1;
     
     // Now handle the on-screen Intellivision keypad... 
     if (keys_pressed & KEY_TOUCH)
@@ -411,8 +531,10 @@ void pollInputs(void)
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitForRom(newFile))
             {
-                LoadCart(newFile); 
-                InitializeEmulator();
+                if (LoadCart(newFile)) 
+                {
+                    InitializeEmulator();
+                }
             }
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
         }
@@ -439,7 +561,6 @@ void pollInputs(void)
     
 }
 
-int full_speed=0;
 int emu_frames=1;
 void Run()
 {
@@ -454,7 +575,8 @@ void Run()
     runState = Running;
 	while(runState == Running) 
     {
-        if (!full_speed)
+        // If not full speed, time 1 frame...
+        if (myConfig.show_fps != 2)
         {
             while(TIMER0_DATA < (546*emu_frames))
                 ;
@@ -474,14 +596,14 @@ void Run()
 
         if (bFirstGameLoaded)
         {
+            //flush the audio  -  normaly this would be done AFTER run/render but this gives us maximum accuracy on audio timing
+            currentEmu->FlushAudio();
+            
             //run the emulation
             currentEmu->Run();
 
             // render the output
             currentEmu->Render();
-
-            //flush the audio
-            currentEmu->FlushAudio();
         }
         
         if (TIMER1_DATA >= 32728)   // 1000MS (1 sec)
@@ -490,14 +612,16 @@ void Run()
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
-            if (frames > 0)
+            if ((frames > 0) && (myConfig.show_fps > 0))
             {
                 sprintf(tmp, "%03d", frames);
                 dsPrintValue(0,0,0,tmp);
             }
-            //sprintf(tmp, "%4d %4d", debug1, debug2);
-            //dsPrintValue(0,1,0,tmp);
             frames=0;
+            //if (currentRip) debug1=currentRip->GetCRC(); else debug1=0;
+            //sprintf(tmp, "%08X %4d", debug1, debug2);
+            //dsPrintValue(0,1,0,tmp);
+            frame_skip_opt = myConfig.frame_skip_opt;
         }
     }
 }
@@ -519,7 +643,7 @@ void dsShowScreenMain(bool bFull)
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
   }
 
-    if (overlay_selected == 1) // Treasure of Tarmin
+    if (myConfig.overlay_selected == 1) // Treasure of Tarmin
     {
       decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -527,7 +651,7 @@ void dsShowScreenMain(bool bFull)
       unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
       dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
-    else if (overlay_selected == 2) // Cloudy Mountain
+    else if (myConfig.overlay_selected == 2) // Cloudy Mountain
     {
       decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -551,8 +675,6 @@ void dsShowScreenMain(bool bFull)
   swiWaitForVBlank();
 }
 
-#define SOUND_SIZE  734
-UINT16 soundBuf[SOUND_SIZE+8] = {0};
 void dsMainLoop(void)
 {
     // -----------------------------------------------------------------------------------------
@@ -667,8 +789,8 @@ void dsFreeEmu(void)
 //----------------------------------------------------------------------------------
 // Load Rom 
 //----------------------------------------------------------------------------------
-FICA2600 vcsromlist[512];
-unsigned short int countvcs=0, ucFicAct=0;
+FICA_INTV intvromlist[512];
+unsigned short int countintv=0, ucFicAct=0;
 char szName[256];
 char szName2[256];
 
@@ -676,8 +798,8 @@ char szName2[256];
 // Find files (.int) available
 int a26Filescmp (const void *c1, const void *c2) 
 {
-  FICA2600 *p1 = (FICA2600 *) c1;
-  FICA2600 *p2 = (FICA2600 *) c2;
+  FICA_INTV *p1 = (FICA_INTV *) c1;
+  FICA_INTV *p2 = (FICA_INTV *) c2;
 
   if (p1->filename[0] == '.' && p2->filename[0] != '.')
       return -1;
@@ -691,12 +813,12 @@ int a26Filescmp (const void *c1, const void *c2)
 }
 
 static char filenametmp[255];
-void vcsFindFiles(void) 
+void intvFindFiles(void) 
 {
   DIR *pdir;
   struct dirent *pent;
 
-  countvcs = 0;
+  countintv = 0;
 
   pdir = opendir(".");
 
@@ -708,30 +830,35 @@ void vcsFindFiles(void)
       if (pent->d_type == DT_DIR)
       {
         if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) {
-          vcsromlist[countvcs].directory = true;
-          strcpy(vcsromlist[countvcs].filename,filenametmp);
-          countvcs++;
+          intvromlist[countintv].directory = true;
+          strcpy(intvromlist[countintv].filename,filenametmp);
+          countintv++;
         }
       }
       else {
         if (strlen(filenametmp)>4) {
           if ( (strcasecmp(strrchr(filenametmp, '.'), ".int") == 0) )  {
-            vcsromlist[countvcs].directory = false;
-            strcpy(vcsromlist[countvcs].filename,filenametmp);
-            countvcs++;
+            intvromlist[countintv].directory = false;
+            strcpy(intvromlist[countintv].filename,filenametmp);
+            countintv++;
+          }
+          if ( (strcasecmp(strrchr(filenametmp, '.'), ".bin") == 0) )  {
+            intvromlist[countintv].directory = false;
+            strcpy(intvromlist[countintv].filename,filenametmp);
+            countintv++;
           }
           if ( (strcasecmp(strrchr(filenametmp, '.'), ".rom") == 0) )  {
-            vcsromlist[countvcs].directory = false;
-            strcpy(vcsromlist[countvcs].filename,filenametmp);
-            countvcs++;
+            intvromlist[countintv].directory = false;
+            strcpy(intvromlist[countintv].filename,filenametmp);
+            countintv++;
           }
         }
       }
     }
     closedir(pdir);
   }
-  if (countvcs)
-    qsort (vcsromlist, countvcs, sizeof (FICA2600), a26Filescmp);
+  if (countintv)
+    qsort (intvromlist, countintv, sizeof (FICA_INTV), a26Filescmp);
 }
 
 void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
@@ -741,19 +868,19 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   // Display all games if possible
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) (bgGetMapPtr(bg1b)),32*24*2);
-  sprintf(szName,"%04d/%04d GAMES",(int)(1+ucSel+NoDebGame),countvcs);
+  sprintf(szName,"%04d/%04d GAMES",(int)(1+ucSel+NoDebGame),countintv);
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
-  dsPrintValue(31,22,0,(char *) (NoDebGame+14<countvcs ? ">" : " "));
+  dsPrintValue(31,22,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
   sprintf(szName, "A=CHOOSE   B=BACK ");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) {
     ucGame= ucBcl+NoDebGame;
-    if (ucGame < countvcs)
+    if (ucGame < countintv)
     {
-      strcpy(szName,vcsromlist[ucGame].filename);
+      strcpy(szName,intvromlist[ucGame].filename);
       szName[29]='\0';
-      if (vcsromlist[ucGame].directory)
+      if (intvromlist[ucGame].directory)
       {
         szName[27]='\0';
         sprintf(szName2,"[%s]",szName);
@@ -776,7 +903,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
   u32 uLenFic=0, ucFlip=0, ucFlop=0;
 
   strcpy(chosen_filename, "tmpz");
-  vcsFindFiles();   // Initial get of files...
+  intvFindFiles();   // Initial get of files...
     
   decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
   decompress(bgFileSelMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -784,13 +911,13 @@ unsigned int dsWaitForRom(char *chosen_filename)
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
 
-  nbRomPerPage = (countvcs>=17 ? 17 : countvcs);
-  uNbRSPage = (countvcs>=5 ? 5 : countvcs);
+  nbRomPerPage = (countintv>=17 ? 17 : countintv);
+  uNbRSPage = (countintv>=5 ? 5 : countintv);
   
-  if (ucFicAct>countvcs-nbRomPerPage)
+  if (ucFicAct>countintv-nbRomPerPage)
   {
-    firstRomDisplay=countvcs-nbRomPerPage;
-    romSelected=ucFicAct-countvcs+nbRomPerPage;
+    firstRomDisplay=countintv-nbRomPerPage;
+    romSelected=ucFicAct-countintv+nbRomPerPage;
   }
   else
   {
@@ -804,14 +931,14 @@ unsigned int dsWaitForRom(char *chosen_filename)
     {
       if (!ucHaut)
       {
-        ucFicAct = (ucFicAct>0 ? ucFicAct-1 : countvcs-1);
+        ucFicAct = (ucFicAct>0 ? ucFicAct-1 : countintv-1);
         if (romSelected>uNbRSPage) { romSelected -= 1; }
         else {
           if (firstRomDisplay>0) { firstRomDisplay -= 1; }
           else {
             if (romSelected>0) { romSelected -= 1; }
             else {
-              firstRomDisplay=countvcs-nbRomPerPage;
+              firstRomDisplay=countintv-nbRomPerPage;
               romSelected=nbRomPerPage-1;
             }
           }
@@ -833,10 +960,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
     if (keysCurrent() & KEY_DOWN)
     {
       if (!ucBas) {
-        ucFicAct = (ucFicAct< countvcs-1 ? ucFicAct+1 : 0);
+        ucFicAct = (ucFicAct< countintv-1 ? ucFicAct+1 : 0);
         if (romSelected<uNbRSPage-1) { romSelected += 1; }
         else {
-          if (firstRomDisplay<countvcs-nbRomPerPage) { firstRomDisplay += 1; }
+          if (firstRomDisplay<countintv-nbRomPerPage) { firstRomDisplay += 1; }
           else {
             if (romSelected<nbRomPerPage-1) { romSelected += 1; }
             else {
@@ -862,10 +989,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
     {
       if (!ucSBas)
       {
-        ucFicAct = (ucFicAct< countvcs-nbRomPerPage ? ucFicAct+nbRomPerPage : countvcs-nbRomPerPage);
-        if (firstRomDisplay<countvcs-nbRomPerPage) { firstRomDisplay += nbRomPerPage; }
-        else { firstRomDisplay = countvcs-nbRomPerPage; }
-        if (ucFicAct == countvcs-nbRomPerPage) romSelected = 0;
+        ucFicAct = (ucFicAct< countintv-nbRomPerPage ? ucFicAct+nbRomPerPage : countintv-nbRomPerPage);
+        if (firstRomDisplay<countintv-nbRomPerPage) { firstRomDisplay += nbRomPerPage; }
+        else { firstRomDisplay = countintv-nbRomPerPage; }
+        if (ucFicAct == countintv-nbRomPerPage) romSelected = 0;
         ucSBas=0x01;
         dsDisplayFiles(firstRomDisplay,romSelected);
       }
@@ -910,23 +1037,22 @@ unsigned int dsWaitForRom(char *chosen_filename)
 
     if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y)
     {
-      if (!vcsromlist[ucFicAct].directory)
+      if (!intvromlist[ucFicAct].directory)
       {
         bRet=true;
         bDone=true;
-        strcpy(chosen_filename,  vcsromlist[ucFicAct].filename);
-        if (keysCurrent() & KEY_Y) full_speed=1; else full_speed=0;
+        strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
       }
       else
       {
-        chdir(vcsromlist[ucFicAct].filename);
-        vcsFindFiles();
+        chdir(intvromlist[ucFicAct].filename);
+        intvFindFiles();
         ucFicAct = 0;
-        nbRomPerPage = (countvcs>=16 ? 16 : countvcs);
-        uNbRSPage = (countvcs>=5 ? 5 : countvcs);
-        if (ucFicAct>countvcs-nbRomPerPage) {
-          firstRomDisplay=countvcs-nbRomPerPage;
-          romSelected=ucFicAct-countvcs+nbRomPerPage;
+        nbRomPerPage = (countintv>=16 ? 16 : countintv);
+        uNbRSPage = (countintv>=5 ? 5 : countintv);
+        if (ucFicAct>countintv-nbRomPerPage) {
+          firstRomDisplay=countintv-nbRomPerPage;
+          romSelected=ucFicAct-countintv+nbRomPerPage;
         }
         else {
           firstRomDisplay=ucFicAct;
@@ -938,14 +1064,14 @@ unsigned int dsWaitForRom(char *chosen_filename)
     }
       
     // If the filename is too long... scroll it.
-    if (strlen(vcsromlist[ucFicAct].filename) > 29) 
+    if (strlen(intvromlist[ucFicAct].filename) > 29) 
     {
       ucFlip++;
       if (ucFlip >= 15) 
       {
         ucFlip = 0;
         uLenFic++;
-        if ((uLenFic+29)>strlen(vcsromlist[ucFicAct].filename)) 
+        if ((uLenFic+29)>strlen(intvromlist[ucFicAct].filename)) 
         {
           ucFlop++;
           if (ucFlop >= 15) 
@@ -956,7 +1082,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
           else
             uLenFic--;
         }
-        strncpy(szName,vcsromlist[ucFicAct].filename+uLenFic,29);
+        strncpy(szName,intvromlist[ucFicAct].filename+uLenFic,29);
         szName[29] = '\0';
         dsPrintValue(1,5+romSelected,1,szName);
       }
@@ -1019,7 +1145,6 @@ bool dsWaitOnQuit(void)
   return bRet;
 }
 
-UINT16 sound_clock_div = 3;
 // -----------------------------------------------------------------------------
 // Options are handled here... we have a number of things the user can tweak
 // and these options are applied immediately. The user can also save off 
@@ -1039,18 +1164,19 @@ struct options_t
 const struct options_t Option_Table[] =
 {
  
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE"},                                                                                                        &overlay_selected,  3},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_A_map,        15},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_B_map,        15},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_X_map,        15},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_Y_map,        15},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_L_map,        15},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_R_map,        15},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_START_map,    15},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &key_SELECT_map,   15},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &controller_type,  3},
-    {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &frame_skip_opt,   3},   
-    {"SOUND DIV",   {"1", "2", "4", "8", "16", "32"},                                                                                                            &sound_clock_div,  6},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE"},                                                                                                        &myConfig.overlay_selected,  3},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_A_map,        15},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_B_map,        15},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_X_map,        15},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_Y_map,        15},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_L_map,        15},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_R_map,        15},
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_START_map,    15},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &myConfig.controller_type,  3},
+    {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &myConfig.frame_skip_opt,   3},   
+    {"SOUND DIV",   {"1", "2", "4", "8", "16", "32"},                                                                                                            &myConfig.sound_clock_div,  6},
+    {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 
@@ -1083,7 +1209,7 @@ void dsChooseOptions(void)
         if (Option_Table[idx].label == NULL) break;
     }
 
-    dsPrintValue(0,23, 0, (char *)"D-PAD LEFT/RIGHT TOGGLE. A=EXIT");
+    dsPrintValue(0,23, 0, (char *)"D-PAD TOGGLE. A=EXIT, START=SAVE");
     optionHighlighted = 0;
     while (!bDone)
     {
@@ -1125,7 +1251,7 @@ void dsChooseOptions(void)
             }
             if (keysCurrent() & KEY_START)  // Save Options
             {
-                // TODO: write them out... dsWriteConfig();
+                SaveConfig(TRUE);
             }
             if ((keysCurrent() & KEY_B) || (keysCurrent() & KEY_A))  // Exit options
             {
@@ -1138,7 +1264,7 @@ void dsChooseOptions(void)
     // Change the sound div if needed... affects sound quality and speed 
     extern  INT32 clockDivisor;
     static UINT32 sound_divs[] = {1,2,4,8,16,32};
-    clockDivisor = sound_divs[sound_clock_div];
+    clockDivisor = sound_divs[myConfig.sound_clock_div];
 
     // Restore original bottom graphic
     dsShowScreenMain(false);

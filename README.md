@@ -23,13 +23,19 @@ Features :
 
 Missing :
 ---------
-Intellivoice games will run but only about 45FPS. 
+Intellivoice games will run but only about 50FPS. 
 
 Check updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V0.7 : 03-Sep-2021 by wavemotion-dave
+  * Ability to save configuration on a per-game basis (START button in Config)
+  * Minor sound improvements
+  * Moved FPS and Turbo mode to Config
+  * More homebrews added to "knowncarts.cfg"
+
 V0.6 : 03-Sep-2021 by wavemotion-dave
   * More speedup and polish - especially for intellivoice games.
   * New config options for frameskip, sound quality

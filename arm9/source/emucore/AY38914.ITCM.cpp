@@ -5,11 +5,8 @@
 INT32 amplitudes16Bit[16] __attribute__((section(".dtcm"))) = 
 {
     0x003C, 0x0055, 0x0079, 0x00AB, 0x00F1, 0x0155, 0x01E3, 0x02AA,
-#if 0    
-    0x03C5, 0x0555, 0x078B, 0x0AAB, 0x0F16, 0x1555, 0x1E2B, 0x2AAA
-#else
-    0x03C5, 0x0555, 0x068B, 0x0900, 0x0A00, 0xE00, 0x1000, 0x1200
-#endif
+    0x03C5, 0x0455, 0x058B, 0x08AB, 0x0B16, 0x0D55, 0x0F2B, 0x1AAA
+    //0x03C5, 0x0555, 0x078B, 0x0AAB, 0x0F16, 0x1555, 0x1E2B, 0x2AAA
 };
 
 struct Channel_t channel0 __attribute__((section(".dtcm")));
@@ -129,7 +126,8 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
 	do {
     //iterate the envelope generator
     envelopeCounter -= clockDivisor;
-    if (envelopeCounter <= 0) {
+    if (envelopeCounter <= 0) 
+    {
         do {
             envelopeCounter += envelopePeriodValue;
             if (!envelopeIdle) {
@@ -151,12 +149,6 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
             }
         }
         while (envelopeCounter <= 0);
-
-        //the envelope volume has changed so the channel outputs
-        //need to be updated if they are using the envelope
-        channel0.isDirty = channel0.envelope;
-        channel1.isDirty = channel1.envelope;
-        channel2.isDirty = channel2.envelope;
     }
 
     //iterate the noise generator
@@ -171,96 +163,46 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
             }
         }
         while (noiseCounter <= 0);
-
-        //if the noise bit changed, then our channel outputs need
-        //to be updated if they are using the noise generator
-        if (!noiseIdle && oldNoise != noise) {
-            channel0.isDirty = (channel0.isDirty | !channel0.noiseDisabled);
-            channel1.isDirty = (channel1.isDirty | !channel1.noiseDisabled);
-            channel2.isDirty = (channel2.isDirty | !channel2.noiseDisabled);
-        }
     }
         
     //iterate the tone generator for channel 0
     channel0.toneCounter -= clockDivisor;
-    if (channel0.toneCounter <= 0) {
+    if (channel0.toneCounter <= 0) 
+    {
         do {
             channel0.toneCounter += channel0.periodValue;
             channel0.tone = !channel0.tone;
         }
         while (channel0.toneCounter <= 0);
-
-        channel0.isDirty = !channel0.toneDisabled;
     }
 
     //iterate the tone generator for channel 1
     channel1.toneCounter -= clockDivisor;
-    if (channel1.toneCounter <= 0) {
+    if (channel1.toneCounter <= 0) 
+    {
         do {
             channel1.toneCounter += channel1.periodValue;
             channel1.tone = !channel1.tone;
         }
         while (channel1.toneCounter <= 0);
-
-        channel1.isDirty = !channel1.toneDisabled;
     }
 
     //iterate the tone generator for channel 2
     channel2.toneCounter -= clockDivisor;
-    if (channel2.toneCounter <= 0) {
+    if (channel2.toneCounter <= 0) 
+    {
         do {
             channel2.toneCounter += channel2.periodValue;
             channel2.tone = !channel2.tone;
         }
         while (channel2.toneCounter <= 0);
-
-        channel2.isDirty = !channel2.toneDisabled;
     }
+        
+    cachedTotalOutput  = amplitudes16Bit[(((channel0.toneDisabled | channel0.tone) & (channel0.noiseDisabled | noise)) ? (channel0.envelope ? envelopeVolume : channel0.volume) : 0)];
+    cachedTotalOutput += amplitudes16Bit[(((channel1.toneDisabled | channel1.tone) & (channel1.noiseDisabled | noise)) ? (channel1.envelope ? envelopeVolume : channel1.volume) : 0)];
+    cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
-    if (channel0.isDirty) {
-        channel0.isDirty = FALSE;
-        channel0.cachedSample = amplitudes16Bit[
-                (((channel0.toneDisabled | channel0.tone) &
-                (channel0.noiseDisabled | noise))
-                    ? (channel0.envelope ? envelopeVolume
-                        : channel0.volume) : 0)];
-        cachedTotalOutputIsDirty = TRUE;
-    }
-
-    if (channel1.isDirty) {
-        channel1.isDirty = FALSE;
-        channel1.cachedSample = amplitudes16Bit[
-                (((channel1.toneDisabled | channel1.tone) &
-                (channel1.noiseDisabled | noise))
-                    ? (channel1.envelope ? envelopeVolume
-                        : channel1.volume) : 0)];
-        cachedTotalOutputIsDirty = TRUE;
-    }
-
-    if (channel2.isDirty) {
-        channel2.isDirty = FALSE;
-        channel2.cachedSample = amplitudes16Bit[
-                (((channel2.toneDisabled | channel2.tone) &
-                (channel2.noiseDisabled | noise))
-                    ? (channel2.envelope ? envelopeVolume
-                        : channel2.volume) : 0)];
-        cachedTotalOutputIsDirty = TRUE;
-    }
-
-    //mix all three channel samples together to generate the overall
-    //output sample for the entire AY38914
-    if (cachedTotalOutputIsDirty) {
-        cachedTotalOutputIsDirty = FALSE;
-        cachedTotalOutput = (channel0.cachedSample +
-                channel1.cachedSample + channel2.cachedSample);
-
-        //apply the saturation clipping to correctly model the
-        //cross-channel modulation that occurs on a real Intellivision
-//        cachedTotalOutput <<= 1;
-//        if (cachedTotalOutput > 0x6000)
-//            cachedTotalOutput = 0x6000 + ((cachedTotalOutput - 0x6000)/6);
-    }
-
+    // Now place the sample onto the audio output line...
     audioOutputLine->playSample((INT16)cachedTotalOutput);
 
 	totalTicks += (clockDivisor<<4);

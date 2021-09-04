@@ -112,7 +112,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
     extern int sp_idle;
     UINT8 apc = (sp_idle ? 1:audioProducerCount);
-    debug1=apc;
+
     for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
     {
         //mix and flush the sample buffers
