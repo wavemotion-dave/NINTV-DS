@@ -3,8 +3,10 @@
 #include <string.h>
 #include "AudioMixer.h"
 #include "AudioOutputLine.h"
+#include "Emulator.h"
+#include "../ds_tools.h"
 
-UINT16 audio_mixer_buffer[1500] __attribute__((section(".dtcm")));
+UINT16 audio_mixer_buffer[SOUND_SIZE]; // Can't be in fast memory as it's shared with ARM7
 
 extern UINT64 lcm(UINT64, UINT64);
 
@@ -59,9 +61,8 @@ void AudioMixer::resetProcessor()
     commonClocksPerTick = 0;
     sampleCount = 0;
 
-	if (sampleBuffer) {
-        memset(sampleBuffer, 0, sampleBufferSize);
-	}
+    // Clear out the sample buffer...
+    memset(sampleBuffer, 0, sampleBufferSize);
 
     //iterate through my audio output lines to determine the common output clock
     UINT64 totalClockSpeed = getClockSpeed();
@@ -80,18 +81,13 @@ void AudioMixer::resetProcessor()
 
 void AudioMixer::init(UINT32 sampleRate)
 {
-	// TODO: assert if sampleRate/clockSpeed is 0
-
 	AudioMixer::release();
 
 	clockSpeed = sampleRate;
 	sampleSize = ( clockSpeed / 60.0 );
 	sampleBufferSize = sampleSize * sizeof(INT16);
 	sampleBuffer = (INT16*) audio_mixer_buffer;
-
-	if (sampleBuffer) {
-		memset(sampleBuffer, 0, sampleBufferSize);
-	}
+    memset(sampleBuffer, 0, sampleBufferSize);
 }
 
 void AudioMixer::release()
@@ -110,6 +106,8 @@ INT32 AudioMixer::getClockSpeed()
 
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
+    if (myConfig.sound_clock_div == 6) return minimum;
+    
     extern int sp_idle;
     UINT8 apc = (sp_idle ? 1:audioProducerCount);
 
@@ -147,10 +145,12 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             totalSample = totalSample / apc;
         }
 
-        sampleBuffer[sampleCount++] = totalSample;
+        audio_mixer_buffer[sampleCount++] = totalSample;
         
-        if (sampleCount == sampleSize) {
-            flushAudio();
+        if (sampleCount == SOUND_SIZE) 
+        {
+            //flushAudio();
+            sampleCount = 0;
         }
     }
 

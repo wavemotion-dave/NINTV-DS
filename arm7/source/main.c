@@ -74,7 +74,7 @@ int main() {
 
 	installSystemFIFO();
 
-  installSoundEmuFIFO();
+    installSoundEmuFIFO();
 
 	irqSet(IRQ_VCOUNT, VcountHandler);
 	irqSet(IRQ_VBLANK, VblankHandler);

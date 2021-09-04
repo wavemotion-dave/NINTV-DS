@@ -16,6 +16,8 @@
 #include "MemoryBus.h"
 #include "Memory.h"
 
+#define SOUND_SIZE  (734)
+
 typedef struct _StateHeader
 {
     UINT32   emu;

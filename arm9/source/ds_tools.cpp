@@ -33,17 +33,13 @@ typedef enum _RunState
     Quit
 } RunState;
 
-#define SOUND_SIZE  (734)
-UINT16 soundBuf[SOUND_SIZE] = {0};
-
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
-RunState             runState;
-Emulator             *currentEmu;
+RunState             runState = Stopped;
+Emulator             *currentEmu = NULL;
 Rip                  *currentRip = NULL;
-VideoBus             *videoBus;
-AudioMixer           *audioMixer;
-
+VideoBus             *videoBus = NULL;
+AudioMixer           *audioMixer = NULL;
 
 struct Config_t  myConfig;
 struct Config_t  allConfigs[MAX_CONFIGS];
@@ -164,6 +160,7 @@ void FindAndLoadConfig(void)
         memset(&allConfigs, 0x00, sizeof(allConfigs));
         SaveConfig(FALSE);
     }
+    ApplyOptions();
 }
 
 int bg0, bg0b, bg1b;
@@ -200,7 +197,7 @@ ITCM_CODE void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 class AudioMixerDS : public AudioMixer
 {
 public:
-	AudioMixerDS(UINT16* buffer);
+	AudioMixerDS();
 	void resetProcessor();
 	void flushAudio();
 	void init(UINT32 sampleRate);
@@ -211,12 +208,11 @@ public:
 	UINT16  outputBufferWritePosition;
 };
 
-AudioMixerDS::AudioMixerDS(UINT16* buffer)
+AudioMixerDS::AudioMixerDS()
   : outputBuffer(NULL),
     outputBufferSize(0),
     outputBufferWritePosition(0)
 {
-	this->outputBuffer = buffer;
 	this->outputBufferWritePosition = 0;
 	this->outputBufferSize = SOUND_SIZE;
 }
@@ -247,25 +243,11 @@ void AudioMixerDS::release()
 	AudioMixer::release();
 }
 
+
 void AudioMixerDS::flushAudio()
 {
-    if (sampleCount < this->sampleSize) {
-		return;
-	}
-
-    UINT32 *dest = (UINT32*)soundBuf;
-    UINT32 *src = (UINT32*)this->sampleBuffer;
-    // Write to DS ARM7 audio buffer
-    for (int i=0; i<SOUND_SIZE/2; i++)
-    {
-        *dest++ = *src++;
-    }
-   
-	// clear the sample count
 	AudioMixer::flushAudio();
 }
-
-
 
 class VideoBusDS : public VideoBus
 {
@@ -425,7 +407,7 @@ BOOL InitializeEmulator(void)
     
 	//hook the audio and video up to the currentEmulator
 	currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
-    currentEmu->InitAudio(audioMixer,22050);
+    currentEmu->InitAudio(audioMixer,22020);
 
     //put the RIP in the currentEmulator
 	currentEmu->SetRip(currentRip);
@@ -561,9 +543,10 @@ void pollInputs(void)
     
 }
 
-int emu_frames=1;
 void Run()
 {
+    int emu_frames=1;
+    
     TIMER1_CR = 0;
     TIMER1_DATA = 0;
     TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
@@ -625,11 +608,13 @@ void Run()
         }
     }
 }
+
+
 void dsShowScreenMain(bool bFull) 
 {
-  // Init BG mode for 16 bits colors
-  if (bFull)
-  {
+    // Init BG mode for 16 bits colors
+    if (bFull)
+    {
       videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
       videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
       vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
@@ -641,7 +626,7 @@ void dsShowScreenMain(bool bFull)
       decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
       decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
-  }
+    }
 
     if (myConfig.overlay_selected == 1) // Treasure of Tarmin
     {
@@ -668,11 +653,9 @@ void dsShowScreenMain(bool bFull)
       dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
 
-  REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
+    REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
     
-  // ShowStatusLine();    
-
-  swiWaitForVBlank();
+    swiWaitForVBlank();
 }
 
 void dsMainLoop(void)
@@ -681,7 +664,7 @@ void dsMainLoop(void)
     // Eventually these will be used to write to the DS screen and produce DS audio output...
     // -----------------------------------------------------------------------------------------
     videoBus = new VideoBusDS();
-    audioMixer = new AudioMixerDS(soundBuf);
+    audioMixer = new AudioMixerDS();
     
     dsShowScreenMain(true);
     InitializeEmulator();
@@ -692,9 +675,10 @@ void dsMainLoop(void)
 //---------------------------------------------------------------------------------
 void dsInstallSoundEmuFIFO(void)
 {
+    extern UINT16 audio_mixer_buffer[];
     FifoMessage msg;
-    msg.SoundPlay.data = &soundBuf;
-    msg.SoundPlay.freq = 22050;
+    msg.SoundPlay.data = audio_mixer_buffer;
+    msg.SoundPlay.freq = 22020;
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -705,10 +689,6 @@ void dsInstallSoundEmuFIFO(void)
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 }
 
-
-void vblankIntr() 
-{
-}
 
 UINT32 gamePalette[32] = 
 {
@@ -741,9 +721,6 @@ void dsInitPalette(void)
 void dsInitScreenMain(void)
 {
     // Init vbl and hbl func
-    SetYtrigger(190); //trigger 2 lines before vsync
-    irqSet(IRQ_VBLANK, vblankIntr);
-    irqEnable(IRQ_VBLANK);
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - 
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - 
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - 
@@ -1175,10 +1152,18 @@ const struct options_t Option_Table[] =
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &myConfig.controller_type,  3},
     {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &myConfig.frame_skip_opt,   3},   
-    {"SOUND DIV",   {"1", "2", "4", "8", "16", "32"},                                                                                                            &myConfig.sound_clock_div,  6},
+    {"SOUND DIV",   {"1", "2", "4", "8", "16", "32", "DISABLED"},                                                                                                &myConfig.sound_clock_div,  7},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
+
+void ApplyOptions(void)
+{
+    // Change the sound div if needed... affects sound quality and speed 
+    extern  INT32 clockDivisor;
+    static UINT32 sound_divs[] = {1,2,4,8,16,32, 64};
+    clockDivisor = sound_divs[myConfig.sound_clock_div];
+}
 
 // -----------------------------------------------------------------------------
 // Allows the user to move the cursor up and down through the various table 
@@ -1260,11 +1245,8 @@ void dsChooseOptions(void)
         }
         swiWaitForVBlank();
     }
-    
-    // Change the sound div if needed... affects sound quality and speed 
-    extern  INT32 clockDivisor;
-    static UINT32 sound_divs[] = {1,2,4,8,16,32};
-    clockDivisor = sound_divs[myConfig.sound_clock_div];
+
+    ApplyOptions();
 
     // Restore original bottom graphic
     dsShowScreenMain(false);

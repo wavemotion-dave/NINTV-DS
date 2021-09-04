@@ -44,6 +44,8 @@ struct Config_t
     UINT16 spare9;
 };
 
+extern struct Config_t  myConfig;
+
 #define MAX_CONFIGS 600
 
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);
@@ -56,6 +58,7 @@ extern void dsShowScreenEmu(void);
 extern bool dsWaitOnQuit(void);
 extern void dsChooseOptions(void);
 extern void dsShowScreenMain(bool bFull);
+extern void ApplyOptions(void);
 extern unsigned int dsWaitForRom(char *chosen_filename);
 
 #endif
