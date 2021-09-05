@@ -30,7 +30,14 @@ Check updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V0.7 : 03-Sep-2021 by wavemotion-dave
+V0.8 : 05-Sep-2021 by wavemotion-dave
+  * Two types of Dual-Action controllers supported (A=Standard, B=buttons on Controller #2)
+  * More overlays added (Astrosmash, B-17 Bomber, Atlantis, Space Spartans)
+  * Switched to a retro-green font for Game Select/Options
+  * More new homebrews supported. 
+  * Minor sound improvements.
+  
+V0.7 : 04-Sep-2021 by wavemotion-dave
   * Ability to save configuration on a per-game basis (START button in Config)
   * Minor sound improvements
   * Moved FPS and Turbo mode to Config

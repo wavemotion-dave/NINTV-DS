@@ -14,6 +14,10 @@
 #include "bgBottom.h"
 #include "bgBottom-treasure.h"
 #include "bgBottom-cloudy.h"
+#include "bgBottom-astro.h"
+#include "bgBottom-spartans.h"
+#include "bgBottom-b17.h"
+#include "bgBottom-atlantis.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
 #include "bgOptions.h"
@@ -44,7 +48,6 @@ AudioMixer           *audioMixer = NULL;
 struct Config_t  myConfig;
 struct Config_t  allConfigs[MAX_CONFIGS];
 
-UINT16 frame_skip_opt = 1;
 void SetDefaultConfig(void)
 {
     myConfig.crc                = 0x00000000;
@@ -421,7 +424,7 @@ BOOL InitializeEmulator(void)
 char newFile[256];
 void pollInputs(void)
 {
-    UINT16 ctrl_disc, ctrl_keys;
+    UINT16 ctrl_disc, ctrl_keys, ctrl_side;
     extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
     extern int ds_disc_input[3][16];  // Set to '1' if pressed... 0 if released.
     unsigned short keys_pressed = keysCurrent();
@@ -433,14 +436,22 @@ void pollInputs(void)
     }
     
     // Check for Dual Action
-    if (myConfig.controller_type == 2)
+    if (myConfig.controller_type == 2)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)
     {
         ctrl_disc = 0;
+        ctrl_side = 0;
+        ctrl_keys = 1;
+    }
+    else if (myConfig.controller_type == 3) // Same as #2 above except side-buttons use controller #2
+    {
+        ctrl_disc = 0;
+        ctrl_side = 1;
         ctrl_keys = 1;
     }
     else
     {
         ctrl_disc = myConfig.controller_type;
+        ctrl_side = myConfig.controller_type;
         ctrl_keys = myConfig.controller_type;
     }
     
@@ -466,14 +477,69 @@ void pollInputs(void)
         ds_disc_input[ctrl_disc][12] = 1;
     }
     
-    if (keys_pressed & KEY_A)       ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
-    if (keys_pressed & KEY_B)       ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
-    if (keys_pressed & KEY_X)       ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
-    if (keys_pressed & KEY_Y)       ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
-    if (keys_pressed & KEY_L)       ds_key_input[ctrl_keys][myConfig.key_L_map] = 1;
-    if (keys_pressed & KEY_R)       ds_key_input[ctrl_keys][myConfig.key_R_map] = 1;
-    if (keys_pressed & KEY_START)   ds_key_input[ctrl_keys][myConfig.key_START_map] = 1; 
-    if (keys_pressed & KEY_SELECT)  ds_key_input[ctrl_keys][myConfig.key_SELECT_map] = 1;
+    if (keys_pressed & KEY_A)       
+    {
+        if (myConfig.key_A_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
+    }
+    
+    if (keys_pressed & KEY_B)
+    {
+        if (myConfig.key_B_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
+    }
+
+    if (keys_pressed & KEY_X)
+    {
+        if (myConfig.key_X_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
+    }
+
+    if (keys_pressed & KEY_Y)
+    {
+        if (myConfig.key_Y_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
+    }
+
+    if (keys_pressed & KEY_L)
+    {
+        if (myConfig.key_L_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_L_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_L_map]  = 1;
+    }
+
+    if (keys_pressed & KEY_R)
+    {
+        if (myConfig.key_R_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_R_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_R_map]  = 1;
+    }
+
+    if (keys_pressed & KEY_START)   
+    {
+        if (myConfig.key_START_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_START_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_START_map]  = 1;
+    }
+    
+    if (keys_pressed & KEY_SELECT)  
+    {
+        if (myConfig.key_SELECT_map > 11) 
+            ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
+    }
     
     // Now handle the on-screen Intellivision keypad... 
     if (keys_pressed & KEY_TOUCH)
@@ -601,10 +667,8 @@ void Run()
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            //if (currentRip) debug1=currentRip->GetCRC(); else debug1=0;
-            //sprintf(tmp, "%08X %4d", debug1, debug2);
+            //sprintf(tmp, "%4d %4d", debug1, debug2);
             //dsPrintValue(0,1,0,tmp);
-            frame_skip_opt = myConfig.frame_skip_opt;
         }
     }
 }
@@ -641,6 +705,38 @@ void dsShowScreenMain(bool bFull)
       decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (myConfig.overlay_selected == 3) // Astrosmash
+    {
+      decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (myConfig.overlay_selected == 4) // Space Spartans
+    {
+      decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (myConfig.overlay_selected == 5) // B17 Bomber
+    {
+      decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (myConfig.overlay_selected == 6) // Atlantis
+    {
+      decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
       unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
       dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
@@ -1140,8 +1236,7 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
- 
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE"},                                                                                                        &myConfig.overlay_selected,  3},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS"},                                              &myConfig.overlay_selected,  7},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_A_map,        15},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_B_map,        15},
     {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_X_map,        15},
@@ -1150,7 +1245,7 @@ const struct options_t Option_Table[] =
     {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_R_map,        15},
     {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_START_map,    15},
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION"},                                                                                            &myConfig.controller_type,  3},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
     {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &myConfig.frame_skip_opt,   3},   
     {"SOUND DIV",   {"1", "2", "4", "8", "16", "32", "DISABLED"},                                                                                                &myConfig.sound_clock_div,  7},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
@@ -1188,7 +1283,7 @@ void dsChooseOptions(void)
     idx=0;
     while (true)
     {
-        sprintf(strBuf, " %-12s  : %-12s ", Option_Table[idx].label, Option_Table[idx].option[*(Option_Table[idx].option_val)]);
+        sprintf(strBuf, " %-11s : %-13s ", Option_Table[idx].label, Option_Table[idx].option[*(Option_Table[idx].option_val)]);
         dsPrintValue(1,5+idx, (idx==0 ? 1:0), strBuf);
         idx++;
         if (Option_Table[idx].label == NULL) break;
@@ -1204,25 +1299,25 @@ void dsChooseOptions(void)
             last_keys_pressed = keys_pressed;
             if (keysCurrent() & KEY_UP) // Previous option
             {
-                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,0, strBuf);
                 if (optionHighlighted > 0) optionHighlighted--; else optionHighlighted=(idx-1);
-                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_DOWN) // Next option
             {
-                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,0, strBuf);
                 if (optionHighlighted < (idx-1)) optionHighlighted++;  else optionHighlighted=0;
-                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,1, strBuf);
             }
 
             if (keysCurrent() & KEY_RIGHT)  // Toggle option clockwise
             {
                 *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) + 1) % Option_Table[optionHighlighted].option_max;
-                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_LEFT)  // Toggle option counterclockwise
@@ -1231,7 +1326,7 @@ void dsChooseOptions(void)
                     *(Option_Table[optionHighlighted].option_val) = Option_Table[optionHighlighted].option_max -1;
                 else
                     *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) - 1) % Option_Table[optionHighlighted].option_max;
-                sprintf(strBuf, " %-12s  : %-12s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
+                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
                 dsPrintValue(1,5+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_START)  // Save Options

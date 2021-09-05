@@ -114,12 +114,12 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
     {
         //mix and flush the sample buffers
-        INT64 totalSample = 0;
+        INT32 totalSample = 0;
         for (UINT32 i = 0; i < apc; i++) 
         {
             AudioOutputLine* nextLine = audioProducers[i]->audioOutputLine;
 
-            INT64 missingClocks = (this->commonClocksPerTick - nextLine->commonClockCounter);
+            INT32 missingClocks = (this->commonClocksPerTick - nextLine->commonClockCounter);
             INT64 sampleToUse = (missingClocks < 0 ? nextLine->previousSample : nextLine->currentSample);
 
             //account for when audio producers idle by adding enough samples to each producer's buffer
@@ -149,7 +149,6 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
         
         if (sampleCount == SOUND_SIZE) 
         {
-            //flushAudio();
             sampleCount = 0;
         }
     }
