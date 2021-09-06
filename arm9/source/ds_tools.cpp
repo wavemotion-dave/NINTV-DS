@@ -20,6 +20,7 @@
 #include "bgBottom-atlantis.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
+#include "bgHighScore.h"
 #include "bgOptions.h"
 
 #include "clickNoQuit_wav.h"
@@ -28,6 +29,7 @@
 #include "Emulator.h"
 #include "InputProducerManager.h"
 #include "Rip.h"
+#include "highscore.h"
 
 typedef enum _RunState 
 {
@@ -44,6 +46,9 @@ Emulator             *currentEmu = NULL;
 Rip                  *currentRip = NULL;
 VideoBus             *videoBus = NULL;
 AudioMixer           *audioMixer = NULL;
+
+int emu_frames=1;
+
 
 struct Config_t  myConfig;
 struct Config_t  allConfigs[MAX_CONFIGS];
@@ -420,6 +425,11 @@ BOOL InitializeEmulator(void)
     
     // And put the Sound Fifo back at the start...
     dsInstallSoundEmuFIFO();
+    
+    TIMER0_CR=0;
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+    emu_frames=1;
 
     return TRUE;
 }
@@ -584,13 +594,13 @@ void pollInputs(void)
 
     
         // RESET
-        if (touch.px > 23  && touch.px < 82 && touch.py > 34 && touch.py < 53) 
+        if (touch.px > 23  && touch.px < 82 && touch.py > 25 && touch.py < 46) 
         {
             if (bFirstGameLoaded) currentEmu->Reset();
         }
         
         // LOAD
-        if (touch.px > 23  && touch.px < 82 && touch.py > 72 && touch.py < 91) 
+        if (touch.px > 23  && touch.px < 82 && touch.py > 55 && touch.py < 76) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitForRom(newFile))
@@ -604,15 +614,28 @@ void pollInputs(void)
         }
         
         // CONFIG
-        if (touch.px > 23  && touch.px < 82 && touch.py > 111 && touch.py < 130) 
+        if (touch.px > 23  && touch.px < 82 && touch.py > 86 && touch.py < 106) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions();
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
         }
+
+        // HIGHSCORES
+        if (touch.px > 23  && touch.px < 82 && touch.py > 116 && touch.py < 136) 
+        {
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                highscore_display(currentRip->GetCRC());
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+        }
         
         // QUIT
-        if (touch.px > 23  && touch.px < 82 && touch.py > 150 && touch.py < 170) 
+        if (touch.px > 23  && touch.px < 82 && touch.py > 145 && touch.py < 170) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitOnQuit())
@@ -627,8 +650,6 @@ void pollInputs(void)
 
 void Run()
 {
-    int emu_frames=1;
-    
     TIMER1_CR = 0;
     TIMER1_DATA = 0;
     TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
@@ -1193,9 +1214,9 @@ bool dsWaitOnQuit(void)
   unsigned int posdeb=0;
   char szName[32];
 
-  decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-  decompress(bgFileSelMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-  dmaCopy((void *) bgFileSelPal,(u16*) BG_PALETTE_SUB,256*2);
+  decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+  decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+  dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
 

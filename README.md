@@ -30,6 +30,10 @@ Check updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V0.9 : 06-Sep-2021 by wavemotion-dave
+  * Major sound improvement (finally!)
+  * High Score Support added
+  
 V0.8 : 05-Sep-2021 by wavemotion-dave
   * Two types of Dual-Action controllers supported (A=Standard, B=buttons on Controller #2)
   * More overlays added (Astrosmash, B-17 Bomber, Atlantis, Space Spartans)
