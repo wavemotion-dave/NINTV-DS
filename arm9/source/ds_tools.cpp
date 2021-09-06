@@ -106,7 +106,6 @@ void SaveConfig(bool bShow)
     
     memcpy(&allConfigs[slot], &myConfig, sizeof(struct Config_t));
 
-
     DIR* dir = opendir("/data");
     if (dir)
     {
@@ -227,6 +226,8 @@ void AudioMixerDS::resetProcessor()
 		outputBufferWritePosition = 0;
 	}
 
+    dsInstallSoundEmuFIFO();
+    
 	// clears the emulator side of the audio mixer
 	AudioMixer::resetProcessor();
 }
@@ -325,7 +326,6 @@ BOOL LoadCart(const CHAR* filename)
         {
             return FALSE;
         }
-
     }
     else 
     {
@@ -415,8 +415,11 @@ BOOL InitializeEmulator(void)
     //put the RIP in the currentEmulator
 	currentEmu->SetRip(currentRip);
 
-    //finally, run everything
+    //finally, reset everything
     currentEmu->Reset();
+    
+    // And put the Sound Fifo back at the start...
+    dsInstallSoundEmuFIFO();
 
     return TRUE;
 }
@@ -533,13 +536,26 @@ void pollInputs(void)
             ds_key_input[ctrl_keys][myConfig.key_START_map]  = 1;
     }
     
+    static int prev_select=0;
     if (keys_pressed & KEY_SELECT)  
     {
+#if 1
         if (myConfig.key_SELECT_map > 11) 
             ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
-    }
+#else   
+        if (prev_select == 0)
+        {
+            fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_PAUSE);
+            swiWaitForVBlank();
+            fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_RESUME);
+            swiWaitForVBlank();
+            prev_select=1;
+        }
+
+#endif        
+    } else prev_select=0;
     
     // Now handle the on-screen Intellivision keypad... 
     if (keys_pressed & KEY_TOUCH)
@@ -774,13 +790,13 @@ void dsInstallSoundEmuFIFO(void)
     extern UINT16 audio_mixer_buffer[];
     FifoMessage msg;
     msg.SoundPlay.data = audio_mixer_buffer;
-    msg.SoundPlay.freq = 22020;
+    msg.SoundPlay.freq = 22060;
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
     msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
     msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = SOUND_SIZE >> 2;
+    msg.SoundPlay.dataSize = (SOUND_SIZE*15*2) >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 }

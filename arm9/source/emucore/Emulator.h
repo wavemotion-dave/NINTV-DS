@@ -16,7 +16,7 @@
 #include "MemoryBus.h"
 #include "Memory.h"
 
-#define SOUND_SIZE  (734)
+#define SOUND_SIZE  (734/2)
 
 typedef struct _StateHeader
 {

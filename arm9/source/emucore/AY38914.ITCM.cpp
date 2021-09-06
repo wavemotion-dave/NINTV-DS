@@ -152,8 +152,8 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
 
     //iterate the noise generator
     noiseCounter -= clockDivisor;
-    if (noiseCounter <= 0) {
-        BOOL oldNoise = noise;
+    if (noiseCounter <= 0) 
+    {
         do {
             noiseCounter += noisePeriodValue;
             if (!noiseIdle) {

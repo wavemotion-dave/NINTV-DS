@@ -98,8 +98,8 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
     if (idle) 
     {
-        //for (int i = 0; i < minimum; i++)
-          //  audioOutputLine->playSample(0);
+        for (int i = 0; i < minimum; i++)
+            audioOutputLine->playSample(0);
         sp_idle = 1;
         return minimum;
     } else sp_idle=0;
