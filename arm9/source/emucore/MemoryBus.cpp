@@ -6,7 +6,7 @@ MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
-    writeableMemoryCounts = (UINT16*)0x06860000;    // LCD D
+    writeableMemoryCounts = (UINT16*)0x06860000;    // LCD D (saves main RAM)
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
@@ -14,7 +14,7 @@ MemoryBus::MemoryBus()
         writeableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
         debug2 = sizeof(Memory);
     }
-    readableMemoryCounts = (UINT16*)0x06880000;    // LCD E
+    readableMemoryCounts = (UINT16*)0x06880000;    // LCD E (saves main RAM)
     memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)

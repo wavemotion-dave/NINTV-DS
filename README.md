@@ -1,15 +1,15 @@
 # NINTV-DS
-Nintellivision - an Intellivision Emulator for the Nintendo DS/DSi
-
 NINTV-DS is an Intellivision console emulator running on the DS/DSi.
 
 Install :
 ----------
 To make this work, place NINTV-DS.NDS on your flashcart or SD card which you can launch.
-You must have these 3 files in the same directory as your .int ROM files:
+You must have these 3 files in the same directory as your ROM files:
 grom.bin
 exec.bin
 knowncarts.cfg
+
+Optional is ivoice.bin for Intellivoice games.
 
 The knowncarts.cfg file is supplied with this emulator. The GROM and EXEC binaries are property
 of Intellivision and you will have to find them yourself. Don't ask. If you own Intellivision 
@@ -19,17 +19,22 @@ Features :
 ----------
  Most things you should expect from an emulator. 
  Most games run at full speed on a DSi or above.
- Most games will NOT run full speed on the older DS. 
+ Most games will NOT run full speed on the older DS - but you can play with config 
+ options to get the most out of these games (even if you have to disable sound to 
+ gain the speed).
 
 Missing :
 ---------
-Intellivoice games will run but only about 50FPS. 
+The few ECS games don't yet run.
 
-Check updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
+Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.0 : 07-Sep-2021 by wavemotion-dave
+  * First major release!
+  
 V0.9 : 06-Sep-2021 by wavemotion-dave
   * Major sound improvement (finally!)
   * High Score Support added
