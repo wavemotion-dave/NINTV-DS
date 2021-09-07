@@ -18,6 +18,7 @@
 #include "bgBottom-spartans.h"
 #include "bgBottom-b17.h"
 #include "bgBottom-atlantis.h"
+#include "bgBottom-bombsquad.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
 #include "bgHighScore.h"
@@ -30,7 +31,6 @@
 #include "InputProducerManager.h"
 #include "Rip.h"
 #include "highscore.h"
-
 
 typedef enum _RunState 
 {
@@ -381,9 +381,6 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 
 BOOL InitializeEmulator(void)
 {
-    //release the current emulator
-    //ReleaseEmulator();
-
     //find the currentEmulator required to run this RIP
 	currentEmu = Emulator::GetEmulatorByID(currentRip->GetTargetSystemID());
     if (currentEmu == NULL) 
@@ -716,8 +713,8 @@ void Run()
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            //sprintf(tmp, "%4d %4d", debug1, debug2);
-            //dsPrintValue(0,1,0,tmp);
+            sprintf(tmp, "%4d %4d", debug1, debug2);
+            dsPrintValue(0,1,0,tmp);
         }
     }
 }
@@ -789,6 +786,14 @@ void dsShowScreenMain(bool bFull)
       unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
       dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
+    else if (myConfig.overlay_selected == 7) // Bomb Squad
+    {
+      decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
     else
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
@@ -826,7 +831,11 @@ void dsInstallSoundEmuFIFO(void)
     TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, VsoundHandler);
-    irqEnable(IRQ_TIMER2);
+    
+    if (myConfig.sound_clock_div != 6)
+        irqEnable(IRQ_TIMER2);
+    else
+        irqDisable(IRQ_TIMER2);
     
     FifoMessage msg;
     msg.SoundPlay.data = audio_mixer_buffer2;
@@ -859,8 +868,8 @@ ITCM_CODE void VsoundHandler(void)
   {
       lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
   }
-  audio_mixer_buffer2[sound_idx] = lastSample;
-  sound_idx = (sound_idx+1) & (2048-1);
+  audio_mixer_buffer2[sound_idx++] = lastSample;
+  sound_idx &= (2048-1);
 }
 
 
@@ -1314,7 +1323,7 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS"},                                              &myConfig.overlay_selected,  7},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD"},                                &myConfig.overlay_selected,  8},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_A_map,        15},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_B_map,        15},
     {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_X_map,        15},

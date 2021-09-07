@@ -47,7 +47,6 @@ void Rip::SetName(const CHAR* n)
 
     peripheralName = new CHAR[strlen(n)+1];
     strcpy(peripheralName, n);
-    printf("RIP Peripheral Name [%s]\n", peripheralName);
 }
 
 void Rip::SetProducer(const CHAR* p)
@@ -93,20 +92,18 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
     Rip* rip = LoadCartridgeConfiguration(configFile, crc);
     if (rip == NULL)
         return NULL;
-    else printf("Configuration [%s] loaded successfully\n", configFile);
 
     //load the data into the rip
     FILE* file = fopen(filename, "rb");
     if (file == NULL) {
         delete rip;
         return NULL;
-    } else printf("File [%s] read into memory successfully\n", filename);
+    }
 
     //obtain the file size
     fseek(file, 0, SEEK_END);
     size_t size = ftell(file);
     rewind(file);
-    printf("The file size is [%d] bytes\n", (int)size);
 
     //load in the file image
     UINT8* image = new UINT8[size];
@@ -115,7 +112,6 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
         image[count++] = (UINT8)fgetc(file);
     fclose(file);
 
-    printf("Parsing file into RIP format\n");
     //parse the file image into the rip
     UINT32 offset = 0;
     UINT16 romCount = rip->GetROMCount();
@@ -130,18 +126,15 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
             return NULL;
         }
         ROM* nextRom = rip->GetROM(i);
-        printf("Loading ROM segment [%s %d %d]\n", nextRom->getName(), nextRom->getByteWidth(), nextRom->getReadSize());
         nextRom->load(image+offset);
         offset += nextRom->getByteWidth() * nextRom->getReadSize();
     }
 
-    printf("Done parsing...\n");
     delete[] image;
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
 
-    printf("RIP loaded!\n");
     return rip;
 }
 

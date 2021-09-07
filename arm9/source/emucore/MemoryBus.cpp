@@ -9,13 +9,23 @@ MemoryBus::MemoryBus()
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
+    {
         writeableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
+        debug2 = sizeof(Memory);
+    }
     readableMemoryCounts = new UINT8[size];
     memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
+    {
         readableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
+        debug2 = sizeof(Memory);
+    }
     mappedMemoryCount = 0;
+    
+    debug1=sizeof(Memory*);
+    debug2=size;
+
 }
 
 MemoryBus::~MemoryBus()

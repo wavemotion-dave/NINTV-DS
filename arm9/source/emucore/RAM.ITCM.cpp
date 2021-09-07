@@ -13,7 +13,6 @@ RAM::RAM(UINT16 size, UINT16 location)
     this->writeAddressMask = 0xFFFF;
     this->bitWidth = sizeof(UINT16)<<3;
     this->trimmer = (UINT16)((1 << (sizeof(UINT16) << 3)) - 1);
-    //image = new UINT16[size];
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
 }
@@ -27,7 +26,6 @@ RAM::RAM(UINT16 size, UINT16 location, UINT8 bitWidth)
     this->writeAddressMask = 0xFFFF;
     this->bitWidth = bitWidth;
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    //image = new UINT16[size];
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
 }
@@ -41,7 +39,6 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->writeAddressMask = writeAddressMask;
     this->bitWidth = sizeof(UINT16)<<3;
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    //image = new UINT16[size];
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
 }
@@ -55,14 +52,13 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->writeAddressMask = writeAddressMask;
     this->bitWidth = bitWidth;
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    //image = new UINT16[size];
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
 }
 
 RAM::~RAM()
 {
-    //delete[] image;
+    
 }
 
 void RAM::reset()

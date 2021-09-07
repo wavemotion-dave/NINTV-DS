@@ -6,7 +6,7 @@
 #include <string.h>
 #include "Memory.h"
 
-#define MAX_MAPPED_MEMORIES 20
+#define MAX_MAPPED_MEMORIES     15
 #define MAX_OVERLAPPED_MEMORIES 3
 
 /**

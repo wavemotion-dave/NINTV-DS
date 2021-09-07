@@ -68,9 +68,6 @@ BOOL ROM::load(const char* filename, UINT32 offset)
 	fclose(f);
 	loaded = TRUE;
     
-    if (loaded) printf("Successful Load of [%s]\n", filename);
-    else printf("Unsuccessful Load of [%s]\n", filename);
-
     return TRUE;
 }
 

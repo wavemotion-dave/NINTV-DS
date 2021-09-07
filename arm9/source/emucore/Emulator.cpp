@@ -32,13 +32,11 @@ Emulator::Emulator(const char* name)
 {
     memset(peripherals, 0, sizeof(peripherals));
     memset(usePeripheralIndicators, FALSE, sizeof(usePeripheralIndicators));
-    printf("Emulator [%s] Constructed\n", name);
 }
 
 void Emulator::AddPeripheral(Peripheral* p)
 {
     peripherals[peripheralCount] = p;
-    printf("  Peripheral [%d] Added\n", peripheralCount);
     peripheralCount++;
 }
 
@@ -148,58 +146,45 @@ void Emulator::InsertPeripheral(Peripheral* p)
 {
     UINT16 i;
     
-    printf("  Peripheral Inserted: [%s]\n", p->GetName());
-
-    printf("    Processors [%d]\n", p->GetProcessorCount());
     //processors
     UINT16 count = p->GetProcessorCount();
     for (i = 0; i < count; i++)
     {    
-        printf("        [%s]\n", p->GetProcessor(i)->getName());
         processorBus.addProcessor(p->GetProcessor(i));
     }
 
-    printf("    RAM [%d]\n", p->GetRAMCount());
     //RAM
     count = p->GetRAMCount();
     for (i = 0; i < count; i++)
     {
-        printf("        @ [%04X] Size [%04X]\n", p->GetRAM(i)->getReadAddress(), p->GetRAM(i)->getReadSize());
         memoryBus.addMemory(p->GetRAM(i));
     }
 
-    printf("    ROM [%d]\n", p->GetROMCount());
     //ROM
     count = p->GetROMCount();
     for (i = 0; i < count; i++) 
     {
         ROM* nextRom = p->GetROM(i);
-        printf("        [%s] @ [%04X] Size [%04X]\n", nextRom->getName(), nextRom->getReadAddress(), nextRom->getReadSize());
         if (!nextRom->isInternal())
             memoryBus.addMemory(nextRom);
     }
 
-    printf("    VIDEO PRODUCERS [%d]\n", p->GetVideoProducerCount());
     //video producers
     count = p->GetVideoProducerCount();
     for (i = 0; i < count; i++)
         videoBus->addVideoProducer(p->GetVideoProducer(i));
 
-    printf("    AUDIO PRODUCERS [%d]\n", p->GetAudioProducerCount());
     //audio producers
     count = p->GetAudioProducerCount();
     for (i = 0; i < count; i++)
         audioMixer->addAudioProducer(p->GetAudioProducer(i));
 
-    printf("    INPUT CONSUMERS [%d]\n", p->GetInputConsumerCount());
     //input consumers
     count = p->GetInputConsumerCount();
     for (i = 0; i < count; i++)
     {
         inputConsumerBus.addInputConsumer(p->GetInputConsumer(i));
-        printf("        [%s]\n", p->GetInputConsumer(i)->getName());
     }
-    printf("  Peripherals Done\n");
 }
 
 void Emulator::RemovePeripheral(Peripheral* p)

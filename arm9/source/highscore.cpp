@@ -8,8 +8,8 @@
 #include "bgHighScore.h"
 #include "bgBottom.h"
 
-#define MAX_HS_GAMES    570
-#define HS_VERSION      0x0001
+#define MAX_HS_GAMES    300
+#define HS_VERSION      0x0002
 
 #define HS_OPT_SORTMASK  0x0003
 #define HS_OPT_SORTLOW   0x0001

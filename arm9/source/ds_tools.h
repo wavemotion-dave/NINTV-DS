@@ -46,7 +46,7 @@ struct Config_t
 
 extern struct Config_t  myConfig;
 
-#define MAX_CONFIGS 600
+#define MAX_CONFIGS 300
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
