@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "MemoryBus.h"
 
+
 MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
-    writeableMemoryCounts = new UINT8[size];
+    writeableMemoryCounts = (UINT16*)0x06860000;    // LCD D
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
@@ -13,7 +14,7 @@ MemoryBus::MemoryBus()
         writeableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
         debug2 = sizeof(Memory);
     }
-    readableMemoryCounts = new UINT8[size];
+    readableMemoryCounts = (UINT16*)0x06880000;    // LCD E
     memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
@@ -22,21 +23,17 @@ MemoryBus::MemoryBus()
         debug2 = sizeof(Memory);
     }
     mappedMemoryCount = 0;
-    
-    debug1=sizeof(Memory*);
-    debug2=size;
-
 }
 
 MemoryBus::~MemoryBus()
 {
     UINT64 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
-    delete[] writeableMemoryCounts;
+    //delete[] writeableMemoryCounts;
     for (i = 0; i < size; i++)
         delete[] writeableMemorySpace[i];
     delete[] writeableMemorySpace;
-    delete[] readableMemoryCounts;
+    //delete[] readableMemoryCounts;
     for (i = 0; i < size; i++)
         delete[] readableMemorySpace[i];
     delete[] readableMemorySpace;

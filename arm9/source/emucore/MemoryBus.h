@@ -37,9 +37,9 @@ class MemoryBus
     private:
         Memory*     mappedMemories[MAX_MAPPED_MEMORIES];
         UINT16      mappedMemoryCount;
-        UINT8*      writeableMemoryCounts;
+        UINT16*     writeableMemoryCounts;
         Memory***   writeableMemorySpace;
-        UINT8*      readableMemoryCounts;
+        UINT16*     readableMemoryCounts;
         Memory***   readableMemorySpace;
 };
 
