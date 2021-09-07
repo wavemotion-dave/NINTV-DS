@@ -62,3 +62,7 @@ V0.6 : 03-Sep-2021 by wavemotion-dave
 V0.5 : 02-Sep-2021 by wavemotion-dave
   * First pass release. 
 
+
+Special Thanks :
+---------
+BLISS - Intellivision Emulator. Originally developed by Kyle Davis. Contributions by Jesse Litton, Mike Dunston, Joseph Zbiciak.
