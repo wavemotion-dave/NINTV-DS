@@ -1326,7 +1326,7 @@ const struct options_t Option_Table[] =
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
     {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &myConfig.frame_skip_opt,   3},   
-    {"SOUND DIV",   {"1", "2", "4", "8", "16", "32", "DISABLED"},                                                                                                &myConfig.sound_clock_div,  7},
+    {"SOUND DIV",   {"8", "12", "16", "20", "24", "28", "DISABLED"},                                                                                             &myConfig.sound_clock_div,  7},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
@@ -1335,7 +1335,7 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern  INT32 clockDivisor;
-    static UINT32 sound_divs[] = {1,2,4,8,16,32, 64};
+    static UINT32 sound_divs[] = {8,12,16,20,24,28,64};
     clockDivisor = sound_divs[myConfig.sound_clock_div];
 }
 
