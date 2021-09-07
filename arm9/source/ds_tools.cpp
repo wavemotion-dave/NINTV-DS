@@ -847,7 +847,7 @@ void dsInstallSoundEmuFIFO(void)
 // pipeline of sound values from the pokey buffer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
-void VsoundHandler(void)
+ITCM_CODE void VsoundHandler(void)
 {
   static UINT16 sound_idx = 0;
   static UINT16 lastSample = 0;
