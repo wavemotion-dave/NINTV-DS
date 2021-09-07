@@ -31,6 +31,8 @@
 #include "Rip.h"
 #include "highscore.h"
 
+#define SOUND_FREQ 18000
+
 typedef enum _RunState 
 {
     Stopped,
@@ -39,7 +41,7 @@ typedef enum _RunState
     Quit
 } RunState;
 
-#define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
+bool bStartSoundFifo = false;
 
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
@@ -231,7 +233,8 @@ void AudioMixerDS::resetProcessor()
 		outputBufferWritePosition = 0;
 	}
 
-    dsInstallSoundEmuFIFO();
+    fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
+    bStartSoundFifo=true;
     
 	// clears the emulator side of the audio mixer
 	AudioMixer::resetProcessor();
@@ -342,6 +345,9 @@ BOOL LoadCart(const CHAR* filename)
         }
     }
 
+    // ---------------------------------------------------------------------
+    // New game is loaded... (would have returned FALSE above otherwise)
+    // ---------------------------------------------------------------------
     FindAndLoadConfig();
     dsShowScreenEmu();
     dsShowScreenMain(false);
@@ -415,7 +421,7 @@ BOOL InitializeEmulator(void)
     
 	//hook the audio and video up to the currentEmulator
 	currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
-    currentEmu->InitAudio(audioMixer,22020);
+    currentEmu->InitAudio(audioMixer, SOUND_FREQ);
 
     //put the RIP in the currentEmulator
 	currentEmu->SetRip(currentRip);
@@ -424,7 +430,7 @@ BOOL InitializeEmulator(void)
     currentEmu->Reset();
     
     // And put the Sound Fifo back at the start...
-    dsInstallSoundEmuFIFO();
+    bStartSoundFifo = true;
     
     TIMER0_CR=0;
     TIMER0_DATA=0;
@@ -690,6 +696,13 @@ void Run()
 
             // render the output
             currentEmu->Render();
+            
+            // Trick to start the fifo after the first round of sound is in the buffer...
+            if (bStartSoundFifo)
+            {
+                bStartSoundFifo = false;
+                dsInstallSoundEmuFIFO();
+            }
         }
         
         if (TIMER1_DATA >= 32728)   // 1000MS (1 sec)
@@ -806,20 +819,49 @@ void dsMainLoop(void)
 }
 
 //---------------------------------------------------------------------------------
+UINT16 audio_mixer_buffer2[2048];
+extern UINT16 audio_mixer_buffer[];
 void dsInstallSoundEmuFIFO(void)
 {
-    extern UINT16 audio_mixer_buffer[];
+    memset(audio_mixer_buffer2, 0x00, 2048*sizeof(UINT16));
+    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);
+    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
+    irqSet(IRQ_TIMER2, VsoundHandler);
+    irqEnable(IRQ_TIMER2);
+    
     FifoMessage msg;
-    msg.SoundPlay.data = audio_mixer_buffer;
-    msg.SoundPlay.freq = 22060;
+    msg.SoundPlay.data = audio_mixer_buffer2;
+    msg.SoundPlay.freq = SOUND_FREQ;
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
     msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
     msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = (SOUND_SIZE*15*2) >> 2;
+    msg.SoundPlay.dataSize = (2048*sizeof(UINT16)) >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
+}
+
+// ---------------------------------------------------------------------------
+// This is called very frequently (18,000 times per second) to fill the
+// pipeline of sound values from the pokey buffer into the Nintendo DS sound
+// buffer which will be processed in the background by the ARM 7 processor.
+// ---------------------------------------------------------------------------
+void VsoundHandler(void)
+{
+  static UINT16 sound_idx = 0;
+  static UINT16 lastSample = 0;
+  static UINT16 myCurrentSampleIdx=0;
+  extern UINT16 currentSampleIdx;
+
+  // If there is a fresh sample...
+  if (myCurrentSampleIdx != currentSampleIdx)
+  {
+      lastSample = audio_mixer_buffer[myCurrentSampleIdx];
+      if (++myCurrentSampleIdx == SOUND_SIZE) myCurrentSampleIdx=0;
+  }
+  audio_mixer_buffer2[sound_idx] = lastSample;
+  sound_idx = (sound_idx+1) & (2048-1);
 }
 
 
@@ -1391,6 +1433,9 @@ void dsChooseOptions(void)
 
     return;
 }
+
+
+
 
 // End of Line
 

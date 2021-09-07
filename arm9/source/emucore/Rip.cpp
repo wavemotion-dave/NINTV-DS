@@ -403,9 +403,12 @@ Rip* Rip::LoadRom(const CHAR* filename)
             case ROM_TAG_COMPATIBILITY:
             {
                 read = fgetc(infile);
-                BOOL requiresECS = ((read & 0xC0) == 0x80);
+                BOOL requiresECS = ((read & 0xC0) != 0x80);
                 if (requiresECS)
                     rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+                BOOL intellivoiceSupport = ((read & 0x0C) != 0x0C);
+                if (intellivoiceSupport)
+                    rip->AddPeripheralUsage("Intellivoice", PERIPH_OPTIONAL);
                 for (i = 0; i < length-1; i++) {
                     fgetc(infile);
                     fgetc(infile);

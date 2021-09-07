@@ -6,9 +6,11 @@
 #include "Emulator.h"
 #include "../ds_tools.h"
 
-UINT16 audio_mixer_buffer[15*SOUND_SIZE];
+UINT16 audio_mixer_buffer[SOUND_SIZE];
 
 extern UINT64 lcm(UINT64, UINT64);
+
+UINT16 currentSampleIdx=0;
 
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
@@ -63,7 +65,7 @@ void AudioMixer::resetProcessor()
 
     // Clear out the sample buffer...
     memset(sampleBuffer, 0, sampleBufferSize);
-    memset(audio_mixer_buffer,0x00, 15*SOUND_SIZE*2);
+    memset(audio_mixer_buffer,0x00, SOUND_SIZE*sizeof(UINT16));
 
     //iterate through my audio output lines to determine the common output clock
     UINT64 totalClockSpeed = getClockSpeed();
@@ -88,7 +90,7 @@ void AudioMixer::init(UINT32 sampleRate)
 	sampleSize = ( clockSpeed / 60.0 );
 	sampleBufferSize = sampleSize * sizeof(INT16);
 	sampleBuffer = (INT16*) audio_mixer_buffer;
-    memset(sampleBuffer, 0, SOUND_SIZE);
+    memset(sampleBuffer, 0x00, SOUND_SIZE*sizeof(UINT16));
 }
 
 void AudioMixer::release()
@@ -146,9 +148,8 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             totalSample = totalSample / apc;
         }
 
-        static int zzz=0;
-        audio_mixer_buffer[zzz++] = totalSample;
-        if (zzz == (15*SOUND_SIZE)) zzz=0;
+        audio_mixer_buffer[currentSampleIdx] = totalSample;
+        if (++currentSampleIdx == (SOUND_SIZE)) currentSampleIdx=0;
         
         if (++sampleCount == SOUND_SIZE) 
         {
