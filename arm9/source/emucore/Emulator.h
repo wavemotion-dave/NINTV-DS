@@ -16,7 +16,7 @@
 #include "MemoryBus.h"
 #include "Memory.h"
 
-#define SOUND_FREQ  18000
+#define SOUND_FREQ  15360
 #define SOUND_SIZE  (SOUND_FREQ/60)
 
 typedef struct _StateHeader

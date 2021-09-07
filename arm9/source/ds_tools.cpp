@@ -31,7 +31,6 @@
 #include "Rip.h"
 #include "highscore.h"
 
-#define SOUND_FREQ 18000
 
 typedef enum _RunState 
 {
@@ -847,18 +846,18 @@ void dsInstallSoundEmuFIFO(void)
 // pipeline of sound values from the pokey buffer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
+UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
+UINT16 lastSample           __attribute__((section(".dtcm"))) = 0;
+UINT8 myCurrentSampleIdx    __attribute__((section(".dtcm"))) = 0;
+
 ITCM_CODE void VsoundHandler(void)
 {
-  static UINT16 sound_idx = 0;
-  static UINT16 lastSample = 0;
-  static UINT16 myCurrentSampleIdx=0;
-  extern UINT16 currentSampleIdx;
+  extern UINT8 currentSampleIdx;
 
   // If there is a fresh sample...
   if (myCurrentSampleIdx != currentSampleIdx)
   {
-      lastSample = audio_mixer_buffer[myCurrentSampleIdx];
-      if (++myCurrentSampleIdx == SOUND_SIZE) myCurrentSampleIdx=0;
+      lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
   }
   audio_mixer_buffer2[sound_idx] = lastSample;
   sound_idx = (sound_idx+1) & (2048-1);
