@@ -19,6 +19,8 @@
 #include "bgBottom-b17.h"
 #include "bgBottom-atlantis.h"
 #include "bgBottom-bombsquad.h"
+#include "bgBottom-utopia.h"
+#include "bgBottom-swords.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
 #include "bgHighScore.h"
@@ -795,6 +797,22 @@ void dsShowScreenMain(bool bFull)
       unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
       dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
+    else if (myConfig.overlay_selected == 8) // Utopia
+    {
+      decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (myConfig.overlay_selected == 9) // Swords & Serpents
+    {
+      decompress(bgBottom_swordsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_swordsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_swordsPal,(u16*) BG_PALETTE_SUB,256*2);
+      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
     else
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
@@ -1324,7 +1342,7 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD"},                                &myConfig.overlay_selected,  8},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWDS & SERPT"},      &myConfig.overlay_selected, 10},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_A_map,        15},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_B_map,        15},
     {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_X_map,        15},
