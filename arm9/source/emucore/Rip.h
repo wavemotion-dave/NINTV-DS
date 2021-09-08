@@ -38,19 +38,11 @@ public:
     //load a regular .rip file
     static Rip* LoadRip(const CHAR* filename);
 
-    //load a raw binary Atari 5200 image of a game
-    static Rip* LoadA52(const CHAR* filename);
-
     //load a raw binary Intellivision image of a game
     static Rip* LoadBin(const CHAR* filename, const CHAR* cfgFilename);
 
-    //load a raw binary image contained within a .zip file
-    static Rip* LoadZip(const CHAR* filename, const CHAR* cfgFilename);
-
     //load an Intellivision .rom file
     static Rip* LoadRom(const CHAR* filename);
-
-    BOOL SaveRip(const CHAR* filename);
 
     const CHAR* GetFileName() {
         return this->filename;

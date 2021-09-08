@@ -96,7 +96,6 @@ InputConsumer* Peripheral::GetInputConsumer(UINT16 i)
 
 void Peripheral::AddROM(ROM* r)
 {
-    printf("ROM Added [%s]\n", r->getName());
     roms[romCount] = r;
     romCount++;
 }

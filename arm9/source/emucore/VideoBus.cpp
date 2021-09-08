@@ -59,7 +59,6 @@ void VideoBus::init(UINT32 width, UINT32 height)
 	pixelBufferRowSize = width * sizeof(UINT8);
 	pixelBufferSize = width * height * sizeof(UINT8);
 	pixelBuffer = new UINT8[width * height];
-    printf("VideoBus::init(%d,%d)\n", width, height);
 
 	if ( pixelBuffer ) {
 		memset(pixelBuffer, 0, pixelBufferSize);
