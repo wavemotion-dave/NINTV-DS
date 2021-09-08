@@ -4,9 +4,6 @@
 #include "ds_tools.h"
 #include "highscore.h"
 
-#include "clickNoQuit_wav.h"
-#include "clickQuit_wav.h"
-
 int main(int argc, char **argv) 
 {
   // Init sound

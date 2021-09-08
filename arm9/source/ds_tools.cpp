@@ -24,11 +24,7 @@
 #include "bgHighScore.h"
 #include "bgOptions.h"
 
-#include "clickNoQuit_wav.h"
-#include "clickQuit_wav.h"
-
 #include "Emulator.h"
-#include "InputProducerManager.h"
 #include "Rip.h"
 #include "highscore.h"
 
