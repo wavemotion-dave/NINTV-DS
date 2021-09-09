@@ -15,7 +15,6 @@ RAM::RAM(UINT16 size, UINT16 location)
     this->trimmer = (UINT16)((1 << (sizeof(UINT16) << 3)) - 1);
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
-    debug1=fast_ram_idx;
 }
 
 RAM::RAM(UINT16 size, UINT16 location, UINT8 bitWidth)
@@ -29,7 +28,6 @@ RAM::RAM(UINT16 size, UINT16 location, UINT8 bitWidth)
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
-    debug1=fast_ram_idx;
 }
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask)
@@ -43,7 +41,6 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
-    debug1=fast_ram_idx;
 }
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth)
@@ -57,7 +54,6 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
     image = &fast_ram[fast_ram_idx];
     fast_ram_idx += size;
-    debug1=fast_ram_idx;
 }
 
 RAM::~RAM()

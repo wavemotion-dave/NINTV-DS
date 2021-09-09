@@ -37,7 +37,6 @@ public:
     {   
         if (multiByte) return ((UINT16*)image)[(location)-this->location];
         return ((UINT8*)image)[(location)-this->location];
-        //  return (*this.*peekFunc)(location);
     }
 
     UINT16 getWriteSize();
