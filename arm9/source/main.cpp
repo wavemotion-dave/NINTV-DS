@@ -1,5 +1,6 @@
 #include <nds.h>
 #include <fat.h>
+#include <filesystem.h>
 #include <stdio.h>
 #include "ds_tools.h"
 #include "highscore.h"
@@ -11,11 +12,25 @@ int main(int argc, char **argv)
   soundEnable();
   lcdMainOnTop();
     
-  // Init Fat
-  if (!fatInitDefault()) 
+  if(argc > 0)
   {
+    // Init NitroFS
+    if(!nitroFSInit(nullptr))
+    {
+      iprintf("Unable to initialize NitroFS!\n");
+      while(1)
+        swiWaitForVBlank();
+    }
+  }
+  else
+  {
+    // Init Fat
+    if (!fatInitDefault()) 
+    {
       iprintf("Unable to initialize libfat!\n");
-	  return -1;
+      while(1)
+        swiWaitForVBlank();
+    }
   }
     
   // Init the high-score tables...

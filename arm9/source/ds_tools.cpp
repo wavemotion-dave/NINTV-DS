@@ -12,15 +12,6 @@
 
 #include "ds_tools.h"
 #include "bgBottom.h"
-#include "bgBottom-treasure.h"
-#include "bgBottom-cloudy.h"
-#include "bgBottom-astro.h"
-#include "bgBottom-spartans.h"
-#include "bgBottom-b17.h"
-#include "bgBottom-atlantis.h"
-#include "bgBottom-bombsquad.h"
-#include "bgBottom-utopia.h"
-#include "bgBottom-swords.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
 #include "bgHighScore.h"
@@ -47,6 +38,19 @@ VideoBus             *videoBus = NULL;
 AudioMixer           *audioMixer = NULL;
 
 int emu_frames=1;
+
+const char *overlays[16] = {
+    "", // Default, not loaded from a file
+    "bgBottom-treasure",
+    "bgBottom-cloudy",
+    "bgBottom-astro",
+    "bgBottom-spartans",
+    "bgBottom-b17",
+    "bgBottom-atlantis",
+    "bgBottom-bombsquad",
+    "bgBottom-utopia",
+    "bgBottom-swords"
+};
 
 
 struct Config_t  myConfig;
@@ -756,85 +760,64 @@ void dsShowScreenMain(bool bFull)
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
     }
 
-    if (myConfig.overlay_selected == 1) // Treasure of Tarmin
-    {
-      decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 2) // Cloudy Mountain
-    {
-      decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 3) // Astrosmash
-    {
-      decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 4) // Space Spartans
-    {
-      decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 5) // B17 Bomber
-    {
-      decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 6) // Atlantis
-    {
-      decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 7) // Bomb Squad
-    {
-      decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 8) // Utopia
-    {
-      decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else if (myConfig.overlay_selected == 9) // Swords & Serpents
-    {
-      decompress(bgBottom_swordsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_swordsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_swordsPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    }
-    else
+    char overlayPath[MAX_PATH];
+    sniprintf(overlayPath, sizeof(overlayPath), "nitro:/%s.grf", overlays[myConfig.overlay_selected]);
+
+    if (myConfig.overlay_selected == 0 || access(overlayPath, F_OK) != 0) // Default
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
       unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
       dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else // Load from NitroFS
+    {
+      FILE *file = fopen(overlayPath, "rb");
+      if (file)
+      {
+        // Check for 'RIFF' to make sure this is actually a GRF file
+        char magic[5] = {0};
+        fread(&magic, 1, 4, file);
+        if (strcmp(magic, "RIFF") == 0)
+        {
+          u32 size;
+          fread(&size, 4, 1, file);
+          u32 *buffer = new u32[size / 4];
+          fread(buffer, 1, size, file);
+
+          // Loop through every section of the GRF and load to VRAM
+          u32 *ptr = buffer + 1;
+          while (ptr - buffer < size)
+          {
+            switch(*ptr)
+            {
+              case 0x20584647: // 'GFX '
+                decompress(ptr + 2, bgGetGfxPtr(bg0b), LZ77Vram);
+                ptr += ptr[1] / 4 + 2;
+                break;
+              case 0x2050414D: // 'MAP '
+                decompress(ptr + 2, bgGetMapPtr(bg0b), LZ77Vram);
+                ptr += ptr[1] / 4 + 2;
+                break;
+              case 0x204C4150: // 'PAL '
+                dmaCopy(ptr + 2, BG_PALETTE_SUB, 256 * 2);
+                ptr += ptr[1] / 4 + 2;
+                break;
+              default:
+                ptr += ptr[1] / 4 + 2;
+                break;
+            }
+          }
+
+          delete[] buffer;
+
+          unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+          dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+        }
+
+        fclose(file);
+      }
     }
 
     REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
