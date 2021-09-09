@@ -1382,7 +1382,12 @@ void ApplyOptions(void)
     extern  INT32 clockDivisor;
     static UINT32 sound_divs[] = {20,24,28,64};
     clockDivisor = sound_divs[myConfig.sound_clock_div];
-    bStartSoundFifo = true;
+
+    // Check if the sound changed...
+    fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
+    bStartSoundFifo=true;
+	// clears the emulator side of the audio mixer
+	audioMixer->resetProcessor();
 }
 
 // -----------------------------------------------------------------------------
