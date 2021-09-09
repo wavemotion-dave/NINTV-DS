@@ -34,6 +34,15 @@ Emulator::Emulator(const char* name)
     memset(usePeripheralIndicators, FALSE, sizeof(usePeripheralIndicators));
 }
 
+UINT16 fast_memory[0x10000];
+void Emulator::LoadFastMemory()
+{
+    for (int i=0x0000; i<=0xFFFF; i++)
+    {
+        fast_memory[i] = memoryBus.peek_origPC(i);
+    }
+}
+
 void Emulator::AddPeripheral(Peripheral* p)
 {
     peripherals[peripheralCount] = p;

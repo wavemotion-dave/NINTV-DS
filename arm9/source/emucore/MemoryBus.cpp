@@ -7,20 +7,26 @@ MemoryBus::MemoryBus()
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
     writeableMemoryCounts = (UINT16*)0x06860000;    // LCD D (saves main RAM)
-    memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
+    memset(writeableMemoryCounts, 0, sizeof(UINT16) * size);
     writeableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
         writeableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
-        debug2 = sizeof(Memory);
+        for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
+        {
+            writeableMemorySpace[i][j] = NULL;
+        }
     }
     readableMemoryCounts = (UINT16*)0x06880000;    // LCD E (saves main RAM)
-    memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
+    memset(readableMemoryCounts, 0, sizeof(UINT16) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
         readableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
-        debug2 = sizeof(Memory);
+        for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
+        {
+            readableMemorySpace[i][j] = NULL;
+        }        
     }
     mappedMemoryCount = 0;
 }

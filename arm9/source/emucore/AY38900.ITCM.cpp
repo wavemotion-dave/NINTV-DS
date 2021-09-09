@@ -420,14 +420,12 @@ void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 	AY38900::pixelBufferRowSize = rowSize;
 }
 
+bool skip_moderate[] = {false, false, true, false};
+bool skip_agressive[] = {true, false, true, false};
 ITCM_CODE void AY38900::renderFrame()
 {
     static int dampen_frame_render=0;
     
-    if (myConfig.frame_skip_opt == 2)    // Is agressive skip?
-    {
-        if (++dampen_frame_render & 0x01) return;
-    }
     //render the next frame
     renderBackground();
     renderMOBs();
@@ -435,9 +433,26 @@ ITCM_CODE void AY38900::renderFrame()
         mobs[i].collisionRegister = 0;
     determineMOBCollisions();
     markClean();
-    renderBorders();
-    copyBackgroundBufferToStagingArea();
+    
+    // -------------------------------------------------------------------------------------
+    // If we are skipping frames, we can skip rendering the pixels to the staging area...
+    // -------------------------------------------------------------------------------------
+    if (myConfig.frame_skip_opt)
+    {
+        extern UINT16 frames;
+        if ((frames & 1) == 0)
+        {
+            renderBorders();
+            copyBackgroundBufferToStagingArea();
+        }
+    }
+    else
+    {
+        renderBorders();
+        copyBackgroundBufferToStagingArea();
+    }
     copyMOBsToStagingArea();
+    
     for (int i = 0; i < 8; i++)
         memory[0x18+i] |= mobs[i].collisionRegister;
 }
@@ -461,8 +476,6 @@ ITCM_CODE void AY38900::markClean() {
 
 ITCM_CODE void AY38900::renderBorders()
 {
-    static int dampen_border_render = 0;
-    
     //draw the top and bottom borders
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
@@ -709,7 +722,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
         INT16 nextY = (INT16)((r->y + verticalOffset) << 1);
         for (UINT8 y = 0; y < mobPixelHeight; y++) 
         {
-            UINT16 zzz = (r->x+0)+ ((r->y+(y/2))*160);
+            UINT16 idx = (r->x+0)+ ((r->y+(y/2))*160);
             for (UINT8 x = 0; x < r->width; x++) 
             {
                 //if this mob pixel is not on, then our life has no meaning
@@ -726,7 +739,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
                 }
 
                 //check for foreground collision
-                UINT8 currentPixel = backgroundBuffer[zzz+x];
+                UINT8 currentPixel = backgroundBuffer[idx+x];
                 if ((currentPixel & FOREGROUND_BIT) != 0) 
                 {
                     foregroundCollision = TRUE;
@@ -753,6 +766,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
         }
     }
 }
+
 
 ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y, UINT8 fgcolor, UINT8 bgcolor)
 {

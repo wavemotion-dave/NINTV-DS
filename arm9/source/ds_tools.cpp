@@ -283,14 +283,14 @@ void VideoBusDS::release()
 }
 
 int debug1, debug2;
-static int frames=0;
+UINT16 frames=0;
 ITCM_CODE void VideoBusDS::render()
 {
     frames++;
 	VideoBus::render();
 
     // Any level of frame skip will skip the render()
-    if (myConfig.frame_skip_opt > 0)
+    if (myConfig.frame_skip_opt)
     {
         if (frames & 1) return;
     }
@@ -419,8 +419,11 @@ BOOL InitializeEmulator(void)
 
     //put the RIP in the currentEmulator
 	currentEmu->SetRip(currentRip);
-
-    //finally, reset everything
+    
+    // Load up the fast ROM memory for quick fetches
+    currentEmu->LoadFastMemory();
+    
+    //Reset everything
     currentEmu->Reset();
     
     // And put the Sound Fifo back at the start...
@@ -609,6 +612,8 @@ void pollInputs(void)
                 {
                     dsPrintValue(0,1,0, (char*) "           ");
                     InitializeEmulator();
+                    for (int i=0; i<20; i++) currentEmu->Run();
+                    if (LoadCart(newFile)) InitializeEmulator();
                 }
                 else
                 {
@@ -1324,14 +1329,13 @@ bool dsWaitOnQuit(void)
   return bRet;
 }
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Options are handled here... we have a number of things the user can tweak
 // and these options are applied immediately. The user can also save off 
-// their option choices for the currently running game into the XEGS.DAT
-// configuration database. When games are loaded back up, XEGS.DAT is read
-// to see if we have a match and the user settings can be restored for the 
-// game.
-// -----------------------------------------------------------------------------
+// their option choices for the currently running game into the NINTV-DS.DAT
+// configuration database. When games are loaded back up, NINTV-DS.DAT is read
+// to see if we have a match and the user settings can be restored for the game.
+// ------------------------------------------------------------------------------
 struct options_t
 {
     const char  *label;
@@ -1342,7 +1346,7 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWDS & SERPT"},      &myConfig.overlay_selected, 10},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT"},     &myConfig.overlay_selected, 10},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_A_map,        15},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_B_map,        15},
     {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_X_map,        15},
@@ -1352,7 +1356,7 @@ const struct options_t Option_Table[] =
     {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_START_map,    15},
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
-    {"FRAMESKIP",   {"OFF", "ON", "ON-AGGRESSIVE"},                                                                                                              &myConfig.frame_skip_opt,   3},   
+    {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                            &myConfig.frame_skip_opt,   2},   
     {"SOUND DIV",   {"8 (HI-Q/SLOW)", "12", "16", "20 (NORMAL)", "24", "28 (LOW/FAST)", "DISABLED"},                                                             &myConfig.sound_clock_div,  7},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
