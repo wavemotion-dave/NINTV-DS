@@ -15,6 +15,7 @@ typedef struct FICtoLoad {
   bool directory;
 } FICA_INTV;
 
+#define CONFIG_VER  0x0001
 
 struct Config_t 
 {
@@ -42,6 +43,7 @@ struct Config_t
     UINT16 spare7;
     UINT16 spare8;
     UINT16 spare9;
+    UINT16 config_ver;
 };
 
 extern struct Config_t  myConfig;

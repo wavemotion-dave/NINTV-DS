@@ -66,7 +66,7 @@ void SetDefaultConfig(void)
     myConfig.key_START_map      = 2;
     myConfig.key_SELECT_map     = 3;
     myConfig.controller_type    = 0;
-    myConfig.sound_clock_div    = 3;
+    myConfig.sound_clock_div    = 1;
     myConfig.show_fps           = 0;
     myConfig.spare0             = 0;
     myConfig.spare1             = 0;
@@ -78,6 +78,7 @@ void SetDefaultConfig(void)
     myConfig.spare7             = 1;
     myConfig.spare8             = 1;
     myConfig.spare9             = 2;
+    myConfig.config_ver         = CONFIG_VER;
 }
 
 // ---------------------------------------------------------------------------
@@ -145,6 +146,13 @@ void FindAndLoadConfig(void)
         fread(&allConfigs, sizeof(allConfigs), 1, fp);
         fclose(fp);
         
+        if (allConfigs[0].config_ver != CONFIG_VER)
+        {
+            memset(&allConfigs, 0x00, sizeof(allConfigs));
+            for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
+            SaveConfig(FALSE);
+        }
+        
         if (currentRip != NULL)
         {
             for (int slot=0; slot<MAX_CONFIGS; slot++)
@@ -164,8 +172,10 @@ void FindAndLoadConfig(void)
     else    // Not found... init the entire database...
     {
         memset(&allConfigs, 0x00, sizeof(allConfigs));
+        for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
         SaveConfig(FALSE);
     }
+    
     ApplyOptions();
 }
 
@@ -856,7 +866,7 @@ void dsInstallSoundEmuFIFO(void)
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, VsoundHandler);
     
-    if (myConfig.sound_clock_div != 6)
+    if (myConfig.sound_clock_div != 3)
         irqEnable(IRQ_TIMER2);
     else
         irqDisable(IRQ_TIMER2);
@@ -1357,7 +1367,7 @@ const struct options_t Option_Table[] =
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
     {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                            &myConfig.frame_skip_opt,   2},   
-    {"SOUND DIV",   {"8 (HI-Q/SLOW)", "12", "16", "20 (NORMAL)", "24", "28 (LOW/FAST)", "DISABLED"},                                                             &myConfig.sound_clock_div,  7},
+    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                 &myConfig.sound_clock_div,  4},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
