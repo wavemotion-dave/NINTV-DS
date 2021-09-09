@@ -66,7 +66,7 @@ void SetDefaultConfig(void)
     myConfig.key_START_map      = 2;
     myConfig.key_SELECT_map     = 3;
     myConfig.controller_type    = 0;
-    myConfig.sound_clock_div    = 1;
+    myConfig.sound_clock_div    = (isDSiMode() ? 1:2);
     myConfig.show_fps           = 0;
     myConfig.spare0             = 0;
     myConfig.spare1             = 0;
@@ -148,9 +148,11 @@ void FindAndLoadConfig(void)
         
         if (allConfigs[0].config_ver != CONFIG_VER)
         {
+            dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
             memset(&allConfigs, 0x00, sizeof(allConfigs));
             for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
             SaveConfig(FALSE);
+            dsPrintValue(0,1,0, (char*)"              ");
         }
         
         if (currentRip != NULL)
@@ -171,9 +173,11 @@ void FindAndLoadConfig(void)
     }
     else    // Not found... init the entire database...
     {
+        dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
         memset(&allConfigs, 0x00, sizeof(allConfigs));
         for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
         SaveConfig(FALSE);
+        dsPrintValue(0,1,0, (char*)"              ");
     }
     
     ApplyOptions();

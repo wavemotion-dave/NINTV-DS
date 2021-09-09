@@ -25,16 +25,19 @@ Features :
 
 Missing :
 ---------
-The few ECS games don't yet run.
-
+No ECS support.
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.1 : 09-Sep-2021 by wavemotion-dave
+  * Big boost in speed. Just about everything full speed on DSi. 
+  * A few more overlays added.
+
 V1.0 : 07-Sep-2021 by wavemotion-dave
   * First major release!
-  
+
 V0.9 : 06-Sep-2021 by wavemotion-dave
   * Major sound improvement (finally!)
   * High Score Support added
