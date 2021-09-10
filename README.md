@@ -31,6 +31,10 @@ Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.2 : 10-Sep-2021 by wavemotion-dave
+  * More speed - many games now playable full speed on the DS-LITE/PHAT!
+  * On the DSi, even the Intellivoice games should be running full speed now.
+
 V1.1 : 09-Sep-2021 by wavemotion-dave
   * Big boost in speed. Just about everything full speed on DSi. 
   * A few more overlays added.

@@ -6,7 +6,7 @@
 #include "Emulator.h"
 #include "../ds_tools.h"
 
-UINT16 audio_mixer_buffer[SOUND_SIZE] __attribute__((section(".dtcm")));
+UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
 UINT8 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
