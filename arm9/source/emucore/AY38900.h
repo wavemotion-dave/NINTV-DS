@@ -17,7 +17,6 @@
 
 TYPEDEF_STRUCT_PACK( _AY38900State
 {
-    BackTabRAMState backtab;
     MOBState        mobs[8];
     INT32           horizontalOffset;
     INT32           verticalOffset;

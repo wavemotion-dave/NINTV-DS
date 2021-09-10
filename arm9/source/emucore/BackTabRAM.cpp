@@ -58,22 +58,3 @@ BOOL BackTabRAM::isDirty(UINT16 location) {
     return dirtyBytes[location-BACKTAB_LOCATION];
 }
 
-BackTabRAMState BackTabRAM::getState()
-{
-	BackTabRAMState state = {0};
-
-	state.RAMState = RAM::getState(state.image);
-	this->getImage(state.image, 0, this->getImageByteSize());
-
-	return state;
-}
-
-void BackTabRAM::setState(BackTabRAMState state, UINT16* image)
-{
-	memset(this->dirtyBytes, TRUE, sizeof(this->dirtyBytes));
-	RAM::setState(state.RAMState, NULL);
-	this->setImage(state.image, 0, this->getImageByteSize());
-
-	this->dirtyRAM = TRUE;
-	this->colorAdvanceBitsDirty = TRUE;
-}

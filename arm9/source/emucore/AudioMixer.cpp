@@ -11,7 +11,6 @@ UINT8 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
 
-
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
     audioProducerCount(0),
@@ -149,6 +148,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
         }
 
         audio_mixer_buffer[currentSampleIdx++] = totalSample;
+        if (currentSampleIdx == SOUND_SIZE) currentSampleIdx=0;
         
         if (++sampleCount == SOUND_SIZE) 
         {

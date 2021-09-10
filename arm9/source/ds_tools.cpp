@@ -889,7 +889,7 @@ void dsInstallSoundEmuFIFO(void)
 }
 
 // ---------------------------------------------------------------------------
-// This is called very frequently (18,000 times per second) to fill the
+// This is called very frequently (15,300 times per second) to fill the
 // pipeline of sound values from the pokey buffer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
@@ -905,6 +905,7 @@ ITCM_CODE void VsoundHandler(void)
   if (myCurrentSampleIdx != currentSampleIdx)
   {
       lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
+      if (myCurrentSampleIdx == SOUND_SIZE) myCurrentSampleIdx=0;
   }
   audio_mixer_buffer2[sound_idx++] = lastSample;
   sound_idx &= (2048-1);

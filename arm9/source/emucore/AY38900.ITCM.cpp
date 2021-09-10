@@ -420,8 +420,6 @@ void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 	AY38900::pixelBufferRowSize = rowSize;
 }
 
-bool skip_moderate[] = {false, false, true, false};
-bool skip_agressive[] = {true, false, true, false};
 ITCM_CODE void AY38900::renderFrame()
 {
     static int dampen_frame_render=0;
@@ -597,9 +595,10 @@ ITCM_CODE void AY38900::renderBackground()
 ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 {
     //iterate through all the cards in the backtab
-    for (UINT8 i = 0; i < 240; i++) {
+    for (UINT8 i = 0; i < 240; i++) 
+    {
         //get the next card to render
-        UINT16 nextCard = backtab.peek(LOCATION_BACKTAB+i);
+        UINT16 nextCard = backtab.peek_direct(i);
         BOOL isGrom = (nextCard & 0x0800) == 0;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
@@ -633,10 +632,11 @@ ITCM_CODE void AY38900::renderColorStackMode()
     //iterate through all the cards in the backtab
     for (UINT8 h = 0; h < 240; h++) 
     {
-        UINT16 nextCard = backtab.peek(LOCATION_BACKTAB+h);
+        UINT16 nextCard = backtab.peek_direct(h);
 
         //colored squares mode
-        if ((nextCard & 0x1800) == 0x1000) {
+        if ((nextCard & 0x1800) == 0x1000) 
+        {
             if (renderAll || backtab.isDirty(LOCATION_BACKTAB+h)) {
                 UINT8 csColor = (UINT8)memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
@@ -652,7 +652,8 @@ ITCM_CODE void AY38900::renderColorStackMode()
             }
         }
         //color stack mode
-        else {
+        else 
+        {
             //advance the color pointer, if necessary
             if ((nextCard & 0x2000) != 0)
                 csPtr = (UINT8)((csPtr+1) & 0x03);
