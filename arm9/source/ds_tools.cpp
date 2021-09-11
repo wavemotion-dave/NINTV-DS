@@ -39,6 +39,7 @@ typedef enum _RunState
 } RunState;
 
 bool bStartSoundFifo = false;
+bool bUseJLP = false;
 
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
@@ -1071,7 +1072,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
   dsPrintValue(31,22,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
-  sprintf(szName, "A=CHOOSE   B=BACK ");
+  sprintf(szName, "A=LOAD, X=LOAD JLP, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) {
     ucGame= ucBcl+NoDebGame;
@@ -1234,12 +1235,13 @@ unsigned int dsWaitForRom(char *chosen_filename)
       while (keysCurrent() & KEY_B);
     }
 
-    if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y)
+    if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y || keysCurrent() & KEY_X)
     {
       if (!intvromlist[ucFicAct].directory)
       {
         bRet=true;
         bDone=true;
+        if (keysCurrent() & KEY_X) bUseJLP = true; else bUseJLP=false;
         strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
       }
       else

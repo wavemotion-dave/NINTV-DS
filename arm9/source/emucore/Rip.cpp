@@ -5,6 +5,7 @@
 #include "Rip.h"
 #include "RAM.h"
 #include "ROM.h"
+#include "JLP.h"
 #include "ROMBanker.h"
 #include "CRC32.h"
 
@@ -27,6 +28,7 @@ Rip::Rip(UINT32 systemID)
     year = new CHAR[1];
     strcpy(year, "");
     memset(filename, 0, sizeof(filename));
+    JLP16Bit = NULL;
 }
 
 Rip::~Rip()
@@ -38,6 +40,7 @@ Rip::~Rip()
         delete GetROM(i);
     delete[] producer;
     delete[] year;
+    if (JLP16Bit) delete JLP16Bit;
 }
 
 void Rip::SetName(const CHAR* n)
@@ -424,6 +427,18 @@ Rip* Rip::LoadRom(const CHAR* filename)
         }
     }
     fclose(infile);
+    
+    // Add the JLP RAM module if required...
+    extern bool bUseJLP;
+    if (bUseJLP)
+    {
+        rip->JLP16Bit = new JLP();
+        rip->AddRAM(rip->JLP16Bit);
+    }
+    else
+    {
+        rip->JLP16Bit = NULL;
+    }
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);

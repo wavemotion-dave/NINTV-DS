@@ -9,6 +9,7 @@
 #include "MemoryBus.h"
 #include "RAM.h"
 #include "ROM.h"
+#include "JLP.h"
 #include "CP1610.h"
 #include "AY38900.h"
 #include "AY38914.h"
