@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include "MemoryBus.h"
 
-
 MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
-    writeableMemoryCounts = (UINT16*)0x06860000;    // LCD D (saves main RAM)
-    memset(writeableMemoryCounts, 0, sizeof(UINT16) * size);
+    writeableMemoryCounts = new UINT8[65536];
+    memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
@@ -17,8 +16,8 @@ MemoryBus::MemoryBus()
             writeableMemorySpace[i][j] = NULL;
         }
     }
-    readableMemoryCounts = (UINT16*)0x06880000;    // LCD E (saves main RAM)
-    memset(readableMemoryCounts, 0, sizeof(UINT16) * size);
+    readableMemoryCounts = new UINT8[65536];
+    memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
@@ -39,7 +38,7 @@ MemoryBus::~MemoryBus()
     for (i = 0; i < size; i++)
         delete[] writeableMemorySpace[i];
     delete[] writeableMemorySpace;
-    //delete[] readableMemoryCounts;
+    delete[] readableMemoryCounts;
     for (i = 0; i < size; i++)
         delete[] readableMemorySpace[i];
     delete[] readableMemorySpace;
@@ -222,10 +221,11 @@ void MemoryBus::removeAll()
         removeMemory(mappedMemories[0]);
 }
 
-
 UINT16 MemoryBus::peek(UINT16 location)
 {
     UINT8 numMemories = readableMemoryCounts[location];
+    
+    if (numMemories == 1) return readableMemorySpace[location][0]->peek(location);
     
     UINT16 value = 0xFFFF;
     for (UINT16 i = 0; i < numMemories; i++)

@@ -1,4 +1,3 @@
-
 #ifndef INTELLIVOICE_H
 #define INTELLIVOICE_H
 
@@ -8,11 +7,6 @@
 #include "Processor.h"
 #include "SP0256.h"
 #include "AudioOutputLine.h"
-
-TYPEDEF_STRUCT_PACK( _IntellivoiceState
-{
-    SP0256State sp0256State;
-} IntellivoiceState; )
 
 class Intellivoice : public Peripheral
 {
@@ -29,9 +23,6 @@ public:
     void getProcessor(INT32 i, Processor** p);
     UINT32 getMemoryCount();
     void getMemory(INT32 i, Memory** m);
-
-    IntellivoiceState getState();
-    void setState(IntellivoiceState state);
 
 private:
     SP0256         sp0256;

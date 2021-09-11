@@ -33,7 +33,7 @@ typedef struct _StateChunk
 
 class Intellivision;
 
-#define MAX_PERIPHERALS    16
+#define MAX_PERIPHERALS     4
 #define NUM_EMULATORS       1
 
 /**

@@ -12,6 +12,13 @@ INT8  periodInterpolation       __attribute__((section(".dtcm")));
 INT8  amplitudeInterpolation    __attribute__((section(".dtcm")));
 
 
+INT32 bitsLeft                  __attribute__((section(".dtcm")));
+INT32 currentBits               __attribute__((section(".dtcm")));
+INT32 pc                        __attribute__((section(".dtcm")));
+INT32 stack                     __attribute__((section(".dtcm")));
+INT32 mode                      __attribute__((section(".dtcm")));
+INT32 repeatPrefix              __attribute__((section(".dtcm")));
+
 UINT16 bitMasks[16] __attribute__((section(".dtcm"))) = {
         0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF,
         0x01FF, 0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF };
@@ -93,7 +100,7 @@ void SP0256::resetProcessor()
     }
 }
 
-int sp_idle;
+UINT8 sp_idle = 0;
 ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
     if (idle) 
@@ -164,7 +171,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 
         //clamp the sample to a 12-bit range
         if (sample > 2047) sample = 2047;
-        if (sample < -2048) sample = -2048;
+        else if (sample < -2048) sample = -2048;
 
         audioOutputLine->playSample((INT16)(sample << 4));
 
@@ -181,7 +188,7 @@ INT8 SP0256::readDelta(INT32 numBits) {
     return (INT8)value;
 }
 
-INT32 SP0256::readBitsReverse(INT32 numBits) 
+ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits) 
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
@@ -211,7 +218,7 @@ INT32 SP0256::readBitsReverse(INT32 numBits)
     return output;
 }
 
-INT32 SP0256::readBits(INT32 numBits) 
+ITCM_CODE INT32 SP0256::readBits(INT32 numBits) 
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
@@ -816,60 +823,6 @@ void SP0256::decode() {
         case 0xF:
             PAUSE(immed4);
             break;
-
-/*
-        case 0x0:
-            if (immed4 == 0)
-                RTS();
-            else
-                SETPAGE(immed4);
-            break;
-        case 0x1:
-            SETMODE(immed4);
-            break;
-        case 0x2:
-            LOAD_4(immed4);
-            break;
-        case 0x3:
-            LOAD_C(immed4);
-            break;
-        case 0x4:
-            LOAD_2(immed4);
-            break;
-        case 0x5:
-            SETMSB_A(immed4);
-            break;
-        case 0x6:
-            SETMSB_6(immed4);
-            break;
-        case 0x7:
-            LOAD_E(immed4);
-            break;
-        case 0x8:
-            LOADALL(immed4);
-            break;
-        case 0x9:
-            DELTA_9(immed4);
-            break;
-        case 0xA:
-            SETMSB_5(immed4);
-            break;
-        case 0xB:
-            DELTA_D(immed4);
-            break;
-        case 0xC:
-            SETMSB_3(immed4);
-            break;
-        case 0xD:
-            JSR(immed4);
-            break;
-        case 0xE:
-            JMP(immed4);
-            break;
-        case 0xF:
-            PAUSE(immed4);
-            break;
-*/
     }
 }
 
@@ -885,74 +838,4 @@ INT32 SP0256::flipEndian(INT32 value, INT32 bits) {
         bitMask = bitMask << 1;
     }
     return output;
-}
-
-SP0256State SP0256::getState()
-{
-	SP0256State state = {0};
-#if 0
-	state.bitsLeft = this->bitsLeft;
-	state.currentBits = this->currentBits;
-
-	state.pc = this->pc;
-	state.stack = this->stack;
-	state.mode = this->mode;
-	state.repeatPrefix = this->repeatPrefix;
-	state.page = this->page;
-	state.command = this->command;
-
-	state.idle = this->idle;
-	state.lrqHigh = this->lrqHigh;
-	state.speaking = this->speaking;
-	memcpy(state.fifoBytes, this->fifoBytes, sizeof(this->fifoBytes));
-	state.fifoHead = this->fifoHead;
-	state.fifoSize = this->fifoSize;
-
-	state.repeat = this->repeat;
-	state.period = this->period;
-	state.periodCounter = this->periodCounter;
-	state.amplitude = this->amplitude;
-	memcpy(state.b, this->b, sizeof(this->b));
-	memcpy(state.f, this->f, sizeof(this->f));
-	memcpy(state.y, this->y, sizeof(this->f));
-	state.periodInterpolation = this->periodInterpolation;
-	state.amplitudeInterpolation = this->amplitudeInterpolation;
-
-	state.random = this->random;
-#endif
-	return state;
-}
-
-void SP0256::setState(SP0256State state)
-{
-#if 0    
-	this->bitsLeft = state.bitsLeft;
-	this->currentBits = state.currentBits;
-
-	this->pc = state.pc;
-	this->stack = state.stack;
-	this->mode = state.mode;
-	this->repeatPrefix = state.repeatPrefix;
-	this->page = state.page;
-	this->command = state.command;
-
-	this->idle = state.idle;
-	this->lrqHigh = state.lrqHigh;
-	this->speaking = state.speaking;
-	memcpy(this->fifoBytes, state.fifoBytes, sizeof(this->fifoBytes));
-	this->fifoHead = state.fifoHead;
-	this->fifoSize = state.fifoSize;
-
-	this->repeat = state.repeat;
-	this->period = state.period;
-	this->periodCounter = state.periodCounter;
-	this->amplitude = state.amplitude;
-	memcpy(this->b, state.b, sizeof(this->b));
-	memcpy(this->f, state.f, sizeof(this->f));
-	memcpy(this->y, state.y, sizeof(this->f));
-	this->periodInterpolation = state.periodInterpolation;
-	this->amplitudeInterpolation = state.amplitudeInterpolation;
-
-	this->random = state.random;
-#endif    
 }

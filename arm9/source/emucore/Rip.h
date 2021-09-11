@@ -12,8 +12,8 @@
 
 using namespace std;
 
-#define MAX_BIOSES      16
-#define MAX_PERIPHERALS 16
+#define MAX_BIOSES      4
+#define MAX_PERIPHERALS 4
 
 typedef struct _CartridgeConfiguration CartridgeConfiguration;
 
@@ -35,9 +35,6 @@ public:
     const CHAR* GetYear() { return year; }
 
     PeripheralCompatibility GetPeripheralUsage(const CHAR* periphName);
-
-    //load a regular .rip file
-    static Rip* LoadRip(const CHAR* filename);
 
     //load a raw binary Intellivision image of a game
     static Rip* LoadBin(const CHAR* filename, const CHAR* cfgFilename);

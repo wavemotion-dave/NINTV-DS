@@ -347,14 +347,9 @@ BOOL LoadCart(const CHAR* filename)
             return FALSE;
         }
     }
-    else 
+    else
     {
-        //load the designated Rip
-        currentRip = Rip::LoadRip(filename);
-        if (currentRip == NULL)
-        {
-            return FALSE;
-        }
+        return FALSE;
     }
 
     // ---------------------------------------------------------------------

@@ -104,7 +104,7 @@ UINT16 CP1610::getIndirect(UINT16 registerNum)
     if (registerNum == 6) 
     {
         r[6]--;
-        value = memoryBus->peek_fast(r[6]);
+        value = memoryBus->peek(r[6]);
         if (D)
             value = (value & 0xFF) | ((memoryBus->peek(r[6]) & 0xFF) << 8);
     }
