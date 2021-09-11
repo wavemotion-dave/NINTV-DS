@@ -19,18 +19,6 @@
 extern UINT16 SOUND_FREQ;
 #define SOUND_SIZE  (SOUND_FREQ/60)
 
-typedef struct _StateHeader
-{
-    UINT32   emu;
-    UINT32   state;
-    UINT32   emuID;
-    UINT32   version;
-    UINT32   sys;
-    UINT32   sysID;
-    UINT32   cart;
-    UINT32   cartID;
-} StateHeader;
-
 typedef struct _StateChunk
 {
     UINT32   id;
@@ -75,9 +63,6 @@ class Emulator : public Peripheral
         void Run();
         void FlushAudio();
 		void Render();
-
-        virtual BOOL SaveState(const CHAR* filename) = 0;
-        virtual BOOL LoadState(const CHAR* filename) = 0;
 
 		static UINT32 GetEmulatorCount();
         static Emulator* GetEmulator(UINT32 i);

@@ -185,7 +185,7 @@ INT32 SP0256::readBitsReverse(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
-            currentBits |= (ivoiceROM.peek((UINT16)pc) << bitsLeft);
+            currentBits |= (ivoiceROM.peek8((UINT16)pc) << bitsLeft);
             bitsLeft += 8;
             pc = (pc+1) & 0xFFFF;
         }
@@ -215,7 +215,7 @@ INT32 SP0256::readBits(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
-            currentBits |= (ivoiceROM.peek((UINT16)pc) << bitsLeft);
+            currentBits |= (ivoiceROM.peek8((UINT16)pc) << bitsLeft);
             bitsLeft += 8;
             pc = (pc+1) & 0xFFFF;
         }

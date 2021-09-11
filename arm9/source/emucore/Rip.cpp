@@ -268,7 +268,7 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
 
             if (rip == NULL)
                 rip = new Rip(ID_SYSTEM_INTELLIVISION);
-            rip->AddRAM(new RAM(ramSize, ramAddress, ramBitWidth));
+            rip->AddRAM(new RAM(ramSize, ramAddress, 0xFFFF, 0xFFFF, ramBitWidth));
             parseSuccess = TRUE;
         }
         else if ((nextToken = strstr(nextLine, "Peripheral")) != NULL) {
@@ -362,7 +362,9 @@ Rip* Rip::LoadRom(const CHAR* filename)
     for (i = 0; i < 32; i++)
         fgetc(infile);
 
-    while ((read = fgetc(infile)) != -1) {
+    // Read through the rest of the .ROM and look for tags...
+    while ((read = fgetc(infile)) != -1) 
+    {
         int length = (read & 0x3F);
         read = (read & 0xC) >> 6;
         for (i = 0; i < read; i++)
@@ -370,7 +372,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
 
         int type = fgetc(infile);
         int crc16;
-        switch (type) {
+        switch (type) 
+        {
             case ROM_TAG_TITLE:
             {
                 CHAR* title = new char[length*sizeof(char)];
@@ -405,7 +408,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
                 BOOL intellivoiceSupport = ((read & 0x0C) != 0x0C);
                 if (intellivoiceSupport)
                     rip->AddPeripheralUsage("Intellivoice", PERIPH_OPTIONAL);
-                for (i = 0; i < length-1; i++) {
+                for (i = 0; i < length-1; i++) 
+                {
                     fgetc(infile);
                     fgetc(infile);
                 }

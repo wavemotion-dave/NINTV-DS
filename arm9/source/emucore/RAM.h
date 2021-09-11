@@ -5,25 +5,10 @@
 #include <string.h>
 #include "Memory.h"
 
-TYPEDEF_STRUCT_PACK( _RAMState
-{
-    INT8    enabled;
-    UINT8   bitWidth;
-    UINT16  size;
-    UINT16  location;
-    UINT16  readAddressMask;
-    UINT16  writeAddressMask;
-    UINT16  trimmer;
-} RAMState; )
-
 class RAM : public Memory
 {
-
     public:
-        RAM(UINT16 size, UINT16 location);
-        RAM(UINT16 size, UINT16 location, UINT8 bitWidth);
-        RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask);
-        RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth);
+        RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth=16);
         virtual ~RAM();
 
         virtual void reset();
@@ -38,19 +23,6 @@ class RAM : public Memory
         UINT16 getWriteAddress();
         UINT16 getWriteAddressMask();
         virtual void poke(UINT16 location, UINT16 value);
-
-        inline size_t getImageByteSize() {
-            return size * sizeof(UINT16);
-        }
-        void getImage(void* dst, UINT16 offset, UINT16 size) {
-            memcpy(dst, image + offset, size);
-        }
-        void setImage(void* src, UINT16 offset, UINT16 size) {
-            memcpy(image + offset, src, size);
-        }
-
-        RAMState getState(UINT16* image);
-        void setState(RAMState state, UINT16* image);
 
         //enabled attributes
         void SetEnabled(BOOL b);
