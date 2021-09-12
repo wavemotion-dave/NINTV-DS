@@ -6,46 +6,46 @@
 #define MIN(v1, v2) (v1 < v2 ? v1 : v2)
 #define MAX(v1, v2) (v1 > v2 ? v1 : v2)
 
-#define MODE_VBLANK 0
-#define MODE_START_ACTIVE_DISPLAY 1
-#define MODE_IDLE_ACTIVE_DISPLAY 2
-#define MODE_FETCH_ROW_0 3
-#define MODE_RENDER_ROW_0 4
-#define MODE_FETCH_ROW_1 5
-#define MODE_RENDER_ROW_1 6
-#define MODE_FETCH_ROW_2 7
-#define MODE_RENDER_ROW_2 8
-#define MODE_FETCH_ROW_3 9
-#define MODE_RENDER_ROW_3 10
-#define MODE_FETCH_ROW_4 11
-#define MODE_RENDER_ROW_4 12
-#define MODE_FETCH_ROW_5 13
-#define MODE_RENDER_ROW_5 14
-#define MODE_FETCH_ROW_6 15
-#define MODE_RENDER_ROW_6 16
-#define MODE_FETCH_ROW_7 17
-#define MODE_RENDER_ROW_7 18
-#define MODE_FETCH_ROW_8 19
-#define MODE_RENDER_ROW_8 20
-#define MODE_FETCH_ROW_9 21
-#define MODE_RENDER_ROW_9 22
-#define MODE_FETCH_ROW_10 23
-#define MODE_RENDER_ROW_10 24
-#define MODE_FETCH_ROW_11 25
-#define MODE_RENDER_ROW_11 26
-#define MODE_FETCH_ROW_12 27
+#define MODE_VBLANK                 0
+#define MODE_START_ACTIVE_DISPLAY   1
+#define MODE_IDLE_ACTIVE_DISPLAY    2
+#define MODE_FETCH_ROW_0            3
+#define MODE_RENDER_ROW_0           4
+#define MODE_FETCH_ROW_1            5
+#define MODE_RENDER_ROW_1           6
+#define MODE_FETCH_ROW_2            7
+#define MODE_RENDER_ROW_2           8
+#define MODE_FETCH_ROW_3            9
+#define MODE_RENDER_ROW_3           10
+#define MODE_FETCH_ROW_4            11
+#define MODE_RENDER_ROW_4           12
+#define MODE_FETCH_ROW_5            13
+#define MODE_RENDER_ROW_5           14
+#define MODE_FETCH_ROW_6            15
+#define MODE_RENDER_ROW_6           16
+#define MODE_FETCH_ROW_7            17
+#define MODE_RENDER_ROW_7           18
+#define MODE_FETCH_ROW_8            19
+#define MODE_RENDER_ROW_8           20
+#define MODE_FETCH_ROW_9            21
+#define MODE_RENDER_ROW_9           22
+#define MODE_FETCH_ROW_10           23
+#define MODE_RENDER_ROW_10          24
+#define MODE_FETCH_ROW_11           25
+#define MODE_RENDER_ROW_11          26
+#define MODE_FETCH_ROW_12           27
 
-const INT32 AY38900::TICK_LENGTH_SCANLINE             = 228;
-const INT32 AY38900::TICK_LENGTH_FRAME                = 59736;
-const INT32 AY38900::TICK_LENGTH_VBLANK               = 15164;
-const INT32 AY38900::TICK_LENGTH_START_ACTIVE_DISPLAY = 112;
-const INT32 AY38900::TICK_LENGTH_IDLE_ACTIVE_DISPLAY  = 456;
-const INT32 AY38900::TICK_LENGTH_FETCH_ROW            = 456;
-const INT32 AY38900::TICK_LENGTH_RENDER_ROW           = 3192;
-const INT32 AY38900::LOCATION_BACKTAB    = 0x0200;
-const INT32 AY38900::LOCATION_GROM       = 0x3000;
-const INT32 AY38900::LOCATION_GRAM       = 0x3800;
-const INT32 AY38900::FOREGROUND_BIT		 = 0x0010;
+#define TICK_LENGTH_SCANLINE             228
+#define TICK_LENGTH_FRAME                59736
+#define TICK_LENGTH_VBLANK               15164
+#define TICK_LENGTH_START_ACTIVE_DISPLAY 112
+#define TICK_LENGTH_IDLE_ACTIVE_DISPLAY  456
+#define TICK_LENGTH_FETCH_ROW            456
+#define TICK_LENGTH_RENDER_ROW           3192
+#define LOCATION_BACKTAB                 0x0200
+#define LOCATION_GROM                    0x3000
+#define LOCATION_GRAM                    0x3800
+#define FOREGROUND_BIT		             0x0010
 
 UINT16  mobBuffers[8][128] __attribute__((section(".dtcm")));
 UINT8 stretch[16] __attribute__((section(".dtcm"))) = {0x00, 0x03, 0x0C, 0x0F, 0x30, 0x33, 0x3C, 0x3F, 0xC0, 0xC3, 0xCC, 0xCF, 0xF0, 0xF3, 0xFC, 0xFF};
@@ -460,7 +460,8 @@ ITCM_CODE void AY38900::render()
 	// the video bus handles the actual rendering.
 }
 
-ITCM_CODE void AY38900::markClean() {
+ITCM_CODE void AY38900::markClean() 
+{
     //everything has been rendered and is now clean
     offsetsChanged = FALSE;
     bordersChanged = FALSE;
@@ -581,11 +582,6 @@ ITCM_CODE void AY38900::renderMOBs()
 
 ITCM_CODE void AY38900::renderBackground()
 {
-    /*
-    if (!backtab.isDirty() && !gram->isDirty() && !colorStackChanged && !colorModeChanged)
-        return;
-    */
-
     if (colorStackMode)
         renderColorStackMode();
     else
@@ -604,7 +600,8 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (colorModeChanged || backtab.isDirty(LOCATION_BACKTAB+i) || (!isGrom && gram->isCardDirty(memoryLocation))) {
+        if (colorModeChanged || backtab.isDirty(LOCATION_BACKTAB+i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+        {
             UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
@@ -663,7 +660,8 @@ ITCM_CODE void AY38900::renderColorStackMode()
                 : (nextCard & 0x01F8));
 
             if (renderAll || backtab.isDirty(LOCATION_BACKTAB+h) ||
-                (!isGrom && gram->isCardDirty(memoryLocation))) {
+                (!isGrom && gram->isCardDirty(memoryLocation))) 
+            {
                 UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
                     (nextCard & 0x0007) | FOREGROUND_BIT);
                 UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
@@ -784,7 +782,8 @@ ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y, UINT8 fgcolor, 
 }
 
 ITCM_CODE void AY38900::renderColoredSquares(int x, int y, UINT8 color0, UINT8 color1,
-    UINT8 color2, UINT8 color3) {
+    UINT8 color2, UINT8 color3) 
+{
     int topLeftPixel = x + (y*160);
     int topRightPixel = topLeftPixel+4;
     int bottomLeftPixel = topLeftPixel+640;
@@ -810,16 +809,6 @@ ITCM_CODE void AY38900::determineMOBCollisions()
         if (mobs[i].xLocation == 0 || !mobs[i].flagCollisions)
             continue;
 
-        /*
-        //check MOB on foreground collisions
-        if (mobCollidesWithForeground(i))
-            mobs[i].collisionRegister |= 0x0100;
-
-        //check MOB on border collisions
-        if (mobCollidesWithBorder(i))
-            mobs[i].collisionRegister |= 0x0200;
-        */
-
         //check MOB on MOB collisions
         for (int j = i+1; j < 8; j++) 
         {
@@ -834,26 +823,10 @@ ITCM_CODE void AY38900::determineMOBCollisions()
     }
 }
 
-BOOL AY38900::mobCollidesWithBorder(int mobNum)
+ITCM_CODE BOOL AY38900::mobCollidesWithBorder(int mobNum)
 {
     MOBRect* r = mobs[mobNum].getBounds();
     UINT8 mobPixelHeight = (UINT8)(r->height<<1);
-
-    /*
-    if (r->x > (blockLeft ? 8 : 0) && r->x+r->width <= 191 &&
-            r->y > (blockTop ? 8 : 0) && r->y+r->height <= 158)
-        return FALSE;
-
-    for (UINT8 i = 0; i < r->height; i++) {
-        if (mobBuffers[mobNum][i<<1] == 0 || mobBuffers[mobNum][(i<<1)+1] == 0)
-            continue;
-
-        if (r->y+i < (blockLeft ? 8 : 0) || r->y+r->height+i > 158)
-            return TRUE;
-
-        //if (r->x && border
-    }
-    */
 
     UINT16 leftRightBorder = 0;
     //check if could possibly touch the left border
@@ -900,7 +873,7 @@ BOOL AY38900::mobCollidesWithBorder(int mobNum)
     return FALSE;
 }
 
-BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
+ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 {
     MOBRect* r0 = mobs[mobNum0].getBounds();
     MOBRect* r1 = mobs[mobNum1].getBounds();

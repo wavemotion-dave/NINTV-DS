@@ -73,20 +73,6 @@ private:
 	BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);
     BOOL mobCollidesWithBorder(int mobNum);
     BOOL mobCollidesWithForeground(int mobNum);
-	//void renderRow(INT32 rowNum);
-
-	const static INT32 TICK_LENGTH_SCANLINE;
-    const static INT32 TICK_LENGTH_FRAME;
-    const static INT32 TICK_LENGTH_VBLANK;
-    const static INT32 TICK_LENGTH_START_ACTIVE_DISPLAY;
-    const static INT32 TICK_LENGTH_IDLE_ACTIVE_DISPLAY;
-    const static INT32 TICK_LENGTH_FETCH_ROW;
-    const static INT32 TICK_LENGTH_RENDER_ROW;
-    const static INT32 LOCATION_BACKTAB;
-    const static INT32 LOCATION_GROM;
-    const static INT32 LOCATION_GRAM;
-    const static INT32 LOCATION_COLORSTACK;
-    const static INT32 FOREGROUND_BIT;
 
     MemoryBus*      memoryBus;
 
