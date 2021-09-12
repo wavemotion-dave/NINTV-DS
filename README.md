@@ -26,10 +26,25 @@ Features :
  JLP support for accelerated functions and RAM is supported. When loading a game,
  use the X button to load and force JLP support ON.
 
-Missing :
----------
+Missing / Known Issues :
+-----------------------
 No ECS support.
+Stampeed - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
+Nova Blast - game will freeze several seconds into playing. 
+
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
+
+License :
+-----------------------
+Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+
+Copying and distribution of this emulator, it's source code and associated 
+readme files, with or without modification, are permitted in any medium without 
+royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
+and Kyle Davis (BLISS) are thanked profusely. 
+
+The NINTV-DS emulator is offered as-is, without any warranty.
+
 
 --------------------------------------------------------------------------------
 History :
