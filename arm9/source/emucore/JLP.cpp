@@ -1,6 +1,8 @@
 #include <nds.h>
 #include "JLP.h"
 
+extern UINT16 jlp_ram[];
+
 JLP::JLP()
 : RAM(RAM_JLP_SIZE, 0x8040, 0xFFFF, 0xFFFF)
 {}
@@ -9,19 +11,20 @@ void JLP::reset()
 {
     enabled = TRUE;
     for (UINT16 i = 0; i < RAM_JLP_SIZE; i++)
-        image[i] = 0;
+        jlp_ram[i] = 0xFFFF;
+    jlp_ram[0x1FFF] = 0;
 }
 
 UINT16 JLP::peek(UINT16 location)
 {
-    if (location == 0x9FFE) return (UINT16)random();
-    return image[(location&readAddressMask) - this->location];
+    if (location&0x1FFF == 0x1FFE) {return (UINT16)random();}
+    return jlp_ram[(location&readAddressMask) - this->location];
 }
 
 void JLP::poke(UINT16 location, UINT16 value)
 {
     UINT32 prod=0, quot=0, rem=0;
-    image[(location&writeAddressMask)-this->location] = value;
+    jlp_ram[(location&writeAddressMask)-this->location] = value;
 
     /* -------------------------------------------------------------------- */
     /*  Check for mult/div writes                                           */
@@ -36,52 +39,52 @@ void JLP::poke(UINT16 location, UINT16 value)
     {
         case 0x9F80:
         case 0x9F81:
-            prod = (UINT32)  ((INT32)(INT16)image[(0x9F80&readAddressMask) - this->location] * (INT32)(INT16)image[(0x9F81&readAddressMask) - this->location]);
-            image[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
-            image[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
+            prod = (UINT32)  ((INT32)(INT16)jlp_ram[(0x9F80&readAddressMask) - this->location] * (INT32)(INT16)jlp_ram[(0x9F81&readAddressMask) - this->location]);
+            jlp_ram[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
+            jlp_ram[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
             break;    
 
         case 0x9F82:
         case 0x9F83:
-            prod = (UINT32)  ((INT32)(INT16)image[(0x9F82&readAddressMask) - this->location] * (INT32)(UINT16)image[(0x9F83&readAddressMask) - this->location]);
-            image[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
-            image[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
+            prod = (UINT32)  ((INT32)(INT16)jlp_ram[(0x9F82&readAddressMask) - this->location] * (INT32)(UINT16)jlp_ram[(0x9F83&readAddressMask) - this->location]);
+            jlp_ram[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
+            jlp_ram[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
             break;    
             
         case 0x9F84:
         case 0x9F85:
-            prod = (UINT32)  ((INT32)(UINT16)image[(0x9F84&readAddressMask) - this->location] * (INT32)(INT16)image[(0x9F85&readAddressMask) - this->location]);
-            image[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
-            image[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
+            prod = (UINT32)  ((INT32)(UINT16)jlp_ram[(0x9F84&readAddressMask) - this->location] * (INT32)(INT16)jlp_ram[(0x9F85&readAddressMask) - this->location]);
+            jlp_ram[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
+            jlp_ram[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
             break;    
 
         case 0x9F86:
         case 0x9F87:
-            prod = (UINT32)  ((UINT32)(UINT16)image[(0x9F86&readAddressMask) - this->location] * (UINT32)(UINT16)image[(0x9F87&readAddressMask) - this->location]);
-            image[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
-            image[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
+            prod = (UINT32)  ((UINT32)(UINT16)jlp_ram[(0x9F86&readAddressMask) - this->location] * (UINT32)(UINT16)jlp_ram[(0x9F87&readAddressMask) - this->location]);
+            jlp_ram[(0x9F8E&writeAddressMask)-this->location] = prod & 0xFFFF;
+            jlp_ram[(0x9F8F&writeAddressMask)-this->location] = prod >> 16;                                                                                                      
             break;    
             
         case 0x9F88:
         case 0x9F89:
-            if (image[(0x9F89&readAddressMask)] != 0)
+            if (jlp_ram[(0x9F89&readAddressMask) - this->location] != 0)
             {
-                quot = (UINT32)  ((INT32)(INT16)image[(0x9F88&readAddressMask) - this->location] / (INT32)(INT16)image[(0x9F89&readAddressMask) - this->location]);
-                rem  = (UINT32)  ((INT32)(INT16)image[(0x9F88&readAddressMask) - this->location] % (INT32)(INT16)image[(0x9F89&readAddressMask) - this->location]);
+                quot = (UINT32)  ((INT32)(INT16)jlp_ram[(0x9F88&readAddressMask) - this->location] / (INT32)(INT16)jlp_ram[(0x9F89&readAddressMask) - this->location]);
+                rem  = (UINT32)  ((INT32)(INT16)jlp_ram[(0x9F88&readAddressMask) - this->location] % (INT32)(INT16)jlp_ram[(0x9F89&readAddressMask) - this->location]);
             }
-            image[(0x9F8E&writeAddressMask)-this->location] = quot;
-            image[(0x9F8F&writeAddressMask)-this->location] = rem;  
+            jlp_ram[(0x9F8E&writeAddressMask)-this->location] = quot;
+            jlp_ram[(0x9F8F&writeAddressMask)-this->location] = rem;  
             break;    
             
         case 0x9F8A:
         case 0x9F8B:
-            if (image[(0x9F8B&readAddressMask)] != 0)
+            if (jlp_ram[(0x9F8B&readAddressMask) - this->location] != 0)
             {
-                quot = (UINT32)  ((UINT32)(UINT16)image[(0x9F8A&readAddressMask) - this->location] / (UINT32)(UINT16)image[(0x9F8B&readAddressMask) - this->location]);
-                rem  = (UINT32)  ((UINT32)(UINT16)image[(0x9F8A&readAddressMask) - this->location] % (UINT32)(UINT16)image[(0x9F8B&readAddressMask) - this->location]);
+                quot = (UINT32)  ((UINT32)(UINT16)jlp_ram[(0x9F8A&readAddressMask) - this->location] / (UINT32)(UINT16)jlp_ram[(0x9F8B&readAddressMask) - this->location]);
+                rem  = (UINT32)  ((UINT32)(UINT16)jlp_ram[(0x9F8A&readAddressMask) - this->location] % (UINT32)(UINT16)jlp_ram[(0x9F8B&readAddressMask) - this->location]);
             }
-            image[(0x9F8E&writeAddressMask)-this->location] = quot;
-            image[(0x9F8F&writeAddressMask)-this->location] = rem;  
+            jlp_ram[(0x9F8E&writeAddressMask)-this->location] = quot;
+            jlp_ram[(0x9F8F&writeAddressMask)-this->location] = rem;  
             break;    
     }
     

@@ -1,6 +1,7 @@
 #include <nds.h>
 #include <fat.h>
 #include <stdio.h>
+#include <time.h>
 #include "ds_tools.h"
 #include "highscore.h"
 
@@ -25,6 +26,8 @@ int main(int argc, char **argv)
   {
     SOUND_FREQ = 11100;
   }
+    
+  srand(time(0));
     
   // Init the high-score tables...
   highscore_init();
