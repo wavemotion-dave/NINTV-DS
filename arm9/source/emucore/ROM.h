@@ -53,12 +53,6 @@ public:
 private:
     void Initialize(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UINT16 size, UINT16 location, UINT16 readMask);
 
-    UINT16 (ROM::*peekFunc)(UINT16); 
-    UINT16 peek1(UINT16 location);
-    UINT16 peek2(UINT16 location);
-    UINT16 peek4(UINT16 location);
-    UINT16 peekN(UINT16 location);
-
     CHAR*    name;
     CHAR*    filename;
     UINT32   fileoffset;

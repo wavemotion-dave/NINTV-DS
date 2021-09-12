@@ -34,7 +34,7 @@ MemoryBus::~MemoryBus()
 {
     UINT64 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
-    //delete[] writeableMemoryCounts;
+    delete[] writeableMemoryCounts;
     for (i = 0; i < size; i++)
         delete[] writeableMemorySpace[i];
     delete[] writeableMemorySpace;

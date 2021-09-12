@@ -7,8 +7,6 @@
 #include "Memory.h"
 #include "ROM.h"
 
-extern UINT16 *fast_memory;
-
 #define MAX_MAPPED_MEMORIES     15
 #define MAX_OVERLAPPED_MEMORIES 3
 
@@ -30,7 +28,9 @@ class MemoryBus
         UINT16 peek(UINT16 location);
         
         // Since PC fetched memory should be static and 16-bits... we pre-load into fast_memory[] for blazingly (relatively!) fast access...
-        inline UINT16 peek_pc(void) {return fast_memory[r[7]];}
+        //inline UINT16 peek_pc(void) {return fast_memory[r[7]];}        
+        inline UINT16 peek_pc(void) {return *((UINT16 *)0x06880000 + r[7]);}        
+        
         inline UINT16 peek_origPC(UINT16 location) 
         {
            if (readableMemorySpace[location])

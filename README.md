@@ -19,9 +19,12 @@ Features :
 ----------
  Most things you should expect from an emulator. 
  Most games run at full speed on a DSi or above.
- Most games will NOT run full speed on the older DS - but you can play with config 
- options to get the most out of these games (even if you have to disable sound to 
- gain the speed).
+ Many games run very close to full speed on the older DS-LITE and
+ DS-PHAT hardware but you can play with config settings to get the 
+ most out of these games (even if you have to disable sound to gain the speed).
+ 
+ JLP support for accelerated functions and RAM is supported. When loading a game,
+ use the X button to load and force JLP support ON.
 
 Missing :
 ---------
@@ -31,6 +34,11 @@ Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.3 : 12-Sep-2021 by wavemotion-dave
+  * Basic JLP support for Accelerated functions and extra 16-bit RAM (hello Grail of the Gods!)
+  * Major internal cleanup for better memory management. 
+  * Squeezed out a couple more frames of speed improvement.
+
 V1.2 : 10-Sep-2021 by wavemotion-dave
   * More speed - many games now playable full speed on the DS-LITE/PHAT!
   * On the DSi, even the Intellivoice games should be running full speed now.

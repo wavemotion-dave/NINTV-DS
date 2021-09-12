@@ -135,6 +135,21 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
 
     delete[] image;
 
+    // Add the JLP RAM module if required...
+    extern bool bUseJLP;
+    if (bUseJLP)
+    {
+        rip->JLP16Bit = new JLP();
+        rip->AddRAM(rip->JLP16Bit);
+    }
+    else
+    {
+        rip->JLP16Bit = NULL;
+    }
+    
+    extern bool bForceIvoice;
+    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
 
@@ -296,7 +311,7 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
         }
     }
     fclose(cfgFile);
-
+ 
     if (rip != NULL && !parseSuccess) {
         delete rip;
         rip = NULL;
@@ -443,6 +458,9 @@ Rip* Rip::LoadRom(const CHAR* filename)
     {
         rip->JLP16Bit = NULL;
     }
+    
+    extern bool bForceIvoice;
+    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);

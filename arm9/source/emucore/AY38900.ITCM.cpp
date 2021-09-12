@@ -100,7 +100,7 @@ void AY38900::setGraphicsBusVisible(BOOL visible) {
     grom->SetEnabled(visible);
 }
 
-INT32 AY38900::tick(INT32 minimum) {
+ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
     INT32 totalTicks = 0;
     do {
         switch (mode) 

@@ -40,15 +40,15 @@ typedef enum _RunState
 
 bool bStartSoundFifo = false;
 bool bUseJLP = false;
+bool bForceIvoice=false;
 
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
 Rip                  *currentRip = NULL;
-VideoBus             *videoBus = NULL;
+VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
 int emu_frames=1;
-
 
 struct Config_t  myConfig;
 struct Config_t  allConfigs[MAX_CONFIGS];
@@ -727,12 +727,13 @@ void Run()
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             if ((frames > 0) && (myConfig.show_fps > 0))
             {
+                if (frames==61) frames--;
                 sprintf(tmp, "%03d", frames);
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            //sprintf(tmp, "%4d %4d", debug1, debug2);
-            //dsPrintValue(0,1,0,tmp);
+            sprintf(tmp, "%4d %4d", debug1, debug2);
+            if (0==1) dsPrintValue(0,1,0,tmp);
         }
     }
 }
@@ -1067,7 +1068,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
   dsPrintValue(31,22,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
-  sprintf(szName, "A=LOAD, X=LOAD JLP, B=BACK");
+  sprintf(szName, "A=LOAD, X=JLP, Y=IVOICE, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) {
     ucGame= ucBcl+NoDebGame;
@@ -1237,6 +1238,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
         bRet=true;
         bDone=true;
         if (keysCurrent() & KEY_X) bUseJLP = true; else bUseJLP=false;
+        if (keysCurrent() & KEY_Y) bForceIvoice = true; else bForceIvoice=false;          
         strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
       }
       else

@@ -4,6 +4,7 @@
 #include "types.h"
 
 #define MAX(v1, v2) (v1 > v2 ? v1 : v2)
+#define PEEK_FAST(x) *((UINT16 *)0x06880000 + (x))
 
 //the eight registers available in the CP1610
 UINT16 r[8] __attribute__((section(".dtcm")));
@@ -90,7 +91,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
         }
 
         //do the next instruction
-        op = memoryBus->peek_pc();
+        op = *((UINT16 *)0x06880000 + r[7]);
         usedCycles += decode();
     } while ((usedCycles) < min_shifted);
 
@@ -98,7 +99,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
 }
 
 
-UINT16 CP1610::getIndirect(UINT16 registerNum)
+inline UINT16 CP1610::getIndirect(UINT16 registerNum)
 {
     UINT16 value;
     if (registerNum == 6) 
@@ -1125,11 +1126,11 @@ INT32 CP1610::decode(void)
             return DIS();
         case 0x0004:
 			{
-            int read = memoryBus->peek((UINT16)(r[7] + 1));
+            int read = PEEK_FAST((UINT16)(r[7] + 1));
             int reg = ((read & 0x0300) >> 8);
             int interrupt = (read & 0x0003);
             UINT16 target = (UINT16)((read & 0x00FC) << 8);
-            read = memoryBus->peek((UINT16)(r[7] + 2));
+            read = PEEK_FAST((UINT16)(r[7] + 2));
             target |= (UINT16)(read & 0x03FF);
             if (reg == 3) {
                 if (interrupt == 0)
@@ -2663,52 +2664,52 @@ INT32 CP1610::decode(void)
             return XORR(7, 7);
 
         case 0x0200:
-            return B(memoryBus->peek((UINT16)(r[7] + 1)));
+            return B(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0201:
-            return BC(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BC(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0202:
-            return BOV(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BOV(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0203:
-            return BPL(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BPL(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0204:
-            return BEQ(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEQ(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0205:
-            return BLT(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BLT(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0206:
-            return BLE(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BLE(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0207:
-            return BUSC(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BUSC(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0208:
-            return NOPP(memoryBus->peek((UINT16)(r[7] + 1)));
+            return NOPP(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0209:
-            return BNC(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BNC(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x020A:
-            return BNOV(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BNOV(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x020B:
-            return BMI(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BMI(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x020C:
-            return BNEQ(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BNEQ(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x020D:
-            return BGE(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BGE(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x020E:
-            return BGT(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BGT(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x020F:
-            return BESC(memoryBus->peek((UINT16)(r[7] + 1)));
+            return BESC(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0210:
             return BEXT(0, memoryBus->peek((UINT16)(r[7] + 1)));

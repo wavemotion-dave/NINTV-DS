@@ -5,7 +5,7 @@
 extern UINT32 systemIDs[NUM_EMULATORS];
 extern Emulator* emus[NUM_EMULATORS];
 
-UINT32 Emulator::GetEmulatorCount()
+UINT8 Emulator::GetEmulatorCount()
 {
     return NUM_EMULATORS;
 }
@@ -34,9 +34,9 @@ Emulator::Emulator(const char* name)
     memset(usePeripheralIndicators, FALSE, sizeof(usePeripheralIndicators));
 }
 
-UINT16 *fast_memory;
 void Emulator::LoadFastMemory()
 {
+    UINT16 *fast_memory;
     fast_memory = (UINT16 *)0x06880000;     // LCD RAM area... possibly faster 16-bit access...
     for (int i=0x0000; i<=0xFFFF; i++)
     {
@@ -50,27 +50,27 @@ void Emulator::AddPeripheral(Peripheral* p)
     peripheralCount++;
 }
 
-UINT32 Emulator::GetPeripheralCount()
+UINT8 Emulator::GetPeripheralCount()
 {
     return peripheralCount;
 }
 
-Peripheral* Emulator::GetPeripheral(UINT32 i)
+Peripheral* Emulator::GetPeripheral(UINT8 i)
 {
     return peripherals[i];
 }
 
-void Emulator::UsePeripheral(UINT32 i, BOOL b)
+void Emulator::UsePeripheral(UINT8 i, BOOL b)
 {
     usePeripheralIndicators[i] = b;
 }
 
-UINT32 Emulator::GetVideoWidth()
+UINT16 Emulator::GetVideoWidth()
 {
     return videoWidth;
 }
 
-UINT32 Emulator::GetVideoHeight()
+UINT16 Emulator::GetVideoHeight()
 {
     return videoHeight;
 }
