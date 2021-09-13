@@ -6,6 +6,10 @@
 
 #define GRAM_SIZE       0x0200
 
+#define GRAM_ADDRESS    0x3800
+#define GRAM_READ_MASK  0xF9FF
+#define GRAM_WRITE_MASK 0x39FF
+
 extern UINT8     gram_image[GRAM_SIZE];
 extern UINT8     dirtyCards[GRAM_SIZE>>3];
 extern UINT8     dirtyRAM;

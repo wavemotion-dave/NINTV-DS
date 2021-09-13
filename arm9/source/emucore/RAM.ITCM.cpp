@@ -1,5 +1,6 @@
 #include <nds.h>
 #include "RAM.h"
+#include "GRAM.h"
 #include "JLP.h"
 
 UINT16 fast_ram[4096] __attribute__((section(".dtcm")));
@@ -17,11 +18,15 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
     if (size == RAM_JLP_SIZE)
     {
-        image = (UINT16*)jlp_ram;
+        image = (UINT16*)jlp_ram;       // Special 8K words of 16-bit RAM
+    }
+    else if (location == GRAM_ADDRESS)
+    {
+        image = (UINT16*)gram_image;    // Special fixed fast 8-bit RAM
     }
     else
     {
-        image = &fast_ram[fast_ram_idx];
+        image = &fast_ram[fast_ram_idx]; // Otherwise "allocate" it from the internal fast buffer... should never run out as most games don't use much extra RAM
         fast_ram_idx += size;
     }
 }

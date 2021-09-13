@@ -65,23 +65,6 @@ UINT32 CRC32::getCrc(UINT8* image, UINT32 imageSize)
     return crc.getValue();
 }
 
-/*
-void CRC32::formInternalFilename(CHAR* out, const CHAR* in, const CHAR* ext)
-{
-    strcpy(out, in);
-    char *p = strstr(out, ".zip");
-    *p = '\0';
-    strcat(out, ext);
-    p = &out[strlen((char *)out)];
-    while(--p > out)
-    {
-        if(*p == '\\' || *p == '/')
-            break;
-    }
-    strcpy(out, p+1);
-}
-*/
-
 void CRC32::reset() {
     crc = 0xFFFFFFFF;
 }

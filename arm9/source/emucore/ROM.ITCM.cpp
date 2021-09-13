@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ROM.h"
+#include "CRC32.h"
 
 ROM::ROM(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UINT16 size, UINT16 location, BOOL i)
 : enabled(TRUE),

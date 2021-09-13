@@ -1,16 +1,13 @@
 #include <nds.h>
 #include "GRAM.h"
 
-#define GRAM_ADDRESS    0x3800
-#define GRAM_READ_MASK  0xF9FF
-#define GRAM_WRITE_MASK 0x39FF
 
 UINT8     gram_image[GRAM_SIZE]         __attribute__((section(".dtcm")));
 UINT8     dirtyCards[GRAM_SIZE>>3]      __attribute__((section(".dtcm")));
 UINT8     dirtyRAM                      __attribute__((section(".dtcm")));
 
 GRAM::GRAM()
-: RAM(GRAM_SIZE, GRAM_ADDRESS, GRAM_READ_MASK, GRAM_WRITE_MASK, 16)
+: RAM(GRAM_SIZE, GRAM_ADDRESS, GRAM_READ_MASK, GRAM_WRITE_MASK, 8)
 {}
 
 void GRAM::reset()

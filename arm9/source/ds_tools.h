@@ -33,7 +33,7 @@ struct Config_t
     UINT16 controller_type;
     UINT16 sound_clock_div;
     UINT16 show_fps;
-    UINT16 spare0;
+    UINT16 dpad_config;
     UINT16 spare1;
     UINT16 spare2;
     UINT16 spare3;
