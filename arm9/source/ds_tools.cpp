@@ -1119,13 +1119,19 @@ void intvFindFiles(void)
       strcpy(filenametmp,pent->d_name);
       if (pent->d_type == DT_DIR)
       {
-        if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) {
+        if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) 
+        {
           intvromlist[countintv].directory = true;
           strcpy(intvromlist[countintv].filename,filenametmp);
           countintv++;
         }
       }
-      else {
+      else 
+      {
+        if (strcasecmp(filenametmp, "grom.bin") == 0) continue;
+        if (strcasecmp(filenametmp, "exec.bin") == 0) continue;
+        if (strcasecmp(filenametmp, "ivoice.bin") == 0) continue;
+          
         if (strlen(filenametmp)>4) {
           if ( (strcasecmp(strrchr(filenametmp, '.'), ".int") == 0) )  {
             intvromlist[countintv].directory = false;
