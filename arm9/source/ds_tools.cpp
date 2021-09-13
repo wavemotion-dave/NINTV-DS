@@ -573,7 +573,25 @@ void pollInputs(void)
             ds_disc_input[ctrl_disc][14] = 1;
         }
     }
-    
+    else if (myConfig.dpad_config == 4)  // Strict 4-way
+    {
+        if (keys_pressed & KEY_UP)    
+        {
+            ds_disc_input[ctrl_disc][0]  = 1;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            ds_disc_input[ctrl_disc][8]  = 1;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            ds_disc_input[ctrl_disc][4]  = 1;
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            ds_disc_input[ctrl_disc][12] = 1;
+        }
+    }    
     
     
     // -------------------------------------------------------------------------------------
@@ -1446,7 +1464,7 @@ const struct options_t Option_Table[] =
     {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_START_map,    15},
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
-    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS"},                                                                                  &myConfig.dpad_config,      4},
+    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                    &myConfig.dpad_config,      5},
     {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                            &myConfig.frame_skip_opt,   2},   
     {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                  &myConfig.sound_clock_div,  4},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
