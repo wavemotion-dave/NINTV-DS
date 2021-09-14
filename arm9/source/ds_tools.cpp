@@ -30,11 +30,13 @@ typedef enum _RunState
 } RunState;
 
 bool bStartSoundFifo = false;
+bool bUseJLP = false;
+bool bForceIvoice=false;
 
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
 Rip                  *currentRip = NULL;
-VideoBus             *videoBus = NULL;
+VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
 int emu_frames=1;
@@ -70,9 +72,9 @@ void SetDefaultConfig(void)
     myConfig.key_START_map      = 2;
     myConfig.key_SELECT_map     = 3;
     myConfig.controller_type    = 0;
-    myConfig.sound_clock_div    = 1;
+    myConfig.sound_clock_div    = (isDSiMode() ? 1:2);
     myConfig.show_fps           = 0;
-    myConfig.spare0             = 0;
+    myConfig.dpad_config        = 0;
     myConfig.spare1             = 0;
     myConfig.spare2             = 0;
     myConfig.spare3             = 0;
@@ -152,9 +154,11 @@ void FindAndLoadConfig(void)
         
         if (allConfigs[0].config_ver != CONFIG_VER)
         {
+            dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
             memset(&allConfigs, 0x00, sizeof(allConfigs));
             for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
             SaveConfig(FALSE);
+            dsPrintValue(0,1,0, (char*)"              ");
         }
         
         if (currentRip != NULL)
@@ -175,9 +179,11 @@ void FindAndLoadConfig(void)
     }
     else    // Not found... init the entire database...
     {
+        dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
         memset(&allConfigs, 0x00, sizeof(allConfigs));
         for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
         SaveConfig(FALSE);
+        dsPrintValue(0,1,0, (char*)"              ");
     }
     
     ApplyOptions();
@@ -346,14 +352,9 @@ BOOL LoadCart(const CHAR* filename)
             return FALSE;
         }
     }
-    else 
+    else
     {
-        //load the designated Rip
-        currentRip = Rip::LoadRip(filename);
-        if (currentRip == NULL)
-        {
-            return FALSE;
-        }
+        return FALSE;
     }
 
     // ---------------------------------------------------------------------
@@ -485,28 +486,122 @@ void pollInputs(void)
         ctrl_keys = myConfig.controller_type;
     }
     
-    // Handle 8 directions on keypad... best we can do...
-    if (keys_pressed & KEY_UP)    
-    {
-        if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
-        else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
-        else ds_disc_input[ctrl_disc][0]  = 1;
-    }
-    else if (keys_pressed & KEY_DOWN)
-    {
-        if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
-        else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
-        else ds_disc_input[ctrl_disc][8]  = 1;
-    }
-    else if (keys_pressed & KEY_RIGHT)
-    {
-        ds_disc_input[ctrl_disc][4]  = 1;
-    }
-    else if (keys_pressed & KEY_LEFT)
-    {
-        ds_disc_input[ctrl_disc][12] = 1;
-    }
+    // ---------------------------------------------------------------
+    // Handle 8 directions on keypad... best we can do with the d-pad
+    // ---------------------------------------------------------------
     
+    if (myConfig.dpad_config == 0)  // Normal handling
+    {
+        if (keys_pressed & KEY_UP)    
+        {
+            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
+            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
+            else ds_disc_input[ctrl_disc][0]  = 1;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
+            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
+            else ds_disc_input[ctrl_disc][8]  = 1;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            ds_disc_input[ctrl_disc][4]  = 1;
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            ds_disc_input[ctrl_disc][12] = 1;
+        }
+    }
+    else if (myConfig.dpad_config == 1) // Reverse Left/Right
+    {
+        if (keys_pressed & KEY_UP)    
+        {
+            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][14]  = 1;
+            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][2] = 1;
+            else ds_disc_input[ctrl_disc][0]  = 1;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][10]  = 1;
+            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][6] = 1;
+            else ds_disc_input[ctrl_disc][8]  = 1;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            ds_disc_input[ctrl_disc][12]  = 1;
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            ds_disc_input[ctrl_disc][4] = 1;
+        }
+    }
+    else if (myConfig.dpad_config == 2)  // Reverse Up/Down
+    {
+        if (keys_pressed & KEY_UP)    
+        {
+            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
+            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
+            else ds_disc_input[ctrl_disc][8]  = 1;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
+            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
+            else ds_disc_input[ctrl_disc][0]  = 1;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            ds_disc_input[ctrl_disc][4]  = 1;
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            ds_disc_input[ctrl_disc][12] = 1;
+        }
+    }    
+    else if (myConfig.dpad_config == 3)  // Diagnoals
+    {
+        if (keys_pressed & KEY_UP)    
+        {
+            ds_disc_input[ctrl_disc][2]  = 1;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            ds_disc_input[ctrl_disc][10] = 1;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            ds_disc_input[ctrl_disc][6]  = 1;
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            ds_disc_input[ctrl_disc][14] = 1;
+        }
+    }
+    else if (myConfig.dpad_config == 4)  // Strict 4-way
+    {
+        if (keys_pressed & KEY_UP)    
+        {
+            ds_disc_input[ctrl_disc][0]  = 1;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            ds_disc_input[ctrl_disc][8]  = 1;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            ds_disc_input[ctrl_disc][4]  = 1;
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            ds_disc_input[ctrl_disc][12] = 1;
+        }
+    }    
+    
+    
+    // -------------------------------------------------------------------------------------
+    // Now handle the main DS keys... these can be re-mapped to any Intellivision function
+    // -------------------------------------------------------------------------------------
     if (keys_pressed & KEY_A)       
     {
         if (myConfig.key_A_map > 11) 
@@ -731,12 +826,13 @@ void Run()
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             if ((frames > 0) && (myConfig.show_fps > 0))
             {
+                if (frames==61) frames--;
                 sprintf(tmp, "%03d", frames);
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            //sprintf(tmp, "%4d %4d", debug1, debug2);
-            //dsPrintValue(0,1,0,tmp);
+            sprintf(tmp, "%4d %4d", debug1, debug2);
+            if (0==1) dsPrintValue(0,1,0,tmp);
         }
     }
 }
@@ -868,7 +964,7 @@ void dsInstallSoundEmuFIFO(void)
 }
 
 // ---------------------------------------------------------------------------
-// This is called very frequently (18,000 times per second) to fill the
+// This is called very frequently (15,300 times per second) to fill the
 // pipeline of sound values from the pokey buffer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
@@ -884,6 +980,7 @@ ITCM_CODE void VsoundHandler(void)
   if (myCurrentSampleIdx != currentSampleIdx)
   {
       lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
+      if (myCurrentSampleIdx == SOUND_SIZE) myCurrentSampleIdx=0;
   }
   audio_mixer_buffer2[sound_idx++] = lastSample;
   sound_idx &= (2048-1);
@@ -1006,13 +1103,19 @@ void intvFindFiles(void)
       strcpy(filenametmp,pent->d_name);
       if (pent->d_type == DT_DIR)
       {
-        if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) {
+        if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) 
+        {
           intvromlist[countintv].directory = true;
           strcpy(intvromlist[countintv].filename,filenametmp);
           countintv++;
         }
       }
-      else {
+      else 
+      {
+        if (strcasecmp(filenametmp, "grom.bin") == 0) continue;
+        if (strcasecmp(filenametmp, "exec.bin") == 0) continue;
+        if (strcasecmp(filenametmp, "ivoice.bin") == 0) continue;
+          
         if (strlen(filenametmp)>4) {
           if ( (strcasecmp(strrchr(filenametmp, '.'), ".int") == 0) )  {
             intvromlist[countintv].directory = false;
@@ -1049,7 +1152,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
   dsPrintValue(31,22,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
-  sprintf(szName, "A=CHOOSE   B=BACK ");
+  sprintf(szName, "A=LOAD, X=JLP, Y=IVOICE, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) {
     ucGame= ucBcl+NoDebGame;
@@ -1212,12 +1315,14 @@ unsigned int dsWaitForRom(char *chosen_filename)
       while (keysCurrent() & KEY_B);
     }
 
-    if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y)
+    if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y || keysCurrent() & KEY_X)
     {
       if (!intvromlist[ucFicAct].directory)
       {
         bRet=true;
         bDone=true;
+        if (keysCurrent() & KEY_X) bUseJLP = true; else bUseJLP=false;
+        if (keysCurrent() & KEY_Y) bForceIvoice = true; else bForceIvoice=false;          
         strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
       }
       else
@@ -1349,8 +1454,9 @@ const struct options_t Option_Table[] =
     {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_START_map,    15},
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
+    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                    &myConfig.dpad_config,      5},
     {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                            &myConfig.frame_skip_opt,   2},   
-    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                 &myConfig.sound_clock_div,  4},
+    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                  &myConfig.sound_clock_div,  4},
     {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
@@ -1359,8 +1465,14 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern  INT32 clockDivisor;
-    static UINT32 sound_divs[] = {8,12,16,20,24,28,64};
+    static UINT32 sound_divs[] = {20,24,28,64};
     clockDivisor = sound_divs[myConfig.sound_clock_div];
+
+    // Check if the sound changed...
+    fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
+    bStartSoundFifo=true;
+	// clears the emulator side of the audio mixer
+	audioMixer->resetProcessor();
 }
 
 // -----------------------------------------------------------------------------

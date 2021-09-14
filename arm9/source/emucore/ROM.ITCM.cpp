@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ROM.h"
+#include "CRC32.h"
 
 ROM::ROM(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UINT16 size, UINT16 location, BOOL i)
 : enabled(TRUE),
@@ -32,8 +33,6 @@ void ROM::Initialize(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UI
     this->location = location;
     this->readAddressMask = readMask;
     this->image = new UINT8[size*byteWidth];
-    peekFunc = (byteWidth == 1 ? &ROM::peek1 : (byteWidth == 2 ? &ROM::peek2 :
-            (byteWidth == 4 ? &ROM::peek4 : &ROM::peekN)));
 }
 
 ROM::~ROM()
@@ -89,11 +88,6 @@ BOOL ROM::load(void* buffer)
 void ROM::SetEnabled(BOOL b)
 {
     enabled = b;
-    if (enabled)
-        peekFunc = (byteWidth == 1 ? &ROM::peek1 : (byteWidth == 2 ? &ROM::peek2 :
-                (byteWidth == 4 ? &ROM::peek4 : &ROM::peekN)));
-    else
-        peekFunc = &ROM::peekN;
 }
 
 const CHAR* ROM::getName()
@@ -142,26 +136,6 @@ UINT16 ROM::getWriteAddressMask()
 UINT8 ROM::getByteWidth()
 {
     return byteWidth;
-}
-
-UINT16 ROM::peek1(UINT16 location)
-{
-    return ((UINT8*)image)[(location&readAddressMask)-this->location];
-}
-
-UINT16 ROM::peek2(UINT16 location)
-{
-    return ((UINT16*)image)[(location&readAddressMask)-this->location];
-}
-
-UINT16 ROM::peek4(UINT16 location)
-{
-    return (UINT16)((UINT32*)image)[(location&readAddressMask)-this->location];
-}
-
-UINT16 ROM::peekN(UINT16)
-{
-    return 0xFFFF;
 }
 
 void ROM::poke(UINT16, UINT16)

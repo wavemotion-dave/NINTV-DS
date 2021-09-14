@@ -6,6 +6,10 @@
 
 #define GRAM_SIZE       0x0200
 
+#define GRAM_ADDRESS    0x3800
+#define GRAM_READ_MASK  0xF9FF
+#define GRAM_WRITE_MASK 0x39FF
+
 extern UINT8     gram_image[GRAM_SIZE];
 extern UINT8     dirtyCards[GRAM_SIZE>>3];
 extern UINT8     dirtyRAM;
@@ -24,20 +28,7 @@ class GRAM : public RAM
         void markClean();
         BOOL isDirty();
         BOOL isCardDirty(UINT16 cardLocation);
-
-        inline size_t getImageByteSize() {
-            return size * sizeof(UINT16);
-        }
-        void getImage(void* dst, UINT16 offset, UINT16 size) {
-            memcpy(dst, gram_image + offset, size);
-        }
-        void setImage(void* src, UINT16 offset, UINT16 size) {
-            memcpy(gram_image + offset, src, size);
-        }
-
-        RAMState getState(UINT16* image);
-        void setState(RAMState state, UINT16* image);
-
+       
     private:
 };
 

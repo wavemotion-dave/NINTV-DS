@@ -41,6 +41,6 @@ void InputConsumerBus::evaluateInputs()
 {
     //tell each of the input consumers that they may now pull their data from
     //the input device
-    for (UINT32 i = 0; i < inputConsumerCount; i++)
+    for (UINT8 i = 0; i < inputConsumerCount; i++)
         inputConsumers[i]->evaluateInputs();
 }

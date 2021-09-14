@@ -8,11 +8,12 @@
 #include "types.h"
 #include "Peripheral.h"
 #include "Memory.h"
+#include "JLP.h"
 
 using namespace std;
 
-#define MAX_BIOSES      16
-#define MAX_PERIPHERALS 16
+#define MAX_BIOSES      4
+#define MAX_PERIPHERALS 4
 
 typedef struct _CartridgeConfiguration CartridgeConfiguration;
 
@@ -35,9 +36,6 @@ public:
 
     PeripheralCompatibility GetPeripheralUsage(const CHAR* periphName);
 
-    //load a regular .rip file
-    static Rip* LoadRip(const CHAR* filename);
-
     //load a raw binary Intellivision image of a game
     static Rip* LoadBin(const CHAR* filename, const CHAR* cfgFilename);
 
@@ -54,7 +52,6 @@ public:
 
 private:
     Rip(UINT32 systemID);
-    //Rip(UINT32 systemID, const CHAR* nme, const CHAR* prducer, const CHAR* yr);
 
     void AddPeripheralUsage(const CHAR* periphName, PeripheralCompatibility usage);
     static Rip* LoadCartridgeConfiguration(const CHAR* cfgFile, UINT32 crc);
@@ -63,6 +60,7 @@ private:
         strncpy(this->filename, fname, sizeof(this->filename));
     }
 
+    JLP *JLP16Bit;
     UINT32 targetSystemID;
     CHAR* producer;
     CHAR* year;

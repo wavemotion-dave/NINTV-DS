@@ -6,11 +6,10 @@
 #include "Emulator.h"
 #include "../ds_tools.h"
 
-UINT16 audio_mixer_buffer[SOUND_SIZE] __attribute__((section(".dtcm")));
+UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
 UINT8 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
-
 
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
@@ -149,6 +148,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
         }
 
         audio_mixer_buffer[currentSampleIdx++] = totalSample;
+        if (currentSampleIdx == SOUND_SIZE) currentSampleIdx=0;
         
         if (++sampleCount == SOUND_SIZE) 
         {

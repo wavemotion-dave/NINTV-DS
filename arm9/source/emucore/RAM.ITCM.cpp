@@ -1,47 +1,11 @@
 #include <nds.h>
 #include "RAM.h"
+#include "GRAM.h"
+#include "JLP.h"
 
 UINT16 fast_ram[4096] __attribute__((section(".dtcm")));
 UINT16 fast_ram_idx = 0;
-
-RAM::RAM(UINT16 size, UINT16 location)
-: enabled(TRUE)
-{
-    this->size = size;
-    this->location = location;
-    this->readAddressMask = 0xFFFF;
-    this->writeAddressMask = 0xFFFF;
-    this->bitWidth = sizeof(UINT16)<<3;
-    this->trimmer = (UINT16)((1 << (sizeof(UINT16) << 3)) - 1);
-    image = &fast_ram[fast_ram_idx];
-    fast_ram_idx += size;
-}
-
-RAM::RAM(UINT16 size, UINT16 location, UINT8 bitWidth)
-: enabled(TRUE)
-{
-    this->size = size;
-    this->location = location;
-    this->readAddressMask = 0xFFFF;
-    this->writeAddressMask = 0xFFFF;
-    this->bitWidth = bitWidth;
-    this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    image = &fast_ram[fast_ram_idx];
-    fast_ram_idx += size;
-}
-
-RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask)
-: enabled(TRUE)
-{
-    this->size = size;
-    this->location = location;
-    this->readAddressMask = readAddressMask;
-    this->writeAddressMask = writeAddressMask;
-    this->bitWidth = sizeof(UINT16)<<3;
-    this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    image = &fast_ram[fast_ram_idx];
-    fast_ram_idx += size;
-}
+UINT16 jlp_ram[8192] = {0};
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth)
 : enabled(TRUE)
@@ -52,8 +16,19 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->writeAddressMask = writeAddressMask;
     this->bitWidth = bitWidth;
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    image = &fast_ram[fast_ram_idx];
-    fast_ram_idx += size;
+    if (size == RAM_JLP_SIZE)
+    {
+        image = (UINT16*)jlp_ram;       // Special 8K words of 16-bit RAM
+    }
+    else if (location == GRAM_ADDRESS)
+    {
+        image = (UINT16*)gram_image;    // Special fixed fast 8-bit RAM
+    }
+    else
+    {
+        image = &fast_ram[fast_ram_idx]; // Otherwise "allocate" it from the internal fast buffer... should never run out as most games don't use much extra RAM
+        fast_ram_idx += size;
+    }
 }
 
 RAM::~RAM()
@@ -110,7 +85,7 @@ UINT16 RAM::getWriteAddressMask()
 
 UINT16 RAM::peek(UINT16 location)
 {
-    return image[(location&readAddressMask)-this->location];
+    return image[(location&readAddressMask) - this->location];
 }
 
 void RAM::poke(UINT16 location, UINT16 value)
@@ -118,36 +93,3 @@ void RAM::poke(UINT16 location, UINT16 value)
     image[(location&writeAddressMask)-this->location] = (value & trimmer);
 }
 
-RAMState RAM::getState(UINT16* image)
-{
-	RAMState state = {0};
-
-	state.enabled = this->enabled;
-	state.size = this->size;
-	state.location = this->location;
-	state.readAddressMask = this->readAddressMask;
-	state.writeAddressMask = this->writeAddressMask;
-	state.bitWidth = this->bitWidth;
-	state.trimmer = this->trimmer;
-
-	if (image != NULL) {
-		this->getImage(image, 0, this->getImageByteSize());
-	}
-
-	return state;
-}
-
-void RAM::setState(RAMState state, UINT16* image)
-{
-	this->enabled = state.enabled;
-	this->size = state.size;
-	this->location = state.location;
-	this->readAddressMask = state.readAddressMask;
-	this->writeAddressMask = state.writeAddressMask;
-	this->bitWidth = state.bitWidth;
-	this->trimmer = state.trimmer;
-
-	if (image != NULL) {
-		this->setImage(image, 0, this->getImageByteSize());
-	}
-}

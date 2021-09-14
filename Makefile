@@ -15,7 +15,7 @@ include $(DEVKITARM)/ds_rules
 export TARGET		:=	NINTV-DS
 export TOPDIR		:=	$(CURDIR)
 export NITRODATA	:=	$(CURDIR)/nitrofiles
-export VERSION		:=  1.0c
+export VERSION		:=  1.3b
 
 ICON 		:= -b $(CURDIR)/logo.bmp "NINTV-DS $(VERSION);wavemotion-dave;https://github.com/wavemotion-dave/NINTV-DS"
 

@@ -9,6 +9,8 @@
 #include "MemoryBus.h"
 #include "RAM.h"
 #include "ROM.h"
+#include "GROM.h"
+#include "JLP.h"
 #include "CP1610.h"
 #include "AY38900.h"
 #include "AY38914.h"
@@ -21,9 +23,6 @@ class Intellivision : public Emulator
     public:
         Intellivision();
 
-        BOOL SaveState(const CHAR* filename);
-        BOOL LoadState(const CHAR* filename);
-
     private:
         //core processors
         CP1610            cpu;
@@ -34,7 +33,7 @@ class Intellivision : public Emulator
         RAM         RAM8bit;
         RAM         RAM16bit;
         ROM         execROM;
-        ROM         grom;
+        GROM        grom;
         GRAM        gram;
 
         //hand controllers

@@ -5,6 +5,7 @@
 #include "Rip.h"
 #include "RAM.h"
 #include "ROM.h"
+#include "JLP.h"
 #include "ROMBanker.h"
 #include "CRC32.h"
 
@@ -27,6 +28,7 @@ Rip::Rip(UINT32 systemID)
     year = new CHAR[1];
     strcpy(year, "");
     memset(filename, 0, sizeof(filename));
+    JLP16Bit = NULL;
 }
 
 Rip::~Rip()
@@ -38,6 +40,7 @@ Rip::~Rip()
         delete GetROM(i);
     delete[] producer;
     delete[] year;
+    if (JLP16Bit) delete JLP16Bit;
 }
 
 void Rip::SetName(const CHAR* n)
@@ -131,6 +134,21 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
     }
 
     delete[] image;
+
+    // Add the JLP RAM module if required...
+    extern bool bUseJLP;
+    if (bUseJLP)
+    {
+        rip->JLP16Bit = new JLP();
+        rip->AddRAM(rip->JLP16Bit);
+    }
+    else
+    {
+        rip->JLP16Bit = NULL;
+    }
+    
+    extern bool bForceIvoice;
+    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
@@ -265,7 +283,7 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
 
             if (rip == NULL)
                 rip = new Rip(ID_SYSTEM_INTELLIVISION);
-            rip->AddRAM(new RAM(ramSize, ramAddress, ramBitWidth));
+            rip->AddRAM(new RAM(ramSize, ramAddress, 0xFFFF, 0xFFFF, ramBitWidth));
             parseSuccess = TRUE;
         }
         else if ((nextToken = strstr(nextLine, "Peripheral")) != NULL) {
@@ -293,7 +311,7 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
         }
     }
     fclose(cfgFile);
-
+ 
     if (rip != NULL && !parseSuccess) {
         delete rip;
         rip = NULL;
@@ -359,7 +377,9 @@ Rip* Rip::LoadRom(const CHAR* filename)
     for (i = 0; i < 32; i++)
         fgetc(infile);
 
-    while ((read = fgetc(infile)) != -1) {
+    // Read through the rest of the .ROM and look for tags...
+    while ((read = fgetc(infile)) != -1) 
+    {
         int length = (read & 0x3F);
         read = (read & 0xC) >> 6;
         for (i = 0; i < read; i++)
@@ -367,7 +387,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
 
         int type = fgetc(infile);
         int crc16;
-        switch (type) {
+        switch (type) 
+        {
             case ROM_TAG_TITLE:
             {
                 CHAR* title = new char[length*sizeof(char)];
@@ -402,7 +423,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
                 BOOL intellivoiceSupport = ((read & 0x0C) != 0x0C);
                 if (intellivoiceSupport)
                     rip->AddPeripheralUsage("Intellivoice", PERIPH_OPTIONAL);
-                for (i = 0; i < length-1; i++) {
+                for (i = 0; i < length-1; i++) 
+                {
                     fgetc(infile);
                     fgetc(infile);
                 }
@@ -424,6 +446,21 @@ Rip* Rip::LoadRom(const CHAR* filename)
         }
     }
     fclose(infile);
+    
+    // Add the JLP RAM module if required...
+    extern bool bUseJLP;
+    if (bUseJLP)
+    {
+        rip->JLP16Bit = new JLP();
+        rip->AddRAM(rip->JLP16Bit);
+    }
+    else
+    {
+        rip->JLP16Bit = NULL;
+    }
+    
+    extern bool bForceIvoice;
+    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
@@ -431,205 +468,5 @@ Rip* Rip::LoadRom(const CHAR* filename)
     return rip;
 }
 
-Rip* Rip::LoadRip(const CHAR* filename)
-{
-    FILE* file = fopen(filename, "rb");
-    if (file == NULL)
-        return NULL;
-
-    //first check the magic number
-    unsigned int nextUINT32 = freadUINT32(file);
-    if (nextUINT32 != 0x3F383A34) {
-        fclose(file);
-        return NULL;
-    }
-
-    nextUINT32 = freadUINT32(file);
-    if (nextUINT32 != 0x7651B5DA) {
-        fclose(file);
-        return NULL;
-    }
-
-    //the magic number is good.  this is definitely a RIP file
-    //start reading the records
-    Rip* rip = NULL;
-    unsigned int nextRecordID = freadUINT32(file);
-    while (!feof(file)) {
-        unsigned int nextRecordSize = freadUINT32(file);
-        switch (nextRecordID) {
-            case ID_HEADER_RECORD:
-            {
-                freadUINT16(file);  //major file format version
-                freadUINT16(file);  //minor file format version
-                UINT32 targetSystemID = freadUINT32(file);  //target system
-                rip = new Rip(targetSystemID);
-                break;
-            }
-/*
-            case ID_BIOS_COMPAT_RECORD:
-                tmp1 = ripFile->biosCount;
-                ripFile->biosCompat[tmp1] =
-                        malloc(sizeof(BiosCompatRecord));
-                ripFile->biosCompat[tmp1]->periphNum = fgetc(file);
-                ripFile->biosCompat[tmp1]->biosTypeNum = fgetc(file);
-                ripFile->biosCompat[tmp1]->biosNum = fgetc(file);
-                ripFile->biosCompat[tmp1]->compatibility = fgetc(file);
-                if (ripFile->biosCompat[tmp1]->compatibility > 2)
-                    ripFile->biosCompat[tmp1]->compatibility = 2;
-                ripFile->biosCount++;
-                break;
-*/
-            case ID_PERIPH_COMPAT_RECORD:
-            {
-                if (!rip)
-                    return NULL;
-                UINT32 periphID = freadUINT32(file);
-                PeripheralCompatibility usage =  (PeripheralCompatibility)(fgetc(file) & 0x03);
-                rip->AddPeripheralUsage((periphID == ID_PERIPH_ECS ? "ECS" : "Intellivoice"), usage);
-                break;
-            }
-            case ID_NAME_RECORD:
-            {
-                if (!rip)
-                    return NULL;
-                CHAR name[MAX_STRING_LENGTH];
-                freadString(file, name, MAX_STRING_LENGTH);
-                rip->SetName(name);
-                break;
-            }
-            case ID_PRODUCER_RECORD:
-            {
-                if (!rip)
-                    return NULL;
-                CHAR producer[MAX_STRING_LENGTH];
-                freadString(file, producer, MAX_STRING_LENGTH);
-                rip->SetProducer(producer);
-                break;
-            }
-            case ID_YEAR_RECORD:
-            {
-                if (!rip)
-                    return NULL;
-                CHAR year[MAX_STRING_LENGTH];
-                freadString(file, year, MAX_STRING_LENGTH);
-                rip->SetProducer(year);
-                break;
-            }
-            case ID_RAM_RECORD:
-            {
-                if (!rip)
-                    return NULL;
-
-                 //TODO: handle when we exceed maximum memory units
-
-                UINT8 flags = (UINT8)fgetc(file);
-                BOOL partialReads = !!(flags & 0x80);
-                BOOL partialWrites = !!(flags & 0x40);
-                BOOL banked = !!(flags & 0x20);
-                UINT8 addressByteWidth = (flags & 0x0F)+1;
-
-                flags = (UINT8)fgetc(file);
-                UINT8 dataBitWidth = (flags & 0x7F)+1;
-                UINT16 address = (UINT16)freadInt(file, addressByteWidth);
-                UINT16 size = (UINT16)freadInt(file, addressByteWidth);
-                //RAM reset value unused at this point, so skip it
-                freadInt(file, (dataBitWidth+7)/8);
-
-                UINT16 readMask = 0xFFFF; 
-                if (partialReads)
-                    readMask = (UINT16)freadInt(file, addressByteWidth);
-
-                UINT16 writeMask = 0xFFFF; 
-                if (partialWrites)
-                    writeMask = (UINT16)freadInt(file, addressByteWidth);
-
-                if (banked) {
-                    //banking descriptors not yet supported, so just need to skip 'em
-                    UINT32 bankingDescriptorCount = freadUINT32(file);
-                    for (UINT32 k = 0; k < bankingDescriptorCount; k++) {
-                        freadInt(file, addressByteWidth); //target address width
-                        freadInt(file, addressByteWidth); //write decoding mask
-                        freadInt(file, (dataBitWidth+7)/8); //reset value
-                        UINT32 dataCount = freadUINT32(file);
-                        for (UINT32 l = 0; l < dataCount; l++)
-                            freadInt(file, (dataBitWidth+7)/8); //data banking match values
-                    }
-                }
-
-                rip->AddRAM(new RAM(size, address, readMask, writeMask, dataBitWidth));
-            }
-            case ID_ROM_RECORD:
-            {
-                if (!rip)
-                    return NULL;
-
-                 //TODO: handle when we exceed maximum memory units
-
-                UINT8 flags = (UINT8)fgetc(file);
-                BOOL partialReads = !!(flags & 0x80);
-                BOOL compressed = !!(flags & 0x40);
-                BOOL banked = !!(flags & 0x20);
-                UINT8 addressByteWidth = (flags & 0x0F)+1;
-
-                flags = (UINT8)fgetc(file);
-                UINT8 dataBitWidth = (flags & 0x7F)+1;
-                UINT16 address = (UINT16)freadInt(file, addressByteWidth);
-
-                UINT32 arraySize = freadUINT32(file);
-                UINT8* romImage = NULL;
-                if (compressed) {
-                    //TODO: support zlib compressed rom images
-                    for (UINT32 k = 0; k < arraySize; k++)
-                        fgetc(file);
-                    arraySize = 0;
-                    romImage = new UINT8[0];
-                }
-                else {
-                    UINT32 dataByteWidth = (dataBitWidth+7)/8;
-                    romImage = new UINT8[arraySize*dataByteWidth];
-                    for (UINT32 k = 0; k < arraySize; k++) {
-                        for (UINT8 l = 0; l < dataByteWidth; l++)
-                            romImage[(k*dataByteWidth)+(dataByteWidth-l-1)] = (UINT8)fgetc(file);
-                    }
-                }
-
-                UINT16 readMask = 0xFFFF; 
-                if (partialReads)
-                    readMask = (UINT16)freadInt(file, addressByteWidth);
-
-                if (banked) {
-                    //banking descriptors not yet supported, so just need to skip 'em
-                    UINT32 bankingDescriptorCount = freadUINT32(file);
-                    for (UINT32 k = 0; k < bankingDescriptorCount; k++) {
-                        freadInt(file, addressByteWidth); //target address width
-                        freadInt(file, addressByteWidth); //write decoding mask
-                        freadInt(file, (dataBitWidth+7)/8); //reset value
-                        UINT32 dataCount = freadUINT32(file);
-                        for (UINT32 l = 0; l < dataCount; l++)
-                            freadInt(file, (dataBitWidth+7)/8); //data banking match values
-                    }
-                }
-
-                rip->AddROM(new ROM("Cartridge ROM", (void*)romImage, (dataBitWidth+7)/8, (UINT16)arraySize, address, readMask));
-                delete[] romImage;
-
-                break;
-            }
-            default:
-            {
-                //unknown record; just skip it
-                for (UINT32 i = 0; i < nextRecordSize; i++)
-                    fgetc(file);
-            }
-        }
-        nextRecordID = freadUINT32(file);
-    }
-    fclose(file);
-
-    rip->SetFileName(filename);
-    rip->crc = CRC32::getCrc(filename);
-
-    return rip;
-}
 
 

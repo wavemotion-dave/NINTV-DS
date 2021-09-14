@@ -11,10 +11,10 @@ Intellivision::Intellivision()
       player1Controller(0, "Hand Controller #1"),
       player2Controller(1, "Hand Controller #2"),
       psg(0x01F0, &player1Controller, &player2Controller),
-      RAM8bit(RAM8BIT_SIZE, 0x0100, 8),
-      RAM16bit(RAM16BIT_SIZE, 0x0200, 16),
+      RAM8bit(RAM8BIT_SIZE, 0x0100, 0xFFFF, 0xFFFF, 8),
+      RAM16bit(RAM16BIT_SIZE, 0x0200, 0xFFFF, 0xFFFF, 16),
       execROM("Executive ROM", "exec.bin", 0, 2, 0x1000, 0x1000),
-      grom("GROM", "grom.bin", 0, 1, 0x0800, 0x3000),
+      grom(),
       gram(),
       cpu(&memoryBus, 0x1000, 0x1004),
       stic(&memoryBus, &grom, &gram)
@@ -73,12 +73,3 @@ Intellivision::Intellivision()
     AddPeripheral(&intellivoice);
 }
 
-BOOL Intellivision::SaveState(const CHAR* filename)
-{
-	return FALSE;
-}
-
-BOOL Intellivision::LoadState(const CHAR* filename)
-{
-	return FALSE;
-}

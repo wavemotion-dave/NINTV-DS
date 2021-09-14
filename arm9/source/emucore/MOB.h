@@ -8,25 +8,6 @@
 class AY38900;
 class AY38900_Registers;
 
-TYPEDEF_STRUCT_PACK( _MOBState
-{
-    INT32   xLocation;
-    INT32   yLocation;
-    INT32   foregroundColor;
-    INT32   cardNumber;
-    UINT16  collisionRegister;
-    INT8    isGrom;
-    INT8    isVisible;
-    INT8    doubleWidth;
-    INT8    doubleYResolution;
-    INT8    doubleHeight;
-    INT8    quadHeight;
-    INT8    flagCollisions;
-    INT8    horizontalMirror;
-    INT8    verticalMirror;
-    INT8    behindForeground;
-} MOBState; )
-
 class MOB
 {
 
@@ -53,27 +34,24 @@ class MOB
         void markClean();
         MOBRect* getBounds();
 
-        MOBState getState();
-        void setState(MOBState state);
-
         INT32   xLocation;
         INT32   yLocation;
         INT32   foregroundColor;
         INT32   cardNumber;
         UINT16  collisionRegister;
-        BOOL    isGrom;
-        BOOL    isVisible;
-        BOOL    doubleWidth;
-        BOOL    doubleYResolution;
-        BOOL    doubleHeight;
-        BOOL    quadHeight;
-        BOOL    flagCollisions;
-        BOOL    horizontalMirror;
-        BOOL    verticalMirror;
-        BOOL    behindForeground;
-        BOOL    boundsChanged;
-        BOOL    shapeChanged;
-        BOOL    colorChanged;
+        UINT8   isGrom;
+        UINT8   isVisible;
+        UINT8   doubleWidth;
+        UINT8   doubleYResolution;
+        UINT8   doubleHeight;
+        UINT8   quadHeight;
+        UINT8   flagCollisions;
+        UINT8   horizontalMirror;
+        UINT8   verticalMirror;
+        UINT8   behindForeground;
+        UINT8   boundsChanged;
+        UINT8   shapeChanged;
+        UINT8   colorChanged;
         MOBRect boundingRectangle;
 
 };

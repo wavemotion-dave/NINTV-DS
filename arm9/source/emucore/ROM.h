@@ -33,10 +33,16 @@ public:
     UINT16 getReadSize();
     UINT16 getReadAddress();
     UINT16 getReadAddressMask();
+    
+    inline UINT8 peek8(UINT16 location) 
+    {   
+        return ((UINT8*)image)[(location) - this->location];
+    }
+    
+    // This is now optimized for 16-bit access... GROM and iVOICE ROM should always call the peek8() version above...
     inline virtual UINT16 peek(UINT16 location) 
     {   
-        if (multiByte) return ((UINT16*)image)[(location)-this->location];
-        return ((UINT8*)image)[(location)-this->location];
+        return ((UINT16*)image)[(location) - this->location];
     }
 
     UINT16 getWriteSize();
@@ -46,12 +52,6 @@ public:
 
 private:
     void Initialize(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UINT16 size, UINT16 location, UINT16 readMask);
-
-    UINT16 (ROM::*peekFunc)(UINT16); 
-    UINT16 peek1(UINT16 location);
-    UINT16 peek2(UINT16 location);
-    UINT16 peek4(UINT16 location);
-    UINT16 peekN(UINT16 location);
 
     CHAR*    name;
     CHAR*    filename;
