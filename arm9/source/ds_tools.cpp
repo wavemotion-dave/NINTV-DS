@@ -947,14 +947,14 @@ void dsShowScreenMain(bool bFull)
           int tiles_idx=0;
           int map_idx=0;
           int pal_idx=0;
+          char *token;
           
-        memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
-        memset(customMap, 0x00, 16*1024*sizeof(UINT16));
-        memset(customPal, 0x00, 512*sizeof(UINT16));
+          memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
+          memset(customMap, 0x00, 16*1024*sizeof(UINT16));
+          memset(customPal, 0x00, 512*sizeof(UINT16));
           
           do
           {
-            unsigned int a,b,c,d,e,f,g,h;
             fgets(line, 255, fp);
             // Handle Overlay Line
             if (strstr(line, ".ovl") != NULL)
@@ -963,11 +963,10 @@ void dsShowScreenMain(bool bFull)
                 {
                     char *ptr = strstr(line, ".ovl");
                     ptr += 5;
-                    sscanf(ptr, "%d, %d, %d, %d", &a, &b, &c, &d);
-                    myOverlay[ov_idx].x1=a;
-                    myOverlay[ov_idx].x2=b;
-                    myOverlay[ov_idx].y1=c;
-                    myOverlay[ov_idx].y2=d;
+                    myOverlay[ov_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                    myOverlay[ov_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                    myOverlay[ov_idx].y1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                    myOverlay[ov_idx].y2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                     ov_idx++;                
                 }
             }
@@ -977,15 +976,15 @@ void dsShowScreenMain(bool bFull)
             {
                 char *ptr = strstr(line, ".tile");
                 ptr += 6;
-                sscanf(ptr, "0x%X, %X, %X, %X, %X, %X, %X, %X", &a, &b, &c, &d, &e, &f, &g, &h);
-                customTiles[tiles_idx++] = a;
-                customTiles[tiles_idx++] = b;
-                customTiles[tiles_idx++] = c;
-                customTiles[tiles_idx++] = d;
-                customTiles[tiles_idx++] = e;
-                customTiles[tiles_idx++] = f;
-                customTiles[tiles_idx++] = g;
-                customTiles[tiles_idx++] = h;
+                
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             }
               
             // Handle Map Line
@@ -993,15 +992,14 @@ void dsShowScreenMain(bool bFull)
             {
                 char *ptr = strstr(line, ".map");
                 ptr += 4;
-                sscanf(ptr, "%X, %X, %X, %X, %X, %X, %X, %X", &a, &b, &c, &d, &e, &f, &g, &h);
-                customMap[map_idx++] = a;
-                customMap[map_idx++] = b;
-                customMap[map_idx++] = c;
-                customMap[map_idx++] = d;
-                customMap[map_idx++] = e;
-                customMap[map_idx++] = f;
-                customMap[map_idx++] = g;
-                customMap[map_idx++] = h;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             }              
               
             // Handle Palette Line
@@ -1009,15 +1007,14 @@ void dsShowScreenMain(bool bFull)
             {
                 char *ptr = strstr(line, ".pal");
                 ptr += 4;
-                sscanf(ptr, "%X, %X, %X, %X, %X, %X, %X, %X", &a, &b, &c, &d, &e, &f, &g, &h);
-                customPal[pal_idx++] = a;
-                customPal[pal_idx++] = b;
-                customPal[pal_idx++] = c;
-                customPal[pal_idx++] = d;
-                customPal[pal_idx++] = e;
-                customPal[pal_idx++] = f;
-                customPal[pal_idx++] = g;
-                customPal[pal_idx++] = h;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             }              
           } while (!feof(fp));
           fclose(fp);
