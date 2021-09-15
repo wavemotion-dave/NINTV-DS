@@ -83,8 +83,6 @@ void SetDefaultConfig(void)
 }
 
 
-struct Overlay_t myOverlay[OVL_MAX];
-
 struct Overlay_t defaultOverlay[OVL_MAX] =
 {
     {120,   155,    30,     60},    // KEY_1
@@ -109,6 +107,8 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     { 23,    82,    116,   136},    // META_SCORE
     { 23,    82,    145,   170},    // META_QUIT
 };
+
+struct Overlay_t myOverlay[OVL_MAX];
 
 
 // ---------------------------------------------------------------------------
@@ -844,9 +844,9 @@ void Run()
 }
 
 
-unsigned int customTiles[8196];
-unsigned short customMap[2048];
-unsigned short customPal[256];
+unsigned int customTiles[32*1024];
+unsigned short customMap[16*1024];
+unsigned short customPal[512];
 char line[256];
 
 
@@ -951,14 +951,17 @@ void dsShowScreenMain(bool bFull)
             // Handle Overlay Line
             if (strstr(line, ".ovl") != NULL)
             {
-                char *ptr = strstr(line, ".ovl");
-                ptr += 5;
-                sscanf(ptr, "%d, %d, %d, %d", &a, &b, &c, &d);
-                myOverlay[ov_idx].x1=a;
-                myOverlay[ov_idx].x2=b;
-                myOverlay[ov_idx].y1=c;
-                myOverlay[ov_idx].y2=d;
-                ov_idx++;                
+                if (ov_idx < OVL_MAX)
+                {
+                    char *ptr = strstr(line, ".ovl");
+                    ptr += 5;
+                    sscanf(ptr, "%d, %d, %d, %d", &a, &b, &c, &d);
+                    myOverlay[ov_idx].x1=a;
+                    myOverlay[ov_idx].x2=b;
+                    myOverlay[ov_idx].y1=c;
+                    myOverlay[ov_idx].y2=d;
+                    ov_idx++;                
+                }
             }
               
             // Handle Tile Line
