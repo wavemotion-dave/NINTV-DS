@@ -15,6 +15,9 @@ typedef struct FICtoLoad {
   bool directory;
 } FICA_INTV;
 
+// ---------------------------
+// Config handling...
+// ---------------------------
 #define CONFIG_VER  0x0001
 
 struct Config_t 
@@ -50,6 +53,43 @@ extern struct Config_t  myConfig;
 
 #define MAX_CONFIGS 300
 
+
+// ---------------------------
+// Overlay handling...
+// ---------------------------
+struct Overlay_t
+{
+    UINT8   x1;
+    UINT8   x2;
+    UINT8   y1;
+    UINT8   y2;
+};
+
+#define OVL_KEY_1       0
+#define OVL_KEY_2       1
+#define OVL_KEY_3       2
+#define OVL_KEY_4       3
+#define OVL_KEY_5       4
+#define OVL_KEY_6       5
+#define OVL_KEY_7       6
+#define OVL_KEY_8       7
+#define OVL_KEY_9       8
+#define OVL_KEY_CLEAR   9
+#define OVL_KEY_0       10
+#define OVL_KEY_ENTER   11
+#define OVL_META_RESET  12
+#define OVL_META_LOAD   13
+#define OVL_META_CONFIG 14
+#define OVL_META_SCORES 15
+#define OVL_META_QUIT   16
+#define OVL_META_RES1   17
+#define OVL_META_RES2   18
+#define OVL_META_RES3   19
+#define OVL_MAX         20
+
+extern struct Overlay_t myOverlay[OVL_MAX];
+
+    
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);

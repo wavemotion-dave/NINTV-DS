@@ -82,6 +82,35 @@ void SetDefaultConfig(void)
     myConfig.config_ver         = CONFIG_VER;
 }
 
+
+struct Overlay_t myOverlay[OVL_MAX];
+
+struct Overlay_t defaultOverlay[OVL_MAX] =
+{
+    {120,   155,    30,     60},    // KEY_1
+    {158,   192,    30,     60},    // KEY_2
+    {195,   230,    30,     60},    // KEY_3
+    
+    {120,   155,    65,     95},    // KEY_4
+    {158,   192,    65,     95},    // KEY_5
+    {195,   230,    65,     95},    // KEY_6
+
+    {120,   155,    101,   135},    // KEY_7
+    {158,   192,    101,   135},    // KEY_8
+    {195,   230,    101,   135},    // KEY_9
+
+    {120,   155,    140,   175},    // KEY_CLEAR
+    {158,   192,    140,   175},    // KEY_0
+    {195,   230,    140,   175},    // KEY_ENTER
+    
+    { 23,    82,     25,    46},    // META_RESET
+    { 23,    82,     55,    76},    // META_LOAD
+    { 23,    82,     86,   106},    // META_CONFIG
+    { 23,    82,    116,   136},    // META_SCORE
+    { 23,    82,    145,   170},    // META_QUIT
+};
+
+
 // ---------------------------------------------------------------------------
 // Write out the XEGS.DAT configuration file to capture the settings for
 // each game.
@@ -653,61 +682,43 @@ void pollInputs(void)
             ds_key_input[ctrl_keys][myConfig.key_START_map]  = 1;
     }
     
-    static int prev_select=0;
     if (keys_pressed & KEY_SELECT)  
     {
-#if 1
         if (myConfig.key_SELECT_map > 11) 
             ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
-#else   
-        if (prev_select == 0)
-        {
-            fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_PAUSE);
-            swiWaitForVBlank();
-            fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_RESUME);
-            swiWaitForVBlank();
-            prev_select=1;
-        }
-
-#endif        
-    } else prev_select=0;
+    }
     
-    // Now handle the on-screen Intellivision keypad... 
+    // -----------------------------------------------------------------
+    // Now handle the on-screen Intellivision overlay and meta keys...
+    // -----------------------------------------------------------------
     if (keys_pressed & KEY_TOUCH)
     {
-        //char tmp[12];
         touchPosition touch;
         touchRead(&touch);
-        //sprintf(tmp, "%3d %3d", touch.px, touch.py);
-        //dsPrintValue(0,1,0,tmp);
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 30 && touch.py < 60)   ds_key_input[ctrl_keys][0] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 30 && touch.py < 60)   ds_key_input[ctrl_keys][1] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 30 && touch.py < 60)   ds_key_input[ctrl_keys][2] = 1;
+        // ----------------------------------------------------------------------
+        // Handle the 12 keypad keys on the intellivision controller overlay...
+        // ----------------------------------------------------------------------
+        for (int i=0; i<12; i++)
+        {
+            if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   ds_key_input[ctrl_keys][i] = 1;
+        }
 
-        if (touch.px > 120  && touch.px < 155 && touch.py > 65 && touch.py < 95)   ds_key_input[ctrl_keys][3] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 65 && touch.py < 95)   ds_key_input[ctrl_keys][4] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 65 && touch.py < 95)   ds_key_input[ctrl_keys][5] = 1;
-
-        if (touch.px > 120  && touch.px < 155 && touch.py > 101 && touch.py < 135)   ds_key_input[ctrl_keys][6] = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 101 && touch.py < 135)   ds_key_input[ctrl_keys][7] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 101 && touch.py < 135)   ds_key_input[ctrl_keys][8] = 1;
-
-        if (touch.px > 120  && touch.px < 155 && touch.py > 140 && touch.py < 175)   ds_key_input[ctrl_keys][9]  = 1;
-        if (touch.px > 158  && touch.px < 192 && touch.py > 140 && touch.py < 175)   ds_key_input[ctrl_keys][10] = 1;
-        if (touch.px > 195  && touch.px < 230 && touch.py > 140 && touch.py < 175)   ds_key_input[ctrl_keys][11] = 1;
-
+        
+        // ----------------------------------------------------------------------------------
+        // Handled "META" keys here... this includes things like RESET, LOAD, CONFIG, etc
+        // ----------------------------------------------------------------------------------
     
         // RESET
-        if (touch.px > 23  && touch.px < 82 && touch.py > 25 && touch.py < 46) 
+        if (touch.px > myOverlay[OVL_META_RESET].x1  && touch.px < myOverlay[OVL_META_RESET].x2 && touch.py > myOverlay[OVL_META_RESET].y1 && touch.py < myOverlay[OVL_META_RESET].y2) 
         {
             if (bFirstGameLoaded) currentEmu->Reset();
         }
         
         // LOAD
-        if (touch.px > 23  && touch.px < 82 && touch.py > 55 && touch.py < 76) 
+        if (touch.px > myOverlay[OVL_META_LOAD].x1  && touch.px < myOverlay[OVL_META_LOAD].x2 && touch.py > myOverlay[OVL_META_LOAD].y1 && touch.py < myOverlay[OVL_META_LOAD].y2) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitForRom(newFile))
@@ -728,7 +739,7 @@ void pollInputs(void)
         }
         
         // CONFIG
-        if (touch.px > 23  && touch.px < 82 && touch.py > 86 && touch.py < 106) 
+        if (touch.px > myOverlay[OVL_META_CONFIG].x1  && touch.px < myOverlay[OVL_META_CONFIG].x2 && touch.py > myOverlay[OVL_META_CONFIG].y1 && touch.py < myOverlay[OVL_META_CONFIG].y2) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions();
@@ -736,7 +747,7 @@ void pollInputs(void)
         }
 
         // HIGHSCORES
-        if (touch.px > 23  && touch.px < 82 && touch.py > 116 && touch.py < 136) 
+        if (touch.px > myOverlay[OVL_META_SCORES].x1  && touch.px < myOverlay[OVL_META_SCORES].x2 && touch.py > myOverlay[OVL_META_SCORES].y1 && touch.py < myOverlay[OVL_META_SCORES].y2) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (currentRip != NULL) 
@@ -749,7 +760,7 @@ void pollInputs(void)
         }
         
         // QUIT
-        if (touch.px > 23  && touch.px < 82 && touch.py > 145 && touch.py < 170) 
+        if (touch.px > myOverlay[OVL_META_QUIT].x1  && touch.px < myOverlay[OVL_META_QUIT].x2 && touch.py > myOverlay[OVL_META_QUIT].y1 && touch.py < myOverlay[OVL_META_QUIT].y2) 
         {
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitOnQuit())
@@ -833,6 +844,12 @@ void Run()
 }
 
 
+unsigned int customTiles[8196];
+unsigned short customMap[2048];
+unsigned short customPal[256];
+char line[256];
+
+
 void dsShowScreenMain(bool bFull) 
 {
     // Init BG mode for 16 bits colors
@@ -851,86 +868,169 @@ void dsShowScreenMain(bool bFull)
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
     }
 
+    // Assume default overlay... custom can change it below...
+    memcpy(&myOverlay, &defaultOverlay, sizeof(myOverlay));
+    
+    swiWaitForVBlank();
     if (myConfig.overlay_selected == 1) // Treasure of Tarmin
     {
       decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 2) // Cloudy Mountain
     {
       decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 3) // Astrosmash
     {
       decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 4) // Space Spartans
     {
       decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 5) // B17 Bomber
     {
       decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 6) // Atlantis
     {
       decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 7) // Bomb Squad
     {
       decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 8) // Utopia
     {
       decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
     else if (myConfig.overlay_selected == 9) // Swords & Serpents
     {
       decompress(bgBottom_swordsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_swordsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_swordsPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else if (myConfig.overlay_selected == 10) // Custom Overlay!
+    {
+      char filename[128];
+      FILE *fp = NULL;
+      // Read the associated .ovl file and parse it...
+      if (currentRip != NULL)
+      {
+          strcpy(filename, currentRip->GetFileName());
+          filename[strlen(filename)-4] = 0;
+          strcat(filename, ".ovl");
+          fp = fopen(filename, "rb");
+      }
+      if (fp != NULL)
+      {
+          int ov_idx = 0;
+          int tiles_idx=0;
+          int map_idx=0;
+          int pal_idx=0;
+          do
+          {
+            unsigned int a,b,c,d,e,f,g,h;
+            fgets(line, 255, fp);
+            // Handle Overlay Line
+            if (strstr(line, ".ovl") != NULL)
+            {
+                char *ptr = strstr(line, ".ovl");
+                ptr += 5;
+                sscanf(ptr, "%d, %d, %d, %d", &a, &b, &c, &d);
+                myOverlay[ov_idx].x1=a;
+                myOverlay[ov_idx].x2=b;
+                myOverlay[ov_idx].y1=c;
+                myOverlay[ov_idx].y2=d;
+                ov_idx++;                
+            }
+              
+            // Handle Tile Line
+            if (strstr(line, ".tile") != NULL)
+            {
+                char *ptr = strstr(line, ".tile");
+                ptr += 6;
+                sscanf(ptr, "0x%X, %X, %X, %X, %X, %X, %X, %X", &a, &b, &c, &d, &e, &f, &g, &h);
+                customTiles[tiles_idx++] = a;
+                customTiles[tiles_idx++] = b;
+                customTiles[tiles_idx++] = c;
+                customTiles[tiles_idx++] = d;
+                customTiles[tiles_idx++] = e;
+                customTiles[tiles_idx++] = f;
+                customTiles[tiles_idx++] = g;
+                customTiles[tiles_idx++] = h;
+            }
+              
+            // Handle Map Line
+            if (strstr(line, ".map") != NULL)
+            {
+                char *ptr = strstr(line, ".map");
+                ptr += 4;
+                sscanf(ptr, "%X, %X, %X, %X, %X, %X, %X, %X", &a, &b, &c, &d, &e, &f, &g, &h);
+                customMap[map_idx++] = a;
+                customMap[map_idx++] = b;
+                customMap[map_idx++] = c;
+                customMap[map_idx++] = d;
+                customMap[map_idx++] = e;
+                customMap[map_idx++] = f;
+                customMap[map_idx++] = g;
+                customMap[map_idx++] = h;
+            }              
+              
+            // Handle Palette Line
+            if (strstr(line, ".pal") != NULL)
+            {
+                char *ptr = strstr(line, ".pal");
+                ptr += 4;
+                sscanf(ptr, "%X, %X, %X, %X, %X, %X, %X, %X", &a, &b, &c, &d, &e, &f, &g, &h);
+                customPal[pal_idx++] = a;
+                customPal[pal_idx++] = b;
+                customPal[pal_idx++] = c;
+                customPal[pal_idx++] = d;
+                customPal[pal_idx++] = e;
+                customPal[pal_idx++] = f;
+                customPal[pal_idx++] = g;
+                customPal[pal_idx++] = h;
+            }              
+          } while (!feof(fp));
+          fclose(fp);
+          
+          decompress(customTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+          decompress(customMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+          dmaCopy((void *) customPal,(u16*) BG_PALETTE_SUB,256*2);
+      }
+      else
+      {
+          decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+          decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+          dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
+      }
     }
     else
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
-      unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-      dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     }
+    
+    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
 
     REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
     
@@ -1128,9 +1228,12 @@ void intvFindFiles(void)
       }
       else 
       {
+        // Filter out the BIOS files from the list...
         if (strcasecmp(filenametmp, "grom.bin") == 0) continue;
         if (strcasecmp(filenametmp, "exec.bin") == 0) continue;
         if (strcasecmp(filenametmp, "ivoice.bin") == 0) continue;
+        if (strstr(filenametmp, "[BIOS]") != NULL) continue;
+        if (strstr(filenametmp, "[bios]") != NULL) continue;
           
         if (strlen(filenametmp)>4) {
           if ( (strcasecmp(strrchr(filenametmp, '.'), ".int") == 0) )  {
@@ -1460,20 +1563,20 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT"},     &myConfig.overlay_selected, 10},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_A_map,        15},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_B_map,        15},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_X_map,        15},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_Y_map,        15},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_L_map,        15},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_R_map,        15},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_START_map,    15},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},  &myConfig.key_SELECT_map,   15},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                         &myConfig.controller_type,  4},
-    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                    &myConfig.dpad_config,      5},
-    {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                            &myConfig.frame_skip_opt,   2},   
-    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                  &myConfig.sound_clock_div,  4},
-    {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                   &myConfig.show_fps,         3},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},  &myConfig.overlay_selected, 11},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_A_map,        15},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_B_map,        15},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_X_map,        15},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_Y_map,        15},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_L_map,        15},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_R_map,        15},
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_START_map,    15},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_SELECT_map,   15},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
+    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
+    {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                                   &myConfig.frame_skip_opt,   2},   
+    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                         &myConfig.sound_clock_div,  4},
+    {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                          &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 
