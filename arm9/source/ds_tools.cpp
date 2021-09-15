@@ -947,6 +947,11 @@ void dsShowScreenMain(bool bFull)
           int tiles_idx=0;
           int map_idx=0;
           int pal_idx=0;
+          
+        memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
+        memset(customMap, 0x00, 16*1024*sizeof(UINT16));
+        memset(customPal, 0x00, 512*sizeof(UINT16));
+          
           do
           {
             unsigned int a,b,c,d,e,f,g,h;
