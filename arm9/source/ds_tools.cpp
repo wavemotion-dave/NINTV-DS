@@ -744,6 +744,9 @@ void pollInputs(void)
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions();
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            touchPosition touch;
+            touchRead(&touch);
         }
 
         // HIGHSCORES
