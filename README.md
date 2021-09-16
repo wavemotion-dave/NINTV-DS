@@ -49,6 +49,13 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.4 : 16-Sep-2021 by wavemotion-dave
+  * Custom overlay support! See custom-overlay.zip in the distribution.
+  * Hide bios files from game listing.
+  * New d-pad configuration options.
+  * Ability to map DS keys to meta-functions such as load, config, score, etc.
+  * Other cleanups as time permitted... 
+
 V1.3 : 12-Sep-2021 by wavemotion-dave
   * Basic JLP support for Accelerated functions and extra 16-bit RAM (hello Grail of the Gods!)
   * Major internal cleanup for better memory management. 
