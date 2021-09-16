@@ -483,6 +483,13 @@ BOOL InitializeEmulator(void)
 char newFile[256];
 void ds_handle_meta(int meta_key)
 {
+    // -------------------------------------------------------------------
+    // On the way in, make sure no keys are pressed before continuing...
+    // -------------------------------------------------------------------
+    while (keysCurrent())
+    {
+        WAITVBL;
+    }
     switch (meta_key)
     {
         case OVL_META_RESET:
@@ -510,7 +517,6 @@ void ds_handle_meta(int meta_key)
   
         case OVL_META_CONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            WAITVBL;WAITVBL;
             dsChooseOptions();
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
