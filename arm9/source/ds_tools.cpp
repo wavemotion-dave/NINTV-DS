@@ -100,6 +100,10 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {120,   155,    140,   175},    // KEY_CLEAR
     {158,   192,    140,   175},    // KEY_0
     {195,   230,    140,   175},    // KEY_ENTER
+
+    {255,   255,    255,   255},    // KEY_FIRE
+    {255,   255,    255,   255},    // KEY_L_ACT
+    {255,   255,    255,   255},    // KEY_R_ACT
     
     { 23,    82,     25,    46},    // META_RESET
     { 23,    82,     55,    76},    // META_LOAD
@@ -477,6 +481,62 @@ BOOL InitializeEmulator(void)
 }
 
 char newFile[256];
+void ds_handle_meta(int meta_key)
+{
+    switch (meta_key)
+    {
+        case OVL_META_RESET:
+            if (bFirstGameLoaded) currentEmu->Reset();
+            break;
+ 
+        case OVL_META_LOAD:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (dsWaitForRom(newFile))
+            {
+                if (LoadCart(newFile)) 
+                {
+                    dsPrintValue(0,1,0, (char*) "           ");
+                    InitializeEmulator();
+                    for (int i=0; i<20; i++) currentEmu->Run();
+                    if (LoadCart(newFile)) InitializeEmulator();
+                }
+                else
+                {
+                    dsPrintValue(0,1,0, (char*) "LOAD FAILED");
+                }
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            break;
+  
+        case OVL_META_CONFIG:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            WAITVBL;WAITVBL;
+            dsChooseOptions();
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            touchPosition touch;
+            touchRead(&touch);
+            break;
+
+        case OVL_META_SCORES:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                highscore_display(currentRip->GetCRC());
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            break;
+
+        case OVL_META_QUIT:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (dsWaitOnQuit()){ runState = Quit; }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            break;
+    }
+}
+
 void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
@@ -628,7 +688,9 @@ void pollInputs(void)
     // -------------------------------------------------------------------------------------
     if (keys_pressed & KEY_A)       
     {
-        if (myConfig.key_A_map > 11) 
+        if (myConfig.key_A_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_A_map);
+        else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
@@ -636,7 +698,9 @@ void pollInputs(void)
     
     if (keys_pressed & KEY_B)
     {
-        if (myConfig.key_B_map > 11) 
+        if (myConfig.key_B_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_B_map);
+        else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
@@ -644,7 +708,9 @@ void pollInputs(void)
 
     if (keys_pressed & KEY_X)
     {
-        if (myConfig.key_X_map > 11) 
+        if (myConfig.key_X_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_X_map);
+        else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
@@ -652,7 +718,9 @@ void pollInputs(void)
 
     if (keys_pressed & KEY_Y)
     {
-        if (myConfig.key_Y_map > 11) 
+        if (myConfig.key_Y_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_Y_map);
+        else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
@@ -660,7 +728,9 @@ void pollInputs(void)
 
     if (keys_pressed & KEY_L)
     {
-        if (myConfig.key_L_map > 11) 
+        if (myConfig.key_L_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_L_map);
+        else if (myConfig.key_L_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_L_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_L_map]  = 1;
@@ -668,7 +738,9 @@ void pollInputs(void)
 
     if (keys_pressed & KEY_R)
     {
-        if (myConfig.key_R_map > 11) 
+        if (myConfig.key_R_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_R_map);
+        else if (myConfig.key_R_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_R_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_R_map]  = 1;
@@ -676,7 +748,9 @@ void pollInputs(void)
 
     if (keys_pressed & KEY_START)   
     {
-        if (myConfig.key_START_map > 11) 
+        if (myConfig.key_START_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_START_map);
+        else if (myConfig.key_START_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_START_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_START_map]  = 1;
@@ -684,7 +758,9 @@ void pollInputs(void)
     
     if (keys_pressed & KEY_SELECT)  
     {
-        if (myConfig.key_SELECT_map > 11) 
+        if (myConfig.key_SELECT_map >= OVL_META_RESET)
+            ds_handle_meta(myConfig.key_SELECT_map);
+        else if (myConfig.key_SELECT_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
@@ -701,11 +777,18 @@ void pollInputs(void)
         // ----------------------------------------------------------------------
         // Handle the 12 keypad keys on the intellivision controller overlay...
         // ----------------------------------------------------------------------
-        for (int i=0; i<12; i++)
+        for (int i=0; i <= OVL_KEY_ENTER; i++)
         {
             if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   ds_key_input[ctrl_keys][i] = 1;
         }
 
+        // ----------------------------------------------------------------------
+        // Handle the 3 side buttons (top=Fire... Left-Action and Right-Action)
+        // ----------------------------------------------------------------------
+        for (int i=OVL_BTN_FIRE; i<=OVL_BTN_R_ACT; i++)
+        {
+            if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   ds_key_input[ctrl_side][i] = 1;
+        }
         
         // ----------------------------------------------------------------------------------
         // Handled "META" keys here... this includes things like RESET, LOAD, CONFIG, etc
@@ -714,63 +797,31 @@ void pollInputs(void)
         // RESET
         if (touch.px > myOverlay[OVL_META_RESET].x1  && touch.px < myOverlay[OVL_META_RESET].x2 && touch.py > myOverlay[OVL_META_RESET].y1 && touch.py < myOverlay[OVL_META_RESET].y2) 
         {
-            if (bFirstGameLoaded) currentEmu->Reset();
+            ds_handle_meta(OVL_META_RESET);
         }
         
         // LOAD
         if (touch.px > myOverlay[OVL_META_LOAD].x1  && touch.px < myOverlay[OVL_META_LOAD].x2 && touch.py > myOverlay[OVL_META_LOAD].y1 && touch.py < myOverlay[OVL_META_LOAD].y2) 
         {
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            if (dsWaitForRom(newFile))
-            {
-                if (LoadCart(newFile)) 
-                {
-                    dsPrintValue(0,1,0, (char*) "           ");
-                    InitializeEmulator();
-                    for (int i=0; i<20; i++) currentEmu->Run();
-                    if (LoadCart(newFile)) InitializeEmulator();
-                }
-                else
-                {
-                    dsPrintValue(0,1,0, (char*) "LOAD FAILED");
-                }
-            }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            ds_handle_meta(OVL_META_LOAD);
         }
         
         // CONFIG
         if (touch.px > myOverlay[OVL_META_CONFIG].x1  && touch.px < myOverlay[OVL_META_CONFIG].x2 && touch.py > myOverlay[OVL_META_CONFIG].y1 && touch.py < myOverlay[OVL_META_CONFIG].y2) 
         {
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            dsChooseOptions();
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
-            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-            touchPosition touch;
-            touchRead(&touch);
+            ds_handle_meta(OVL_META_CONFIG);
         }
 
         // HIGHSCORES
         if (touch.px > myOverlay[OVL_META_SCORES].x1  && touch.px < myOverlay[OVL_META_SCORES].x2 && touch.py > myOverlay[OVL_META_SCORES].y1 && touch.py < myOverlay[OVL_META_SCORES].y2) 
         {
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            if (currentRip != NULL) 
-            {
-                highscore_display(currentRip->GetCRC());
-                dsShowScreenMain(false);
-                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-            }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            ds_handle_meta(OVL_META_SCORES);
         }
         
         // QUIT
         if (touch.px > myOverlay[OVL_META_QUIT].x1  && touch.px < myOverlay[OVL_META_QUIT].x2 && touch.py > myOverlay[OVL_META_QUIT].y1 && touch.py < myOverlay[OVL_META_QUIT].y2) 
         {
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            if (dsWaitOnQuit())
-            {
-                runState = Quit;
-            }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            ds_handle_meta(OVL_META_QUIT);
         }
     }
     
@@ -976,7 +1027,6 @@ void dsShowScreenMain(bool bFull)
             {
                 char *ptr = strstr(line, ".tile");
                 ptr += 6;
-                
                 customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
                 customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
                 customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -1564,27 +1614,27 @@ bool dsWaitOnQuit(void)
 struct options_t
 {
     const char  *label;
-    const char  *option[16];
+    const char  *option[20];
     UINT16 *option_val;
     UINT16 option_max;
 };
 
 const struct options_t Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},  &myConfig.overlay_selected, 11},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_A_map,        15},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_B_map,        15},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_X_map,        15},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_Y_map,        15},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_L_map,        15},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_R_map,        15},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_START_map,    15},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT"},         &myConfig.key_SELECT_map,   15},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
-    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
-    {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                                   &myConfig.frame_skip_opt,   2},   
-    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                         &myConfig.sound_clock_div,  4},
-    {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                          &myConfig.show_fps,         3},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},                               &myConfig.overlay_selected, 11},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_A_map,        19},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_B_map,        19},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_X_map,        19},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_Y_map,        19},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_L_map,        19},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_R_map,        19},
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_START_map,    19},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_SELECT_map,   19},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                                             &myConfig.controller_type,  4},
+    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                                                        &myConfig.dpad_config,      5},
+    {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                                                                &myConfig.frame_skip_opt,   2},   
+    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                                                      &myConfig.sound_clock_div,  4},
+    {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                                                       &myConfig.show_fps,         3},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 

@@ -77,15 +77,21 @@ struct Overlay_t
 #define OVL_KEY_CLEAR   9
 #define OVL_KEY_0       10
 #define OVL_KEY_ENTER   11
-#define OVL_META_RESET  12
-#define OVL_META_LOAD   13
-#define OVL_META_CONFIG 14
-#define OVL_META_SCORES 15
-#define OVL_META_QUIT   16
-#define OVL_META_RES1   17
-#define OVL_META_RES2   18
-#define OVL_META_RES3   19
-#define OVL_MAX         20
+
+#define OVL_BTN_FIRE    12
+#define OVL_BTN_L_ACT   13
+#define OVL_BTN_R_ACT   14
+
+#define OVL_META_RESET  15
+#define OVL_META_LOAD   16
+#define OVL_META_CONFIG 17
+#define OVL_META_SCORES 18
+#define OVL_META_QUIT   19
+
+#define OVL_META_RES1   20
+#define OVL_META_RES2   21
+#define OVL_META_RES3   22
+#define OVL_MAX         23
 
 extern struct Overlay_t myOverlay[OVL_MAX];
 
