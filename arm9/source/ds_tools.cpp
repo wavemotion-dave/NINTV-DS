@@ -420,6 +420,14 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 }
 
 
+void reset_emu_frames(void)
+{
+    TIMER0_CR=0;
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+    emu_frames=1;
+}
+
 BOOL InitializeEmulator(void)
 {
     //find the currentEmulator required to run this RIP
@@ -472,10 +480,7 @@ BOOL InitializeEmulator(void)
     // And put the Sound Fifo back at the start...
     bStartSoundFifo = true;
     
-    TIMER0_CR=0;
-    TIMER0_DATA=0;
-    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
-    emu_frames=1;
+    reset_emu_frames();
 
     return TRUE;
 }
@@ -519,6 +524,7 @@ void ds_handle_meta(int meta_key)
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions();
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            reset_emu_frames();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             touchPosition touch;
             touchRead(&touch);
@@ -838,13 +844,12 @@ int target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
 
 void Run()
 {
+    // Setup 1 second timer for things like FPS
     TIMER1_CR = 0;
     TIMER1_DATA = 0;
     TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
     
-    TIMER0_CR=0;
-    TIMER0_DATA=0;
-    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+    reset_emu_frames();
     
     runState = Running;
 	while(runState == Running) 
@@ -856,10 +861,7 @@ void Run()
         // Have we processed target (default 60) frames... start over...
         if (++emu_frames >= target_frames[myConfig.target_fps])
         {
-            TIMER0_CR=0;
-            TIMER0_DATA=0;
-            TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
-            emu_frames=1;
+            reset_emu_frames();
         }       
         
         //poll the input
