@@ -439,11 +439,15 @@ BOOL InitializeEmulator(void)
     
     //load the BIOS files required for this currentEmulator
     if (!LoadPeripheralRoms(currentEmu))
+    {
+        dsPrintValue(0,1,0, (char*) "NO BIOS FILES");
         return FALSE;
+    }
 
     //load peripheral roms
     INT32 count = currentEmu->GetPeripheralCount();
-    for (INT32 i = 0; i < count; i++) {
+    for (INT32 i = 0; i < count; i++) 
+    {
         Peripheral* p = currentEmu->GetPeripheral(i);
         PeripheralCompatibility usage = currentRip->GetPeripheralUsage(p->GetShortName());
         if (usage == PERIPH_INCOMPATIBLE || usage == PERIPH_COMPATIBLE) {
@@ -460,8 +464,11 @@ BOOL InitializeEmulator(void)
             //didn't load, but the peripheral is optional, so just skip it
             currentEmu->UsePeripheral(i, FALSE);
         }
-        else //usage == PERIPH_REQUIRED, but it didn't load 
+        else //usage == PERIPH_REQUIRED, but it didn't load
+        {
+            dsPrintValue(0,1,0, (char*) "NO IVOICE.BIN");
             return FALSE;
+        }
     }
     
 	//hook the audio and video up to the currentEmulator
@@ -507,14 +514,20 @@ void ds_handle_meta(int meta_key)
             {
                 if (LoadCart(newFile)) 
                 {
-                    dsPrintValue(0,1,0, (char*) "           ");
+                    // ------------------------------------------------------------------------------------------
+                    // We double load... to ensure reset vectors and such are set before we copy fast memory...
+                    // ------------------------------------------------------------------------------------------
                     InitializeEmulator();
                     for (int i=0; i<20; i++) currentEmu->Run();
-                    if (LoadCart(newFile)) InitializeEmulator();
+                    LoadCart(newFile);
+                    if (InitializeEmulator())
+                    {
+                        dsPrintValue(0,1,0, (char*) "             ");
+                    }
                 }
                 else
                 {
-                    dsPrintValue(0,1,0, (char*) "LOAD FAILED");
+                    dsPrintValue(0,1,0, (char*) "UNKNOWN GAME ");
                 }
             }
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
