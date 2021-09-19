@@ -70,7 +70,7 @@ void SetDefaultConfig(void)
     myConfig.sound_clock_div    = (isDSiMode() ? 1:2);
     myConfig.show_fps           = 0;
     myConfig.dpad_config        = 0;
-    myConfig.spare1             = 0;
+    myConfig.target_fps         = 0;
     myConfig.spare2             = 0;
     myConfig.spare3             = 0;
     myConfig.spare4             = 0;
@@ -340,7 +340,7 @@ ITCM_CODE void VideoBusDS::render()
     // Any level of frame skip will skip the render()
     if (myConfig.frame_skip_opt)
     {
-        if (frames & 1) return;
+        if (frames & (myConfig.frame_skip_opt==2 ? 0:1)) return;        // Skip ODD or EVEN Frames as configured
     }
     UINT32 *ds_video=(UINT32*)0x06000000;
     UINT32 *source_video = (UINT32*)pixelBuffer;
@@ -833,6 +833,9 @@ void pollInputs(void)
     
 }
 
+int target_frames[]         = {60,  66,   72,  78,  84,  90,  999};
+int target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
+
 void Run()
 {
     TIMER1_CR = 0;
@@ -846,15 +849,12 @@ void Run()
     runState = Running;
 	while(runState == Running) 
     {
-        // If not full speed, time 1 frame...
-        if (myConfig.show_fps != 2)
-        {
-            while(TIMER0_DATA < (546*emu_frames))
-                ;
-        }
+        // Time 1 frame...
+        while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*emu_frames))
+            ;
 
-        // Have we processed 60 frames... start over...
-        if (++emu_frames == 60)
+        // Have we processed target (default 60) frames... start over...
+        if (++emu_frames >= target_frames[myConfig.target_fps])
         {
             TIMER0_CR=0;
             TIMER0_DATA=0;
@@ -892,7 +892,7 @@ void Run()
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             if ((frames > 0) && (myConfig.show_fps > 0))
             {
-                if (frames==61) frames--;
+                if (frames==(target_frames[myConfig.target_fps]+1)) frames--;
                 sprintf(tmp, "%03d", frames);
                 dsPrintValue(0,0,0,tmp);
             }
@@ -1504,6 +1504,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
       {
         bRet=true;
         bDone=true;
+        WAITVBL;
         if (keysCurrent() & KEY_X) bUseJLP = true; else bUseJLP=false;
         if (keysCurrent() & KEY_Y) bForceIvoice = true; else bForceIvoice=false;          
         strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
@@ -1638,9 +1639,10 @@ const struct options_t Option_Table[] =
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_SELECT_map,   19},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                                             &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                                                        &myConfig.dpad_config,      5},
-    {"FRAMESKIP",   {"OFF", "ON"}                                   ,                                                                                                                                &myConfig.frame_skip_opt,   2},   
+    {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                                                &myConfig.frame_skip_opt,   3},
     {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                                                      &myConfig.sound_clock_div,  4},
-    {"FPS",         {"OFF", "ON", "ON-TURBO"},                                                                                                                                                       &myConfig.show_fps,         3},
+    {"FPS",         {"OFF", "ON"},                                                                                                                                                                   &myConfig.show_fps,         2},
+    {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                                             &myConfig.target_fps,       7},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 
