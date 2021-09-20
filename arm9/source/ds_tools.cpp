@@ -520,10 +520,7 @@ void ds_handle_meta(int meta_key)
                     InitializeEmulator();
                     for (int i=0; i<20; i++) currentEmu->Run();
                     LoadCart(newFile);
-                    if (InitializeEmulator())
-                    {
-                        dsPrintValue(0,1,0, (char*) "             ");
-                    }
+                    InitializeEmulator();
                 }
                 else
                 {

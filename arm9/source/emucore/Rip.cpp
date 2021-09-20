@@ -327,9 +327,10 @@ Rip* Rip::LoadRom(const CHAR* filename)
         return NULL;
     }
 
-    //read the magic byte (should always be $A8)
+    //read the magic byte (should always be $A8 or $41)
     int read = fgetc(infile);
-    if (read != 0xA8) {
+    if ((read != 0xA8) && (read != 0x41))
+    {
         fclose(infile);
         return NULL;
     }
