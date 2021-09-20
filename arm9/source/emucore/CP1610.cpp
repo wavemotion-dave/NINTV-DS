@@ -2712,58 +2712,58 @@ INT32 CP1610::decode(void)
             return BESC(PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0210:
-            return BEXT(0, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(0, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0211:
-            return BEXT(1, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(1, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0212:
-            return BEXT(2, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(2, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0213:
-            return BEXT(3, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(3, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0214:
-            return BEXT(4, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(4, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0215:
-            return BEXT(5, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(5, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0216:
-            return BEXT(6, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(6, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0217:
-            return BEXT(7, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(7, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0218:
-            return BEXT(8, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(8, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0219:
-            return BEXT(9, memoryBus->peek((UINT16)(r[7] + 1)));
+            return BEXT(9, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x021A:
             return BEXT(10,
-                memoryBus->peek((UINT16)(r[7] + 1)));
+                PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x021B:
             return BEXT(11,
-                memoryBus->peek((UINT16)(r[7] + 1)));
+                PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x021C:
             return BEXT(12,
-                memoryBus->peek((UINT16)(r[7] + 1)));
+                PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x021D:
             return BEXT(13,
-                memoryBus->peek((UINT16)(r[7] + 1)));
+                PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x021E:
             return BEXT(14,
-                memoryBus->peek((UINT16)(r[7] + 1)));
+                PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x021F:
             return BEXT(15,
-                memoryBus->peek((UINT16)(r[7] + 1)));
+                PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0220:
             return B(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
@@ -2878,28 +2878,28 @@ INT32 CP1610::decode(void)
                 -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
 
         case 0x0240:
-            return MVO(0, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(0, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0241:
-            return MVO(1, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(1, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0242:
-            return MVO(2, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(2, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0243:
-            return MVO(3, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(3, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0244:
-            return MVO(4, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(4, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0245:
-            return MVO(5, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(5, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0246:
-            return MVO(6, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(6, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0247:
-            return MVO(7, memoryBus->peek((UINT16)(r[7] + 1)));
+            return MVO(7, PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0248:
             return MVO_ind(1, 0);
@@ -3070,28 +3070,28 @@ INT32 CP1610::decode(void)
             return MVO_ind(7, 7);
 
         case 0x0280:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 0);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 0);
 
         case 0x0281:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 1);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 1);
 
         case 0x0282:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 2);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 2);
 
         case 0x0283:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 3);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 3);
 
         case 0x0284:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 4);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 4);
 
         case 0x0285:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 5);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 5);
 
         case 0x0286:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 6);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 6);
 
         case 0x0287:
-            return MVI(memoryBus->peek((UINT16)(r[7] + 1)), 7);
+            return MVI(PEEK_FAST((UINT16)(r[7] + 1)), 7);
 
         case 0x0288:
             return MVI_ind(1, 0);
@@ -3262,28 +3262,28 @@ INT32 CP1610::decode(void)
             return MVI_ind(7, 7);
 
         case 0x02C0:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 0);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 0);
 
         case 0x02C1:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 1);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 1);
 
         case 0x02C2:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 2);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 2);
 
         case 0x02C3:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 3);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 3);
 
         case 0x02C4:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 4);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 4);
 
         case 0x02C5:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 5);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 5);
 
         case 0x02C6:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 6);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 6);
 
         case 0x02C7:
-            return ADD(memoryBus->peek((UINT16)(r[7] + 1)), 7);
+            return ADD(PEEK_FAST((UINT16)(r[7] + 1)), 7);
 
         case 0x02C8:
             return ADD_ind(1, 0);
@@ -3454,28 +3454,28 @@ INT32 CP1610::decode(void)
             return ADD_ind(7, 7);
 
         case 0x0300:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 0);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 0);
 
         case 0x0301:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 1);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 1);
 
         case 0x0302:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 2);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 2);
 
         case 0x0303:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 3);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 3);
 
         case 0x0304:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 4);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 4);
 
         case 0x0305:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 5);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 5);
 
         case 0x0306:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 6);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 6);
 
         case 0x0307:
-            return SUB(memoryBus->peek((UINT16)(r[7] + 1)), 7);
+            return SUB(PEEK_FAST((UINT16)(r[7] + 1)), 7);
 
         case 0x0308:
             return SUB_ind(1, 0);
@@ -3646,28 +3646,28 @@ INT32 CP1610::decode(void)
             return SUB_ind(7, 7);
 
         case 0x0340:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 0);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 0);
 
         case 0x0341:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 1);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 1);
 
         case 0x0342:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 2);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 2);
 
         case 0x0343:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 3);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 3);
 
         case 0x0344:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 4);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 4);
 
         case 0x0345:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 5);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 5);
 
         case 0x0346:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 6);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 6);
 
         case 0x0347:
-            return CMP(memoryBus->peek((UINT16)(r[7] + 1)), 7);
+            return CMP(PEEK_FAST((UINT16)(r[7] + 1)), 7);
 
         case 0x0348:
             return CMP_ind(1, 0);
@@ -3838,28 +3838,28 @@ INT32 CP1610::decode(void)
             return CMP_ind(7, 7);
 
         case 0x0380:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 0);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 0);
 
         case 0x0381:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 1);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 1);
 
         case 0x0382:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 2);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 2);
 
         case 0x0383:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 3);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 3);
 
         case 0x0384:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 4);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 4);
 
         case 0x0385:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 5);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 5);
 
         case 0x0386:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 6);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 6);
 
         case 0x0387:
-            return AND(memoryBus->peek((UINT16)(r[7] + 1)), 7);
+            return AND(PEEK_FAST((UINT16)(r[7] + 1)), 7);
 
         case 0x0388:
             return AND_ind(1, 0);
@@ -4030,28 +4030,28 @@ INT32 CP1610::decode(void)
             return AND_ind(7, 7);
 
         case 0x03C0:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 0);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 0);
 
         case 0x03C1:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 1);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 1);
 
         case 0x03C2:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 2);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 2);
 
         case 0x03C3:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 3);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 3);
 
         case 0x03C4:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 4);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 4);
 
         case 0x03C5:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 5);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 5);
 
         case 0x03C6:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 6);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 6);
 
         case 0x03C7:
-            return XOR(memoryBus->peek((UINT16)(r[7] + 1)), 7);
+            return XOR(PEEK_FAST((UINT16)(r[7] + 1)), 7);
 
         case 0x03C8:
             return XOR_ind(1, 0);

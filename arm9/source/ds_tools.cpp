@@ -67,7 +67,7 @@ void SetDefaultConfig(void)
     myConfig.key_START_map      = 2;
     myConfig.key_SELECT_map     = 3;
     myConfig.controller_type    = 0;
-    myConfig.sound_clock_div    = (isDSiMode() ? 1:2);
+    myConfig.sound_clock_div    = 1;
     myConfig.show_fps           = 0;
     myConfig.dpad_config        = 0;
     myConfig.target_fps         = 0;
