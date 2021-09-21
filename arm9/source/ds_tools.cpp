@@ -1304,6 +1304,7 @@ void intvFindFiles(void)
         if (strcasecmp(filenametmp, "grom.bin") == 0) continue;
         if (strcasecmp(filenametmp, "exec.bin") == 0) continue;
         if (strcasecmp(filenametmp, "ivoice.bin") == 0) continue;
+          if (strcasecmp(filenametmp, "ecs.bin") == 0) continue;
         if (strstr(filenametmp, "[BIOS]") != NULL) continue;
         if (strstr(filenametmp, "[bios]") != NULL) continue;
           
