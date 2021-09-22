@@ -8,7 +8,7 @@
 
 TYPEDEF_STRUCT_PACK( _JLPState
 {
-    UINT8     jlp_ram[RAM_JLP_SIZE];
+    UINT16     jlp_ram[RAM_JLP_SIZE];
 } JLPState; )
 
 class JLP : public RAM
