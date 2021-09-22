@@ -24,7 +24,7 @@
     .ovl 193,  254,  160,  185,   //META_CONFIG - Bottom Right Corner
     .ovl 255,  255,  255,  255,   //META_SCORES - UNUSED for Touch Area
     .ovl 255,  255,  255,  255,   //META_QUIT   - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //META_RES1   - UNUSED for Touch Area
+    .ovl 255,  255,  255,  255,   //META_STATE  - UNUSED for Touch Area
     .ovl 255,  255,  255,  255,   //META_RES2   - UNUSED for Touch Area
     .ovl 255,  255,  255,  255,   //META_RES3   - UNUSED for Touch Area
 

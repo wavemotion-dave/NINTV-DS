@@ -224,7 +224,7 @@ void savestate_entry(void)
                 else if (current_entry == 2 || current_entry == 5) show_slot_info(2);
                 else show_slot_info(255);
             }
-            if ((keys_pressed & KEY_A) || (keys_pressed & KEY_B))
+            if (keys_pressed & KEY_A)
             {
                 switch (current_entry)
                 {
@@ -253,6 +253,11 @@ void savestate_entry(void)
                         bDone=1;
                         break;
                 }
+            }
+            
+            if (keys_pressed & KEY_B)
+            {
+                bDone = 1;
             }
             swiWaitForVBlank();
         }
