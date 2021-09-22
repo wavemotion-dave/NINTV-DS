@@ -89,3 +89,14 @@ void JLP::poke(UINT16 location, UINT16 value)
     }
     
 }
+
+
+void JLP::getState(JLPState *state)
+{
+    for (int i=0; i<RAM_JLP_SIZE; i++)   state->jlp_ram[i] = jlp_ram[i];
+}
+
+void JLP::setState(JLPState *state)
+{
+    for (int i=0; i<RAM_JLP_SIZE; i++)   jlp_ram[i] = state->jlp_ram[i];
+}

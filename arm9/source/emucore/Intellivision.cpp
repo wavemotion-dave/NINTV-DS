@@ -89,7 +89,8 @@ BOOL Intellivision::SaveState(struct _stateStruct *saveState)
     RAM16bit.getState(&saveState->RAM16bitState);
     gram.getState(&saveState->MyGRAMState);
     intellivoice.getState(&saveState->ivoiceState);
-    
+    if (currentRip->JLP16Bit) currentRip->JLP16Bit->getState(&saveState->jlpState);
+    memset(&saveState->ExtraCartRamState, 0x00, sizeof(RAMState));   // Not used yet... maybe for Chess and Land Battle
 	return didSave;
 }
 
@@ -104,6 +105,7 @@ BOOL Intellivision::LoadState(struct _stateStruct *saveState)
     RAM16bit.setState(&saveState->RAM16bitState);
     gram.setState(&saveState->MyGRAMState);
     intellivoice.setState(&saveState->ivoiceState);
+    if (currentRip->JLP16Bit) currentRip->JLP16Bit->setState(&saveState->jlpState);
 
 	return didLoadState;
 }

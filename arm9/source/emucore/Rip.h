@@ -49,6 +49,7 @@ public:
     UINT32 GetCRC() {
         return this->crc;
     }
+    JLP *JLP16Bit;
 
 private:
     Rip(UINT32 systemID);
@@ -60,7 +61,6 @@ private:
         strncpy(this->filename, fname, sizeof(this->filename));
     }
 
-    JLP *JLP16Bit;
     UINT32 targetSystemID;
     CHAR* producer;
     CHAR* year;

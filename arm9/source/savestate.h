@@ -21,6 +21,7 @@ extern void savestate_entry(void);
 struct _stateStruct
 {
     UINT16              frames;
+    UINT16              emu_frames;
     CP1610State         cpuState;
     AY38900State        sticState;
     AY38914State        psgState;
@@ -28,6 +29,8 @@ struct _stateStruct
     RAMState            RAM16bitState;
     GRAMState           MyGRAMState; 
     IntellivoiceState   ivoiceState;
+    JLPState            jlpState;
+    RAMState            ExtraCartRamState;
 };
 
 

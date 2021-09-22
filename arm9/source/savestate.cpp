@@ -10,10 +10,11 @@
 extern Emulator *currentEmu;
 extern Rip      *currentRip;
 
+#define CURRENT_SAVE_FILE_VER   0x0003
 
 struct 
 {
-    UINT8                   saveFileVersion;
+    UINT16                  saveFileVersion;
     UINT8                   bSlotUsed[3];
     char                    slotTimestamp[3][20];
     struct _stateStruct     slot[3];
@@ -21,19 +22,21 @@ struct
 
 
 extern UINT16 frames;
+extern UINT16 emu_frames;
 BOOL do_save(const CHAR* filename, UINT8 slot)
 {
     BOOL didSave = FALSE;
     time_t unixTime = time(NULL);
     struct tm* timeStruct = gmtime((const time_t *)&unixTime);
 
-    saveState.saveFileVersion = 0x01; 
+    saveState.saveFileVersion = CURRENT_SAVE_FILE_VER; 
     saveState.bSlotUsed[slot] = TRUE;
     sprintf(saveState.slotTimestamp[slot], "%02d-%02d-%04d %02d:%02d:%02d", timeStruct->tm_mday, timeStruct->tm_mon+1, timeStruct->tm_year+1900, timeStruct->tm_hour, timeStruct->tm_min, timeStruct->tm_sec);
 
     // Ask the emulator to save it's state...
     currentEmu->SaveState(&saveState.slot[slot]);
     saveState.slot[slot].frames = frames;
+    saveState.slot[slot].emu_frames = emu_frames;
     
 	FILE* file = fopen(filename, "wb+");
 
@@ -56,13 +59,21 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
 
 	if (file != NULL) 
     {
-		fread(&saveState, 1, sizeof(saveState), file);
+		int size = fread(&saveState, 1, sizeof(saveState), file);
         
-        // Ask the emulator to restore it's state...
-        currentEmu->LoadState(&saveState.slot[slot]);
-        frames = saveState.slot[slot].frames;
-        
-        didLoadState = TRUE;
+        if ((size != sizeof(saveState)) || (saveState.saveFileVersion != CURRENT_SAVE_FILE_VER))
+        {
+            memset(&saveState, 0x00, sizeof(saveState));
+        }
+        else
+        {
+            // Ask the emulator to restore it's state...
+            currentEmu->LoadState(&saveState.slot[slot]);
+            frames = saveState.slot[slot].frames;
+            emu_frames = saveState.slot[slot].emu_frames;
+
+            didLoadState = TRUE;
+        }
         fclose(file);
 	}
 
@@ -83,8 +94,12 @@ void just_read_save_file(void)
 
         if (file != NULL) 
         {
-            fread(&saveState, 1, sizeof(saveState), file);
+            int size = fread(&saveState, 1, sizeof(saveState), file);
             fclose(file);
+            if ((size != sizeof(saveState)) || (saveState.saveFileVersion != CURRENT_SAVE_FILE_VER))
+            {
+                memset(&saveState, 0x00, sizeof(saveState));
+            }
         }
     }
 }
@@ -215,15 +230,15 @@ void savestate_entry(void)
                 {
                     case 0:
                         state_save(0);
-                        bDone=1;
+                        show_slot_info(0);
                         break;
                     case 1:
                         state_save(1);
-                        bDone=1;
+                        show_slot_info(1);
                         break;
                     case 2:
                         state_save(2);
-                        bDone=1;
+                        show_slot_info(2);
                         break;
                     case 3:
                         if (state_restore(0)) bDone=1;

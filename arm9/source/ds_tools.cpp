@@ -49,7 +49,9 @@ Rip                  *currentRip = NULL;
 VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
-int emu_frames=1;
+int debug1, debug2;
+UINT16 emu_frames=1;
+UINT16 frames=0;
 
 struct Config_t  myConfig;
 struct Config_t  allConfigs[MAX_CONFIGS];
@@ -332,8 +334,6 @@ void VideoBusDS::release()
 	VideoBus::release();
 }
 
-int debug1, debug2;
-UINT16 frames=0;
 ITCM_CODE void VideoBusDS::render()
 {
     frames++;
@@ -1276,7 +1276,7 @@ char szName2[256];
 
 
 // Find files (.int) available
-int a26Filescmp (const void *c1, const void *c2) 
+int intvFilescmp (const void *c1, const void *c2) 
 {
   FICA_INTV *p1 = (FICA_INTV *) c1;
   FICA_INTV *p2 = (FICA_INTV *) c2;
@@ -1348,7 +1348,7 @@ void intvFindFiles(void)
     closedir(pdir);
   }
   if (countintv)
-    qsort (intvromlist, countintv, sizeof (FICA_INTV), a26Filescmp);
+    qsort (intvromlist, countintv, sizeof (FICA_INTV), intvFilescmp);
 }
 
 void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
