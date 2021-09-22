@@ -43,6 +43,9 @@ class Emulator : public Peripheral
 
 		UINT16 GetVideoWidth();
 		UINT16 GetVideoHeight();
+        
+        virtual BOOL SaveState(struct _stateStruct *saveState) = 0;
+        virtual BOOL LoadState(struct _stateStruct *saveState) = 0;
 
         void UsePeripheral(UINT8, BOOL);
 
@@ -63,10 +66,10 @@ class Emulator : public Peripheral
         static Emulator* GetEmulator(UINT32 i);
 		static Emulator* GetEmulatorByID(UINT32 targetSystemID);
         
+        MemoryBus          memoryBus;
+
     protected:
         Emulator(const char* name);
-
-        MemoryBus          memoryBus;
 
         Rip*               currentRip;
 

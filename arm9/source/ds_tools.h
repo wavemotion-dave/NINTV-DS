@@ -87,8 +87,8 @@ struct Overlay_t
 #define OVL_META_CONFIG 17
 #define OVL_META_SCORES 18
 #define OVL_META_QUIT   19
+#define OVL_META_STATE  20
 
-#define OVL_META_RES1   20
 #define OVL_META_RES2   21
 #define OVL_META_RES3   22
 #define OVL_MAX         23

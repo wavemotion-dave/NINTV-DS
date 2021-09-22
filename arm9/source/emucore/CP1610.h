@@ -13,6 +13,21 @@
     
 extern UINT8 interruptible;
 
+TYPEDEF_STRUCT_PACK( _CP1610State
+{
+    UINT8     S;
+    UINT8     Z;
+    UINT8     O;
+    UINT8     C;
+    UINT8     I;
+    UINT8     D;
+    UINT8     interruptible;
+    INT8      ext;
+    UINT16   interruptAddress;
+    UINT16   resetAddress;
+    UINT16   r[8];
+} CP1610State; )
+
 class CP1610 : public Processor
 {
 
@@ -26,6 +41,9 @@ class CP1610 : public Processor
         //Processor functions
         INT32 getClockSpeed();
         INT32 tick(INT32);
+        
+        void getState(CP1610State *state);
+        void setState(CP1610State *state);
 
         BOOL isIdle() {
             if (!pinIn[CP1610_PIN_IN_BUSRQ]->isHigh && interruptible) {

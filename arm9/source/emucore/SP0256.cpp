@@ -839,3 +839,67 @@ INT32 SP0256::flipEndian(INT32 value, INT32 bits) {
     }
     return output;
 }
+
+void SP0256::getState(SP0256State *state)
+{
+    state->bitsLeft = bitsLeft;
+    state->currentBits = currentBits;
+    state->pc = pc;
+    state->stack = stack;
+    state->mode = mode;
+    state->repeatPrefix = repeatPrefix;
+    state->page = page;
+    state->command = command;
+    state->repeat = repeat;
+    state->period = period;
+    state->periodCounter = periodCounter;
+    state->amplitude = amplitude;
+    state->random = random;
+    state->fifoHead = fifoHead;
+    state->fifoSize = fifoSize;
+    for (int i=0; i<64; i++) state->fifoBytes[i] = fifoBytes[i];
+    for (int i=0; i<6; i++)
+    {
+        state->y[i][0] = y[i][0];
+        state->y[i][1] = y[i][1];
+        state->b[i] = b[i];
+        state->f[i] = f[i];
+    }
+    state->periodInterpolation = periodInterpolation;
+    state->amplitudeInterpolation = amplitudeInterpolation;
+    state->idle = idle;
+    state->lrqHigh = lrqHigh;
+    state->speaking = speaking;
+}
+
+void SP0256::setState(SP0256State *state)
+{
+    bitsLeft = state->bitsLeft;
+    currentBits = state->currentBits;
+    pc = state->pc;
+    stack = state->stack;
+    mode = state->mode;
+    repeatPrefix = state->repeatPrefix;
+    page = state->page;
+    command = state->command;
+    repeat = state->repeat;
+    period = state->period;
+    periodCounter = state->periodCounter;
+    amplitude = state->amplitude;
+    random = state->random;
+    fifoHead = state->fifoHead;
+    fifoSize = state->fifoSize;
+    for (int i=0; i<64; i++) fifoBytes[i] = state->fifoBytes[i];
+    for (int i=0; i<6; i++)
+    {
+        y[i][0] = state->y[i][0];
+        y[i][1] = state->y[i][1];
+        b[i] = state->b[i];
+        f[i] = state->f[i];
+    }
+    periodInterpolation = state->periodInterpolation;
+    amplitudeInterpolation = state->amplitudeInterpolation;
+    idle = state->idle;
+    lrqHigh = state->lrqHigh;
+    speaking = state->speaking;    
+}

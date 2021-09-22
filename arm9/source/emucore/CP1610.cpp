@@ -23,7 +23,7 @@ UINT16 op __attribute__((section(".dtcm")));
 UINT8 interruptible __attribute__((section(".dtcm")));
 
 //the four external lines
-INT8 ext __attribute__((section(".dtcm")));;
+INT8 ext __attribute__((section(".dtcm")));
 
 #pragma warning(disable:4786)    // Suppress STL debug info > 255 chars messages
 
@@ -4223,4 +4223,35 @@ INT32 CP1610::decode(void)
             return XOR_ind(7, 7);
 
     }
+}
+
+
+void CP1610::getState(CP1610State *state)
+{
+    state->S  = S;
+    state->Z  = Z;
+    state->O  = O;
+    state->C  = C;
+    state->I  = I;
+    state->D  = D;
+    state->interruptible = interruptible;
+    state->ext = ext;
+    state->interruptAddress = interruptAddress;
+    state->resetAddress = resetAddress;
+    for (int i=0; i<8; i++)  state->r[i] = r[i];
+}
+ 
+void CP1610::setState(CP1610State *state)
+{
+    S = state->S;
+    Z = state->Z;
+    O = state->O;
+    C = state->C;
+    I = state->I;
+    D = state->D;
+    interruptible = state->interruptible;
+    ext = state->ext;
+    interruptAddress = state->interruptAddress;
+    resetAddress = state->resetAddress;
+    for (int i=0; i<8; i++)  r[i] = state->r[i];
 }

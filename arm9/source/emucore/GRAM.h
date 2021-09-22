@@ -14,6 +14,14 @@ extern UINT8     gram_image[GRAM_SIZE];
 extern UINT8     dirtyCards[GRAM_SIZE>>3];
 extern UINT8     dirtyRAM;
 
+TYPEDEF_STRUCT_PACK( _GRAMState
+{
+    UINT8     gram_image[GRAM_SIZE];
+    UINT8     dirtyCards[GRAM_SIZE>>3];
+    UINT8     dirtyRAM;
+} GRAMState; )
+
+    
 class GRAM : public RAM
 {
     friend class AY38900;
@@ -28,7 +36,10 @@ class GRAM : public RAM
         void markClean();
         BOOL isDirty();
         BOOL isCardDirty(UINT16 cardLocation);
-       
+        
+        void getState(GRAMState *state);
+        void setState(GRAMState *state);
+        
     private:
 };
 

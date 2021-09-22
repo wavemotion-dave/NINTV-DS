@@ -58,3 +58,20 @@ BOOL BackTabRAM::isDirty(UINT16 location) {
     return dirtyBytes[location-BACKTAB_LOCATION];
 }
 
+
+void BackTabRAM::getState(BackTabRAMState *state)
+{
+    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = image[i];
+    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = dirtyBytes[i];
+    state->dirtyRAM = dirtyRAM;
+    state->colorAdvanceBitsDirty = colorAdvanceBitsDirty;
+}
+
+void BackTabRAM::setState(BackTabRAMState *state)
+{
+    for (int i=0; i<BACKTAB_SIZE; i++)  image[i] = state->image[i];
+    for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = state->dirtyBytes[i];
+    dirtyRAM = state->dirtyRAM;
+    colorAdvanceBitsDirty = state->colorAdvanceBitsDirty;
+}
+

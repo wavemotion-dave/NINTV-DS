@@ -8,11 +8,33 @@
 class AY38900;
 class AY38900_Registers;
 
+TYPEDEF_STRUCT_PACK( _MOBState
+{
+    INT32   xLocation;
+    INT32   yLocation;
+    INT32   foregroundColor;
+    INT32   cardNumber;
+    UINT16  collisionRegister;
+    INT8    isGrom;
+    INT8    isVisible;
+    INT8    doubleWidth;
+    INT8    doubleYResolution;
+    INT8    doubleHeight;
+    INT8    quadHeight;
+    INT8    flagCollisions;
+    INT8    horizontalMirror;
+    INT8    verticalMirror;
+    INT8    behindForeground;
+} MOBState; )
+    
 class MOB
 {
-
     friend class AY38900;
     friend class AY38900_Registers;
+
+    public:
+        void getState(MOBState *state);
+        void setState(MOBState *state);
 
     private:
         MOB() {};

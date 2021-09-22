@@ -156,3 +156,48 @@ MOBRect* MOB::getBounds() {
     }
     return &boundingRectangle;
 }
+
+void MOB::getState(MOBState *state)
+{
+    state->xLocation = xLocation;
+    state->yLocation = yLocation;
+    state->foregroundColor = foregroundColor;
+    state->cardNumber = cardNumber;
+    state->collisionRegister = collisionRegister;
+    state->isGrom = isGrom;
+    state->isVisible = isVisible;
+    state->doubleWidth = doubleWidth;
+    state->doubleYResolution = doubleYResolution;
+    state->doubleHeight = doubleHeight;
+    state->quadHeight = quadHeight;
+    state->flagCollisions = flagCollisions;
+    state->horizontalMirror = horizontalMirror;
+    state->verticalMirror = verticalMirror;
+    state->behindForeground = behindForeground;
+}
+
+void MOB::setState(MOBState *state)
+{
+    xLocation = state->xLocation;
+    yLocation = state->yLocation;
+    foregroundColor = state->foregroundColor;
+    cardNumber = state->cardNumber;
+    collisionRegister = state->collisionRegister;
+    isGrom = state->isGrom;
+    isGrom = state->isVisible;
+    doubleWidth = state->doubleWidth;
+    doubleYResolution = state->doubleYResolution;
+    doubleHeight = state->doubleHeight;
+    quadHeight = state->quadHeight;
+    flagCollisions = state->flagCollisions;
+    horizontalMirror = state->horizontalMirror;
+    horizontalMirror = state->verticalMirror;
+    behindForeground = state->behindForeground;
+
+	this->boundsChanged = TRUE;
+	this->shapeChanged = TRUE;
+	this->colorChanged = TRUE;
+    
+}
+
+

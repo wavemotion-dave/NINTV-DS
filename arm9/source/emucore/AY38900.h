@@ -16,6 +16,25 @@
 #define AY38900_PIN_OUT_SR1 0
 #define AY38900_PIN_OUT_SR2 1
 
+TYPEDEF_STRUCT_PACK( _AY38900State
+{
+    BackTabRAMState backtab;
+    MOBState        mobs[8];
+    INT32           horizontalOffset;
+    INT32           verticalOffset;
+    INT32           mode;
+    UINT16          registers[0x40];
+    INT8            inVBlank;
+    INT8            previousDisplayEnabled;
+    INT8            displayEnabled;
+    INT8            colorStackMode;
+    UINT8           borderColor;
+    INT8            blockLeft;
+    INT8            blockTop;
+    UINT8           _pad[1];
+} AY38900State; )
+
+
 class AY38900 : public Processor, public VideoProducer
 {
 
@@ -35,6 +54,9 @@ public:
      * Implemented from the Processor interface.
      */
 	void resetProcessor();
+    
+  	void getState(AY38900State *state);
+	void setState(AY38900State *state);
 
     /**
      * Implemented from the Processor interface.

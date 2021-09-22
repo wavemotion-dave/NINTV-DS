@@ -93,3 +93,28 @@ void RAM::poke(UINT16 location, UINT16 value)
     image[(location&writeAddressMask)-this->location] = (value & trimmer);
 }
 
+
+void RAM::getState(RAMState *state)
+{
+    state->enabled = enabled;
+    state->bitWidth = bitWidth;
+    state->size = size;
+    state->location = location;
+    state->readAddressMask = readAddressMask;
+    state->writeAddressMask = writeAddressMask;
+    state->trimmer = trimmer;
+    for (int i=0; i<size; i++) state->image[i] = image[i];
+}
+
+void RAM::setState(RAMState *state)
+{
+    enabled = state->enabled;
+    bitWidth = state->bitWidth;
+    size = state->size;
+    location = state->location;
+    readAddressMask = state->readAddressMask;
+    writeAddressMask = state->writeAddressMask;
+    trimmer = state->trimmer;
+    for (int i=0; i<size; i++) image[i] = state->image[i];
+}
+

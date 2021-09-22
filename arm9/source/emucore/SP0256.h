@@ -13,6 +13,33 @@
 #define FIFO_MAX_SIZE 64
 //#define FIFO_END      (FIFO_LOCATION + FIFO_MAX_SIZE)
 
+TYPEDEF_STRUCT_PACK( _SP0256State
+{
+    INT32 bitsLeft;
+    INT32 currentBits;
+    INT32 pc;
+    INT32 stack;
+    INT32 mode;
+    INT32 repeatPrefix;
+    INT32 page;
+    INT32 command;
+    INT32 repeat;
+    INT32 period;
+    INT32 periodCounter;
+    INT32 amplitude;
+    INT32 random;
+    INT32 fifoHead;
+    INT32 fifoSize;
+    INT32 fifoBytes[64];
+    INT32 y[6][2];
+    INT8  b[6];
+    INT8  f[6];
+    INT8  periodInterpolation;
+    INT8  amplitudeInterpolation;
+    INT8  idle;
+    INT8  lrqHigh;
+    INT8  speaking;
+} SP0256State; )
 
 //registers
 extern INT32 repeat;
@@ -50,6 +77,9 @@ class SP0256 : public Processor, public AudioProducer
 
         SP0256_Registers registers;
         ROM        ivoiceROM;
+        
+        void getState(SP0256State *state);
+        void setState(SP0256State *state);
 
     private:
         INT8 readDelta(INT32 numBits);

@@ -1,5 +1,9 @@
+#include <nds.h>
+#include <stdio.h>
+#include <time.h>
 
 #include "Intellivision.h"
+#include "../savestate.h"
 
 /**
  * Initializes all of the basic hardware included in the Intellivision
@@ -71,5 +75,36 @@ Intellivision::Intellivision()
 
     //add the Intellivoice
     AddPeripheral(&intellivoice);
+}
+
+
+BOOL Intellivision::SaveState(struct _stateStruct *saveState)
+{
+    BOOL didSave = TRUE;
+
+    cpu.getState(&saveState->cpuState);
+    stic.getState(&saveState->sticState);
+    psg.getState(&saveState->psgState);
+    RAM8bit.getState(&saveState->RAM8bitState);
+    RAM16bit.getState(&saveState->RAM16bitState);
+    gram.getState(&saveState->MyGRAMState);
+    intellivoice.getState(&saveState->ivoiceState);
+    
+	return didSave;
+}
+
+BOOL Intellivision::LoadState(struct _stateStruct *saveState)
+{
+	BOOL didLoadState = TRUE;
+
+    cpu.setState(&saveState->cpuState);
+    stic.setState(&saveState->sticState);
+    psg.setState(&saveState->psgState);
+    RAM8bit.setState(&saveState->RAM8bitState);
+    RAM16bit.setState(&saveState->RAM16bitState);
+    gram.setState(&saveState->MyGRAMState);
+    intellivoice.setState(&saveState->ivoiceState);
+
+	return didLoadState;
 }
 

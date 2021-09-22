@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "ds_tools.h"
+#include "savestate.h"
 #include "bgBottom.h"
 #include "bgBottom-treasure.h"
 #include "bgBottom-cloudy.h"
@@ -105,11 +106,12 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_L_ACT
     {255,   255,    255,   255},    // KEY_R_ACT
     
-    { 23,    82,     25,    46},    // META_RESET
-    { 23,    82,     55,    76},    // META_LOAD
-    { 23,    82,     86,   106},    // META_CONFIG
-    { 23,    82,    116,   136},    // META_SCORE
-    { 23,    82,    145,   170},    // META_QUIT
+    { 23,    82,     16,    36},    // META_RESET
+    { 23,    82,     45,    65},    // META_LOAD
+    { 23,    82,     74,    94},    // META_CONFIG
+    { 23,    82,    103,   123},    // META_SCORE
+    { 23,    82,    161,   181},    // META_QUIT
+    { 23,    82,    132,   152},    // META_STATE
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
@@ -551,6 +553,17 @@ void ds_handle_meta(int meta_key)
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
             break;
 
+        case OVL_META_STATE:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                savestate_entry();      
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            break;
+
         case OVL_META_QUIT:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitOnQuit()){ runState = Quit; }
@@ -835,6 +848,11 @@ void pollInputs(void)
         else if (touch.px > myOverlay[OVL_META_SCORES].x1  && touch.px < myOverlay[OVL_META_SCORES].x2 && touch.py > myOverlay[OVL_META_SCORES].y1 && touch.py < myOverlay[OVL_META_SCORES].y2) 
         {
             ds_handle_meta(OVL_META_SCORES);
+        }
+        // STATE
+        else if (touch.px > myOverlay[OVL_META_STATE].x1  && touch.px < myOverlay[OVL_META_STATE].x2 && touch.py > myOverlay[OVL_META_STATE].y1 && touch.py < myOverlay[OVL_META_STATE].y2) 
+        {
+            ds_handle_meta(OVL_META_STATE);
         }
         // QUIT
         else if (touch.px > myOverlay[OVL_META_QUIT].x1  && touch.px < myOverlay[OVL_META_QUIT].x2 && touch.py > myOverlay[OVL_META_QUIT].y1 && touch.py < myOverlay[OVL_META_QUIT].y2) 
@@ -1630,7 +1648,7 @@ bool dsWaitOnQuit(void)
 struct options_t
 {
     const char  *label;
-    const char  *option[20];
+    const char  *option[22];
     UINT16 *option_val;
     UINT16 option_max;
 };
@@ -1638,14 +1656,14 @@ struct options_t
 const struct options_t Option_Table[] =
 {
     {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},                               &myConfig.overlay_selected, 11},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_A_map,        19},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_B_map,        19},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_X_map,        19},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_Y_map,        19},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_L_map,        19},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_R_map,        19},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_START_map,    19},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES"}, &myConfig.key_SELECT_map,   19},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_A_map,        21},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_B_map,        21},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_X_map,        21},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_Y_map,        21},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_L_map,        21},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_R_map,        21},
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_START_map,    21},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_SELECT_map,   21},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                                             &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                                                        &myConfig.dpad_config,      5},
     {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                                                &myConfig.frame_skip_opt,   3},

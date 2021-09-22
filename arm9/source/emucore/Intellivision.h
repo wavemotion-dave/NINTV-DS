@@ -14,6 +14,7 @@
 #include "CP1610.h"
 #include "AY38900.h"
 #include "AY38914.h"
+#include "../savestate.h"
 
 #define RAM8BIT_SIZE    0x00F0
 #define RAM16BIT_SIZE   0x0160
@@ -22,6 +23,8 @@ class Intellivision : public Emulator
 {
     public:
         Intellivision();
+        BOOL SaveState(struct _stateStruct *saveState);
+        BOOL LoadState(struct _stateStruct *saveState);
 
     private:
         //core processors

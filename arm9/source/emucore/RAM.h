@@ -5,6 +5,19 @@
 #include <string.h>
 #include "Memory.h"
 
+TYPEDEF_STRUCT_PACK( _RAMState
+{
+    INT8    enabled;
+    UINT8   bitWidth;
+    UINT16  size;
+    UINT16  location;
+    UINT16  readAddressMask;
+    UINT16  writeAddressMask;
+    UINT16  trimmer;
+    UINT16  image[0x400];
+} RAMState; )
+    
+    
 class RAM : public Memory
 {
     public:
@@ -23,6 +36,9 @@ class RAM : public Memory
         UINT16 getWriteAddress();
         UINT16 getWriteAddressMask();
         virtual void poke(UINT16 location, UINT16 value);
+
+        void getState(RAMState *state);
+        void setState(RAMState *state);
 
         //enabled attributes
         void SetEnabled(BOOL b);

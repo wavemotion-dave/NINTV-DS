@@ -31,7 +31,9 @@ class MemoryBus
         //inline UINT16 peek_pc(void) {return fast_memory[r[7]];}        
         inline UINT16 peek_pc(void) {return *((UINT16 *)0x06880000 + r[7]);}        
         
-        inline UINT16 peek_origPC(UINT16 location) 
+        void poke(UINT16 location, UINT16 value);
+
+        UINT16 peek_slow_and_safe(UINT16 location) 
         {
            if (readableMemorySpace[location])
            {
@@ -41,7 +43,15 @@ class MemoryBus
                   return 0xFFFF;
            } else return 0xFFFF;
         }
-        void poke(UINT16 location, UINT16 value);
+        
+        void poke_slow_and_safe(UINT16 location, UINT16 value) 
+        {
+           if (writeableMemorySpace[location])
+           {
+               if (writeableMemorySpace[location][0])
+                  writeableMemorySpace[location][0]->poke(location,value);
+           }           
+        }
 
         void addMemory(Memory* m);
         void removeMemory(Memory* m);

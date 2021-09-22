@@ -7,6 +7,14 @@
 #define BACKTAB_SIZE     0xF0
 #define BACKTAB_LOCATION 0x200
 
+TYPEDEF_STRUCT_PACK(_BackTabRAMState
+{
+    UINT16       image[BACKTAB_SIZE];
+    BOOL         dirtyBytes[BACKTAB_SIZE];
+    BOOL         dirtyRAM;
+    BOOL         colorAdvanceBitsDirty;
+} BackTabRAMState;)
+
 class BackTabRAM : public RAM
 {
     public:
@@ -21,6 +29,9 @@ class BackTabRAM : public RAM
         BOOL isDirty();
         BOOL isDirty(UINT16 location);
         void markClean();
+        
+        void getState(BackTabRAMState *state);
+        void setState(BackTabRAMState *state);
 
     private:
         UINT16       image[BACKTAB_SIZE];

@@ -212,3 +212,59 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
     //or 16 NTSC cycles
 	return totalTicks;
 }
+
+
+void AY38914::getState(AY38914State *state)
+{
+    memcpy(state->registers, registers.memory, 0x0E * sizeof(UINT16));
+    memcpy(&state->channel0, &channel0, sizeof(struct Channel_t));
+    memcpy(&state->channel1, &channel1, sizeof(struct Channel_t));
+    memcpy(&state->channel2, &channel2, sizeof(struct Channel_t));
+
+    state->clockDivisor              = clockDivisor;
+    state->cachedTotalOutput         = cachedTotalOutput;
+    state->envelopePeriod            = envelopePeriod;
+    state->envelopePeriodValue       = envelopePeriodValue;
+    state->envelopeCounter           = envelopeCounter;
+    state->envelopeVolume            = envelopeVolume;
+    state->noisePeriod               = noisePeriod;
+    state->noisePeriodValue          = noisePeriodValue;
+    state->noiseCounter              = noiseCounter;
+    state->random                    = my_random;
+    state->cachedTotalOutputIsDirty  = cachedTotalOutputIsDirty;
+    state->envelopeIdle              = envelopeIdle;
+    state->envelopeHold              = envelopeHold;
+    state->envelopeAltr              = envelopeAltr;
+    state->envelopeAtak              = envelopeAtak;
+    state->envelopeCont              = envelopeCont;
+    state->noiseIdle                 = noiseIdle;
+    state->noise                     = noise;
+}
+
+void AY38914::setState(AY38914State *state)
+{
+    memcpy(registers.memory, state->registers, 0x0E * sizeof(UINT16));
+    memcpy(&channel0, &state->channel0, sizeof(struct Channel_t));
+    memcpy(&channel1, &state->channel1, sizeof(struct Channel_t));
+    memcpy(&channel2, &state->channel2, sizeof(struct Channel_t));
+
+    clockDivisor = state->clockDivisor;
+    cachedTotalOutput = state->cachedTotalOutput;
+    envelopePeriod = state->envelopePeriod;
+    envelopePeriodValue = state->envelopePeriodValue;
+    envelopeCounter = state->envelopeCounter;
+    envelopeVolume = state->envelopeVolume;
+    noisePeriod = state->noisePeriod;
+    noisePeriodValue = state->noisePeriodValue;
+    noiseCounter = state->noiseCounter;
+    my_random = state->random;
+    cachedTotalOutputIsDirty = state->cachedTotalOutputIsDirty;
+    envelopeIdle = state->envelopeIdle;
+    envelopeHold = state->envelopeHold;
+    envelopeAltr = state->envelopeAltr;
+    envelopeAtak = state->envelopeAtak;
+    envelopeCont = state->envelopeCont;
+    noiseIdle = state->noiseIdle;
+    noise = state->noise;
+}
+

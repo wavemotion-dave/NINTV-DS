@@ -899,3 +899,58 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 
     return FALSE;
 }
+
+
+void AY38900::getState(AY38900State *state)
+{
+    extern UINT16 memory[0x40];
+	memcpy(state->registers, memory, 0x40*sizeof(UINT16));
+	this->backtab.getState(&state->backtab);
+
+	state->inVBlank = this->inVBlank;
+	state->mode = this->mode;
+	state->previousDisplayEnabled = this->previousDisplayEnabled;
+	state->displayEnabled = this->displayEnabled;
+	state->colorStackMode = this->colorStackMode;
+
+	state->borderColor = this->borderColor;
+	state->blockLeft = this->blockLeft;
+	state->blockTop = this->blockTop;
+	state->horizontalOffset = this->horizontalOffset;
+	state->verticalOffset = this->verticalOffset;
+
+	for (int i = 0; i < 8; i++) 
+    {
+		this->mobs[i].getState(&state->mobs[i]);
+	}
+}
+
+void AY38900::setState(AY38900State *state)
+{
+    extern UINT16 memory[0x40];
+	memcpy(memory, state->registers, 0x40*sizeof(UINT16));
+	this->backtab.setState(&state->backtab);
+
+	this->inVBlank = state->inVBlank;
+	this->mode = state->mode;
+	this->previousDisplayEnabled = state->previousDisplayEnabled;
+	this->displayEnabled = state->displayEnabled;
+	this->colorStackMode = state->colorStackMode;
+
+	this->borderColor = state->borderColor;
+	this->blockLeft = state->blockLeft;
+	this->blockTop = state->blockTop;
+	this->horizontalOffset = state->horizontalOffset;
+	this->verticalOffset = state->verticalOffset;
+
+	for (int i = 0; i < 8; i++) 
+    {
+		this->mobs[i].setState(&state->mobs[i]);
+	}
+    
+	this->colorModeChanged = TRUE;
+	this->bordersChanged = TRUE;
+	this->colorStackChanged = TRUE;
+	this->offsetsChanged = TRUE;
+	this->imageBufferChanged = TRUE;
+}
