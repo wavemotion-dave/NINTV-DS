@@ -139,7 +139,23 @@ BOOL state_restore(UINT8 slot)
 }
 
 
-#define SAVE_MENU_ITEMS 7
+void clear_save_file(void)
+{
+    if (currentRip != NULL)
+    {
+        strcpy(savefilename, currentRip->GetFileName());
+        savefilename[strlen(savefilename)-4] = 0;
+        strcat(savefilename, ".sav");
+        dsPrintValue(10,23,0, (char*)".SAV FILE ERASED");
+        remove(savefilename);
+        memset(&saveState, 0x00, sizeof(saveState));
+        WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(10,23,0, (char*)"                ");       
+    }
+}
+
+
+#define SAVE_MENU_ITEMS 8
 const char *savestate_menu[SAVE_MENU_ITEMS] = 
 {
     "SAVE TO SLOT 1",  
@@ -148,7 +164,8 @@ const char *savestate_menu[SAVE_MENU_ITEMS] =
     "RESTORE FROM SLOT 1",  
     "RESTORE FROM SLOT 2",  
     "RESTORE FROM SLOT 3",  
-    "EXIT - NO CHANGE",  
+    "ERASE SAVE FILE", 
+    "EXIT THIS MENU",  
 };
 
 void show_slot_info(UINT8 slot)
@@ -250,6 +267,10 @@ void savestate_entry(void)
                         if (state_restore(2)) bDone=1;
                         break;
                     case 6:
+                        clear_save_file();
+                        show_slot_info(255);
+                        break;
+                    case 7:
                         bDone=1;
                         break;
                 }
