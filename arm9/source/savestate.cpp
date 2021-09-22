@@ -10,7 +10,7 @@
 extern Emulator *currentEmu;
 extern Rip      *currentRip;
 
-#define CURRENT_SAVE_FILE_VER   0x0003
+#define CURRENT_SAVE_FILE_VER   0x0004
 
 struct 
 {
@@ -20,9 +20,8 @@ struct
     struct _stateStruct     slot[3];
 } saveState;
 
+char savefilename[128];
 
-extern UINT16 frames;
-extern UINT16 emu_frames;
 BOOL do_save(const CHAR* filename, UINT8 slot)
 {
     BOOL didSave = FALSE;
@@ -79,8 +78,6 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
 
 	return didLoadState;
 }
-
-char savefilename[128];
 
 void just_read_save_file(void)
 {

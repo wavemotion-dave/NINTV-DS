@@ -95,6 +95,8 @@ struct Overlay_t
 
 extern struct Overlay_t myOverlay[OVL_MAX];
 
+extern UINT16 frames;
+extern UINT16 emu_frames;
     
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
