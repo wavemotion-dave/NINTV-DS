@@ -29,7 +29,6 @@ struct _stateStruct
     RAMState            RAM16bitState;
     GRAMState           MyGRAMState; 
     IntellivoiceState   ivoiceState;
-    JLPState            jlpState;
     RAMState            ExtraCartRamState;
 };
 

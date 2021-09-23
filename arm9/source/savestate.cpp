@@ -20,6 +20,9 @@ struct
     struct _stateStruct     slot[3];
 } saveState;
 
+// Only for the games that require this... it's larger than all of the other saveState stuff above...
+JLPState jlpState[3];
+
 char savefilename[128];
 
 BOOL do_save(const CHAR* filename, UINT8 slot)
@@ -36,12 +39,14 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
     currentEmu->SaveState(&saveState.slot[slot]);
     saveState.slot[slot].frames = frames;
     saveState.slot[slot].emu_frames = emu_frames;
+    if (currentRip->JLP16Bit) currentRip->JLP16Bit->getState(&jlpState[slot]);
     
 	FILE* file = fopen(filename, "wb+");
 
 	if (file != NULL) 
     {
         fwrite(&saveState, 1, sizeof(saveState), file);
+        if (currentRip->JLP16Bit) fwrite(&jlpState, 1, sizeof(jlpState), file);
         didSave = TRUE;
         fclose(file);
 	} 
@@ -63,11 +68,14 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
         if ((size != sizeof(saveState)) || (saveState.saveFileVersion != CURRENT_SAVE_FILE_VER))
         {
             memset(&saveState, 0x00, sizeof(saveState));
+            memset(&jlpState, 0x00, sizeof(jlpState));
         }
         else
         {
+            if (currentRip->JLP16Bit) fread(&jlpState, 1, sizeof(jlpState), file);            
             // Ask the emulator to restore it's state...
             currentEmu->LoadState(&saveState.slot[slot]);
+            if (currentRip->JLP16Bit) currentRip->JLP16Bit->setState(&jlpState[slot]);
             frames = saveState.slot[slot].frames;
             emu_frames = saveState.slot[slot].emu_frames;
 
