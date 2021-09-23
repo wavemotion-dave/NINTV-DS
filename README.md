@@ -54,6 +54,7 @@ History :
 --------------------------------------------------------------------------------
 V1.6 : 23-Sep-2021 by wavemotion-dave
   * Save State support added.
+  * Fixed EVEN frameskip.
   
 V1.5 : 21-Sep-2021 by wavemotion-dave
   * Better .ROM support (CVDEMO will now play)
