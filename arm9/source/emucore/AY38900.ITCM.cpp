@@ -438,7 +438,7 @@ ITCM_CODE void AY38900::renderFrame()
     if (myConfig.frame_skip_opt)
     {
         extern UINT16 frames;
-        if (!(frames & (myConfig.frame_skip_opt==2 ? 0:1)))        // Skip ODD or EVEN Frames as configured
+        if (!((frames & 1)  == (myConfig.frame_skip_opt==1 ? 1:0)))        // Skip ODD or EVEN Frames as configured
         {
             renderBorders();
             copyBackgroundBufferToStagingArea();

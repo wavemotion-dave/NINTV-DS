@@ -114,10 +114,11 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     { 23,    82,    103,   123},    // META_SCORE
     { 23,    82,    161,   181},    // META_QUIT
     { 23,    82,    132,   152},    // META_STATE
+    {255,   255,    255,   255},    // META_RES2
+    {255,   255,    255,   255},    // META_RES3
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
-
 
 // ---------------------------------------------------------------------------
 // Write out the XEGS.DAT configuration file to capture the settings for
@@ -342,7 +343,7 @@ ITCM_CODE void VideoBusDS::render()
     // Any level of frame skip will skip the render()
     if (myConfig.frame_skip_opt)
     {
-        if (frames & (myConfig.frame_skip_opt==2 ? 0:1)) return;        // Skip ODD or EVEN Frames as configured
+        if ((frames & 1) == (myConfig.frame_skip_opt==1 ? 1:0)) return;        // Skip ODD or EVEN Frames as configured
     }
     UINT32 *ds_video=(UINT32*)0x06000000;
     UINT32 *source_video = (UINT32*)pixelBuffer;
@@ -572,7 +573,7 @@ void ds_handle_meta(int meta_key)
     }
 }
 
-void pollInputs(void)
+ITCM_CODE void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
     extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
@@ -866,7 +867,7 @@ void pollInputs(void)
 int target_frames[]         = {60,  66,   72,  78,  84,  90,  999};
 int target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
 
-void Run()
+ITCM_CODE void Run()
 {
     // Setup 1 second timer for things like FPS
     TIMER1_CR = 0;
@@ -923,8 +924,8 @@ void Run()
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            sprintf(tmp, "%4d %4d", debug1, debug2);
-            if (0==1) dsPrintValue(0,1,0,tmp);
+            //sprintf(tmp, "%4d %4d", debug1, debug2);
+            //if (0==1) dsPrintValue(0,1,0,tmp);
         }
     }
 }

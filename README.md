@@ -52,6 +52,9 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.6 : 23-Sep-2021 by wavemotion-dave
+  * Save State support added.
+  
 V1.5 : 21-Sep-2021 by wavemotion-dave
   * Better .ROM support (CVDEMO will now play)
   * More CP1610 optmization squeezing out a few more frames of performance.
