@@ -79,6 +79,10 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
             frames = saveState.slot[slot].frames;
             emu_frames = saveState.slot[slot].emu_frames;
 
+            if (myConfig.erase_saves)
+            {
+                remove(savefilename);
+            }
             didLoadState = TRUE;
         }
         fclose(file);

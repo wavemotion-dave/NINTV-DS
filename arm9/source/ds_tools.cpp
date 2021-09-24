@@ -76,7 +76,7 @@ void SetDefaultConfig(void)
     myConfig.target_fps         = 0;
     myConfig.brightness         = 0;
     myConfig.palette            = 0;
-    myConfig.spare4             = 0;
+    myConfig.erase_saves        = 0;
     myConfig.spare5             = 0;
     myConfig.spare6             = 1;
     myConfig.spare7             = 1;
@@ -1307,7 +1307,7 @@ ITCM_CODE void VsoundHandler(void)
 }
 
 
-UINT32 alternet_gamePalette[32] = 
+UINT32 muted_gamePalette[32] = 
 {
     0x000000,  0x0021AD,  0xE03904,  0xCECE94,
     0x1E4912,  0x01812E,  0xF7E64A,  0xFFFFFF,
@@ -1318,6 +1318,19 @@ UINT32 alternet_gamePalette[32] =
     0x1E4912,  0x01812E,  0xF7E64A,  0xFFFFFF,
     0xA5ADA5,  0x51B7E5,  0xEF9C00,  0x424A08,
     0xFF3173,  0x9A8AEF,  0x4AA552,  0x950457,
+};
+
+UINT32 bright_gamePalette[32] = 
+{
+    0x000000,    0x002DFF,    0xFF3D10,    0xC9CFAB,
+    0x386B3F,    0x00A756,    0xFAEA50,    0xFFFCFF,
+    0xBDACC8,    0x24B8FF,    0xFFB41F,    0x546E00,
+    0xFF4E57,    0xA496FF,    0x75CC80,    0xB51A58,
+
+    0x000000,    0x002DFF,    0xFF3D10,    0xC9CFAB,
+    0x386B3F,    0x00A756,    0xFAEA50,    0xFFFCFF,
+    0xBDACC8,    0x24B8FF,    0xFFB41F,    0x546E00,
+    0xFF4E57,    0xA496FF,    0x75CC80,    0xB51A58,
 };
 
 UINT32 pal_gamePalette[32] = 
@@ -1359,12 +1372,17 @@ void dsInitPalette(void)
 
         switch (myConfig.palette)
         {
-            case 1: // ALTERNATE
-                r = (unsigned char) ((alternet_gamePalette[i%32] & 0x00ff0000) >> 19);
-                g = (unsigned char) ((alternet_gamePalette[i%32] & 0x0000ff00) >> 11);
-                b = (unsigned char) ((alternet_gamePalette[i%32] & 0x000000ff) >> 3);
+            case 1: // MUTED
+                r = (unsigned char) ((muted_gamePalette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((muted_gamePalette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((muted_gamePalette[i%32] & 0x000000ff) >> 3);
                 break;
-            case 2: // PAL
+            case 2: // BRIGHT
+                r = (unsigned char) ((bright_gamePalette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((bright_gamePalette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((bright_gamePalette[i%32] & 0x000000ff) >> 3);
+                break;
+            case 3: // PAL
                 r = (unsigned char) ((pal_gamePalette[i%32] & 0x00ff0000) >> 19);
                 g = (unsigned char) ((pal_gamePalette[i%32] & 0x0000ff00) >> 11);
                 b = (unsigned char) ((pal_gamePalette[i%32] & 0x000000ff) >> 3);
@@ -1816,23 +1834,33 @@ struct options_t
 
 const struct options_t Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},                               &myConfig.overlay_selected, 11},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_A_map,        22},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_B_map,        22},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_X_map,        22},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_Y_map,        22},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_L_map,        22},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_R_map,        22},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_START_map,    22},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_SELECT_map,   22},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                                             &myConfig.controller_type,  4},
-    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                                                        &myConfig.dpad_config,      5},
-    {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                                                &myConfig.frame_skip_opt,   3},
-    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                                                      &myConfig.sound_clock_div,  4},
-    {"FPS",         {"OFF", "ON"},                                                                                                                                                                   &myConfig.show_fps,         2},
-    {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                                             &myConfig.target_fps,       7},
-    {"PALETTE",     {"ORIGINAL", "ALTERNATE", "PAL"},                                                                                                                                                &myConfig.palette,      3},
-    {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                                               &myConfig.brightness,      4},
+    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},  &myConfig.overlay_selected, 11},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_A_map,        22},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_B_map,        22},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_X_map,        22},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT",  
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_Y_map,        22},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_L_map,        22},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_R_map,        22},
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_START_map,    22},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_SELECT_map,   22},
+    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
+    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
+    {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                   &myConfig.frame_skip_opt,   3},
+    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                         &myConfig.sound_clock_div,  4},
+    {"FPS",         {"OFF", "ON"},                                                                                                                                      &myConfig.show_fps,         2},
+    {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                &myConfig.target_fps,       7},
+    {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL"},                                                                                                             &myConfig.palette,          4},
+    {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myConfig.brightness,       4},
+    {"SAVE STATE",  {"KEEP ON LOAD", "ERASE ON LOAD"},                                                                                                                  &myConfig.erase_saves,      2},
+    
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 

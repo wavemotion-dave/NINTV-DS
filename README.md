@@ -52,6 +52,13 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.7 : 24-Sep-2021 by wavemotion-dave
+  * New Palette options.
+  * New Brightness options.
+  * New Save State options.
+  * New MENU button for custom overlays (and START defaults to MENU now)
+  * Other cleanup as time permitted.
+
 V1.6 : 23-Sep-2021 by wavemotion-dave
   * Save State support added.
   * Fixed EVEN frameskip.

@@ -40,7 +40,7 @@ struct Config_t
     UINT16 target_fps;
     UINT16 brightness;
     UINT16 palette;
-    UINT16 spare4;
+    UINT16 erase_saves;
     UINT16 spare5;
     UINT16 spare6;
     UINT16 spare7;
