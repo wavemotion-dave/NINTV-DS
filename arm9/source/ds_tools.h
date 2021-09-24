@@ -38,8 +38,8 @@ struct Config_t
     UINT16 show_fps;
     UINT16 dpad_config;
     UINT16 target_fps;
-    UINT16 spare2;
-    UINT16 spare3;
+    UINT16 brightness;
+    UINT16 palette;
     UINT16 spare4;
     UINT16 spare5;
     UINT16 spare6;
@@ -88,8 +88,8 @@ struct Overlay_t
 #define OVL_META_SCORES 18
 #define OVL_META_QUIT   19
 #define OVL_META_STATE  20
+#define OVL_META_MENU   21
 
-#define OVL_META_RES2   21
 #define OVL_META_RES3   22
 #define OVL_MAX         23
 

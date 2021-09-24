@@ -74,8 +74,8 @@ void SetDefaultConfig(void)
     myConfig.show_fps           = 0;
     myConfig.dpad_config        = 0;
     myConfig.target_fps         = 0;
-    myConfig.spare2             = 0;
-    myConfig.spare3             = 0;
+    myConfig.brightness         = 0;
+    myConfig.palette            = 0;
     myConfig.spare4             = 0;
     myConfig.spare5             = 0;
     myConfig.spare6             = 1;
@@ -114,11 +114,13 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     { 23,    82,    103,   123},    // META_SCORE
     { 23,    82,    161,   181},    // META_QUIT
     { 23,    82,    132,   152},    // META_STATE
-    {255,   255,    255,   255},    // META_RES2
+    {255,   255,    255,   255},    // META_MENU
     {255,   255,    255,   255},    // META_RES3
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
+
+void dsInitPalette(void);
 
 // ---------------------------------------------------------------------------
 // Write out the XEGS.DAT configuration file to capture the settings for
@@ -495,9 +497,103 @@ BOOL InitializeEmulator(void)
     return TRUE;
 }
 
+
+#define MAIN_MENU_ITEMS 7
+const char *main_menu[MAIN_MENU_ITEMS] = 
+{
+    "RESET EMULATOR",  
+    "LOAD NEW GAME",  
+    "GAME CONFIG",  
+    "GAME SCORES",  
+    "SAVE/RESTORE STATE",  
+    "QUIT EMULATOR",  
+    "EXIT THIS MENU",  
+};
+
+
+int menu_entry(void)
+{
+    UINT8 current_entry = 0;
+    extern int bg0, bg0b, bg1b;
+    char bDone = 0;
+
+    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
+    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    swiWaitForVBlank();
+    dsPrintValue(8,3,0, (char*)"MAIN MENU");
+    dsPrintValue(4,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");
+
+    for (int i=0; i<MAIN_MENU_ITEMS; i++)
+    {
+           dsPrintValue(8,5+i, (i==0 ? 1:0), (char*)main_menu[i]);
+    }
+    
+    int last_keys_pressed = -1;
+    while (!bDone)
+    {
+        int keys_pressed = keysCurrent();
+        
+        if (keys_pressed != last_keys_pressed)
+        {
+            last_keys_pressed = keys_pressed;
+            if (keys_pressed & KEY_DOWN)
+            {
+                dsPrintValue(8,5+current_entry, 0, (char*)main_menu[current_entry]);
+                if (current_entry < (MAIN_MENU_ITEMS-1)) current_entry++; else current_entry=0;
+                dsPrintValue(8,5+current_entry, 1, (char*)main_menu[current_entry]);
+            }
+            if (keys_pressed & KEY_UP)
+            {
+                dsPrintValue(8,5+current_entry, 0, (char*)main_menu[current_entry]);
+                if (current_entry > 0) current_entry--; else current_entry=(MAIN_MENU_ITEMS-1);
+                dsPrintValue(8,5+current_entry, 1, (char*)main_menu[current_entry]);
+            }
+            if (keys_pressed & KEY_A)
+            {
+                switch (current_entry)
+                {
+                    case 0:
+                        return OVL_META_RESET;
+                        break;
+                    case 1:
+                        return OVL_META_LOAD;
+                        break;
+                    case 2:
+                        return OVL_META_CONFIG;
+                        break;
+                    case 3:
+                        return OVL_META_SCORES;
+                        break;
+                    case 4:
+                        return OVL_META_STATE;
+                        break;
+                    case 5:
+                        return OVL_META_QUIT;
+                        break;
+                    case 6:
+                        bDone=1;
+                        break;
+                }
+            }
+            
+            if (keys_pressed & KEY_B)
+            {
+                bDone=1;
+            }
+            swiWaitForVBlank();
+        }
+    }    
+    return OVL_MAX;
+}
+
 char newFile[256];
 void ds_handle_meta(int meta_key)
 {
+    if (meta_key == OVL_MAX) return;
+    
     // -------------------------------------------------------------------
     // On the way in, make sure no keys are pressed before continuing...
     // -------------------------------------------------------------------
@@ -538,6 +634,7 @@ void ds_handle_meta(int meta_key)
             dsChooseOptions();
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
             reset_emu_frames();
+            dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             touchPosition touch;
             touchRead(&touch);
@@ -565,6 +662,17 @@ void ds_handle_meta(int meta_key)
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
             break;
 
+        case OVL_META_MENU:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                ds_handle_meta(menu_entry());
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            break;
+            
         case OVL_META_QUIT:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitOnQuit()){ runState = Quit; }
@@ -859,6 +967,11 @@ ITCM_CODE void pollInputs(void)
         else if (touch.px > myOverlay[OVL_META_QUIT].x1  && touch.px < myOverlay[OVL_META_QUIT].x2 && touch.py > myOverlay[OVL_META_QUIT].y1 && touch.py < myOverlay[OVL_META_QUIT].y2) 
         {
             ds_handle_meta(OVL_META_QUIT);
+        }
+        // MENU
+        else if (touch.px > myOverlay[OVL_META_MENU].x1  && touch.px < myOverlay[OVL_META_MENU].x2 && touch.py > myOverlay[OVL_META_MENU].y1 && touch.py < myOverlay[OVL_META_MENU].y2) 
+        {
+            ds_handle_meta(OVL_META_MENU);
         }
     }
     
@@ -1194,47 +1307,79 @@ ITCM_CODE void VsoundHandler(void)
 }
 
 
-UINT32 orig_gamePalette[32] = 
+UINT32 jzint_gamePalette[32] = 
 {
-    0x000000, 0x002DFF, 0xFF3D10, 0xC9CFAB,
-    0x386B3F, 0x00A756, 0xFAEA50, 0xFFFCFF,
-    0xBDACC8, 0x24B8FF, 0xFFB41F, 0x546E00,
-    0xFF4E57, 0xA496FF, 0x75CC80, 0xB51A58,
+    0x000000,  0x1438F7,  0xE35B0E,  0xCBF168,
+    0x009428,  0x07C200,  0xFFFF01,  0xFFFFFF,
+    0xC8C8C8,  0x23CEC3,  0xFD9918,  0x3A8A00,
+    0xF0463C,  0xD383FF,  0x48F601,  0xB81178,
     
-    0x000000, 0x002DFF, 0xFF3D10, 0xC9CFAB,
-    0x386B3F, 0x00A756, 0xFAEA50, 0xFFFCFF,
-    0xBDACC8, 0x24B8FF, 0xFFB41F, 0x546E00,
-    0xFF4E57, 0xA496FF, 0x75CC80, 0xB51A58,
+    0x000000,  0x1438F7,  0xE35B0E,  0xCBF168,
+    0x009428,  0x07C200,  0xFFFF01,  0xFFFFFF,
+    0xC8C8C8,  0x23CEC3,  0xFD9918,  0x3A8A00,
+    0xF0463C,  0xD383FF,  0x48F601,  0xB81178,
 };
 
-UINT32 gamePalette[32] = 
+UINT32 pal_gamePalette[32] = 
+{
+    0x000000,  0x0075FF,  0xFF4C39,  0xD1B951,
+    0x09B900,  0x30DF10,  0xFFE501,  0xFFFFFF,
+    0x8C8C8C,  0x28E5C0,  0xFFA02E,  0x646700,
+    0xFF29FF,  0x8C8FFF,  0x7CED00,  0xC42BFC,
+    
+    0x000000,  0x0075FF,  0xFF4C39,  0xD1B951,
+    0x09B900,  0x30DF10,  0xFFE501,  0xFFFFFF,
+    0x8C8C8C,  0x28E5C0,  0xFFA02E,  0x646700,
+    0xFF29FF,  0x8C8FFF,  0x7CED00,  0xC42BFC,
+};
+
+
+UINT32 default_Palette[32] = 
 {
     // Optmized
-    0x000000, 0x002DFF, 0xFF3D10, 0xC8D271,
-    0x386B3F, 0x00A756, 0xFAEA50, 0xFFFFFF,
-    0x9B9DA1, 0x24B8FF, 0xFFB41F, 0x3D5A02,
-    0xFF4E57, 0xA496FF, 0x75CC80, 0xB51A58,
-    
-    0x000000, 0x002DFF, 0xFF3D10, 0xC8D271,
-    0x386B3F, 0x00A756, 0xFAEA50, 0xFFFFFF,
-    0x9B9DA1, 0x24B8FF, 0xFFB41F, 0x3D5A02,
-    0xFF4E57, 0xA496FF, 0x75CC80, 0xB51A58,
+    0x000000,  0x002DFF,  0xFF3D10,  0xC8D271,
+    0x386B3F,  0x00A756,  0xFAEA50,  0xFFFFFF,
+    0x9B9DA1,  0x24B8FF,  0xFFB41F,  0x3D5A02,
+    0xFF4E57,  0xA496FF,  0x75CC80,  0xB51A58,
+     
+    0x000000,  0x002DFF,  0xFF3D10,  0xC8D271,
+    0x386B3F,  0x00A756,  0xFAEA50,  0xFFFFFF,
+    0x9B9DA1,  0x24B8FF,  0xFFB41F,  0x3D5A02,
+    0xFF4E57,  0xA496FF,  0x75CC80,  0xB51A58,
 };
 
 
+const INT8 brightness[] = {0, -3, -6, -9};
 void dsInitPalette(void) 
 {
-    // Init DS Specific palette
+    // Init DS Specific palette for the Intellivision (16 colors...)
     for(int i = 0; i < 256; i++)   
     {
         unsigned char r, g, b;
 
-        r = (unsigned char) ((gamePalette[i%32] & 0x00ff0000) >> 19);
-        g = (unsigned char) ((gamePalette[i%32] & 0x0000ff00) >> 11);
-        b = (unsigned char) ((gamePalette[i%32] & 0x000000ff) >> 3);
+        switch (myConfig.palette)
+        {
+            case 1: // JZINT
+                r = (unsigned char) ((jzint_gamePalette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((jzint_gamePalette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((jzint_gamePalette[i%32] & 0x000000ff) >> 3);
+                break;
+            case 2: // PAL
+                r = (unsigned char) ((pal_gamePalette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((pal_gamePalette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((pal_gamePalette[i%32] & 0x000000ff) >> 3);
+                break;
+            default:
+                r = (unsigned char) ((default_Palette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((default_Palette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((default_Palette[i%32] & 0x000000ff) >> 3);
+                break;
+        }
 
         BG_PALETTE[i]=RGB15(r,g,b);
     }
+    
+    setBrightness(2, brightness[myConfig.brightness]);      // Subscreen Brightness
 }
 
 void dsInitScreenMain(void)
@@ -1664,7 +1809,7 @@ bool dsWaitOnQuit(void)
 struct options_t
 {
     const char  *label;
-    const char  *option[22];
+    const char  *option[23];
     UINT16 *option_val;
     UINT16 option_max;
 };
@@ -1672,20 +1817,22 @@ struct options_t
 const struct options_t Option_Table[] =
 {
     {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},                               &myConfig.overlay_selected, 11},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_A_map,        21},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_B_map,        21},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_X_map,        21},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_Y_map,        21},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_L_map,        21},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_R_map,        21},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_START_map,    21},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE"}, &myConfig.key_SELECT_map,   21},
+    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_A_map,        22},
+    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_B_map,        22},
+    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_X_map,        22},
+    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_Y_map,        22},
+    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_L_map,        22},
+    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_R_map,        22},
+    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_START_map,    22},
+    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"}, &myConfig.key_SELECT_map,   22},
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                                             &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                                                        &myConfig.dpad_config,      5},
     {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                                                &myConfig.frame_skip_opt,   3},
     {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                                                      &myConfig.sound_clock_div,  4},
     {"FPS",         {"OFF", "ON"},                                                                                                                                                                   &myConfig.show_fps,         2},
     {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                                             &myConfig.target_fps,       7},
+    {"PALETTE",     {"ORIGINAL", "JZINT", "PAL"},                                                                                                                                                     &myConfig.palette,      3},
+    {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                                               &myConfig.brightness,      4},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
 
@@ -1727,7 +1874,7 @@ void dsChooseOptions(void)
     while (true)
     {
         sprintf(strBuf, " %-11s : %-13s ", Option_Table[idx].label, Option_Table[idx].option[*(Option_Table[idx].option_val)]);
-        dsPrintValue(1,5+idx, (idx==0 ? 1:0), strBuf);
+        dsPrintValue(1,3+idx, (idx==0 ? 1:0), strBuf);
         idx++;
         if (Option_Table[idx].label == NULL) break;
     }
@@ -1743,25 +1890,25 @@ void dsChooseOptions(void)
             if (keysCurrent() & KEY_UP) // Previous option
             {
                 sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,5+optionHighlighted,0, strBuf);
+                dsPrintValue(1,3+optionHighlighted,0, strBuf);
                 if (optionHighlighted > 0) optionHighlighted--; else optionHighlighted=(idx-1);
                 sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,5+optionHighlighted,1, strBuf);
+                dsPrintValue(1,3+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_DOWN) // Next option
             {
                 sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,5+optionHighlighted,0, strBuf);
+                dsPrintValue(1,3+optionHighlighted,0, strBuf);
                 if (optionHighlighted < (idx-1)) optionHighlighted++;  else optionHighlighted=0;
                 sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,5+optionHighlighted,1, strBuf);
+                dsPrintValue(1,3+optionHighlighted,1, strBuf);
             }
 
             if (keysCurrent() & KEY_RIGHT)  // Toggle option clockwise
             {
                 *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) + 1) % Option_Table[optionHighlighted].option_max;
                 sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,5+optionHighlighted,1, strBuf);
+                dsPrintValue(1,3+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_LEFT)  // Toggle option counterclockwise
             {
@@ -1770,7 +1917,7 @@ void dsChooseOptions(void)
                 else
                     *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) - 1) % Option_Table[optionHighlighted].option_max;
                 sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,5+optionHighlighted,1, strBuf);
+                dsPrintValue(1,3+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_START)  // Save Options
             {
