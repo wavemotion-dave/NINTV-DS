@@ -1307,17 +1307,17 @@ ITCM_CODE void VsoundHandler(void)
 }
 
 
-UINT32 jzint_gamePalette[32] = 
+UINT32 alternet_gamePalette[32] = 
 {
-    0x000000,  0x1438F7,  0xE35B0E,  0xCBF168,
-    0x009428,  0x07C200,  0xFFFF01,  0xFFFFFF,
-    0xC8C8C8,  0x23CEC3,  0xFD9918,  0x3A8A00,
-    0xF0463C,  0xD383FF,  0x48F601,  0xB81178,
+    0x000000,  0x0021AD,  0xE03904,  0xCECE94,
+    0x1E4912,  0x01812E,  0xF7E64A,  0xFFFFFF,
+    0xA5ADA5,  0x51B7E5,  0xEF9C00,  0x424A08,
+    0xFF3173,  0x9A8AEF,  0x4AA552,  0x950457,
     
-    0x000000,  0x1438F7,  0xE35B0E,  0xCBF168,
-    0x009428,  0x07C200,  0xFFFF01,  0xFFFFFF,
-    0xC8C8C8,  0x23CEC3,  0xFD9918,  0x3A8A00,
-    0xF0463C,  0xD383FF,  0x48F601,  0xB81178,
+    0x000000,  0x0021AD,  0xE03904,  0xCECE94,
+    0x1E4912,  0x01812E,  0xF7E64A,  0xFFFFFF,
+    0xA5ADA5,  0x51B7E5,  0xEF9C00,  0x424A08,
+    0xFF3173,  0x9A8AEF,  0x4AA552,  0x950457,
 };
 
 UINT32 pal_gamePalette[32] = 
@@ -1359,10 +1359,10 @@ void dsInitPalette(void)
 
         switch (myConfig.palette)
         {
-            case 1: // JZINT
-                r = (unsigned char) ((jzint_gamePalette[i%32] & 0x00ff0000) >> 19);
-                g = (unsigned char) ((jzint_gamePalette[i%32] & 0x0000ff00) >> 11);
-                b = (unsigned char) ((jzint_gamePalette[i%32] & 0x000000ff) >> 3);
+            case 1: // ALTERNATE
+                r = (unsigned char) ((alternet_gamePalette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((alternet_gamePalette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((alternet_gamePalette[i%32] & 0x000000ff) >> 3);
                 break;
             case 2: // PAL
                 r = (unsigned char) ((pal_gamePalette[i%32] & 0x00ff0000) >> 19);
@@ -1831,7 +1831,7 @@ const struct options_t Option_Table[] =
     {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                                                      &myConfig.sound_clock_div,  4},
     {"FPS",         {"OFF", "ON"},                                                                                                                                                                   &myConfig.show_fps,         2},
     {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                                             &myConfig.target_fps,       7},
-    {"PALETTE",     {"ORIGINAL", "JZINT", "PAL"},                                                                                                                                                     &myConfig.palette,      3},
+    {"PALETTE",     {"ORIGINAL", "ALTERNATE", "PAL"},                                                                                                                                                &myConfig.palette,      3},
     {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                                               &myConfig.brightness,      4},
     {NULL,          {"",            ""},                                NULL,                   2},
 };
