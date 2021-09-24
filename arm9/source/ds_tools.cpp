@@ -67,8 +67,8 @@ void SetDefaultConfig(void)
     myConfig.key_Y_map          = 14;
     myConfig.key_L_map          = 0;
     myConfig.key_R_map          = 1;
-    myConfig.key_START_map      = 2;
-    myConfig.key_SELECT_map     = 3;
+    myConfig.key_START_map      = 21;
+    myConfig.key_SELECT_map     = 17;
     myConfig.controller_type    = 0;
     myConfig.sound_clock_div    = 1;
     myConfig.show_fps           = 0;
