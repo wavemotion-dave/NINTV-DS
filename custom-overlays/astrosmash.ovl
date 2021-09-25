@@ -1,32 +1,31 @@
     // -----------------------------------------------------------------
     // Astrosmash Sample Overlay for Nintellivision
     // -----------------------------------------------------------------
-    .ovl   7,   86,    5,   40,   //KEY_1  -  AUTO SHOT
-    .ovl  90,  168,    5,   40,   //KEY_2  -  SINGLE SHOT
-    .ovl 175,  254,    5,   40,   //KEY_3  -  HYPER SPACE
-    
-    .ovl 255,  255,  255,  255,   //KEY_4       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_5       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_6       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_7       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_8       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_9       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_CLEAR   - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_0       - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_ENTER   - UNUSED for Touch Area
-    
-    .ovl 255,  255,  255,  255,   //KEY_FIRE    - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_L_ACT   - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //KEY_R_ACT   - UNUSED for Touch Area
-    
-    .ovl 255,  255,  255,  255,   //META_RESET  - UNUSED for Touch Area
-    .ovl   0,   56,  160,  185,   //META_LOAD   - Bottom Left Corner
-    .ovl 193,  254,  160,  185,   //META_CONFIG - Bottom Right Corner
-    .ovl 255,  255,  255,  255,   //META_SCORES - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //META_QUIT   - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //META_STATE  - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //META_RES2   - UNUSED for Touch Area
-    .ovl 255,  255,  255,  255,   //META_RES3   - UNUSED for Touch Area
+    .ovl   7,   86,    5,   40,   //KEY_1         - AUTO SHOT   (upper left area)
+    .ovl  90,  168,    5,   40,   //KEY_2         - SINGLE SHOT (upper middle area)
+    .ovl 175,  254,    5,   40,   //KEY_3         - HYPER SPACE (upper right area)
+    .ovl 255,  255,  255,  255,   //KEY_4         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_5         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_6         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_7         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_8         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_9         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_CLEAR     - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_0         - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_ENTER     - UNUSED for Astrosmash
+      
+    .ovl 255,  255,  255,  255,   //KEY_FIRE      - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_L_ACT     - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //KEY_R_ACT     - UNUSED for Astrosmash
+      
+    .ovl 255,  255,  255,  255,   //META_RESET    - UNUSED for Astrosmash
+    .ovl   0,   56,  160,  185,   //META_LOAD     - Bottom Left Corner
+    .ovl 193,  254,  160,  185,   //META_CONFIG   - Bottom Right Corner
+    .ovl 255,  255,  255,  255,   //META_SCORES   - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //META_QUIT     - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //META_STATE    - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //META_MENU     - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //META_RESERVED - UNUSED for Astrosmash
 
 	.tile 0x0041C010,0xF000003C,0xF001F001,0xAA095001,0x01F0FEAA,0x01F001F0,0x01F001F0,0x01E001F0
 	.tile 0x13F0C720,0x20AA01F0,0x00271020,0xFF070005,0x04700520,0x28402DF0,0x01F001F0,0x1AF03F90

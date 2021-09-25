@@ -1,6 +1,28 @@
 #include <stdio.h>
 #include "MemoryBus.h"
 
+// ----------------------------------------------------------------------------------------------
+// We use this class and single object to fill all unused memory locations in the memory map. 
+// Returns 0xFFFF on all access as a real intellivision would with unused memory regions.
+// ----------------------------------------------------------------------------------------------
+class UnusedMemory : public Memory
+{
+public:
+    UnusedMemory() {};
+    virtual ~UnusedMemory() {}
+	virtual void reset() {}
+    UINT8  getByteWidth() {return 2;}
+    UINT16 getReadSize() {return 2;}
+    UINT16 getReadAddress() {return 0;}
+    UINT16 getReadAddressMask() {return 0xFFFF;}
+    inline virtual UINT16 peek(UINT16 location) {return 0xFFFF;}
+    UINT16 getWriteSize() {return 2;}
+    UINT16 getWriteAddress() {return 0;}
+    UINT16 getWriteAddressMask() {return 0xFFFF;}
+    virtual void poke(UINT16 location, UINT16 value) {}
+} MyUnusedMemory;
+
+
 MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
@@ -13,7 +35,7 @@ MemoryBus::MemoryBus()
         writeableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
         for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
         {
-            writeableMemorySpace[i][j] = NULL;
+            writeableMemorySpace[i][j] = &MyUnusedMemory;
         }
     }
     readableMemoryCounts = new UINT8[65536];
@@ -24,7 +46,7 @@ MemoryBus::MemoryBus()
         readableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
         for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
         {
-            readableMemorySpace[i][j] = NULL;
+            readableMemorySpace[i][j] = &MyUnusedMemory;
         }        
     }
     mappedMemoryCount = 0;
@@ -160,7 +182,7 @@ void MemoryBus::removeMemory(Memory* m)
                         for (INT32 l = n; l < (memCount-1); l++) {
                             readableMemorySpace[k][l] = readableMemorySpace[k][l+1];
                         }
-                        readableMemorySpace[k][memCount-1] = NULL;
+                        readableMemorySpace[k][memCount-1] = &MyUnusedMemory;
                         readableMemoryCounts[k]--;
                         break;
                     }
@@ -195,7 +217,7 @@ void MemoryBus::removeMemory(Memory* m)
                             writeableMemorySpace[k][l] = 
                                 writeableMemorySpace[k][l+1];
                         }
-                        writeableMemorySpace[k][memCount-1] = NULL;
+                        writeableMemorySpace[k][memCount-1] = &MyUnusedMemory;
                         writeableMemoryCounts[k]--;
                         break;
                     }
@@ -225,11 +247,11 @@ UINT16 MemoryBus::peek(UINT16 location)
 {
     UINT8 numMemories = readableMemoryCounts[location];
     
-    if (numMemories == 1) return readableMemorySpace[location][0]->peek(location);
-    
     UINT16 value = 0xFFFF;
     for (UINT16 i = 0; i < numMemories; i++)
+    {
         value &= readableMemorySpace[location][i]->peek(location);
+    }
     return value;
 }
 
@@ -238,6 +260,8 @@ void MemoryBus::poke(UINT16 location, UINT16 value)
     UINT8 numMemories = writeableMemoryCounts[location];
 
     for (UINT16 i = 0; i < numMemories; i++)
+    {
         writeableMemorySpace[location][i]->poke(location, value);
+    }
 }
 

@@ -1037,8 +1037,8 @@ ITCM_CODE void Run()
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            //sprintf(tmp, "%4d %4d", debug1, debug2);
-            //if (0==1) dsPrintValue(0,1,0,tmp);
+            sprintf(tmp, "%4d %4d", debug1, debug2);
+            if (0==1) dsPrintValue(0,1,0,tmp);
         }
     }
 }
