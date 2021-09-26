@@ -52,6 +52,11 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.8 : 26-Sep-2021 by wavemotion-dave
+  * Reworked configuration options - new game specific and global options available. 
+    Unfortunatley your old config will be wiped out in favor of the new format. Sorry!
+  * Improved sound quality for the DSi.
+
 V1.7 : 24-Sep-2021 by wavemotion-dave
   * New Palette options.
   * New Brightness options.

@@ -1167,7 +1167,7 @@ void dsInstallSoundEmuFIFO(void)
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, VsoundHandler);
     
-    if (myConfig.sound_clock_div != 3)
+    if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
         irqEnable(IRQ_TIMER2);
     else
         irqDisable(IRQ_TIMER2);

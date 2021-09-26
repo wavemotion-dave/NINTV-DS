@@ -109,7 +109,7 @@ INT32 AudioMixer::getClockSpeed()
 
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
-    if (myConfig.sound_clock_div == 6) return minimum;
+    if (myConfig.sound_clock_div == SOUND_DIV_DISABLE) return minimum;
     
     extern int sp_idle;
     UINT8 apc = (sp_idle ? 1:audioProducerCount);

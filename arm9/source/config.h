@@ -7,9 +7,11 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x0003
+#define CONFIG_VER  0x0004
 
 #define MAX_CONFIGS 300
+
+#define SOUND_DIV_DISABLE  4
 
 struct Config_t 
 {
@@ -50,20 +52,24 @@ struct GlobalConfig_t
     char   grom_bios_filename[256];     // Not used yet... maybe for the future
     char   ecs_bios_filename[256];      // Not used yet... maybe for the future
     char   ivoice_bios_filename[256];   // Not used yet... maybe for the future
+    UINT32 favorites[10];               // Not used yet... maybe for the future
     UINT8  bios_dir;
     UINT8  save_dir;
     UINT8  ovl_dir;
+    UINT8  rom_dir;
     UINT8  show_fps;
     UINT8  erase_saves;
+    UINT8  def_sound_quality;
     UINT8  key_START_map_default;
     UINT8  key_SELECT_map_default;
-    UINT8  rom_dir;
+    UINT8  spare0;
     UINT8  spare1;
     UINT8  spare2;
     UINT8  spare3;
     UINT8  spare4;
     UINT8  spare5;
-    UINT8  reserved[256];               // Not used yet... future use...
+    UINT8  spare6;
+    UINT8  reserved[512];               // Not used yet... future use...
 };
 
 struct AllConfig_t
