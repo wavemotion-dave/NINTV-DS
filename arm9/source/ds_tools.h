@@ -16,45 +16,6 @@ typedef struct FICtoLoad {
 } FICA_INTV;
 
 // ---------------------------
-// Config handling...
-// ---------------------------
-#define CONFIG_VER  0x0001
-
-struct Config_t 
-{
-    UINT32 crc;
-    UINT16 frame_skip_opt;
-    UINT16 overlay_selected;
-    UINT16 key_A_map;
-    UINT16 key_B_map;
-    UINT16 key_X_map;
-    UINT16 key_Y_map;
-    UINT16 key_L_map;
-    UINT16 key_R_map;
-    UINT16 key_START_map;
-    UINT16 key_SELECT_map;
-    UINT16 controller_type;
-    UINT16 sound_clock_div;
-    UINT16 show_fps;
-    UINT16 dpad_config;
-    UINT16 target_fps;
-    UINT16 brightness;
-    UINT16 palette;
-    UINT16 erase_saves;
-    UINT16 spare5;
-    UINT16 spare6;
-    UINT16 spare7;
-    UINT16 spare8;
-    UINT16 spare9;
-    UINT16 config_ver;
-};
-
-extern struct Config_t  myConfig;
-
-#define MAX_CONFIGS 300
-
-
-// ---------------------------
 // Overlay handling...
 // ---------------------------
 struct Overlay_t
@@ -113,5 +74,6 @@ extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
 extern unsigned int dsWaitForRom(char *chosen_filename);
 extern void VsoundHandler(void);
+extern void dsInitPalette(void);
 
 #endif

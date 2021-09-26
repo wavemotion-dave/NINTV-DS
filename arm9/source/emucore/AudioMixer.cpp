@@ -5,6 +5,7 @@
 #include "AudioOutputLine.h"
 #include "Emulator.h"
 #include "../ds_tools.h"
+#include "../config.h"
 
 UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
 UINT8 currentSampleIdx __attribute__((section(".dtcm"))) = 0;

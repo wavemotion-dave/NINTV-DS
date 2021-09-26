@@ -2,6 +2,7 @@
 #include "AY38900.h"
 #include "ProcessorBus.h"
 #include "../ds_tools.h"
+#include "../config.h"
 
 #define MIN(v1, v2) (v1 < v2 ? v1 : v2)
 #define MAX(v1, v2) (v1 > v2 ? v1 : v2)

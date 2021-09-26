@@ -6,6 +6,7 @@
 #include "ds_tools.h"
 #include "savestate.h"
 #include "bgHighScore.h"
+#include "config.h"
 
 extern Emulator *currentEmu;
 extern Rip      *currentRip;
@@ -79,7 +80,7 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
             frames = saveState.slot[slot].frames;
             emu_frames = saveState.slot[slot].emu_frames;
 
-            if (myConfig.erase_saves)
+            if (myGlobalConfig.erase_saves)
             {
                 remove(savefilename);
             }
@@ -91,13 +92,41 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
 	return didLoadState;
 }
 
+void get_save_filename(void)
+{
+    if (myGlobalConfig.save_dir == 1) 
+    {
+        DIR* dir = opendir("/roms/sav");    // See if directory exists
+        if (dir) closedir(dir);             // Directory exists. All good.
+        else mkdir("/roms/sav", 0777);      // Doesn't exist - make it...
+        strcpy(savefilename, "/roms/sav/");
+    }
+    else if (myGlobalConfig.save_dir == 2)
+    {
+        DIR* dir = opendir("/roms/intv/sav");   // See if directory exists
+        if (dir) closedir(dir);                 // Directory exists. All good.
+        else mkdir("/roms/intv/sav", 0777);     // Doesn't exist - make it...
+        strcpy(savefilename, "/roms/intv/sav/");
+    }
+    else if (myGlobalConfig.save_dir == 3)
+    {
+        DIR* dir = opendir("/data/sav");    // See if directory exists
+        if (dir) closedir(dir);             // Directory exists. All good.
+        else mkdir("/data/sav", 0777);      // Doesn't exist - make it...
+        strcpy(savefilename, "/data/sav/");
+    }
+    else strcpy(savefilename, "");
+    
+    strcat(savefilename, currentRip->GetFileName());
+    savefilename[strlen(savefilename)-4] = 0;
+    strcat(savefilename, ".sav");
+}
+
 void just_read_save_file(void)
 {
     if (currentRip != NULL)
     {
-        strcpy(savefilename, currentRip->GetFileName());
-        savefilename[strlen(savefilename)-4] = 0;
-        strcat(savefilename, ".sav");
+        get_save_filename();
         memset(&saveState, 0x00, sizeof(saveState));
         FILE* file = fopen(savefilename, "rb");
 
@@ -118,9 +147,7 @@ void state_save(UINT8 slot)
 {
     if (currentRip != NULL)
     {
-        strcpy(savefilename, currentRip->GetFileName());
-        savefilename[strlen(savefilename)-4] = 0;
-        strcat(savefilename, ".sav");
+        get_save_filename();
         dsPrintValue(10,23,0, (char*)"STATE SAVED");
         do_save(savefilename, slot);
         WAITVBL;WAITVBL;WAITVBL;
@@ -134,9 +161,7 @@ BOOL state_restore(UINT8 slot)
     {
         if (saveState.bSlotUsed[slot] == TRUE)
         {
-            strcpy(savefilename, currentRip->GetFileName());
-            savefilename[strlen(savefilename)-4] = 0;
-            strcat(savefilename, ".sav");
+            get_save_filename();
             dsPrintValue(10,23,0, (char*)"STATE RESTORED");
             do_load(savefilename, slot);
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;
@@ -152,10 +177,7 @@ void clear_save_file(void)
 {
     if (currentRip != NULL)
     {
-        strcpy(savefilename, currentRip->GetFileName());
-        savefilename[strlen(savefilename)-4] = 0;
-        strcat(savefilename, ".sav");
-        dsPrintValue(10,23,0, (char*)".SAV FILE ERASED");
+        get_save_filename();
         remove(savefilename);
         memset(&saveState, 0x00, sizeof(saveState));
         WAITVBL;WAITVBL;WAITVBL;WAITVBL;

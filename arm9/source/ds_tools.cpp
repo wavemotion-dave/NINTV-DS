@@ -12,6 +12,7 @@
 
 #include "ds_tools.h"
 #include "savestate.h"
+#include "config.h"
 #include "bgBottom.h"
 #include "bgBottom-treasure.h"
 #include "bgBottom-cloudy.h"
@@ -53,38 +54,6 @@ int debug1, debug2;
 UINT16 emu_frames=1;
 UINT16 frames=0;
 
-struct Config_t  myConfig;
-struct Config_t  allConfigs[MAX_CONFIGS];
-
-void SetDefaultConfig(void)
-{
-    myConfig.crc                = 0x00000000;
-    myConfig.frame_skip_opt     = 1;
-    myConfig.overlay_selected   = 0;
-    myConfig.key_A_map          = 12;
-    myConfig.key_B_map          = 12;
-    myConfig.key_X_map          = 13;
-    myConfig.key_Y_map          = 14;
-    myConfig.key_L_map          = 0;
-    myConfig.key_R_map          = 1;
-    myConfig.key_START_map      = 21;
-    myConfig.key_SELECT_map     = 17;
-    myConfig.controller_type    = 0;
-    myConfig.sound_clock_div    = 1;
-    myConfig.show_fps           = 0;
-    myConfig.dpad_config        = 0;
-    myConfig.target_fps         = 0;
-    myConfig.brightness         = 0;
-    myConfig.palette            = 0;
-    myConfig.erase_saves        = 0;
-    myConfig.spare5             = 0;
-    myConfig.spare6             = 1;
-    myConfig.spare7             = 1;
-    myConfig.spare8             = 1;
-    myConfig.spare9             = 2;
-    myConfig.config_ver         = CONFIG_VER;
-}
-
 
 struct Overlay_t defaultOverlay[OVL_MAX] =
 {
@@ -121,108 +90,6 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
 struct Overlay_t myOverlay[OVL_MAX];
 
 void dsInitPalette(void);
-
-// ---------------------------------------------------------------------------
-// Write out the XEGS.DAT configuration file to capture the settings for
-// each game.
-// ---------------------------------------------------------------------------
-void SaveConfig(bool bShow)
-{
-    FILE *fp;
-    int slot = 0;
-    
-    if (currentRip == NULL) return;
-
-    if (bShow) dsPrintValue(0,2,0, (char*)"SAVE CONFIG");
-    
-    myConfig.crc = currentRip->GetCRC();
-    
-    // Find the slot we should save into...
-    for (slot=0; slot<MAX_CONFIGS; slot++)
-    {
-        if (allConfigs[slot].crc == myConfig.crc)  // Got a match?!
-        {
-            break;                           
-        }
-        if (allConfigs[slot].crc == 0x00000000)  // End of useful list...
-        {
-            break;                           
-        }
-    }
-    
-    memcpy(&allConfigs[slot], &myConfig, sizeof(struct Config_t));
-
-    DIR* dir = opendir("/data");
-    if (dir)
-    {
-        closedir(dir);  // Directory exists.
-    }
-    else
-    {
-        mkdir("/data", 0777);   // Doesn't exist - make it...
-    }
-    fp = fopen("/data/NINTV-DS.DAT", "wb+");
-    if (fp != NULL)
-    {
-        fwrite(&allConfigs, sizeof(allConfigs), 1, fp);
-        fclose(fp);
-    } else dsPrintValue(0,2,0, (char*)"   ERROR   ");
-
-    if (bShow) 
-    {
-        WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-        dsPrintValue(0,2,0, (char*)"           ");
-    }
-}
-
-
-void FindAndLoadConfig(void)
-{
-    FILE *fp;
-
-    SetDefaultConfig();
-    fp = fopen("/data/NINTV-DS.DAT", "rb");
-    if (fp != NULL)
-    {
-        fread(&allConfigs, sizeof(allConfigs), 1, fp);
-        fclose(fp);
-        
-        if (allConfigs[0].config_ver != CONFIG_VER)
-        {
-            dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
-            memset(&allConfigs, 0x00, sizeof(allConfigs));
-            for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
-            SaveConfig(FALSE);
-            dsPrintValue(0,1,0, (char*)"              ");
-        }
-        
-        if (currentRip != NULL)
-        {
-            for (int slot=0; slot<MAX_CONFIGS; slot++)
-            {
-                if (allConfigs[slot].crc == currentRip->GetCRC())  // Got a match?!
-                {
-                    memcpy(&myConfig, &allConfigs[slot], sizeof(struct Config_t));
-                    break;                           
-                }
-            }
-        }
-        else
-        {
-            SetDefaultConfig();
-        }
-    }
-    else    // Not found... init the entire database...
-    {
-        dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
-        memset(&allConfigs, 0x00, sizeof(allConfigs));
-        for (int i=0; i<MAX_CONFIGS; i++) allConfigs[i].config_ver = CONFIG_VER;
-        SaveConfig(FALSE);
-        dsPrintValue(0,1,0, (char*)"              ");
-    }
-    
-    ApplyOptions();
-}
 
 int bg0, bg0b, bg1b;
 bool bFirstGameLoaded = false;
@@ -409,11 +276,25 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 		if (r->isLoaded())
 			continue;
 
-		//TODO: get filenames from config file
-		//TODO: handle file loading errors
         CHAR nextFile[MAX_PATH];
-        strcpy(nextFile, ".");
-        strcat(nextFile, "/");
+        
+        if (myGlobalConfig.bios_dir == 1)        // In: /ROMS/BIOS
+        {
+            strcpy(nextFile, "/roms/bios/");
+        }
+        else if (myGlobalConfig.bios_dir == 2)   // In: /ROMS/INTV/BIOS
+        {
+            strcpy(nextFile, "/roms/intv/bios/");
+        }
+        else if (myGlobalConfig.bios_dir == 3)   // In: /DATA/BIOS/
+        {
+            strcpy(nextFile, "/data/bios/");
+        }
+        else
+        {
+            strcpy(nextFile, "./");              // In: Same DIR as ROM files
+        }
+
         strcat(nextFile, r->getDefaultFileName());
         if (!r->load(nextFile, r->getDefaultFileOffset())) 
         {
@@ -423,7 +304,6 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 
     return TRUE;
 }
-
 
 void reset_emu_frames(void)
 {
@@ -1030,7 +910,7 @@ ITCM_CODE void Run()
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
-            if ((frames > 0) && (myConfig.show_fps > 0))
+            if ((frames > 0) && (myGlobalConfig.show_fps > 0))
             {
                 if (frames==(target_frames[myConfig.target_fps]+1)) frames--;
                 sprintf(tmp, "%03d", frames);
@@ -1049,6 +929,122 @@ unsigned short customMap[16*1024];
 unsigned short customPal[512];
 char line[256];
 
+void load_custom_overlay(void)
+{
+    char filename[128];
+    FILE *fp = NULL;
+    // Read the associated .ovl file and parse it...
+    if (currentRip != NULL)
+    {
+        if (myGlobalConfig.ovl_dir == 1)        // In: /ROMS/OVL
+        {
+            strcpy(filename, "/roms/ovl/");
+        }
+        else if (myGlobalConfig.ovl_dir == 2)   // In: /ROMS/INTY/OVL
+        {
+            strcpy(filename, "/roms/intv/ovl/");
+        }
+        else if (myGlobalConfig.ovl_dir == 3)   // In: /DATA/OVL/
+        {
+            strcpy(filename, "/data/ovl/");
+        }
+        else
+        {
+            strcpy(filename, "./");              // In: Same DIR as ROM files
+        }
+        strcat(filename, currentRip->GetFileName());
+        filename[strlen(filename)-4] = 0;
+        strcat(filename, ".ovl");
+        fp = fopen(filename, "rb");
+    }
+    if (fp != NULL)
+    {
+      int ov_idx = 0;
+      int tiles_idx=0;
+      int map_idx=0;
+      int pal_idx=0;
+      char *token;
+
+      memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
+      memset(customMap, 0x00, 16*1024*sizeof(UINT16));
+      memset(customPal, 0x00, 512*sizeof(UINT16));
+
+      do
+      {
+        fgets(line, 255, fp);
+        // Handle Overlay Line
+        if (strstr(line, ".ovl") != NULL)
+        {
+            if (ov_idx < OVL_MAX)
+            {
+                char *ptr = strstr(line, ".ovl");
+                ptr += 5;
+                myOverlay[ov_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                myOverlay[ov_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                myOverlay[ov_idx].y1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                myOverlay[ov_idx].y2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                ov_idx++;                
+            }
+        }
+
+        // Handle Tile Line
+        if (strstr(line, ".tile") != NULL)
+        {
+            char *ptr = strstr(line, ".tile");
+            ptr += 6;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+        }
+
+        // Handle Map Line
+        if (strstr(line, ".map") != NULL)
+        {
+            char *ptr = strstr(line, ".map");
+            ptr += 4;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+        }              
+
+        // Handle Palette Line
+        if (strstr(line, ".pal") != NULL)
+        {
+            char *ptr = strstr(line, ".pal");
+            ptr += 4;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+            customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
+        }              
+      } while (!feof(fp));
+      fclose(fp);
+
+      decompress(customTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(customMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) customPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else
+    {
+      decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
+    }    
+}
 
 void dsShowScreenMain(bool bFull) 
 {
@@ -1072,161 +1068,66 @@ void dsShowScreenMain(bool bFull)
     memcpy(&myOverlay, &defaultOverlay, sizeof(myOverlay));
     
     swiWaitForVBlank();
-    if (myConfig.overlay_selected == 1) // Treasure of Tarmin
+    
+    if (myConfig.overlay_selected == 1) // Custom Overlay!
+    {
+        load_custom_overlay();
+    }
+    else if (myConfig.overlay_selected == 2) // Treasure of Tarmin
     {
       decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 2) // Cloudy Mountain
+    else if (myConfig.overlay_selected == 3) // Cloudy Mountain
     {
       decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 3) // Astrosmash
+    else if (myConfig.overlay_selected == 4) // Astrosmash
     {
       decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 4) // Space Spartans
+    else if (myConfig.overlay_selected == 5) // Space Spartans
     {
       decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 5) // B17 Bomber
+    else if (myConfig.overlay_selected == 6) // B17 Bomber
     {
       decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 6) // Atlantis
+    else if (myConfig.overlay_selected == 7) // Atlantis
     {
       decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 7) // Bomb Squad
+    else if (myConfig.overlay_selected == 8) // Bomb Squad
     {
       decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 8) // Utopia
+    else if (myConfig.overlay_selected == 9) // Utopia
     {
       decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 9) // Swords & Serpents
+    else if (myConfig.overlay_selected == 10) // Swords & Serpents
     {
       decompress(bgBottom_swordsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_swordsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_swordsPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 10) // Custom Overlay!
-    {
-      char filename[128];
-      FILE *fp = NULL;
-      // Read the associated .ovl file and parse it...
-      if (currentRip != NULL)
-      {
-          strcpy(filename, currentRip->GetFileName());
-          filename[strlen(filename)-4] = 0;
-          strcat(filename, ".ovl");
-          fp = fopen(filename, "rb");
-      }
-      if (fp != NULL)
-      {
-          int ov_idx = 0;
-          int tiles_idx=0;
-          int map_idx=0;
-          int pal_idx=0;
-          char *token;
-          
-          memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
-          memset(customMap, 0x00, 16*1024*sizeof(UINT16));
-          memset(customPal, 0x00, 512*sizeof(UINT16));
-          
-          do
-          {
-            fgets(line, 255, fp);
-            // Handle Overlay Line
-            if (strstr(line, ".ovl") != NULL)
-            {
-                if (ov_idx < OVL_MAX)
-                {
-                    char *ptr = strstr(line, ".ovl");
-                    ptr += 5;
-                    myOverlay[ov_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
-                    myOverlay[ov_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
-                    myOverlay[ov_idx].y1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
-                    myOverlay[ov_idx].y2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
-                    ov_idx++;                
-                }
-            }
-              
-            // Handle Tile Line
-            if (strstr(line, ".tile") != NULL)
-            {
-                char *ptr = strstr(line, ".tile");
-                ptr += 6;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-            }
-              
-            // Handle Map Line
-            if (strstr(line, ".map") != NULL)
-            {
-                char *ptr = strstr(line, ".map");
-                ptr += 4;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-            }              
-              
-            // Handle Palette Line
-            if (strstr(line, ".pal") != NULL)
-            {
-                char *ptr = strstr(line, ".pal");
-                ptr += 4;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-                customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-            }              
-          } while (!feof(fp));
-          fclose(fp);
-          
-          decompress(customTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-          decompress(customMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-          dmaCopy((void *) customPal,(u16*) BG_PALETTE_SUB,256*2);
-      }
-      else
-      {
-          decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-          decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-          dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
-      }
-    }
-    else
+    else    // Default Overlay...
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -1249,6 +1150,7 @@ void dsMainLoop(void)
     videoBus = new VideoBusDS();
     audioMixer = new AudioMixerDS();
     
+    FindAndLoadConfig();
     dsShowScreenMain(true);
     InitializeEmulator();
 
@@ -1365,6 +1267,8 @@ UINT32 default_Palette[32] =
 const INT8 brightness[] = {0, -3, -6, -9};
 void dsInitPalette(void) 
 {
+    if (!bFirstGameLoaded) return;
+    
     // Init DS Specific palette for the Intellivision (16 colors...)
     for(int i = 0; i < 256; i++)   
     {
@@ -1474,11 +1378,26 @@ int intvFilescmp (const void *c1, const void *c2)
 static char filenametmp[255];
 void intvFindFiles(void) 
 {
+  static bool bFirstTime = true;
   DIR *pdir;
   struct dirent *pent;
 
   countintv = 0;
 
+  // First time in we use the config setting to determine where we open files...
+  if (bFirstTime)
+  {
+      bFirstTime = false;
+      if (myGlobalConfig.rom_dir == 1)
+      {
+         chdir("/ROMS");
+      }
+      else if (myGlobalConfig.rom_dir == 2)
+      {
+         chdir("/ROMS/INTV");
+      }
+  }
+    
   pdir = opendir(".");
 
   if (pdir) {
@@ -1815,162 +1734,6 @@ bool dsWaitOnQuit(void)
   dsShowScreenMain(false);
 
   return bRet;
-}
-
-// ------------------------------------------------------------------------------
-// Options are handled here... we have a number of things the user can tweak
-// and these options are applied immediately. The user can also save off 
-// their option choices for the currently running game into the NINTV-DS.DAT
-// configuration database. When games are loaded back up, NINTV-DS.DAT is read
-// to see if we have a match and the user settings can be restored for the game.
-// ------------------------------------------------------------------------------
-struct options_t
-{
-    const char  *label;
-    const char  *option[23];
-    UINT16 *option_val;
-    UINT16 option_max;
-};
-
-const struct options_t Option_Table[] =
-{
-    {"OVERLAY",     {"GENERIC", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTAN", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORD & SERPT", "CUSTOM"},  &myConfig.overlay_selected, 11},
-    {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_A_map,        22},
-    {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_B_map,        22},
-    {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_X_map,        22},
-    {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT",  
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_Y_map,        22},
-    {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_L_map,        22},
-    {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_R_map,        22},
-    {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_START_map,    22},
-    {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myConfig.key_SELECT_map,   22},
-    {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
-    {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
-    {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                   &myConfig.frame_skip_opt,   3},
-    {"SOUND DIV",   {"20 (HIGHQ)", "24 (LOW/FAST)", "28 (LOWEST)", "DISABLED"},                                                                                         &myConfig.sound_clock_div,  4},
-    {"FPS",         {"OFF", "ON"},                                                                                                                                      &myConfig.show_fps,         2},
-    {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                &myConfig.target_fps,       7},
-    {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL"},                                                                                                             &myConfig.palette,          4},
-    {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myConfig.brightness,       4},
-    {"SAVE STATE",  {"KEEP ON LOAD", "ERASE ON LOAD"},                                                                                                                  &myConfig.erase_saves,      2},
-    
-    {NULL,          {"",            ""},                                NULL,                   2},
-};
-
-void ApplyOptions(void)
-{
-    // Change the sound div if needed... affects sound quality and speed 
-    extern  INT32 clockDivisor;
-    static UINT32 sound_divs[] = {20,24,28,64};
-    clockDivisor = sound_divs[myConfig.sound_clock_div];
-
-    // Check if the sound changed...
-    fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
-    bStartSoundFifo=true;
-	// clears the emulator side of the audio mixer
-	audioMixer->resetProcessor();
-}
-
-// -----------------------------------------------------------------------------
-// Allows the user to move the cursor up and down through the various table 
-// enties  above to select options for the game they wish to play. 
-// -----------------------------------------------------------------------------
-void dsChooseOptions(void)
-{
-    int optionHighlighted;
-    int idx;
-    bool bDone=false;
-    int keys_pressed;
-    int last_keys_pressed = 999;
-    char strBuf[64];
-
-    // Show the Options background...
-    decompress(bgOptionsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgOptionsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgOptionsPal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-
-    idx=0;
-    while (true)
-    {
-        sprintf(strBuf, " %-11s : %-13s ", Option_Table[idx].label, Option_Table[idx].option[*(Option_Table[idx].option_val)]);
-        dsPrintValue(1,3+idx, (idx==0 ? 1:0), strBuf);
-        idx++;
-        if (Option_Table[idx].label == NULL) break;
-    }
-
-    dsPrintValue(0,23, 0, (char *)"D-PAD TOGGLE. A=EXIT, START=SAVE");
-    optionHighlighted = 0;
-    while (!bDone)
-    {
-        keys_pressed = keysCurrent();
-        if (keys_pressed != last_keys_pressed)
-        {
-            last_keys_pressed = keys_pressed;
-            if (keysCurrent() & KEY_UP) // Previous option
-            {
-                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,0, strBuf);
-                if (optionHighlighted > 0) optionHighlighted--; else optionHighlighted=(idx-1);
-                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
-            }
-            if (keysCurrent() & KEY_DOWN) // Next option
-            {
-                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,0, strBuf);
-                if (optionHighlighted < (idx-1)) optionHighlighted++;  else optionHighlighted=0;
-                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
-            }
-
-            if (keysCurrent() & KEY_RIGHT)  // Toggle option clockwise
-            {
-                *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) + 1) % Option_Table[optionHighlighted].option_max;
-                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
-            }
-            if (keysCurrent() & KEY_LEFT)  // Toggle option counterclockwise
-            {
-                if ((*(Option_Table[optionHighlighted].option_val)) == 0)
-                    *(Option_Table[optionHighlighted].option_val) = Option_Table[optionHighlighted].option_max -1;
-                else
-                    *(Option_Table[optionHighlighted].option_val) = (*(Option_Table[optionHighlighted].option_val) - 1) % Option_Table[optionHighlighted].option_max;
-                sprintf(strBuf, " %-11s : %-13s ", Option_Table[optionHighlighted].label, Option_Table[optionHighlighted].option[*(Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
-            }
-            if (keysCurrent() & KEY_START)  // Save Options
-            {
-                SaveConfig(TRUE);
-            }
-            if ((keysCurrent() & KEY_B) || (keysCurrent() & KEY_A))  // Exit options
-            {
-                break;
-            }
-        }
-        swiWaitForVBlank();
-    }
-
-    ApplyOptions();
-
-    // Restore original bottom graphic
-    dsShowScreenMain(false);
-    
-    // Give a third of a second time delay...
-    for (int i=0; i<20; i++)
-    {
-        swiWaitForVBlank();
-    }
-
-    return;
 }
 
 // End of Line
