@@ -8,6 +8,7 @@
 #include "JLP.h"
 #include "ROMBanker.h"
 #include "CRC32.h"
+#include "../database.h"
 
 #define MAX_MEMORY_UNITS  16
 #define MAX_STRING_LENGTH 256
@@ -88,11 +89,23 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
 }
 
 
-Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
+Rip* Rip::LoadBin(const CHAR* filename)
 {
+    char cfgFilename[128];
+
+    // Create the path to the .cfg file (which may or may not exist...)
+    strcpy(cfgFilename, filename);
+    cfgFilename[strlen(cfgFilename)-4] = 0;
+    strcat(cfgFilename, ".cfg");
+
     //determine the crc of the designated file
     UINT32 crc = CRC32::getCrc(filename);
-    Rip* rip = LoadCartridgeConfiguration(configFile, crc);
+    
+    // ----------------------------------------------------------------
+    // Now go and try and load all the memory regions based on either 
+    // the internal database table or the .cfg file if it exists...
+    // ----------------------------------------------------------------
+    Rip* rip = LoadCartridgeConfiguration(cfgFilename, crc);
     if (rip == NULL)
         return NULL;
 
@@ -122,8 +135,10 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
     {
         if (offset >= size) 
         {
-            //something is wrong, the file we're trying to load isn't large enough
-            //getting here indicates a likely incorrect memory map in knowncarts.cfg
+            // -------------------------------------------------------------------------------
+            // Something is wrong, the file we're trying to load isn't large enough getting
+            // here indicates a likely incorrect memory map in the database or the .cfg file
+            // -------------------------------------------------------------------------------
             delete[] image;
             delete rip;
             return NULL;
@@ -158,6 +173,126 @@ Rip* Rip::LoadBin(const CHAR* filename, const CHAR* configFile)
 
 Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
 {
+    Rip* rip = NULL;
+    const struct Database_t *db_entry = FindDatabaseEntry(crc); // Try to find the CRC in our internal database...
+    
+    if (db_entry != NULL)   // We found an entry... let's go!
+    {
+        rip = new Rip(ID_SYSTEM_INTELLIVISION);
+        rip->JLP16Bit = NULL;
+        rip->SetName(db_entry->name);
+        for (UINT8 i=0; i<MAX_MEM_AREAS; i++)
+        {
+            switch (db_entry->mem_areas[i].mem_type)
+            {
+                case DB_ROM8:
+                {
+                    rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT8), db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr));
+                    break;
+                }
+                case DB_ROM16:
+                {
+                    rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr));
+                    break;
+                }
+                case DB_RAM8:
+                {
+                    rip->AddRAM(new RAM(db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr, 0xFFFF, 0xFFFF, 8));
+                    break;
+                }
+                case DB_RAM16:
+                {
+                    rip->AddRAM(new RAM(db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr, 0xFFFF, 0xFFFF, 16));
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        
+        // Now add the required peripherals...
+        if (db_entry->bIntellivoice)
+        {
+            rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+        }
+        if (db_entry->bJLP)
+        {
+            rip->JLP16Bit = new JLP();
+            rip->AddRAM(rip->JLP16Bit);
+        }
+        if (db_entry->bECS)
+        {
+            // TODO - give warning that ECS is not supported...
+        }
+    }
+    else    // Didn't find it... let's see if we can read a .cfg file
+    {
+        FILE* cfgFile = fopen(configFile, "r");
+        if (cfgFile != NULL)
+        {
+            rip = new Rip(ID_SYSTEM_INTELLIVISION);
+            rip->JLP16Bit = NULL;
+            CHAR nextLine[128];
+            int cfg_mode=0;
+            while (!feof(cfgFile)) 
+            {
+                fgets(nextLine, 127, cfgFile);
+                if (strstr(nextLine, "[mapping]") != NULL)          cfg_mode = 1;
+                else if (strstr(nextLine, "[memattr]") != NULL)     cfg_mode = 2;
+                else if (strstr(nextLine, "[vars]") != NULL)        cfg_mode = 3;
+                else
+                {
+                    char *ptr = nextLine;
+                    while (*ptr == ' ') ptr++;
+                    if (cfg_mode == 1)  // [mapping] Mode
+                    {
+                        if (*ptr == '$')
+                        {
+                            ptr++;
+                            UINT16 start_addr = strtoul(ptr, &ptr, 16);
+                            while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
+                            UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
+                            while (*ptr == ' ' || *ptr == '=' || *ptr == '$') ptr++;
+                            UINT16 map_addr = strtoul(ptr, &ptr, 16);
+                            rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr));
+                        }
+                    }
+                    if (cfg_mode == 2)  // [memattr] Mode
+                    {
+                        if (*ptr == '$')
+                        {
+                            ptr++;
+                            UINT16 start_addr = strtoul(ptr, &ptr, 16);
+                            while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
+                            UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
+                            if (strstr(ptr, "RAM 8") != NULL)
+                            {
+                                rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 8));
+                            }
+                            else if (strstr(ptr, "RAM 16") != NULL)
+                            {
+                                rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 16));
+                            }
+                        }
+                    }
+                    if (cfg_mode == 3)  // [vars] Mode
+                    {
+                        if (strstr(ptr, "jlp"))
+                        {
+                            rip->JLP16Bit = new JLP();
+                            rip->AddRAM(rip->JLP16Bit);
+                        }
+                        if (strstr(ptr, "voice"))
+                        {
+                            rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+                        }
+                    }
+                }                
+            }
+            fclose(cfgFile);
+        }
+    }
+#if 0    
     CHAR scrc[9];
     sprintf(scrc, "%08X", crc);
 
@@ -166,9 +301,7 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
     if (cfgFile == NULL)
         return NULL;
 
-    Rip* rip = NULL;
     BOOL parseSuccess = FALSE;
-    CHAR nextLine[256];
     while (!feof(cfgFile)) {
         fgets(nextLine, 256, cfgFile);
         //size_t length = strlen(nextLine);
@@ -316,8 +449,8 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
         delete rip;
         rip = NULL;
     }
-
-    return rip;
+#endif
+    return rip;    
 }
 
 Rip* Rip::LoadRom(const CHAR* filename)
@@ -448,8 +581,21 @@ Rip* Rip::LoadRom(const CHAR* filename)
     }
     fclose(infile);
     
-    // Add the JLP RAM module if required...
+    rip->SetFileName(filename);
+    rip->crc = CRC32::getCrc(filename);
+
     extern bool bUseJLP;
+    extern bool bForceIvoice;
+    
+    // See if we have any special overrides...
+    const struct SpecialRomDatabase_t *db_entry = FindRomDatabaseEntry(rip->crc); // Try to find the CRC in our internal database...    
+    if (db_entry != NULL)
+    {
+        if (db_entry->bJLP) bUseJLP=true;       
+        if (db_entry->bIntellivoice) bForceIvoice=true;       
+    }
+
+    // Add the JLP RAM module if required...
     if (bUseJLP)
     {
         rip->JLP16Bit = new JLP();
@@ -459,12 +605,9 @@ Rip* Rip::LoadRom(const CHAR* filename)
     {
         rip->JLP16Bit = NULL;
     }
-    
-    extern bool bForceIvoice;
-    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
 
-    rip->SetFileName(filename);
-    rip->crc = CRC32::getCrc(filename);
+    // Force Intellivoice if asked for...
+    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
 
     return rip;
 }

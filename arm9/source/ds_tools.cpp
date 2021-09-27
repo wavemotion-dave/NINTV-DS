@@ -235,9 +235,8 @@ BOOL LoadCart(const CHAR* filename)
     const CHAR* extStart = filename + strlen(filename) - 4;
     if (strcmpi(extStart, ".int") == 0 || strcmpi(extStart, ".bin") == 0)
     {
-        //load the bin file as a Rip
-        CHAR* cfgFilename = (CHAR*)"knowncarts.cfg";
-        currentRip = Rip::LoadBin(filename, cfgFilename);
+        //load the bin file as a Rip - use internal database or maybe <filename>.cfg exists... LoadBin() handles all that.
+        currentRip = Rip::LoadBin(filename);
         if (currentRip == NULL)
         {
             return FALSE;

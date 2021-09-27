@@ -37,7 +37,7 @@ public:
     PeripheralCompatibility GetPeripheralUsage(const CHAR* periphName);
 
     //load a raw binary Intellivision image of a game
-    static Rip* LoadBin(const CHAR* filename, const CHAR* cfgFilename);
+    static Rip* LoadBin(const CHAR* filename);
 
     //load an Intellivision .rom file
     static Rip* LoadRom(const CHAR* filename);
