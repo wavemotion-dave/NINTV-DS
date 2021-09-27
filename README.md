@@ -4,16 +4,14 @@ NINTV-DS is an Intellivision console emulator running on the DS/DSi.
 Install :
 ----------
 To make this work, place NINTV-DS.NDS on your flashcart or SD card which you can launch.
-You must have these 3 files in the same directory as your ROM files:
+You must supply the BIOS files in the same directory as your ROM files (can be changed in Global Options):
 grom.bin
 exec.bin
-knowncarts.cfg
 
 Optional is ivoice.bin for Intellivoice games.
 
-The knowncarts.cfg file is supplied with this emulator. The GROM and EXEC binaries are property
-of Intellivision and you will have to find them yourself. Don't ask. If you own Intellivision 
-Lives (various over the years), you likely have both files already somewhere in your house. 
+The GROM and EXEC binaries are property of Intellivision and you will have to find them yourself. 
+Don't ask. If you own Intellivision Lives, you likely have both files already somewhere in your house. 
 
 Features :
 ----------
@@ -52,6 +50,11 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.9 : 27-Sep-2021 by wavemotion-dave
+  * Removed reliance on knowncarts.cfg. Internal database handles most games
+    and you can use a "romname".cfg for new .bin games.
+  * Added command line support so it can be called via TWL++.
+  
 V1.8 : 26-Sep-2021 by wavemotion-dave
   * Reworked configuration options - new game specific and global options available. 
     Unfortunatley your old config will be wiped out in favor of the new format. Sorry!
