@@ -2,6 +2,7 @@
 #include <fat.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include "ds_tools.h"
 #include "highscore.h"
 
@@ -41,6 +42,17 @@ int main(int argc, char **argv)
   // Handle command line argument...
   if (argc > 1) 
   {
+      // We want to start in the directory where the file is being launched...
+      if (strchr(argv[1], '/') != NULL)
+      {
+          char path[128];
+          strcpy(path, argv[1]);
+          char *ptr = &path[strlen(path)-1];
+          while (*ptr != '/') ptr--;
+          ptr++; *ptr=NULL;
+          chdir(path);
+      }
+      
       // Main loop of emulation - with initial file
       dsMainLoop(argv[1]);
   } 
