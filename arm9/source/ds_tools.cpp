@@ -859,7 +859,7 @@ ITCM_CODE void pollInputs(void)
 int target_frames[]         = {60,  66,   72,  78,  84,  90,  999};
 int target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
 
-ITCM_CODE void Run()
+ITCM_CODE void Run(char *initial_file)
 {
     // Setup 1 second timer for things like FPS
     TIMER1_CR = 0;
@@ -869,6 +869,24 @@ ITCM_CODE void Run()
     reset_emu_frames();
     
     runState = Running;
+    
+    // ------------------------------------------------------
+    // If we were passed in a file on the command line...
+    // ------------------------------------------------------
+    if (initial_file)
+    {
+        if (LoadCart(initial_file)) 
+        {
+            // ------------------------------------------------------------------------------------------
+            // We double load... to ensure reset vectors and such are set before we copy fast memory...
+            // ------------------------------------------------------------------------------------------
+            InitializeEmulator();
+            for (int i=0; i<20; i++) currentEmu->Run();
+            LoadCart(initial_file);
+            InitializeEmulator();
+        }
+    }
+    
 	while(runState == Running) 
     {
         // Time 1 frame...
@@ -1141,7 +1159,7 @@ void dsShowScreenMain(bool bFull)
     swiWaitForVBlank();
 }
 
-void dsMainLoop(void)
+void dsMainLoop(char *initial_file)
 {
     // -----------------------------------------------------------------------------------------
     // Eventually these will be used to write to the DS screen and produce DS audio output...
@@ -1152,8 +1170,8 @@ void dsMainLoop(void)
     FindAndLoadConfig();
     dsShowScreenMain(true);
     InitializeEmulator();
-
-    Run();    
+    
+    Run(initial_file);
 }
 
 //---------------------------------------------------------------------------------

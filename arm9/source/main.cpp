@@ -37,9 +37,18 @@ int main(int argc, char **argv)
     
   // Setup the main screen handling
   dsInitScreenMain();
-    
-  // Main loop of emulation
-  dsMainLoop();
+  
+  // Handle command line argument...
+  if (argc > 1) 
+  {
+      // Main loop of emulation - with initial file
+      dsMainLoop(argv[1]);
+  } 
+  else
+  {
+      // Main loop of emulation - no initial file
+      dsMainLoop(NULL);
+  }
   	
   // Free memory to be correct 
   dsFreeEmu();

@@ -62,7 +62,7 @@ extern UINT16 emu_frames;
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);
-extern void dsMainLoop(void);
+extern void dsMainLoop(char *initial_file);
 extern void dsInstallSoundEmuFIFO(void);
 extern void dsInitScreenMain(void);
 extern void dsInitTimer(void);
