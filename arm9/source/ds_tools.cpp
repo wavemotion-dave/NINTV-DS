@@ -1505,8 +1505,8 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) (bgGetMapPtr(bg1b)),32*24*2);
   sprintf(szName,"%04d/%04d GAMES",(int)(1+ucSel+NoDebGame),countintv);
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
-  dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
-  dsPrintValue(31,22,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
+  dsPrintValue(31,4,0,(char *) (NoDebGame>0 ? "<" : " "));
+  dsPrintValue(31,21,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
   sprintf(szName, "A=LOAD, X=JLP, Y=IVOICE, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) {
@@ -1519,11 +1519,11 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
       {
         szName[27]='\0';
         sprintf(szName2,"[%s]",szName);
-        dsPrintValue(0,5+ucBcl,(ucSel == ucBcl ? 1 :  0),szName2);
+        dsPrintValue(0,4+ucBcl,(ucSel == ucBcl ? 1 :  0),szName2);
       }
       else
       {
-        dsPrintValue(1,5+ucBcl,(ucSel == ucBcl ? 1 : 0),szName);
+        dsPrintValue(1,4+ucBcl,(ucSel == ucBcl ? 1 : 0),szName);
       }
     }
   }
@@ -1722,7 +1722,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
         }
         strncpy(szName,intvromlist[ucFicAct].filename+uLenFic,29);
         szName[29] = '\0';
-        dsPrintValue(1,5+romSelected,1,szName);
+        dsPrintValue(1,4+romSelected,1,szName);
       }
     }
       
