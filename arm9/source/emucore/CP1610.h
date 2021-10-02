@@ -136,7 +136,7 @@ class CP1610 : public Processor
         INT32 XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive);
         INT32 decode(void);
 
-        //the mory bus
+        //the memory bus
         MemoryBus* memoryBus;
 
         //interrupt address

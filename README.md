@@ -29,7 +29,7 @@ Missing / Known Issues :
 No ECS support - ECS games will not load/play.
 Stampeed - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
 Nova Blast - game will freeze several seconds into playing. No known cause.
-Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows 
+Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows
 version of BLISS and also happens on the MAME/MESS emulator for the same game.
 DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
 
