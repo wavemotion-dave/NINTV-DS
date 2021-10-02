@@ -50,6 +50,13 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.0 : 02-Oct-2021 by wavemotion-dave
+  * Improved loading from command line so overlays work again.
+  * Improved first-load of a game so it's faster/smoother.
+  * Patch for Q-Bert so lives are not lost (ever... it's not a great patch but makes the game playable)
+  * Another frame or two of speedup.
+  * Other cleanups under the hood.
+  
 V1.9 : 27-Sep-2021 by wavemotion-dave
   * Removed reliance on knowncarts.cfg. Internal database handles most games
     and you can use a "romname".cfg for new .bin games.

@@ -32,6 +32,8 @@
 #include "Rip.h"
 #include "highscore.h"
 
+#define DEBUG_ENABLE 0
+
 typedef enum _RunState 
 {
     Stopped,
@@ -315,7 +317,9 @@ void reset_emu_frames(void)
 BOOL InitializeEmulator(void)
 {
     //find the currentEmulator required to run this RIP
-	currentEmu = Emulator::GetEmulatorByID(currentRip->GetTargetSystemID());
+    if (currentRip == NULL) return FALSE;
+    
+	currentEmu = Emulator::GetEmulator();
     if (currentEmu == NULL) 
     {
         return FALSE;
@@ -492,12 +496,7 @@ void ds_handle_meta(int meta_key)
             {
                 if (LoadCart(newFile)) 
                 {
-                    // ------------------------------------------------------------------------------------------
-                    // We double load... to ensure reset vectors and such are set before we copy fast memory...
-                    // ------------------------------------------------------------------------------------------
-                    InitializeEmulator();
-                    for (int i=0; i<20; i++) currentEmu->Run();
-                    LoadCart(newFile);
+                    dsInitPalette();
                     InitializeEmulator();
                 }
                 else
@@ -551,6 +550,10 @@ void ds_handle_meta(int meta_key)
             }
             fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
             break;
+
+        case OVL_META_SWITCH:
+            myConfig.controller_type = 1-myConfig.controller_type;
+            break;
             
         case OVL_META_QUIT:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
@@ -566,6 +569,7 @@ ITCM_CODE void pollInputs(void)
     extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
     extern int ds_disc_input[3][16];  // Set to '1' if pressed... 0 if released.
     unsigned short keys_pressed = keysCurrent();
+    static short last_pressed = -1;
 
     for (int j=0; j<3; j++)
     {
@@ -712,7 +716,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_A)       
     {
         if (myConfig.key_A_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_A_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
+        }
         else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
         else
@@ -722,7 +728,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_B)
     {
         if (myConfig.key_B_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_B_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
+        }
         else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
         else
@@ -732,7 +740,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_X)
     {
         if (myConfig.key_X_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_X_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
+        }
         else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
         else
@@ -742,7 +752,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_Y)
     {
         if (myConfig.key_Y_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_Y_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
+        }
         else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
         else
@@ -752,7 +764,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_L)
     {
         if (myConfig.key_L_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_L_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
+        }
         else if (myConfig.key_L_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_L_map]  = 1;
         else
@@ -762,7 +776,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_R)
     {
         if (myConfig.key_R_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_R_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
+        }
         else if (myConfig.key_R_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_R_map]  = 1;
         else
@@ -772,7 +788,9 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_START)   
     {
         if (myConfig.key_START_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_START_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
+        }
         else if (myConfig.key_START_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_START_map]  = 1;
         else
@@ -782,12 +800,16 @@ ITCM_CODE void pollInputs(void)
     if (keys_pressed & KEY_SELECT)  
     {
         if (myConfig.key_SELECT_map >= OVL_META_RESET)
-            ds_handle_meta(myConfig.key_SELECT_map);
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
+        }
         else if (myConfig.key_SELECT_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
         else
             ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
     }
+    
+    last_pressed = keys_pressed;
     
     // -----------------------------------------------------------------
     // Now handle the on-screen Intellivision overlay and meta keys...
@@ -877,12 +899,7 @@ ITCM_CODE void Run(char *initial_file)
     {
         if (LoadCart(initial_file)) 
         {
-            // ------------------------------------------------------------------------------------------
-            // We double load... to ensure reset vectors and such are set before we copy fast memory...
-            // ------------------------------------------------------------------------------------------
-            InitializeEmulator();
-            for (int i=0; i<20; i++) currentEmu->Run();
-            LoadCart(initial_file);
+            dsInitPalette();
             InitializeEmulator();
         }
     }
@@ -935,7 +952,20 @@ ITCM_CODE void Run(char *initial_file)
             }
             frames=0;
             sprintf(tmp, "%4d %4d", debug1, debug2);
-            if (0==1) dsPrintValue(0,1,0,tmp);
+            if (DEBUG_ENABLE==1) dsPrintValue(0,1,0,tmp);
+
+            // ------------------------------------------------
+            // Hack for Q*Bert...Keep life counter set to 3
+            // to avoid original Bliss core bug for this game.
+            // ------------------------------------------------
+            if (currentRip)
+            {
+                if (currentRip->GetCRC() == 0xD8C9856A)
+                {
+                    currentEmu->memoryBus.poke(0x173, 3);
+                }
+            }
+            
         }
     }
 }

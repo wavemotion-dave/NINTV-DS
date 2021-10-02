@@ -27,7 +27,7 @@ MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT64 i;
-    writeableMemoryCounts = new UINT8[65536];
+    writeableMemoryCounts = new UINT8[size];
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
@@ -38,7 +38,7 @@ MemoryBus::MemoryBus()
             writeableMemorySpace[i][j] = &MyUnusedMemory;
         }
     }
-    readableMemoryCounts = new UINT8[65536];
+    readableMemoryCounts = new UINT8[size];
     memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
@@ -263,5 +263,7 @@ void MemoryBus::poke(UINT16 location, UINT16 value)
     {
         writeableMemorySpace[location][i]->poke(location, value);
     }
+    // Update the fast_memory buffer...
+    *((UINT16 *)0x06880000 + location) = value;
 }
 

@@ -126,7 +126,7 @@ inline UINT16 CP1610::getIndirect(UINT16 registerNum)
 }
 
 INT32 CP1610::HLT() {
-    return 1;
+    return 4;
 }
 
 INT32 CP1610::SDBD() {

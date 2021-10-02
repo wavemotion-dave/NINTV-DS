@@ -25,11 +25,9 @@ typedef struct _StateChunk
     UINT32   size;
 } StateChunk;
 
-
 class Intellivision;
 
 #define MAX_PERIPHERALS     4
-#define NUM_EMULATORS       1
 
 /**
  *
@@ -62,9 +60,7 @@ class Emulator : public Peripheral
         void FlushAudio();
 		void Render();
 
-		static UINT8 GetEmulatorCount();
-        static Emulator* GetEmulator(UINT32 i);
-		static Emulator* GetEmulatorByID(UINT32 targetSystemID);
+        static Emulator* GetEmulator(void);
         
         MemoryBus          memoryBus;
 
@@ -89,8 +85,6 @@ class Emulator : public Peripheral
         BOOL            usePeripheralIndicators[MAX_PERIPHERALS];
         UINT8           peripheralCount;
 
-        static UINT32 systemIDs[NUM_EMULATORS];
-        static Emulator* emus[NUM_EMULATORS];
         static Intellivision inty;
 };
 

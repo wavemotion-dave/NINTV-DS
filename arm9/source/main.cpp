@@ -7,7 +7,8 @@
 #include "highscore.h"
 
 UINT16 SOUND_FREQ __attribute__((section(".dtcm"))) = 15360;
-    
+char file[64];
+
 int main(int argc, char **argv) 
 {
   // Init sound
@@ -49,12 +50,18 @@ int main(int argc, char **argv)
           strcpy(path, argv[1]);
           char *ptr = &path[strlen(path)-1];
           while (*ptr != '/') ptr--;
-          ptr++; *ptr=NULL;
+          ptr++; 
+          strcpy(file, ptr);
+          *ptr=NULL;
           chdir(path);
+      }
+      else
+      {
+          strcpy(file, argv[1]);
       }
       
       // Main loop of emulation - with initial file
-      dsMainLoop(argv[1]);
+      dsMainLoop(file);
   } 
   else
   {

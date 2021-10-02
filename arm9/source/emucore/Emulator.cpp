@@ -2,27 +2,11 @@
 #include "Emulator.h"
 #include "Intellivision.h"
 
-extern UINT32 systemIDs[NUM_EMULATORS];
-extern Emulator* emus[NUM_EMULATORS];
+Intellivision Emulator::inty;
 
-UINT8 Emulator::GetEmulatorCount()
+Emulator* Emulator::GetEmulator(void)
 {
-    return NUM_EMULATORS;
-}
-
-Emulator* Emulator::GetEmulator(UINT32 i)
-{
-    return emus[i];
-}
-
-Emulator* Emulator::GetEmulatorByID(UINT32 targetSystemID)
-{
-    for (int i = 0; i < NUM_EMULATORS; i++) {
-        if (systemIDs[i] == targetSystemID)
-            return emus[i];
-    }
-
-    return NULL;
+    return &inty;
 }
 
 Emulator::Emulator(const char* name)
@@ -38,10 +22,6 @@ void Emulator::LoadFastMemory()
 {
     UINT16 *fast_memory;
     fast_memory = (UINT16 *)0x06880000;     // LCD RAM area... possibly faster 16-bit access...
-    for (int i=0x0000; i<=0xFFFF; i++)
-    {
-        fast_memory[i] = 0xFFFF;
-    }
     for (int i=0x0000; i<=0xFFFF; i++)
     {
         fast_memory[i] = memoryBus.peek_slow_and_safe(i);
@@ -141,13 +121,13 @@ void Emulator::SetRip(Rip* rip)
 
     currentRip = rip;
 
-    //TODO: use the desired peripheral configuration specified by the rip
-
-    if (this->currentRip != NULL) {
+    if (this->currentRip != NULL) 
+    {
         InsertPeripheral(this);
 
         //use the desired peripherals
-        for (INT32 i = 0; i < peripheralCount; i++) {
+        for (INT32 i = 0; i < peripheralCount; i++) 
+        {
             if (usePeripheralIndicators[i])
                 InsertPeripheral(peripherals[i]);
         }
@@ -251,13 +231,3 @@ void Emulator::FlushAudio()
 {
     audioMixer->flushAudio();
 }
-
-UINT32 Emulator::systemIDs[NUM_EMULATORS] = {
-        ID_SYSTEM_INTELLIVISION,
-    };
-
-Intellivision Emulator::inty;
-
-Emulator* Emulator::emus[] = {
-    &inty,
-};

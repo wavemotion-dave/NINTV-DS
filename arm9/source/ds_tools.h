@@ -50,8 +50,8 @@ struct Overlay_t
 #define OVL_META_QUIT   19
 #define OVL_META_STATE  20
 #define OVL_META_MENU   21
+#define OVL_META_SWITCH 22
 
-#define OVL_META_RES3   22
 #define OVL_MAX         23
 
 extern struct Overlay_t myOverlay[OVL_MAX];
