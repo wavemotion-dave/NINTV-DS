@@ -263,6 +263,10 @@ void MemoryBus::poke(UINT16 location, UINT16 value)
     {
         writeableMemorySpace[location][i]->poke(location, value);
     }
-    *((UINT16 *)0x06880000 + location) = peek(location);
+    
+    if (location < 0x1000)
+    {
+        *((UINT16 *)0x06880000 + location) = value;
+    }
 }
 
