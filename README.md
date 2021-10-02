@@ -53,6 +53,7 @@ History :
 V2.0 : 02-Oct-2021 by wavemotion-dave
   * Improved loading from command line so overlays work again.
   * Improved first-load of a game so it's faster/smoother.
+  * Added new SWAP handling to instantly swap left/right controller (for Swords & Serpents "co-op" play)
   * Patch for Q-Bert so lives are not lost (ever... it's not a great patch but makes the game playable)
   * Another frame or two of speedup.
   * Other cleanups under the hood.
