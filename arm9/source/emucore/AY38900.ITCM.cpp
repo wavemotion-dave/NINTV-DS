@@ -56,18 +56,18 @@
 #define LOCATION_BACKTAB                 0x0200
 #define LOCATION_GROM                    0x3000
 #define LOCATION_GRAM                    0x3800
-#define FOREGROUND_BIT		             0x0010
+#define FOREGROUND_BIT                   0x0010
 
 UINT16  mobBuffers[8][128] __attribute__((section(".dtcm")));
 UINT8 stretch[16] __attribute__((section(".dtcm"))) = {0x00, 0x03, 0x0C, 0x0F, 0x30, 0x33, 0x3C, 0x3F, 0xC0, 0xC3, 0xCC, 0xCF, 0xF0, 0xF3, 0xFC, 0xFF};
 UINT8 reverse[16] __attribute__((section(".dtcm"))) = {0x0, 0x8, 0x4, 0xC, 0x2, 0xA, 0x6, 0xE, 0x1, 0x9, 0x5, 0xD, 0x3, 0xB, 0x7, 0xF};
 
 AY38900::AY38900(MemoryBus* mb, GROM* go, GRAM* ga)
-	: Processor("AY-3-8900"),
+    : Processor("AY-3-8900"),
       memoryBus(mb),
       grom(go),
       gram(ga),
-	  backtab()
+      backtab()
 {
     registers.init(this);
 
@@ -147,7 +147,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
                 if (previousDisplayEnabled) {
                     //render a blank screen
                     for (int x = 0; x < 160*192; x++)
-						pixelBuffer[x] = borderColor;
+                        pixelBuffer[x] = borderColor;
                 }
                 previousDisplayEnabled = FALSE;
                 mode = MODE_VBLANK;
@@ -427,8 +427,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
 void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 {
-	AY38900::pixelBuffer = pixelBuffer;
-	AY38900::pixelBufferRowSize = rowSize;
+    AY38900::pixelBuffer = pixelBuffer;
+    AY38900::pixelBufferRowSize = rowSize;
 }
 
 ITCM_CODE void AY38900::renderFrame()
@@ -468,7 +468,7 @@ ITCM_CODE void AY38900::renderFrame()
 
 ITCM_CODE void AY38900::render()
 {
-	// the video bus handles the actual rendering.
+    // the video bus handles the actual rendering.
 }
 
 ITCM_CODE void AY38900::markClean() 
@@ -699,16 +699,16 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 
     for (int y = 0; y < sourceHeightY; y++) 
     {
-		UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
-		nextPixelStore0 += (y*pixelBufferRowSize*4)>>1;
-		if (blockTop) nextPixelStore0 += (pixelBufferRowSize*4)<<1;
-		if (blockLeft) nextPixelStore0 += 4;
-		UINT8* nextPixelStore1 = nextPixelStore0 + pixelBufferRowSize;
+        UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
+        nextPixelStore0 += (y*pixelBufferRowSize*4)>>1;
+        if (blockTop) nextPixelStore0 += (pixelBufferRowSize*4)<<1;
+        if (blockLeft) nextPixelStore0 += 4;
+        UINT8* nextPixelStore1 = nextPixelStore0 + pixelBufferRowSize;
         for (int x = 0; x < sourceWidthX; x++) 
         {
-			UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
-			*nextPixelStore0++ = nextColor;
-			*nextPixelStore1++ = nextColor;
+            UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
+            *nextPixelStore0++ = nextColor;
+            *nextPixelStore1++ = nextColor;
         }
         nextSourcePixel += 160;
     }
@@ -759,10 +759,10 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
                 }
                 if (mobs[i].isVisible) 
                 {
-					UINT8* nextPixel = (UINT8*)pixelBuffer;
-					nextPixel += leftX - (blockLeft ? 4 : 0) + x;
-					nextPixel += (nextY - (blockTop ? 8 : 0)) * (pixelBufferRowSize);
-					*nextPixel = fgcolor | (currentPixel & FOREGROUND_BIT);
+                    UINT8* nextPixel = (UINT8*)pixelBuffer;
+                    nextPixel += leftX - (blockLeft ? 4 : 0) + x;
+                    nextPixel += (nextY - (blockTop ? 8 : 0)) * (pixelBufferRowSize);
+                    *nextPixel = fgcolor | (currentPixel & FOREGROUND_BIT);
                 }
             }
             nextY++;
@@ -916,53 +916,53 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 void AY38900::getState(AY38900State *state)
 {
     extern UINT16 memory[0x40];
-	memcpy(state->registers, memory, 0x40*sizeof(UINT16));
-	this->backtab.getState(&state->backtab);
+    memcpy(state->registers, memory, 0x40*sizeof(UINT16));
+    this->backtab.getState(&state->backtab);
 
-	state->inVBlank = this->inVBlank;
-	state->mode = this->mode;
-	state->previousDisplayEnabled = this->previousDisplayEnabled;
-	state->displayEnabled = this->displayEnabled;
-	state->colorStackMode = this->colorStackMode;
+    state->inVBlank = this->inVBlank;
+    state->mode = this->mode;
+    state->previousDisplayEnabled = this->previousDisplayEnabled;
+    state->displayEnabled = this->displayEnabled;
+    state->colorStackMode = this->colorStackMode;
 
-	state->borderColor = this->borderColor;
-	state->blockLeft = this->blockLeft;
-	state->blockTop = this->blockTop;
-	state->horizontalOffset = this->horizontalOffset;
-	state->verticalOffset = this->verticalOffset;
+    state->borderColor = this->borderColor;
+    state->blockLeft = this->blockLeft;
+    state->blockTop = this->blockTop;
+    state->horizontalOffset = this->horizontalOffset;
+    state->verticalOffset = this->verticalOffset;
 
-	for (int i = 0; i < 8; i++) 
+    for (int i = 0; i < 8; i++) 
     {
-		this->mobs[i].getState(&state->mobs[i]);
-	}
+        this->mobs[i].getState(&state->mobs[i]);
+    }
 }
 
 void AY38900::setState(AY38900State *state)
 {
     extern UINT16 memory[0x40];
-	memcpy(memory, state->registers, 0x40*sizeof(UINT16));
-	this->backtab.setState(&state->backtab);
+    memcpy(memory, state->registers, 0x40*sizeof(UINT16));
+    this->backtab.setState(&state->backtab);
 
-	this->inVBlank = state->inVBlank;
-	this->mode = state->mode;
-	this->previousDisplayEnabled = state->previousDisplayEnabled;
-	this->displayEnabled = state->displayEnabled;
-	this->colorStackMode = state->colorStackMode;
+    this->inVBlank = state->inVBlank;
+    this->mode = state->mode;
+    this->previousDisplayEnabled = state->previousDisplayEnabled;
+    this->displayEnabled = state->displayEnabled;
+    this->colorStackMode = state->colorStackMode;
 
-	this->borderColor = state->borderColor;
-	this->blockLeft = state->blockLeft;
-	this->blockTop = state->blockTop;
-	this->horizontalOffset = state->horizontalOffset;
-	this->verticalOffset = state->verticalOffset;
+    this->borderColor = state->borderColor;
+    this->blockLeft = state->blockLeft;
+    this->blockTop = state->blockTop;
+    this->horizontalOffset = state->horizontalOffset;
+    this->verticalOffset = state->verticalOffset;
 
-	for (int i = 0; i < 8; i++) 
+    for (int i = 0; i < 8; i++) 
     {
-		this->mobs[i].setState(&state->mobs[i]);
-	}
+        this->mobs[i].setState(&state->mobs[i]);
+    }
     
-	this->colorModeChanged = TRUE;
-	this->bordersChanged = TRUE;
-	this->colorStackChanged = TRUE;
-	this->offsetsChanged = TRUE;
-	this->imageBufferChanged = TRUE;
+    this->colorModeChanged = TRUE;
+    this->bordersChanged = TRUE;
+    this->colorStackChanged = TRUE;
+    this->offsetsChanged = TRUE;
+    this->imageBufferChanged = TRUE;
 }

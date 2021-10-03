@@ -5,8 +5,9 @@ Install :
 ----------
 To make this work, place NINTV-DS.NDS on your flashcart or SD card which you can launch.
 You must supply the BIOS files in the same directory as your ROM files (can be changed in Global Options):
-grom.bin
-exec.bin
+
+* grom.bin
+* exec.bin
 
 Optional is ivoice.bin for Intellivoice games.
 
@@ -15,19 +16,19 @@ Don't ask. If you own Intellivision Lives, you likely have both files already so
 
 Features :
 ----------
- Most things you should expect from an emulator. 
- Most games run at full speed on a DSi or above.
- Many games run very close to full speed on the older DS-LITE and
+ * Most things you should expect from an emulator. 
+ * Most games run at full speed on a DSi or above.
+ * Many games run very close to full speed on the older DS-LITE and
  DS-PHAT hardware but you can play with config settings to get the 
  most out of these games (even if you have to disable sound to gain the speed).
  
- JLP support for accelerated functions and RAM is supported. When loading a game,
+ * JLP support for accelerated functions and RAM is supported. When loading a game,
  use the X button to load and force JLP support ON.
 
 Missing / Known Issues :
 -----------------------
 * No ECS support - ECS games will not load/play.
-* Stampeed - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
+* Stampede - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
 * Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows
 version of BLISS and also happens on the MAME/MESS emulator for the same game.
 * DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
