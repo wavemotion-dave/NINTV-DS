@@ -26,11 +26,11 @@ Features :
 
 Missing / Known Issues :
 -----------------------
-No ECS support - ECS games will not load/play.
-Stampeed - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
-Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows
+* No ECS support - ECS games will not load/play.
+* Stampeed - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
+* Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows
 version of BLISS and also happens on the MAME/MESS emulator for the same game.
-DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
+* DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
@@ -49,6 +49,12 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.1 : 03-Oct-2021 by wavemotion-dave
+  * Nova Blast fixed.
+  * JLP random fixed and improved JLP compatibility.
+  * Reduced dynamic memory allocation.
+  * Added headers and cleanup under the hood.
+
 V2.0 : 02-Oct-2021 by wavemotion-dave
   * Improved loading from command line so overlays work again.
   * Improved first-load of a game so it's faster/smoother.
