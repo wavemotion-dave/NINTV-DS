@@ -274,10 +274,7 @@ void MemoryBus::poke(UINT16 location, UINT16 value)
         writeableMemorySpace[location][i]->poke(location, value);
     }
     
-    // ----------------------------------------------------------------------
-    // If we are in the writable area, keep the fast memory cache updated...
-    // ----------------------------------------------------------------------
-    if (location <= 0x1004)
+    if (location < 0x1000)
     {
         *((UINT16 *)0x06880000 + location) = value;
     }
