@@ -24,9 +24,7 @@ Rip::Rip(UINT32 systemID)
   targetSystemID(systemID),
   crc(0)
 {
-    producer = new CHAR[1];
     strcpy(producer, "");
-    year = new CHAR[1];
     strcpy(year, "");
     memset(filename, 0, sizeof(filename));
     JLP16Bit = NULL;
@@ -39,8 +37,6 @@ Rip::~Rip()
     UINT16 count = GetROMCount();
     for (UINT16 i = 0; i < count; i++)
         delete GetROM(i);
-    delete[] producer;
-    delete[] year;
     if (JLP16Bit) delete JLP16Bit;
 }
 
@@ -55,19 +51,11 @@ void Rip::SetName(const CHAR* n)
 
 void Rip::SetProducer(const CHAR* p)
 {
-    if (this->producer)
-        delete[] producer;
-
-    producer = new CHAR[strlen(p)+1];
     strcpy(producer, p);
 }
 
 void Rip::SetYear(const CHAR* y)
 {
-    if (this->year)
-        delete[] year;
-
-    year = new CHAR[strlen(y)+1];
     strcpy(year, y);
 }
 

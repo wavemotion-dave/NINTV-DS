@@ -685,8 +685,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
     int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
     int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
 
-    int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) +
-	((blockTop ? (8 - verticalOffset) : 0) * 160);
+    int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) + ((blockTop ? (8 - verticalOffset) : 0) * 160);
 
     for (int y = 0; y < sourceHeightY; y++) 
     {
@@ -695,7 +694,8 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 		if (blockTop) nextPixelStore0 += (pixelBufferRowSize*4)<<1;
 		if (blockLeft) nextPixelStore0 += 4;
 		UINT8* nextPixelStore1 = nextPixelStore0 + pixelBufferRowSize;
-        for (int x = 0; x < sourceWidthX; x++) {
+        for (int x = 0; x < sourceWidthX; x++) 
+        {
 			UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
 			*nextPixelStore0++ = nextColor;
 			*nextPixelStore1++ = nextColor;
@@ -707,7 +707,8 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 //copy the offscreen mob buffers to the staging area
 ITCM_CODE void AY38900::copyMOBsToStagingArea()
 {
-    for (INT8 i = 7; i >= 0; i--) {
+    for (INT8 i = 7; i >= 0; i--) 
+    {
         if (mobs[i].xLocation == 0 || (!mobs[i].flagCollisions && !mobs[i].isVisible))
             continue;
 

@@ -62,8 +62,8 @@ private:
     }
 
     UINT32 targetSystemID;
-    CHAR* producer;
-    CHAR* year;
+    CHAR producer[64];
+    CHAR year[12];
 
     //peripheral compatibility indicators
     CHAR* peripheralNames[MAX_PERIPHERALS];
