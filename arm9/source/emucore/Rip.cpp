@@ -237,6 +237,7 @@ Rip* Rip::LoadCartridgeConfiguration(const CHAR* configFile, UINT32 crc)
             while (!feof(cfgFile)) 
             {
                 fgets(nextLine, 127, cfgFile);
+                if (feof(cfgFile)) continue;
                 if (strstr(nextLine, "[mapping]") != NULL)          cfg_mode = 1;
                 else if (strstr(nextLine, "[memattr]") != NULL)     cfg_mode = 2;
                 else if (strstr(nextLine, "[vars]") != NULL)        cfg_mode = 3;

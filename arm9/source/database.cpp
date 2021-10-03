@@ -212,6 +212,8 @@ const struct Database_t database[] =
     {0x2A77A2FA, "Mystic Castle (Early Version)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xAB748E96, "Mystic Castle",                               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x1000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xAFB30336, "Robot Finds Kitten",                          0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xA000, 0x4000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    
+    {0xa4b2afe8, "MOB Collision Test",                          0,  0,  0,  {{DB_ROM16, 0x5000, 0x0400},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
 
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0,  {{DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}}
 };
