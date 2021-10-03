@@ -12,12 +12,12 @@ void JLP::reset()
     enabled = TRUE;
     for (UINT16 i = 0; i < RAM_JLP_SIZE; i++)
         jlp_ram[i] = 0xFFFF;
-    jlp_ram[0x1FFF] = 0;
+    jlp_ram[RAM_JLP_SIZE-1] = 0;
 }
 
 UINT16 JLP::peek(UINT16 location)
 {
-    if (location&0x1FFF == 0x1FFE) {return (UINT16)random();}
+    if (location == 0x9FFE) {return (UINT16)random();}
     return jlp_ram[(location&readAddressMask) - this->location];
 }
 

@@ -222,6 +222,7 @@ const struct SpecialRomDatabase_t rom_database[] =
     {0xef662b2b, "Grail of the Gods (JLP)",                     0,  1,  0},    
     {0xec2e2320, "Missile Domination (JLP)",                    0,  1,  0},    
     {0x5d6ac5a9, "Super Pixel Bros (JLP)",                      0,  1,  0},    
+    {0xd63c8ad0, "JLP Test (JLP)",                              0,  1,  0},        
     {0x69adbba6, "FW Diagnostics (IVoice)",                     1,  0,  0},
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0}
 };

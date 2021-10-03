@@ -82,7 +82,6 @@ void Emulator::InitAudio(AudioMixer* audio, UINT32 sampleRate)
         audioMixer = audio;
     }
 
-    // TODO: check for an existing audioMixer processor and release it
     for (UINT16 i = 0; i < GetProcessorCount(); i++) {
         Processor* p = GetProcessor(i);
         if (p == audio) {

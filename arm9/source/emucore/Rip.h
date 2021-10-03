@@ -55,7 +55,7 @@ private:
     Rip(UINT32 systemID);
 
     void AddPeripheralUsage(const CHAR* periphName, PeripheralCompatibility usage);
-    static Rip* LoadCartridgeConfiguration(const CHAR* cfgFile, UINT32 crc);
+    static Rip* LoadBinCfg(const CHAR* cfgFile, UINT32 crc);
 
     void SetFileName(const CHAR* fname) {
         strncpy(this->filename, fname, sizeof(this->filename));
@@ -66,7 +66,7 @@ private:
     CHAR year[12];
 
     //peripheral compatibility indicators
-    CHAR* peripheralNames[MAX_PERIPHERALS];
+    CHAR peripheralNames[MAX_PERIPHERALS][32];
     PeripheralCompatibility peripheralUsages[MAX_PERIPHERALS];
     UINT32 peripheralCount;
 

@@ -186,18 +186,13 @@ class Peripheral
               audioProducerCount(0),
               inputConsumerCount(0),
               ramCount(0),
-			  romCount(0),
-              peripheralName(NULL),
-              peripheralShortName(NULL)
+			  romCount(0)
         {
-            if (name) {
-                peripheralName = new CHAR[strlen(name)+1];
-                strcpy(peripheralName, name);
-            }
-            if (shortName) {
-                peripheralShortName = new CHAR[strlen(shortName)+1];
-                strcpy(peripheralShortName, shortName);
-            }
+            if (name) strcpy(peripheralName, name);
+            else strcpy(peripheralName, "");
+
+            if (shortName) strcpy(peripheralShortName, shortName);
+            else strcpy(peripheralShortName, "");
         }
 
         /**
@@ -205,18 +200,16 @@ class Peripheral
          */
         ~Peripheral()
         {
-            delete[] peripheralShortName;
-            delete[] peripheralName;
         }
 
         /**
          * The peripheral name. The Rip class exposes the periphal name as mutable, so we leave
          * it exposed as protected access here. This will probably change in the future.
          */
-        char*             peripheralName;
+        char              peripheralName[32];
 
     private:
-        char*             peripheralShortName;
+        char              peripheralShortName[16];
         Processor*        processors[MAX_COMPONENTS];
         UINT16            processorCount;
         VideoProducer*    videoProducers[MAX_COMPONENTS];
