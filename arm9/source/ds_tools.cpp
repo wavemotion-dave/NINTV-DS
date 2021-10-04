@@ -269,6 +269,9 @@ BOOL LoadCart(const CHAR* filename)
     // ---------------------------------------------------------------------
     // New game is loaded... (would have returned FALSE above otherwise)
     // ---------------------------------------------------------------------
+    extern UINT32 fudge_timing;
+    fudge_timing = 0;
+    if (currentRip->GetCRC() == 0x5F6E1AF6) fudge_timing = 1000;    // Motocross needs some fudge timing to run... known race condition...
     FindAndLoadConfig();
     dsShowScreenEmu();
     dsShowScreenMain(false);
@@ -980,7 +983,7 @@ ITCM_CODE void Run(char *initial_file)
 
 
 unsigned int customTiles[32*1024];
-unsigned short customMap[16*1024];
+unsigned short customMap[12*1024];
 unsigned short customPal[512];
 char line[256];
 
@@ -1021,7 +1024,7 @@ void load_custom_overlay(void)
       char *token;
 
       memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
-      memset(customMap, 0x00, 16*1024*sizeof(UINT16));
+      memset(customMap, 0x00, 12*1024*sizeof(UINT16));
       memset(customPal, 0x00, 512*sizeof(UINT16));
 
       do

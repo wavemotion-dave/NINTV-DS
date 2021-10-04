@@ -79,7 +79,8 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
-UINT8 bin_image_buf[128*1024];
+UINT8 bin_image_buf[50 * 1024];
+UINT16 *bin_image_buf16 = (UINT16 *) 0x06860000;
 Rip* Rip::LoadBin(const CHAR* filename)
 {
     char cfgFilename[128];
@@ -316,7 +317,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
         UINT16 size = (UINT16)((end-start)+1);
 
         //finally, transfer the ROM image
-        UINT16* romImage = (UINT16*)bin_image_buf;
+        UINT16* romImage = (UINT16*)bin_image_buf16;
         int j;
         for (j = 0; j < size; j++) {
             int nextbyte = fgetc(infile) << 8;
