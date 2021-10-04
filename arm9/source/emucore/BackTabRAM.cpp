@@ -32,7 +32,6 @@ UINT16 BackTabRAM::peek(UINT16 location)
 
 void BackTabRAM::poke(UINT16 location, UINT16 value)
 {
-    value &= 0xFFFF;
     location -= BACKTAB_LOCATION;
 
     if (image[location] == value)
@@ -43,16 +42,11 @@ void BackTabRAM::poke(UINT16 location, UINT16 value)
 
     image[location] = value;
     dirtyBytes[location] = TRUE;
-    dirtyRAM = TRUE;
 }
 
 void BackTabRAM::markClean() {
-    if (!dirtyRAM)
-        return;
-
     for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
         dirtyBytes[i] = FALSE;
-    dirtyRAM = FALSE;
     colorAdvanceBitsDirty = FALSE;
 }
 
@@ -60,12 +54,21 @@ BOOL BackTabRAM::areColorAdvanceBitsDirty() {
     return colorAdvanceBitsDirty;
 }
 
-BOOL BackTabRAM::isDirty() {
-    return dirtyRAM;
-}
 
 BOOL BackTabRAM::isDirty(UINT16 location) {
     return dirtyBytes[location-BACKTAB_LOCATION];
+}
+
+BOOL BackTabRAM::isDirtyCache(UINT16 location) 
+{
+    bool ret = dirtyBytes[location];
+    dirtyBytes[location] = FALSE;
+    return ret;
+}
+
+void BackTabRAM::markCleanCache() 
+{
+    colorAdvanceBitsDirty = FALSE;
 }
 
 

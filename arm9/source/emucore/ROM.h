@@ -46,14 +46,14 @@ public:
     
     inline UINT8 peek8(UINT16 location) 
     {   
-        if (!enabled) return 0xFF;
+        if (!enabled) return (location & 0xFF);
         return ((UINT8*)image)[(location) - this->location];
     }
     
     // This is now optimized for 16-bit access... GROM and iVOICE ROM should always call the peek8() version above...
     inline virtual UINT16 peek(UINT16 location) 
     {   
-        if (!enabled) return 0xFFFF;
+        if (!enabled) return (location & 0x3FFF);
         return ((UINT16*)image)[(location) - this->location];
     }
 

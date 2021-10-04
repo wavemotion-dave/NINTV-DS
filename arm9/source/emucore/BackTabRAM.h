@@ -36,9 +36,10 @@ class BackTabRAM : public RAM
         UINT16 peek_direct(UINT16 offset) { return image[offset]; }
 
         BOOL areColorAdvanceBitsDirty();
-        BOOL isDirty();
         BOOL isDirty(UINT16 location);
+        BOOL isDirtyCache(UINT16 location);
         void markClean();
+        void markCleanCache();
         
         void getState(BackTabRAMState *state);
         void setState(BackTabRAMState *state);

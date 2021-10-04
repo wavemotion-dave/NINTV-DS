@@ -151,7 +151,7 @@ void AY38900_Registers::poke(UINT16 location, UINT16 value) {
 UINT16 AY38900_Registers::peek(UINT16 location)
 {
     if (!enabled)
-        return location;
+        return location&0x3FFF;
     location &= 0x3F;
 
     switch (location) {

@@ -111,6 +111,8 @@ void AY38900::setGraphicsBusVisible(BOOL visible) {
     grom->SetEnabled(visible);
 }
 
+UINT16 bt[240];
+UINT8 btDirty[240];
 ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
     INT32 totalTicks = 0;
     do {
@@ -121,7 +123,9 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             //come out of bus isolation mode
             setGraphicsBusVisible(TRUE);
             if (previousDisplayEnabled)
+            {
                 renderFrame();
+            }
             displayEnabled = FALSE;
 
             //start of vblank, so stop and go back to the main loop
@@ -185,6 +189,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
         case MODE_FETCH_ROW_0:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             //renderRow((mode-3)/2);
+                
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_RENDER_ROW_0;
@@ -197,6 +202,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_1;
+                for (int i=0; i<20; i++) 
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -215,6 +225,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_2;
+                for (int i=20; i<40; i++) 
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -233,6 +248,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_3;
+                for (int i=40; i<60; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -251,6 +271,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_4;
+                for (int i=60; i<80; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -269,6 +294,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_5;
+                for (int i=80; i<100; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -287,6 +317,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_6;
+                for (int i=100; i<120; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -305,6 +340,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_7;
+                for (int i=120; i<140; i++) 
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -323,6 +363,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_8;
+                for (int i=140; i<160; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -341,6 +386,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_9;
+                for (int i=160; i<180; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -359,6 +409,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_10;
+                for (int i=180; i<200; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -377,6 +432,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_11;
+                for (int i=200; i<220; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -386,6 +446,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_RENDER_ROW_11;
+                for (int i=220; i<240; i++)
+                {
+                    bt[i] = backtab.peek_direct(i);
+                    btDirty[i] = backtab.isDirtyCache(i);
+                }
                 break;
             }
 
@@ -424,6 +489,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
     return totalTicks;
 }
+
+#define PIXEL_BUFFER_ROW_SIZE  160
 
 void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 {
@@ -478,7 +545,7 @@ ITCM_CODE void AY38900::markClean()
     bordersChanged = FALSE;
     colorStackChanged = FALSE;
     colorModeChanged = FALSE;
-    backtab.markClean();
+    backtab.markCleanCache();
     gram->markClean();
     for (int i = 0; i < 8; i++)
         mobs[i].markClean();
@@ -490,8 +557,8 @@ ITCM_CODE void AY38900::renderBorders()
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
         for (UINT8 y = 0; y < 8; y++) {
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*pixelBufferRowSize);
-            UINT8* buffer1 = buffer0 + (184*pixelBufferRowSize);
+            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
+            UINT8* buffer1 = buffer0 + (184*PIXEL_BUFFER_ROW_SIZE);
             for (UINT8 x = 0; x < 160; x++) {
                 *buffer0++ = borderColor;
                 *buffer1++ = borderColor;
@@ -502,7 +569,7 @@ ITCM_CODE void AY38900::renderBorders()
         //block the top rows of pixels depending on the amount of vertical offset
         UINT8 numRows = (UINT8)(verticalOffset<<1);
         for (UINT8 y = 0; y < numRows; y++) {
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*pixelBufferRowSize);
+            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
             for (UINT8 x = 0; x < 160; x++)
                 *buffer0++ = borderColor;
         }
@@ -512,7 +579,7 @@ ITCM_CODE void AY38900::renderBorders()
     if (blockLeft) {
         //move the image to the left 4 pixels and block the left and right 4 columns with the border
         for (UINT8 y = 0; y < 192; y++) {
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*pixelBufferRowSize);
+            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
             UINT8* buffer1 = buffer0 + 156;
             for (UINT8 x = 0; x < 4; x++) {
                 *buffer0++ = borderColor;
@@ -523,7 +590,7 @@ ITCM_CODE void AY38900::renderBorders()
     else if (horizontalOffset != 0) {
         //block the left columns of pixels depending on the amount of horizontal offset
         for (UINT8 y = 0; y < 192; y++) { 
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*pixelBufferRowSize);
+            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
             for (UINT8 x = 0; x < horizontalOffset; x++) {
                 *buffer0++ = borderColor;
             }
@@ -605,13 +672,13 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
     for (UINT8 i = 0; i < 240; i++) 
     {
         //get the next card to render
-        UINT16 nextCard = backtab.peek_direct(i);
+        UINT16 nextCard = bt[i];
         BOOL isGrom = (nextCard & 0x0800) == 0;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (colorModeChanged || backtab.isDirty(LOCATION_BACKTAB+i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+        if (colorModeChanged || btDirty[i] || (!isGrom && gram->isCardDirty(memoryLocation))) 
         {
             UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
@@ -634,18 +701,19 @@ ITCM_CODE void AY38900::renderColorStackMode()
     //must be rendered
     BOOL renderAll = backtab.areColorAdvanceBitsDirty() ||
         colorStackChanged || colorModeChanged;
-
+    
     UINT8 nextx = 0;
     UINT8 nexty = 0;
     //iterate through all the cards in the backtab
     for (UINT8 h = 0; h < 240; h++) 
     {
-        UINT16 nextCard = backtab.peek_direct(h);
+        UINT16 nextCard = bt[h]; //backtab.peek_direct(h);
 
         //colored squares mode
         if ((nextCard & 0x1800) == 0x1000) 
         {
-            if (renderAll || backtab.isDirty(LOCATION_BACKTAB+h)) {
+            if (renderAll || btDirty[h]) 
+            {
                 UINT8 csColor = (UINT8)memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
@@ -670,7 +738,7 @@ ITCM_CODE void AY38900::renderColorStackMode()
             UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8)
                 : (nextCard & 0x01F8));
 
-            if (renderAll || backtab.isDirty(LOCATION_BACKTAB+h) ||
+            if (renderAll || btDirty[h] ||
                 (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
                 UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
@@ -692,25 +760,64 @@ ITCM_CODE void AY38900::renderColorStackMode()
 
 ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 {
-    int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
-    int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
-
-    int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) + ((blockTop ? (8 - verticalOffset) : 0) * 160);
-
-    for (int y = 0; y < sourceHeightY; y++) 
+    if (blockLeft || blockTop)
     {
-        UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
-        nextPixelStore0 += (y*pixelBufferRowSize*4)>>1;
-        if (blockTop) nextPixelStore0 += (pixelBufferRowSize*4)<<1;
-        if (blockLeft) nextPixelStore0 += 4;
-        UINT8* nextPixelStore1 = nextPixelStore0 + pixelBufferRowSize;
-        for (int x = 0; x < sourceWidthX; x++) 
+        int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
+        int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
+        int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) + ((blockTop ? (8 - verticalOffset) : 0) * 160);
+
+        for (int y = 0; y < sourceHeightY; y++) 
         {
-            UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
-            *nextPixelStore0++ = nextColor;
-            *nextPixelStore1++ = nextColor;
+            UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
+            nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
+            if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
+            if (blockLeft) nextPixelStore0 += 4;
+            UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
+            for (int x = 0; x < sourceWidthX; x++) 
+            {
+                UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
+                *nextPixelStore0++ = nextColor;
+                *nextPixelStore1++ = nextColor;
+            }
+            nextSourcePixel += 160;
         }
-        nextSourcePixel += 160;
+    }
+    else // No borders... quicker render...
+    {
+        // This is the fastest of them all... no offsets and no borders so everything will be a multiple of 4...
+        if (horizontalOffset == 0 && verticalOffset == 0)
+        {
+            UINT32* backColor = (UINT32*)(&backgroundBuffer[0]);
+            for (int y = 0; y < 96; y++) 
+            {
+                UINT32* nextPixelStore0 = (UINT32*)(&pixelBuffer[y*PIXEL_BUFFER_ROW_SIZE*2]);
+                UINT32* nextPixelStore1 = nextPixelStore0 + (PIXEL_BUFFER_ROW_SIZE/4);
+                for (int x = 0; x < PIXEL_BUFFER_ROW_SIZE/4; x++) 
+                {
+                    *nextPixelStore0++ = *backColor;
+                    *nextPixelStore1++ = *backColor++;
+                }
+            }
+        }
+        else // Has offsets... but no borders
+        {
+            int sourceWidthX = (160 - horizontalOffset);
+            int sourceHeightY = (96 - verticalOffset);
+            int nextSourcePixel = 0;
+
+            for (int y = 0; y < sourceHeightY; y++) 
+            {
+                UINT8* nextPixelStore0 = (UINT8*)&pixelBuffer[y*PIXEL_BUFFER_ROW_SIZE*2];
+                UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
+                for (int x = 0; x < sourceWidthX; x++) 
+                {
+                    UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
+                    *nextPixelStore0++ = nextColor;
+                    *nextPixelStore1++ = nextColor;
+                }
+                nextSourcePixel += 160;
+            }            
+        }
     }
 }
 
@@ -761,7 +868,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
                 {
                     UINT8* nextPixel = (UINT8*)pixelBuffer;
                     nextPixel += leftX - (blockLeft ? 4 : 0) + x;
-                    nextPixel += (nextY - (blockTop ? 8 : 0)) * (pixelBufferRowSize);
+                    nextPixel += (nextY - (blockTop ? 8 : 0)) * (PIXEL_BUFFER_ROW_SIZE);
                     *nextPixel = fgcolor | (currentPixel & FOREGROUND_BIT);
                 }
             }

@@ -33,8 +33,8 @@ void GRAM::reset()
 
 void GRAM::poke(UINT16 location, UINT16 value)
 {
+    if (!enabled) return;
     location &= 0x01FF;
-    //value &= 0xFF;
 
     gram_image[location] = (UINT8)value;
     dirtyCards[location>>3] = TRUE;

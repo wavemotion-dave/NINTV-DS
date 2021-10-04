@@ -28,7 +28,6 @@ Features :
 Missing / Known Issues :
 -----------------------
 * No ECS support - ECS games will not load/play.
-* Stampede - the cattle flicker in weird ways. Happens on Windows version of BLISS as well.
 * Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows
 version of BLISS and also happens on the MAME/MESS emulator for the same game.
 * DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
