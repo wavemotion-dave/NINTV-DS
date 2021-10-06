@@ -107,7 +107,6 @@ private:
 	BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);
     BOOL mobCollidesWithBorder(int mobNum);
     BOOL mobCollidesWithForeground(int mobNum);
-    void LatchRow(int row);
 
     MemoryBus*      memoryBus;
 

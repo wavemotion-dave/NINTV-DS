@@ -11,6 +11,7 @@
 
 #include "BackTabRAM.h"
 
+
 BackTabRAM::BackTabRAM()
 : RAM(BACKTAB_SIZE, BACKTAB_LOCATION, 0xFFFF, 0xFFFF)
 {}
@@ -59,15 +60,20 @@ BOOL BackTabRAM::isDirty(UINT16 location) {
     return dirtyBytes[location-BACKTAB_LOCATION];
 }
 
-BOOL BackTabRAM::isDirtyCache(UINT16 location) 
+
+void BackTabRAM::LatchRow(UINT8 row)
 {
-    bool ret = dirtyBytes[location];
-    dirtyBytes[location] = FALSE;
-    return ret;
+    for (int i=(row*20); i<((row+1)*20); i++) 
+    {
+        imageLatched[i] = image[i];
+        dirtyBytesLatched[i] = dirtyBytes[i];
+    }
 }
 
-void BackTabRAM::markCleanCache() 
+void BackTabRAM::markCleanLatched() 
 {
+    for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
+        dirtyBytesLatched[i] = FALSE;
     colorAdvanceBitsDirty = FALSE;
 }
 

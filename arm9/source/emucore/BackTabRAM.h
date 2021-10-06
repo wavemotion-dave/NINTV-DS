@@ -38,18 +38,23 @@ class BackTabRAM : public RAM
         BOOL areColorAdvanceBitsDirty();
         BOOL isDirty(UINT16 location);
         inline BOOL isDirtyDirect(UINT16 location) {return dirtyBytes[location];}
-        BOOL isDirtyCache(UINT16 location);
         void markClean();
-        void markCleanCache();
+
+        void LatchRow(UINT8 row);
+        void markCleanLatched();
+        BOOL isDirtyLatched(UINT16 location) { return dirtyBytesLatched[location];}
+        UINT16 peek_latched(UINT16 offset) { return imageLatched[offset]; }
         
         void getState(BackTabRAMState *state);
         void setState(BackTabRAMState *state);
 
     private:
         UINT16       image[BACKTAB_SIZE];
-        BOOL         dirtyBytes[BACKTAB_SIZE];
-        BOOL         dirtyRAM;
-        BOOL         colorAdvanceBitsDirty;
+        UINT8        dirtyBytes[BACKTAB_SIZE];
+        UINT16       imageLatched[BACKTAB_SIZE];
+        UINT8        dirtyBytesLatched[BACKTAB_SIZE];
+        UINT8        dirtyRAM;
+        UINT8        colorAdvanceBitsDirty;
 };
 
 #endif

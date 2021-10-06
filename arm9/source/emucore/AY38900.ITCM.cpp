@@ -63,6 +63,7 @@ UINT32 fudge_timing = 0;
 UINT16  mobBuffers[8][128] __attribute__((section(".dtcm")));
 UINT8 stretch[16] __attribute__((section(".dtcm"))) = {0x00, 0x03, 0x0C, 0x0F, 0x30, 0x33, 0x3C, 0x3F, 0xC0, 0xC3, 0xCC, 0xCF, 0xF0, 0xF3, 0xFC, 0xFF};
 UINT8 reverse[16] __attribute__((section(".dtcm"))) = {0x0, 0x8, 0x4, 0xC, 0x2, 0xA, 0x6, 0xE, 0x1, 0x9, 0x5, 0xD, 0x3, 0xB, 0x7, 0xF};
+UINT8 bLatched __attribute__((section(".dtcm"))) = false;
 
 AY38900::AY38900(MemoryBus* mb, GROM* go, GRAM* ga)
     : Processor("AY-3-8900"),
@@ -113,25 +114,6 @@ void AY38900::setGraphicsBusVisible(BOOL visible) {
     grom->SetEnabled(visible);
 }
 
-UINT16 bt[240];
-UINT8 btDirty[240];
-UINT8 bLatched = false;
-ITCM_CODE void AY38900::LatchRow(int row)
-{
-    static int last_row = -1;
-    
-    if (!bLatched) return;
-    
-    if (row != last_row)
-    {
-        for (int i=(row*20); i<((row+1)*20); i++) 
-        {
-            bt[i] = backtab.peek_direct(i);
-            btDirty[i] = backtab.isDirtyCache(i);
-        }
-        last_row = row;
-    }
-}
 
 ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
     INT32 totalTicks = 0;
@@ -210,7 +192,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(0);
+                if (bLatched) backtab.LatchRow(0);
                 mode = MODE_RENDER_ROW_0;
                 break;
             }
@@ -228,7 +210,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(1);
+                if (bLatched) backtab.LatchRow(1);
                 mode = MODE_RENDER_ROW_1;
                 break;
             }
@@ -246,7 +228,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(2);
+                if (bLatched) backtab.LatchRow(2);
                 mode = MODE_RENDER_ROW_2;
                 break;
             }
@@ -264,7 +246,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(3);
+                if (bLatched) backtab.LatchRow(3);
                 mode = MODE_RENDER_ROW_3;
                 break;
             }
@@ -282,7 +264,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(4);
+                if (bLatched) backtab.LatchRow(4);
                 mode = MODE_RENDER_ROW_4;
                 break;
             }
@@ -300,7 +282,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(5);
+                if (bLatched) backtab.LatchRow(5);
                 mode = MODE_RENDER_ROW_5;
                 break;
             }
@@ -318,7 +300,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(6);
+                if (bLatched) backtab.LatchRow(6);
                 mode = MODE_RENDER_ROW_6;
                 break;
             }
@@ -336,7 +318,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(7);
+                if (bLatched) backtab.LatchRow(7);
                 mode = MODE_RENDER_ROW_7;
                 break;
             }
@@ -352,10 +334,9 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_8:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            LatchRow(8);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(8);
+                if (bLatched) backtab.LatchRow(8);
                 mode = MODE_RENDER_ROW_8;
                 break;
             }
@@ -373,7 +354,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(9);
+                if (bLatched) backtab.LatchRow(9);
                 mode = MODE_RENDER_ROW_9;
                 break;
             }
@@ -391,7 +372,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(10);
+                if (bLatched) backtab.LatchRow(10);
                 mode = MODE_RENDER_ROW_10;
                 break;
             }
@@ -409,7 +390,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) LatchRow(11);
+                if (bLatched) backtab.LatchRow(11);
                 mode = MODE_RENDER_ROW_11;
                 break;
             }
@@ -506,7 +487,7 @@ ITCM_CODE void AY38900::markClean()
     colorStackChanged = FALSE;
     colorModeChanged = FALSE;
     if (bLatched)
-        backtab.markCleanCache();
+        backtab.markCleanLatched();
     else
         backtab.markClean();
     gram->markClean();
@@ -677,13 +658,13 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
     for (UINT8 i = 0; i < 240; i++) 
     {
         //get the next card to render
-        UINT16 nextCard = bt[i];
+        UINT16 nextCard = backtab.peek_latched(i);
         BOOL isGrom = (nextCard & 0x0800) == 0;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (colorModeChanged || btDirty[i] || (!isGrom && gram->isCardDirty(memoryLocation))) 
+        if (colorModeChanged || backtab.isDirtyLatched(i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
         {
             UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
@@ -777,12 +758,12 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
     //iterate through all the cards in the backtab
     for (UINT8 h = 0; h < 240; h++) 
     {
-        UINT16 nextCard = bt[h]; //backtab.peek_direct(h);
+        UINT16 nextCard = backtab.peek_latched(h); //backtab.peek_direct(h);
 
         //colored squares mode
         if ((nextCard & 0x1800) == 0x1000) 
         {
-            if (renderAll || btDirty[h]) 
+            if (renderAll || backtab.isDirtyDirect(h)) 
             {
                 UINT8 csColor = (UINT8)memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
@@ -808,8 +789,7 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
             UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8)
                 : (nextCard & 0x01F8));
 
-            if (renderAll || btDirty[h] ||
-                (!isGrom && gram->isCardDirty(memoryLocation))) 
+            if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
                 UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
                     (nextCard & 0x0007) | FOREGROUND_BIT);
