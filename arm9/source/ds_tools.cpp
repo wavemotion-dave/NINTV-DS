@@ -270,8 +270,13 @@ BOOL LoadCart(const CHAR* filename)
     // New game is loaded... (would have returned FALSE above otherwise)
     // ---------------------------------------------------------------------
     extern UINT32 fudge_timing;
+    extern UINT8 bLatched;
     fudge_timing = 0;
+    bLatched = false;
     if (currentRip->GetCRC() == 0x5F6E1AF6) fudge_timing = 1000;    // Motocross needs some fudge timing to run... known race condition...
+    if (currentRip->GetCRC() == 0x2DEACD15) bLatched = true;        // Stampede must have latched backtab access
+    if (currentRip->GetCRC() == 0x573B9B6D) bLatched = true;        // Masters of the Universe must have latched backtab access
+    
     FindAndLoadConfig();
     dsShowScreenEmu();
     dsShowScreenMain(false);

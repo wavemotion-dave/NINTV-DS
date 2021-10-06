@@ -115,6 +115,24 @@ void AY38900::setGraphicsBusVisible(BOOL visible) {
 
 UINT16 bt[240];
 UINT8 btDirty[240];
+UINT8 bLatched = false;
+ITCM_CODE void AY38900::LatchRow(int row)
+{
+    static int last_row = -1;
+    
+    if (!bLatched) return;
+    
+    if (row != last_row)
+    {
+        for (int i=(row*20); i<((row+1)*20); i++) 
+        {
+            bt[i] = backtab.peek_direct(i);
+            btDirty[i] = backtab.isDirtyCache(i);
+        }
+        last_row = row;
+    }
+}
+
 ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
     INT32 totalTicks = 0;
     do {
@@ -190,10 +208,9 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_0:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
-                
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(0);
                 mode = MODE_RENDER_ROW_0;
                 break;
             }
@@ -204,19 +221,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_1;
-                for (int i=0; i<20; i++) 
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_1:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(1);
                 mode = MODE_RENDER_ROW_1;
                 break;
             }
@@ -227,19 +239,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_2;
-                for (int i=20; i<40; i++) 
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_2:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(2);
                 mode = MODE_RENDER_ROW_2;
                 break;
             }
@@ -250,19 +257,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_3;
-                for (int i=40; i<60; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_3:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(3);
                 mode = MODE_RENDER_ROW_3;
                 break;
             }
@@ -273,19 +275,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_4;
-                for (int i=60; i<80; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_4:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(4);
                 mode = MODE_RENDER_ROW_4;
                 break;
             }
@@ -296,19 +293,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_5;
-                for (int i=80; i<100; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_5:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(5);
                 mode = MODE_RENDER_ROW_5;
                 break;
             }
@@ -319,19 +311,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_6;
-                for (int i=100; i<120; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_6:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(6);
                 mode = MODE_RENDER_ROW_6;
                 break;
             }
@@ -342,19 +329,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_7;
-                for (int i=120; i<140; i++) 
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_7:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(7);
                 mode = MODE_RENDER_ROW_7;
                 break;
             }
@@ -365,19 +347,15 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_8;
-                for (int i=140; i<160; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_8:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
+            LatchRow(8);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(8);
                 mode = MODE_RENDER_ROW_8;
                 break;
             }
@@ -388,19 +366,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_9;
-                for (int i=160; i<180; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_9:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(9);
                 mode = MODE_RENDER_ROW_9;
                 break;
             }
@@ -411,19 +384,14 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_10;
-                for (int i=180; i<200; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_10:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(10);
                 mode = MODE_RENDER_ROW_10;
                 break;
             }
@@ -434,25 +402,15 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_11;
-                for (int i=200; i<220; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
         case MODE_FETCH_ROW_11:
             pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
-            //renderRow((mode-3)/2);
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
+                if (bLatched) LatchRow(11);
                 mode = MODE_RENDER_ROW_11;
-                for (int i=220; i<240; i++)
-                {
-                    bt[i] = backtab.peek_direct(i);
-                    btDirty[i] = backtab.isDirtyCache(i);
-                }
                 break;
             }
 
@@ -547,7 +505,10 @@ ITCM_CODE void AY38900::markClean()
     bordersChanged = FALSE;
     colorStackChanged = FALSE;
     colorModeChanged = FALSE;
-    backtab.markCleanCache();
+    if (bLatched)
+        backtab.markCleanCache();
+    else
+        backtab.markClean();
     gram->markClean();
     for (int i = 0; i < 8; i++)
         mobs[i].markClean();
@@ -618,7 +579,9 @@ ITCM_CODE void AY38900::renderMOBs()
         //end at this memory location
         UINT16 lastMemoryLocation = (UINT16)(firstMemoryLocation + 8);
         if (mobs[i].doubleYResolution)
+        {
             lastMemoryLocation += 8;
+        }
 
         //make the pixels this tall
         int pixelHeight = (mobs[i].quadHeight ? 4 : 1) * (mobs[i].doubleHeight ? 2 : 1);
@@ -628,8 +591,10 @@ ITCM_CODE void AY38900::renderMOBs()
         int nextLine = 0;
         if (mobs[i].verticalMirror)
             nextLine = (pixelHeight * (mobs[i].doubleYResolution ? 15 : 7));
-        for (UINT16 j = firstMemoryLocation; j < lastMemoryLocation; j++) {
-            if (!mobs[i].shapeChanged && !gram->isCardDirty((UINT16)(j & 0x01FF))) {
+        for (UINT16 j = firstMemoryLocation; j < lastMemoryLocation; j++) 
+        {
+            if (!mobs[i].shapeChanged && !gram->isCardDirty((UINT16)(j & 0x01FF))) 
+            {
                 if (mobs[i].verticalMirror)
                     nextLine -= pixelHeight;
                 else
@@ -663,12 +628,50 @@ ITCM_CODE void AY38900::renderMOBs()
 ITCM_CODE void AY38900::renderBackground()
 {
     if (colorStackMode)
-        renderColorStackMode();
+    {
+        if (bLatched)
+            renderColorStackModeLatched();
+        else
+            renderColorStackMode();
+    }
     else
-        renderForegroundBackgroundMode();
+    {
+        if (bLatched)
+            renderForegroundBackgroundModeLatched();
+        else
+            renderForegroundBackgroundMode();
+    }
 }
 
+
 ITCM_CODE void AY38900::renderForegroundBackgroundMode()
+{
+    //iterate through all the cards in the backtab
+    for (UINT8 i = 0; i < 240; i++) 
+    {
+        //get the next card to render
+        UINT16 nextCard = backtab.peek_direct(i);
+        BOOL isGrom = (nextCard & 0x0800) == 0;
+        UINT16 memoryLocation = nextCard & 0x01F8;
+
+        //render this card only if this card has changed or if the card points to GRAM
+        //and one of the eight bytes in gram that make up this card have changed
+        if (colorModeChanged || backtab.isDirtyDirect(i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+        {
+            UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+            UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+
+            Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
+            UINT16 address = memory->getReadAddress()+memoryLocation;
+            UINT8 nextx = (i%20) * 8;
+            UINT8 nexty = (i/20) * 8;
+            for (UINT16 j = 0; j < 8; j++)
+                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+        }
+    }
+}
+
+ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
 {
     //iterate through all the cards in the backtab
     for (UINT8 i = 0; i < 240; i++) 
@@ -696,6 +699,71 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 }
 
 ITCM_CODE void AY38900::renderColorStackMode()
+{
+    UINT8 csPtr = 0;
+    //if there are any dirty color advance bits in the backtab, or if
+    //the color stack or the color mode has changed, the whole scene
+    //must be rendered
+    BOOL renderAll = backtab.areColorAdvanceBitsDirty() ||
+        colorStackChanged || colorModeChanged;
+    
+    UINT8 nextx = 0;
+    UINT8 nexty = 0;
+    //iterate through all the cards in the backtab
+    for (UINT8 h = 0; h < 240; h++) 
+    {
+        UINT16 nextCard = backtab.peek_direct(h);
+
+        //colored squares mode
+        if ((nextCard & 0x1800) == 0x1000) 
+        {
+            if (renderAll || backtab.isDirtyDirect(h)) 
+            {
+                UINT8 csColor = (UINT8)memory[0x28 + csPtr];
+                UINT8 color0 = (UINT8)(nextCard & 0x0007);
+                UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
+                UINT8 color2 = (UINT8)((nextCard & 0x01C0) >> 6);
+                UINT8 color3 = (UINT8)(((nextCard & 0x2000) >> 11) |
+                    ((nextCard & 0x0600) >> 9));
+                renderColoredSquares(nextx, nexty,
+                    (color0 == 7 ? csColor : (UINT8)(color0 | FOREGROUND_BIT)),
+                    (color1 == 7 ? csColor : (UINT8)(color1 | FOREGROUND_BIT)),
+                    (color2 == 7 ? csColor : (UINT8)(color2 | FOREGROUND_BIT)),
+                    (color3 == 7 ? csColor : (UINT8)(color3 | FOREGROUND_BIT)));
+            }
+        }
+        //color stack mode
+        else 
+        {
+            //advance the color pointer, if necessary
+            if ((nextCard & 0x2000) != 0)
+                csPtr = (UINT8)((csPtr+1) & 0x03);
+
+            BOOL isGrom = (nextCard & 0x0800) == 0;
+            UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8)
+                : (nextCard & 0x01F8));
+
+            if (renderAll || backtab.isDirtyDirect(h) ||
+                (!isGrom && gram->isCardDirty(memoryLocation))) 
+            {
+                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
+                    (nextCard & 0x0007) | FOREGROUND_BIT);
+                UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
+                Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
+                UINT16 address = memory->getReadAddress()+memoryLocation;
+                for (UINT16 j = 0; j < 8; j++)
+                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+            }
+        }
+        nextx += 8;
+        if (nextx == 160) {
+            nextx = 0;
+            nexty += 8;
+        }
+    }
+}
+
+ITCM_CODE void AY38900::renderColorStackModeLatched()
 {
     UINT8 csPtr = 0;
     //if there are any dirty color advance bits in the backtab, or if

@@ -37,6 +37,7 @@ class BackTabRAM : public RAM
 
         BOOL areColorAdvanceBitsDirty();
         BOOL isDirty(UINT16 location);
+        inline BOOL isDirtyDirect(UINT16 location) {return dirtyBytes[location];}
         BOOL isDirtyCache(UINT16 location);
         void markClean();
         void markCleanCache();

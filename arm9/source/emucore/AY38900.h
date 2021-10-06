@@ -96,7 +96,9 @@ private:
 	void renderMOBs();
 	void renderBackground();
 	void renderForegroundBackgroundMode();
+    void renderForegroundBackgroundModeLatched();
 	void renderColorStackMode();
+    void renderColorStackModeLatched();
 	void copyBackgroundBufferToStagingArea();
 	void copyMOBsToStagingArea();
 	void renderLine(UINT8 nextByte, INT32 x, INT32 y, UINT8 fgcolor, UINT8 bgcolor);
@@ -105,6 +107,7 @@ private:
 	BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);
     BOOL mobCollidesWithBorder(int mobNum);
     BOOL mobCollidesWithForeground(int mobNum);
+    void LatchRow(int row);
 
     MemoryBus*      memoryBus;
 
