@@ -49,6 +49,12 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.2 : 07-Oct-2021 by wavemotion-dave
+  * Stampede graphics fixed.
+  * Minor artifacts in Masters of the Universe fixed.
+  * Centipede working again.
+  * Improved speed across the board.
+  
 V2.1 : 03-Oct-2021 by wavemotion-dave
   * Nova Blast fixed.
   * JLP random fixed and improved JLP compatibility.

@@ -500,12 +500,13 @@ ITCM_CODE void AY38900::renderBorders()
     //draw the top and bottom borders
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
+         UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
         for (UINT8 y = 0; y < 8; y++) {
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
-            UINT8* buffer1 = buffer0 + (184*PIXEL_BUFFER_ROW_SIZE);
-            for (UINT8 x = 0; x < 160; x++) {
-                *buffer0++ = borderColor;
-                *buffer1++ = borderColor;
+            UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
+            UINT32* buffer1 = buffer0 + (184*PIXEL_BUFFER_ROW_SIZE/4);
+            for (UINT8 x = 0; x < 160/4; x++) {
+                *buffer0++ = borderColor32;
+                *buffer1++ = borderColor32;
             }
         }
     }
@@ -522,13 +523,12 @@ ITCM_CODE void AY38900::renderBorders()
     //draw the left and right borders
     if (blockLeft) {
         //move the image to the left 4 pixels and block the left and right 4 columns with the border
+         UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
         for (UINT8 y = 0; y < 192; y++) {
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
-            UINT8* buffer1 = buffer0 + 156;
-            for (UINT8 x = 0; x < 4; x++) {
-                *buffer0++ = borderColor;
-                *buffer1++ = borderColor;
-            }
+            UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
+            UINT32* buffer1 = buffer0 + (156/4);
+            *buffer0++ = borderColor32;
+            *buffer1++ = borderColor32;
         }
     }
     else if (horizontalOffset != 0) {
@@ -553,9 +553,7 @@ ITCM_CODE void AY38900::renderMOBs()
             continue;
 
         //start at this memory location
-        UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom
-                ? LOCATION_GROM + (mobs[i].cardNumber << 3)
-                : LOCATION_GRAM + ((mobs[i].cardNumber & 0x3F) << 3));
+        UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + (mobs[i].cardNumber << 3) : ((mobs[i].cardNumber & 0x3F) << 3));
 
         //end at this memory location
         UINT16 lastMemoryLocation = (UINT16)(firstMemoryLocation + 8);
@@ -574,17 +572,13 @@ ITCM_CODE void AY38900::renderMOBs()
             nextLine = (pixelHeight * (mobs[i].doubleYResolution ? 15 : 7));
         for (UINT16 j = firstMemoryLocation; j < lastMemoryLocation; j++) 
         {
-            if (!mobs[i].shapeChanged && !gram->isCardDirty((UINT16)(j & 0x01FF))) 
-            {
-                if (mobs[i].verticalMirror)
-                    nextLine -= pixelHeight;
-                else
-                    nextLine += pixelHeight;
-                continue;
-            }
+            UINT16 nextData;
 
             //get the next line of pixels
-            UINT16 nextData = (UINT16)(memoryBus->peek(j) & 0xFF);
+            if (mobs[i].isGrom)
+                nextData = (UINT16)(memoryBus->peek(j));
+            else
+                nextData = (UINT16)(gram_image[j]);
 
             //reverse the pixels horizontally if necessary
             if (mobs[i].horizontalMirror)
@@ -727,13 +721,20 @@ ITCM_CODE void AY38900::renderColorStackMode()
             if (renderAll || backtab.isDirtyDirect(h) ||
                 (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
-                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
-                    (nextCard & 0x0007) | FOREGROUND_BIT);
+                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
                 UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
-                Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
-                UINT16 address = memory->getReadAddress()+memoryLocation;
-                for (UINT16 j = 0; j < 8; j++)
-                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                if (isGrom)
+                {
+                    Memory* memory = (Memory*)grom;
+                    UINT16 address = memory->getReadAddress()+memoryLocation;
+                    for (UINT16 j = 0; j < 8; j++)
+                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                }
+                else
+                {
+                    for (UINT16 j = 0; j < 8; j++)
+                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j, fgcolor, bgcolor);
+                }
             }
         }
         nextx += 8;
