@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   // For the older DS-LITE and DS-PHAT hardware, we lower the sample rate
   if (!isDSiMode())
   {
-    SOUND_FREQ = 11100;
+    SOUND_FREQ = 12000;
   }
     
   srand(time(0));

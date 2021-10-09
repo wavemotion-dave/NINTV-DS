@@ -72,7 +72,7 @@ struct GlobalConfig_t
     UINT8  def_sound_quality;
     UINT8  key_START_map_default;
     UINT8  key_SELECT_map_default;
-    UINT8  spare0;
+    UINT8  man_dir;
     UINT8  spare1;
     UINT8  spare2;
     UINT8  spare3;

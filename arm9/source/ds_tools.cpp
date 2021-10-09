@@ -21,6 +21,7 @@
 #include "ds_tools.h"
 #include "savestate.h"
 #include "config.h"
+#include "manual.h"
 #include "bgBottom.h"
 #include "bgBottom-treasure.h"
 #include "bgBottom-cloudy.h"
@@ -91,10 +92,11 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     { 23,    82,     45,    65},    // META_LOAD
     { 23,    82,     74,    94},    // META_CONFIG
     { 23,    82,    103,   123},    // META_SCORE
-    { 23,    82,    161,   181},    // META_QUIT
+    {255,   255,    255,   255},    // META_QUIT
     { 23,    82,    132,   152},    // META_STATE
-    {255,   255,    255,   255},    // META_MENU
+    { 23,    82,    161,   181},    // META_MENU
     {255,   255,    255,   255},    // META_SWAP
+    {255,   255,    255,   255},    // META_MANUAL
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
@@ -397,7 +399,7 @@ BOOL InitializeEmulator(void)
 }
 
 
-#define MAIN_MENU_ITEMS 7
+#define MAIN_MENU_ITEMS 8
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
     "RESET EMULATOR",  
@@ -405,6 +407,7 @@ const char *main_menu[MAIN_MENU_ITEMS] =
     "GAME CONFIG",  
     "GAME SCORES",  
     "SAVE/RESTORE STATE",  
+    "GAME MANUAL",  
     "QUIT EMULATOR",  
     "EXIT THIS MENU",  
 };
@@ -470,9 +473,12 @@ int menu_entry(void)
                         return OVL_META_STATE;
                         break;
                     case 5:
-                        return OVL_META_QUIT;
+                        return OVL_META_MANUAL;
                         break;
                     case 6:
+                        return OVL_META_QUIT;
+                        break;
+                    case 7:
                         bDone=1;
                         break;
                 }
@@ -569,6 +575,17 @@ void ds_handle_meta(int meta_key)
 
         case OVL_META_SWITCH:
             myConfig.controller_type = 1-myConfig.controller_type;
+            break;
+            
+        case OVL_META_MANUAL:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                dsShowManual();
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
             break;
             
         case OVL_META_QUIT:
@@ -987,8 +1004,8 @@ ITCM_CODE void Run(char *initial_file)
 }
 
 
-unsigned int customTiles[32*1024];
-unsigned short customMap[12*1024];
+unsigned int customTiles[24*1024];
+unsigned short *customMap = (unsigned short *)0x068A0000; //16K of video memory
 unsigned short customPal[512];
 char line[256];
 
@@ -1028,8 +1045,8 @@ void load_custom_overlay(void)
       int pal_idx=0;
       char *token;
 
-      memset(customTiles, 0x00, 32*1024*sizeof(UINT32));
-      memset(customMap, 0x00, 12*1024*sizeof(UINT16));
+      memset(customTiles, 0x00, 24*1024*sizeof(UINT32));
+      memset(customMap, 0x00, 16*1024*sizeof(UINT16));
       memset(customPal, 0x00, 512*sizeof(UINT16));
 
       do
@@ -1228,7 +1245,7 @@ void dsInstallSoundEmuFIFO(void)
     memset(audio_mixer_buffer2, 0x00, 2048*sizeof(UINT16));
     TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
-    irqSet(IRQ_TIMER2, VsoundHandler);
+    irqSet(IRQ_TIMER2, (isDSiMode() ? VsoundHandlerDSi:VsoundHandlerDS));
     
     if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
         irqEnable(IRQ_TIMER2);
@@ -1257,7 +1274,20 @@ UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
 UINT16 lastSample           __attribute__((section(".dtcm"))) = 0;
 UINT8 myCurrentSampleIdx    __attribute__((section(".dtcm"))) = 0;
 
-ITCM_CODE void VsoundHandler(void)
+ITCM_CODE void VsoundHandlerDSi(void)
+{
+  extern UINT8 currentSampleIdx;
+
+  // If there is a fresh sample...
+  if (myCurrentSampleIdx != currentSampleIdx)
+  {
+      lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
+  }
+  audio_mixer_buffer2[sound_idx++] = lastSample;
+  sound_idx &= (2048-1);
+}
+
+ITCM_CODE void VsoundHandlerDS(void)
 {
   extern UINT8 currentSampleIdx;
 

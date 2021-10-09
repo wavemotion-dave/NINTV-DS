@@ -500,8 +500,9 @@ ITCM_CODE void AY38900::renderBorders()
     //draw the top and bottom borders
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
-         UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
-        for (UINT8 y = 0; y < 8; y++) {
+        UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
+        for (UINT8 y = 0; y < 8; y++) 
+        {
             UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
             UINT32* buffer1 = buffer0 + (184*PIXEL_BUFFER_ROW_SIZE/4);
             for (UINT8 x = 0; x < 160/4; x++) {
@@ -513,10 +514,12 @@ ITCM_CODE void AY38900::renderBorders()
     else if (verticalOffset != 0) {
         //block the top rows of pixels depending on the amount of vertical offset
         UINT8 numRows = (UINT8)(verticalOffset<<1);
-        for (UINT8 y = 0; y < numRows; y++) {
-            UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
-            for (UINT8 x = 0; x < 160; x++)
-                *buffer0++ = borderColor;
+        UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
+        for (UINT8 y = 0; y < numRows; y++) 
+        {
+            UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
+            for (UINT8 x = 0; x < 160/4; x++)
+                *buffer0++ = borderColor32;
         }
     }
 
@@ -795,10 +798,19 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
                 UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
                     (nextCard & 0x0007) | FOREGROUND_BIT);
                 UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
-                Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
-                UINT16 address = memory->getReadAddress()+memoryLocation;
-                for (UINT16 j = 0; j < 8; j++)
-                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                
+                if (isGrom)
+                {
+                    Memory* memory = (Memory*)grom;
+                    UINT16 address = memory->getReadAddress()+memoryLocation;
+                    for (UINT16 j = 0; j < 8; j++)
+                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                }
+                else
+                {
+                    for (UINT16 j = 0; j < 8; j++)
+                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j, fgcolor, bgcolor);
+                }
             }
         }
         nextx += 8;
@@ -813,24 +825,52 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 {
     if (blockLeft || blockTop)
     {
-        int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
-        int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
-        int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) + ((blockTop ? (8 - verticalOffset) : 0) * 160);
-
-        for (int y = 0; y < sourceHeightY; y++) 
+        if (horizontalOffset == 0 && verticalOffset == 0)
         {
-            UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
-            nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
-            if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
-            if (blockLeft) nextPixelStore0 += 4;
-            UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-            for (int x = 0; x < sourceWidthX; x++) 
+            int sourceWidthX = blockLeft ? 152 : 160;
+            int sourceHeightY = blockTop ? 88 : 96;
+            int nextSourcePixel = (blockLeft ? (8) : 0) + ((blockTop ? (8) : 0) * 160);
+
+            for (int y = 0; y < sourceHeightY; y++) 
             {
-                UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
-                *nextPixelStore0++ = nextColor;
-                *nextPixelStore1++ = nextColor;
+                UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
+                nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
+                if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
+                if (blockLeft) nextPixelStore0 += 4;
+                UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
+                
+                UINT32* np0 = (UINT32 *)nextPixelStore0;
+                UINT32* np1 = (UINT32 *)nextPixelStore1;
+                UINT32* backColor = (UINT32*)(&backgroundBuffer[nextSourcePixel]);
+                for (int x = 0; x < sourceWidthX/4; x++) 
+                {
+                    *np0++ = *backColor;
+                    *np1++ = *backColor++;
+                }
+                nextSourcePixel += 160;
             }
-            nextSourcePixel += 160;
+        }
+        else
+        {
+            int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
+            int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
+            int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) + ((blockTop ? (8 - verticalOffset) : 0) * 160);
+
+            for (int y = 0; y < sourceHeightY; y++) 
+            {
+                UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
+                nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
+                if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
+                if (blockLeft) nextPixelStore0 += 4;
+                UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
+                for (int x = 0; x < sourceWidthX; x++) 
+                {
+                    UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
+                    *nextPixelStore0++ = nextColor;
+                    *nextPixelStore1++ = nextColor;
+                }
+                nextSourcePixel += 160;
+            }
         }
     }
     else // No borders... quicker render...

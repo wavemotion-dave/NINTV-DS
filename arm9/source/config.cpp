@@ -54,7 +54,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.key_SELECT_map_default   = 21;
     myGlobalConfig.rom_dir                  = 0;
     myGlobalConfig.def_sound_quality        = (isDSiMode() ? 1:2);
-    myGlobalConfig.spare0                   = 0;
+    myGlobalConfig.man_dir                  = 0;
     myGlobalConfig.spare1                   = 0;
     myGlobalConfig.spare2                   = 0;
     myGlobalConfig.spare3                   = 0;
@@ -266,6 +266,7 @@ const struct options_t Global_Option_Table[] =
     {"SAVE DIR",    {"SAME AS ROMS", "/ROMS/SAV",  "/ROMS/INTV/SAV",  "/DATA/SAV"},                                                                                     &myGlobalConfig.save_dir,    4},
     {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                                     &myGlobalConfig.ovl_dir,     4},
     {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                                       &myGlobalConfig.rom_dir,     3},
+    {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                                     &myGlobalConfig.man_dir,     4},    
     {"START DEF",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_START_map_default, 22},
     {"SELECT DEF",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 

@@ -61,8 +61,9 @@ struct Overlay_t
 #define OVL_META_STATE  20
 #define OVL_META_MENU   21
 #define OVL_META_SWITCH 22
+#define OVL_META_MANUAL 23
 
-#define OVL_MAX         23
+#define OVL_MAX         24
 
 extern struct Overlay_t myOverlay[OVL_MAX];
 
@@ -83,7 +84,8 @@ extern void dsChooseOptions(void);
 extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
 extern unsigned int dsWaitForRom(char *chosen_filename);
-extern void VsoundHandler(void);
+extern void VsoundHandlerDSi(void);
+extern void VsoundHandlerDS(void);
 extern void dsInitPalette(void);
 
 #endif

@@ -13,7 +13,7 @@
 #include "GRAM.h"
 #include "JLP.h"
 
-UINT16 fast_ram[2048] __attribute__((section(".dtcm")));
+UINT16 fast_ram[1024] __attribute__((section(".dtcm")));
 UINT16 fast_ram_idx = 0;
 UINT16 jlp_ram[8192] = {0};
 
