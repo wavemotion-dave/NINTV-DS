@@ -334,15 +334,10 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 
 void reset_emu_frames(void)
 {
-    TIMER1_CR = 0;
-    TIMER1_DATA = 0;
-    TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
-
     TIMER0_CR=0;
     TIMER0_DATA=0;
     TIMER0_CR=TIMER_ENABLE | TIMER_DIV_1024;
     emu_frames=0;
-    frames=0;
 }
 
 BOOL InitializeEmulator(void)
@@ -979,6 +974,7 @@ ITCM_CODE void Run(char *initial_file)
         if (bInitEmulator)  // If the inputs told us we loaded a new file... cleanup and start over...
         {
             InitializeEmulator();
+            frames=0;
             bInitEmulator = false;
             continue;
         }        
@@ -1018,6 +1014,7 @@ ITCM_CODE void Run(char *initial_file)
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
+            debug1++;
             sprintf(tmp, "%4d %4d", debug1, debug2);
             if (DEBUG_ENABLE==1) dsPrintValue(0,1,0,tmp);
 
