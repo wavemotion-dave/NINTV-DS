@@ -20,7 +20,7 @@
 #include "manual.h"
 #include "CRC32.h"
 #include "bgBottom.h"
-#include "bgOptions.h"
+#include "bgHighScore.h"
 #include "Emulator.h"
 #include "Rip.h"
 
@@ -28,6 +28,7 @@ UINT16 buf_lines = 0;
 char man_buf[MAX_MAN_ROWS][MAX_MAN_COLS +1];
 
 extern Rip *currentRip;
+extern int bg0, bg0b,bg1b;
 
 static void ReadManual(void)
 {
@@ -103,6 +104,14 @@ void dsShowManual(void)
     bool bDone=false;
     int keys_pressed;
     static int last_keys = -1;
+    
+    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
+    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    swiWaitForVBlank();
+    
     
     if (last_crc != currentRip->GetCRC())
     {
