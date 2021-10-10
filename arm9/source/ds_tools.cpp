@@ -242,6 +242,7 @@ ITCM_CODE void VideoBusDS::render()
     }    
 }
 
+UINT8 bNoHorizontalOffset = 0;
 
 BOOL LoadCart(const CHAR* filename)
 {
@@ -280,9 +281,11 @@ BOOL LoadCart(const CHAR* filename)
     extern UINT8 bLatched;
     fudge_timing = 0;
     bLatched = false;
+    bNoHorizontalOffset = 0;
     if (currentRip->GetCRC() == 0x5F6E1AF6) fudge_timing = 1000;    // Motocross needs some fudge timing to run... known race condition...
     if (currentRip->GetCRC() == 0x2DEACD15) bLatched = true;        // Stampede must have latched backtab access
     if (currentRip->GetCRC() == 0x573B9B6D) bLatched = true;        // Masters of the Universe must have latched backtab access
+    if (currentRip->GetCRC() == 0x5ccf8b59) bNoHorizontalOffset = 1;// Christmas Carol goes weird if we allow horizontal shift... TODO: look into why...
     
     FindAndLoadConfig();
     dsShowScreenEmu();
@@ -1083,7 +1086,6 @@ ITCM_CODE void Run(char *initial_file)
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            debug1++;
             sprintf(tmp, "%4d %4d", debug1, debug2);
             if (DEBUG_ENABLE==1) dsPrintValue(0,1,0,tmp);
 
