@@ -57,6 +57,8 @@ static void ReadManual(void)
         strcat(filebuf, ".man");
         fp = fopen(filebuf, "rb");
     }
+
+    memset(man_buf, 0x00, sizeof(man_buf));
     
     // --------------------------------------------------------------
     // Now read the entire file in... up to limits of our buffers...
@@ -64,7 +66,6 @@ static void ReadManual(void)
     buf_lines = 0;
     if (fp != NULL)
     {
-        memset(man_buf, 0x00, sizeof(man_buf));
         do
         {
             fgets(filebuf, 127, fp);
@@ -97,12 +98,18 @@ void DisplayManual(UINT16 start_line)
 
 void dsShowManual(void)
 {
-    int top_line = 0;
+    static UINT16 top_line = 0;
+    static UINT32 last_crc=0;
     bool bDone=false;
     int keys_pressed;
     static int last_keys = -1;
     
-    ReadManual();
+    if (last_crc != currentRip->GetCRC())
+    {
+        top_line=0;   
+        ReadManual();
+        last_crc = currentRip->GetCRC();
+    }
     DisplayManual(top_line);
     while (!bDone)
     {
