@@ -21,6 +21,8 @@ Features :
  * Many games run very close to full speed on the older DS-LITE and
  DS-PHAT hardware but you can play with config settings to get the 
  most out of these games (even if you have to disable sound to gain the speed).
+ * Custom Overlay Support. See the 'extras' folder for details.
+ * Manual instruction Support. See the 'extras' folder for an example.
  
  * JLP support for accelerated functions and RAM is supported. When loading a game,
  use the X button to load and force JLP support ON.
@@ -49,6 +51,13 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.3 : 10-Oct-2021 by wavemotion-dave
+  * New Custom Overlay Guide (see extras folder)
+  * New Manual/Instructions Support (see extras folder)
+  * Improved speed, reduced memory usage
+  * Full JLP flash support
+  * DS-LITE/PHAT sound improvment
+
 V2.2 : 07-Oct-2021 by wavemotion-dave
   * Stampede graphics fixed.
   * Minor artifacts in Masters of the Universe fixed.

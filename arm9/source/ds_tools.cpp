@@ -54,6 +54,7 @@ typedef enum _RunState
 bool bStartSoundFifo = false;
 bool bUseJLP = false;
 bool bForceIvoice=false;
+bool bInitEmulator=false;
 
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
@@ -62,7 +63,7 @@ VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
 int debug1, debug2;
-UINT16 emu_frames=1;
+UINT16 emu_frames=0;
 UINT16 frames=0;
 
 
@@ -283,7 +284,7 @@ BOOL LoadCart(const CHAR* filename)
     dsShowScreenEmu();
     dsShowScreenMain(false);
     bFirstGameLoaded = TRUE;    
-    
+    bInitEmulator = true;    
     return TRUE;
 }
 
@@ -326,10 +327,15 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 
 void reset_emu_frames(void)
 {
+    TIMER1_CR = 0;
+    TIMER1_DATA = 0;
+    TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
+
     TIMER0_CR=0;
     TIMER0_DATA=0;
-    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
-    emu_frames=1;
+    TIMER0_CR=TIMER_ENABLE | TIMER_DIV_1024;
+    emu_frames=0;
+    frames=0;
 }
 
 BOOL InitializeEmulator(void)
@@ -377,9 +383,15 @@ BOOL InitializeEmulator(void)
         }
     }
     
+    // No audio to start... it will turn on 1 frame in...
+    TIMER2_CR=0; irqDisable(IRQ_TIMER2);
+    
 	//hook the audio and video up to the currentEmulator
 	currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
     currentEmu->InitAudio(audioMixer, SOUND_FREQ);
+    
+    // Clear the audio mixer...
+    audioMixer->resetProcessor();
 
     //put the RIP in the currentEmulator
 	currentEmu->SetRip(currentRip);
@@ -393,6 +405,7 @@ BOOL InitializeEmulator(void)
     // And put the Sound Fifo back at the start...
     bStartSoundFifo = true;
     
+    // Make sure we're starting fresh...
     reset_emu_frames();
 
     return TRUE;
@@ -519,7 +532,6 @@ void ds_handle_meta(int meta_key)
                 if (LoadCart(newFile)) 
                 {
                     dsInitPalette();
-                    InitializeEmulator();
                 }
                 else
                 {
@@ -536,8 +548,6 @@ void ds_handle_meta(int meta_key)
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-            touchPosition touch;
-            touchRead(&touch);
             break;
 
         case OVL_META_SCORES:
@@ -933,14 +943,13 @@ ITCM_CODE void Run(char *initial_file)
         if (LoadCart(initial_file)) 
         {
             dsInitPalette();
-            InitializeEmulator();
         }
     }
     
 	while(runState == Running) 
     {
         // Time 1 frame...
-        while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*emu_frames))
+        while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*(emu_frames+1)))
             ;
 
         // Have we processed target (default 60) frames... start over...
@@ -951,11 +960,21 @@ ITCM_CODE void Run(char *initial_file)
         
         //poll the input
 		pollInputs();
+        
+        if (bInitEmulator)  // If the inputs told us we loaded a new file... cleanup and start over...
+        {
+            InitializeEmulator();
+            bInitEmulator = false;
+            continue;
+        }        
 
         if (bFirstGameLoaded)
         {
             //flush the audio  -  normaly this would be done AFTER run/render but this gives us maximum accuracy on audio timing
-            currentEmu->FlushAudio();
+            if (!bStartSoundFifo)
+            {
+                currentEmu->FlushAudio();
+            }
             
             //run the emulation
             currentEmu->Run();
