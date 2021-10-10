@@ -67,6 +67,8 @@ AudioMixer           *audioMixer = NULL;
 int debug1, debug2;
 UINT16 emu_frames=0;
 UINT16 frames=0;
+UINT16 stretch_x = ((160 / 256) << 8) | (160 % 256);
+INT16  offset_x = 0;
 
 
 struct Overlay_t defaultOverlay[OVL_MAX] =
@@ -413,8 +415,60 @@ BOOL InitializeEmulator(void)
     return TRUE;
 }
 
+void HandleScreenStretch(void)
+{
+    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
+    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    swiWaitForVBlank();
+    
+    dsPrintValue(2, 5, 0, (char*)"PRESS UP/DN TO STRETCH SCREEN");
+    dsPrintValue(2, 7, 0, (char*)"LEFT/RIGHT TO SHIFT SCREEN");
+    dsPrintValue(2, 9, 0, (char*)"PRESS X TO RESET TO DEFAULTS");
+    dsPrintValue(2, 11,0, (char*)"PRESS B TO EXIT");
+    
+    bool bDone = false;
+    while (!bDone)
+    {
+        int keys_pressed = keysCurrent();
+        if (keys_pressed & KEY_UP)    
+        {
+            REG_BG3PA = --stretch_x;
+            WAITVBL;
+        }
+        else if (keys_pressed & KEY_DOWN)
+        {
+            REG_BG3PA = ++stretch_x;
+            WAITVBL;
+        }
+        else if (keys_pressed & KEY_RIGHT)
+        {
+            REG_BG3X = ++offset_x;
+            for (int i=0; i<2600; i++) asm("nop");
+        }
+        else if (keys_pressed & KEY_LEFT)
+        {
+            REG_BG3X = --offset_x;
+            for (int i=0; i<2600; i++) asm("nop");
+        }
+        else if (keys_pressed & KEY_X)
+        {
+            stretch_x = ((160 / 256) << 8) | (160 % 256);
+            offset_x = 0;
+            REG_BG3PA = stretch_x;
+            REG_BG3X = offset_x;
+            WAITVBL;
+        }
+        else if ((keys_pressed & KEY_B) || (keys_pressed & KEY_A))
+        {
+            bDone = true;
+        }
+    }
+}
 
-#define MAIN_MENU_ITEMS 8
+#define MAIN_MENU_ITEMS 9
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
     "RESET EMULATOR",  
@@ -423,6 +477,7 @@ const char *main_menu[MAIN_MENU_ITEMS] =
     "GAME SCORES",  
     "SAVE/RESTORE STATE",  
     "GAME MANUAL",  
+    "SCREEN STRETCH",
     "QUIT EMULATOR",  
     "EXIT THIS MENU",  
 };
@@ -491,9 +546,12 @@ int menu_entry(void)
                         return OVL_META_MANUAL;
                         break;
                     case 6:
-                        return OVL_META_QUIT;
+                        return OVL_META_STRETCH;
                         break;
                     case 7:
+                        return OVL_META_QUIT;
+                        break;
+                    case 8:
                         bDone=1;
                         break;
                 }
@@ -602,6 +660,17 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 dsShowManual();
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            break;
+            
+        case OVL_META_STRETCH:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                HandleScreenStretch();
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
@@ -1449,11 +1518,10 @@ void dsShowScreenEmu(void)
   bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_256x256, 0,0);
   memset((void*)0x06000000, 0x00, 128*1024);
 
-  int stretch_x = ((160 / 256) << 8) | (160 % 256);
   REG_BG3PA = stretch_x;
   REG_BG3PB = 0; REG_BG3PC = 0;
   REG_BG3PD = ((100 / 100)  << 8) | (100 % 100) ;
-  REG_BG3X = 0;
+  REG_BG3X = offset_x;
   REG_BG3Y = 0;
 
   dsInitPalette();

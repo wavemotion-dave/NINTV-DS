@@ -36,34 +36,35 @@ struct Overlay_t
     UINT8   y2;
 };
 
-#define OVL_KEY_1       0
-#define OVL_KEY_2       1
-#define OVL_KEY_3       2
-#define OVL_KEY_4       3
-#define OVL_KEY_5       4
-#define OVL_KEY_6       5
-#define OVL_KEY_7       6
-#define OVL_KEY_8       7
-#define OVL_KEY_9       8
-#define OVL_KEY_CLEAR   9
-#define OVL_KEY_0       10
-#define OVL_KEY_ENTER   11
+#define OVL_KEY_1        0
+#define OVL_KEY_2        1
+#define OVL_KEY_3        2
+#define OVL_KEY_4        3
+#define OVL_KEY_5        4
+#define OVL_KEY_6        5
+#define OVL_KEY_7        6
+#define OVL_KEY_8        7
+#define OVL_KEY_9        8
+#define OVL_KEY_CLEAR    9
+#define OVL_KEY_0        10
+#define OVL_KEY_ENTER    11
+ 
+#define OVL_BTN_FIRE     12
+#define OVL_BTN_L_ACT    13
+#define OVL_BTN_R_ACT    14
+ 
+#define OVL_META_RESET   15
+#define OVL_META_LOAD    16
+#define OVL_META_CONFIG  17
+#define OVL_META_SCORES  18
+#define OVL_META_QUIT    19
+#define OVL_META_STATE   20
+#define OVL_META_MENU    21
+#define OVL_META_SWITCH  22
+#define OVL_META_MANUAL  23
+#define OVL_META_STRETCH 24
 
-#define OVL_BTN_FIRE    12
-#define OVL_BTN_L_ACT   13
-#define OVL_BTN_R_ACT   14
-
-#define OVL_META_RESET  15
-#define OVL_META_LOAD   16
-#define OVL_META_CONFIG 17
-#define OVL_META_SCORES 18
-#define OVL_META_QUIT   19
-#define OVL_META_STATE  20
-#define OVL_META_MENU   21
-#define OVL_META_SWITCH 22
-#define OVL_META_MANUAL 23
-
-#define OVL_MAX         24
+#define OVL_MAX          25
 
 extern struct Overlay_t myOverlay[OVL_MAX];
 
