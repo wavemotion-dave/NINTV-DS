@@ -43,6 +43,8 @@
 
 #define DEBUG_ENABLE 0
 
+BOOL InitializeEmulator(void);
+
 typedef enum _RunState 
 {
     Stopped,
@@ -283,8 +285,13 @@ BOOL LoadCart(const CHAR* filename)
     FindAndLoadConfig();
     dsShowScreenEmu();
     dsShowScreenMain(false);
+    
     bFirstGameLoaded = TRUE;    
     bInitEmulator = true;    
+    
+    dsInstallSoundEmuFIFO();
+    WAITVBL;WAITVBL;
+    
     return TRUE;
 }
 
@@ -522,7 +529,15 @@ void ds_handle_meta(int meta_key)
     switch (meta_key)
     {
         case OVL_META_RESET:
-            if (bFirstGameLoaded) currentEmu->Reset();
+            if (bFirstGameLoaded)
+            {
+                currentEmu->Reset();
+                // And put the Sound Fifo back at the start...
+                bStartSoundFifo = true;
+
+                // Make sure we're starting fresh...
+                reset_emu_frames();
+            }                
             break;
  
         case OVL_META_LOAD:
@@ -1251,7 +1266,6 @@ void dsMainLoop(char *initial_file)
     
     FindAndLoadConfig();
     dsShowScreenMain(true);
-    InitializeEmulator();
     
     Run(initial_file);
 }
