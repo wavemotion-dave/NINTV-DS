@@ -155,7 +155,7 @@ void dsShowManual(void)
                     DisplayManual(top_line);
                 }
             }
-            if (keys_pressed & KEY_B) 
+            if ((keys_pressed & KEY_B) || (keys_pressed & KEY_A))
             {
                 bDone=true;
             }
