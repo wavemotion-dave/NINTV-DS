@@ -19,7 +19,8 @@
 #include "VideoProducer.h"
 #include "InputConsumer.h"
 
-#define MAX_COMPONENTS 16
+#define MAX_COMPONENTS 4
+#define MAX_ROMS       12
 
 /**
  * A peripheral represents a device that contains emulated hardware components, including
@@ -221,17 +222,17 @@ class Peripheral
     private:
         char              peripheralShortName[16];
         Processor*        processors[MAX_COMPONENTS];
-        UINT16            processorCount;
+        UINT8             processorCount;
         VideoProducer*    videoProducers[MAX_COMPONENTS];
-        UINT16            videoProducerCount;
+        UINT8             videoProducerCount;
         AudioProducer*    audioProducers[MAX_COMPONENTS];
-        UINT16            audioProducerCount;
+        UINT8             audioProducerCount;
         InputConsumer*    inputConsumers[MAX_COMPONENTS];
-        UINT16            inputConsumerCount;
-        RAM*			  rams[MAX_COMPONENTS];
-        UINT16            ramCount;
-        ROM*		      roms[MAX_COMPONENTS];
-        UINT16            romCount;
+        UINT8             inputConsumerCount;
+        RAM*			  rams[MAX_ROMS];
+        UINT8             ramCount;
+        ROM*		      roms[MAX_ROMS];
+        UINT8             romCount;
 
 };
 

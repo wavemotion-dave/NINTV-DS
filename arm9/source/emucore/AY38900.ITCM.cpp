@@ -108,7 +108,7 @@ void AY38900::resetProcessor()
     horizontalOffset = verticalOffset = 0;
 }
 
-void AY38900::setGraphicsBusVisible(BOOL visible) {
+ITCM_CODE void AY38900::setGraphicsBusVisible(BOOL visible) {
     registers.SetEnabled(visible);
     gram->SetEnabled(visible);
     grom->SetEnabled(visible);

@@ -223,7 +223,7 @@ void FindAndLoadConfig(void)
 struct options_t
 {
     const char  *label;
-    const char  *option[24];
+    const char  *option[25];
     UINT8 *option_val;
     UINT8 option_max;
 };

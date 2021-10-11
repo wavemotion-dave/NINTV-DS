@@ -66,10 +66,10 @@ class MOB
         void markClean();
         MOBRect* getBounds();
 
-        INT32   xLocation;
-        INT32   yLocation;
+        INT16   xLocation;
+        INT16   yLocation;
         INT32   foregroundColor;
-        INT32   cardNumber;
+        INT16   cardNumber;
         UINT16  collisionRegister;
         UINT8   isGrom;
         UINT8   isVisible;

@@ -25,10 +25,10 @@ class MOBRect
 		         (r->y >= y + height));
         }
 
-        INT32 x;
-        INT32 y;
-        INT32 width;
-        INT32 height;
+        INT16 x;
+        INT16 y;
+        UINT8 width;
+        UINT8 height;
 
 };
 

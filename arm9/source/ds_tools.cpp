@@ -417,6 +417,7 @@ BOOL InitializeEmulator(void)
 
 void HandleScreenStretch(void)
 {
+    char tmpStr[33];
     decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
     decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
     dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
@@ -426,32 +427,30 @@ void HandleScreenStretch(void)
     
     dsPrintValue(2, 5, 0, (char*)"PRESS UP/DN TO STRETCH SCREEN");
     dsPrintValue(2, 7, 0, (char*)"LEFT/RIGHT TO SHIFT SCREEN");
-    dsPrintValue(2, 9, 0, (char*)"PRESS X TO RESET TO DEFAULTS");
-    dsPrintValue(2, 11,0, (char*)"PRESS B TO EXIT");
+    dsPrintValue(2, 15, 0, (char*)"PRESS X TO RESET TO DEFAULTS");
+    dsPrintValue(2, 16,0, (char*)"PRESS B TO EXIT");
     
     bool bDone = false;
+    int last_stretch_x = -99;
+    int last_offset_x = -99;
     while (!bDone)
     {
         int keys_pressed = keysCurrent();
         if (keys_pressed & KEY_UP)    
         {
-            REG_BG3PA = --stretch_x;
-            WAITVBL;
+            if (stretch_x > 0x0080) REG_BG3PA = --stretch_x;
         }
         else if (keys_pressed & KEY_DOWN)
         {
-            REG_BG3PA = ++stretch_x;
-            WAITVBL;
+            if (stretch_x < 0x0100) REG_BG3PA = ++stretch_x;
         }
         else if (keys_pressed & KEY_RIGHT)
         {
-            REG_BG3X = ++offset_x;
-            for (int i=0; i<2600; i++) asm("nop");
+            REG_BG3X = (++offset_x) << 8;
         }
         else if (keys_pressed & KEY_LEFT)
         {
-            REG_BG3X = --offset_x;
-            for (int i=0; i<2600; i++) asm("nop");
+            REG_BG3X = (--offset_x) << 8;
         }
         else if (keys_pressed & KEY_X)
         {
@@ -459,12 +458,24 @@ void HandleScreenStretch(void)
             offset_x = 0;
             REG_BG3PA = stretch_x;
             REG_BG3X = offset_x;
-            WAITVBL;
         }
         else if ((keys_pressed & KEY_B) || (keys_pressed & KEY_A))
         {
             bDone = true;
         }
+        
+        // If any values changed... output them.
+        if ((stretch_x != last_stretch_x) || (offset_x != last_offset_x))
+        {
+            last_stretch_x = stretch_x;
+            last_offset_x = offset_x;
+            sprintf(tmpStr, "STRETCH_X = 0x%04X", stretch_x);
+            dsPrintValue(6, 11, 0, (char*)tmpStr);
+            sprintf(tmpStr, " OFFSET_X = %-5d", offset_x);
+            dsPrintValue(6, 12, 0, (char*)tmpStr);
+        }
+
+        WAITVBL;WAITVBL;
     }
 }
 
