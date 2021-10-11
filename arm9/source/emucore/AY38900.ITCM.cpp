@@ -823,8 +823,9 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
 
 ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 {
-    if (blockLeft || blockTop)
+    if (blockLeft || blockTop || horizontalOffset || verticalOffset)
     {
+        // No offsets - this is a reasonably fast 32-bit render
         if (horizontalOffset == 0 && verticalOffset == 0)
         {
             int sourceWidthX = blockLeft ? 152 : 160;
@@ -850,13 +851,13 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                 nextSourcePixel += 160;
             }
         }
-        else
+        else    // This is the worst case... offsets!
         {
-            int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
-            int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
+            int sourceWidthX = blockLeft ? 152 : 160;
+            int sourceHeightY = blockTop ? 88 : 96;
             int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : -horizontalOffset) + ((blockTop ? (8 - verticalOffset) : -verticalOffset) * 160);
 
-            for (int y = 0; y < sourceHeightY; y++) 
+            for (int y = 0; y<verticalOffset; y++)
             {
                 UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
                 nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
@@ -865,7 +866,23 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
                 for (int x = 0; x < sourceWidthX; x++) 
                 {
-                    UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
+                    UINT8 nextColor = 0x00;
+                    *nextPixelStore0++ = nextColor;
+                    *nextPixelStore1++ = nextColor;
+                }
+                nextSourcePixel += 160;
+            }
+            
+            for (int y = verticalOffset; y < sourceHeightY; y++) 
+            {
+                UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
+                nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
+                if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
+                if (blockLeft) nextPixelStore0 += 4;
+                UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
+                for (int x = 0; x < sourceWidthX; x++) 
+                {
+                    UINT8 nextColor = ((x < horizontalOffset) ? 0x00: backgroundBuffer[nextSourcePixel+x]);
                     *nextPixelStore0++ = nextColor;
                     *nextPixelStore1++ = nextColor;
                 }
@@ -873,7 +890,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
             }
         }
     }
-    else // No borders... quicker render...
+    else // No borders and no offsets...
     {
         // This is the fastest of them all... no offsets and no borders so everything will be a multiple of 4...
         if (horizontalOffset == 0 && verticalOffset == 0)
@@ -889,25 +906,6 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                     *nextPixelStore1++ = *backColor++;
                 }
             }
-        }
-        else // Has offsets... but no borders
-        {
-            int sourceWidthX = (160 - horizontalOffset);
-            int sourceHeightY = (96 - verticalOffset);
-            int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : -horizontalOffset) + ((blockTop ? (8 - verticalOffset) : -verticalOffset) * 160);
-
-            for (int y = 0; y < sourceHeightY; y++) 
-            {
-                UINT8* nextPixelStore0 = (UINT8*)&pixelBuffer[y*PIXEL_BUFFER_ROW_SIZE*2];
-                UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-                for (int x = 0; x < sourceWidthX; x++) 
-                {
-                    UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
-                    *nextPixelStore0++ = nextColor;
-                    *nextPixelStore1++ = nextColor;
-                }
-                nextSourcePixel += 160;
-            }            
         }
     }
 }

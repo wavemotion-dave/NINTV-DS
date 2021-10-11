@@ -28,6 +28,9 @@
 #define ROM_TAG_RELEASE_DATE   0x05
 #define ROM_TAG_COMPATIBILITY  0x06
 
+UINT8 bin_image_buf[128 * 1024];
+UINT16 *bin_image_buf16 = (UINT16 *) 0x06860000;
+
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
   peripheralCount(0),
@@ -79,8 +82,6 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
-UINT8 bin_image_buf[128 * 1024];
-UINT16 *bin_image_buf16 = (UINT16 *) 0x06860000;
 Rip* Rip::LoadBin(const CHAR* filename)
 {
     char cfgFilename[128];
@@ -115,7 +116,9 @@ Rip* Rip::LoadBin(const CHAR* filename)
 
     UINT32 count = 0;
     while (count < size)
+    {
         bin_image_buf[count++] = (UINT8)fgetc(file);
+    }
     fclose(file);
 
     //parse the file bin_image_buf[] into the rip
