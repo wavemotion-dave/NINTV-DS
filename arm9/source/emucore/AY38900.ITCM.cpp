@@ -853,36 +853,27 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
         }
         else    // This is the worst case... offsets!
         {
-            int sourceWidthX = blockLeft ? 152 : 160;
-            int sourceHeightY = blockTop ? 88 : 96;
-            int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : -horizontalOffset) + ((blockTop ? (8 - verticalOffset) : -verticalOffset) * 160);
-
-            for (int y = 0; y<verticalOffset; y++)
-            {
-                UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
-                nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
-                if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
-                if (blockLeft) nextPixelStore0 += 4;
-                UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-                for (int x = 0; x < sourceWidthX; x++) 
-                {
-                    UINT8 nextColor = 0x00;
-                    *nextPixelStore0++ = nextColor;
-                    *nextPixelStore1++ = nextColor;
-                }
-                nextSourcePixel += 160;
-            }
+            short int sourceWidthX = blockLeft ? 152 : (160-horizontalOffset);
+            short int sourceHeightY = blockTop ? 88 : (96-verticalOffset);
+            short int myHoriz = (blockLeft ? (8 - horizontalOffset) : 0);
+            short int myVert  = (blockTop  ? (8 - verticalOffset)   : 0);
+            short int nextSourcePixel = myHoriz + (myVert * 160);           
             
-            for (int y = verticalOffset; y < sourceHeightY; y++) 
+            for (int y = 0; y < sourceHeightY; y++) 
             {
                 UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
                 nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
+
                 if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
+                else if (verticalOffset) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*(verticalOffset*2));
+                
                 if (blockLeft) nextPixelStore0 += 4;
+                else if (horizontalOffset) nextPixelStore0 += horizontalOffset;
+                
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
                 for (int x = 0; x < sourceWidthX; x++) 
                 {
-                    UINT8 nextColor = ((x < horizontalOffset) ? 0x00: backgroundBuffer[nextSourcePixel+x]);
+                    UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
                     *nextPixelStore0++ = nextColor;
                     *nextPixelStore1++ = nextColor;
                 }

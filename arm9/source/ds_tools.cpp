@@ -1114,8 +1114,8 @@ ITCM_CODE void Run(char *initial_file)
 }
 
 
-unsigned int customTiles[24*1024];
-unsigned short *customMap = (unsigned short *)0x068A0000; //16K of video memory
+unsigned int *customTiles = (unsigned int *) 0x06860000;   //128K of video memory
+unsigned short *customMap = (unsigned short *)0x068A0000;  //16K of video memory
 unsigned short customPal[512];
 char line[256];
 
