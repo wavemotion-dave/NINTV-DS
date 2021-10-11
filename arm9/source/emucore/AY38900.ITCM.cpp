@@ -854,7 +854,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
         {
             int sourceWidthX = blockLeft ? 152 : (160 - horizontalOffset);
             int sourceHeightY = blockTop ? 88 : (96 - verticalOffset);
-            int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : 0) + ((blockTop ? (8 - verticalOffset) : 0) * 160);
+            int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : -horizontalOffset) + ((blockTop ? (8 - verticalOffset) : -verticalOffset) * 160);
 
             for (int y = 0; y < sourceHeightY; y++) 
             {
@@ -894,7 +894,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
         {
             int sourceWidthX = (160 - horizontalOffset);
             int sourceHeightY = (96 - verticalOffset);
-            int nextSourcePixel = 0;
+            int nextSourcePixel = (blockLeft ? (8 - horizontalOffset) : -horizontalOffset) + ((blockTop ? (8 - verticalOffset) : -verticalOffset) * 160);
 
             for (int y = 0; y < sourceHeightY; y++) 
             {

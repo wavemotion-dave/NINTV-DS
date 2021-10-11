@@ -79,7 +79,7 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
-UINT8 bin_image_buf[50 * 1024];
+UINT8 bin_image_buf[128 * 1024];
 UINT16 *bin_image_buf16 = (UINT16 *) 0x06860000;
 Rip* Rip::LoadBin(const CHAR* filename)
 {

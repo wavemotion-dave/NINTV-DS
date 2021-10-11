@@ -29,7 +29,6 @@ void AY38900_Registers::reset()
     memset(memory, 0, sizeof(memory));
 }
 
-extern UINT8 bNoHorizontalOffset;
 void AY38900_Registers::poke(UINT16 location, UINT16 value) {
     if (!enabled)
         return;
@@ -128,7 +127,7 @@ void AY38900_Registers::poke(UINT16 location, UINT16 value) {
             break;
         case 0x30:
             value &= 0x0007;
-            ay38900->horizontalOffset = (bNoHorizontalOffset ? 0:value);
+            ay38900->horizontalOffset = value;
             ay38900->offsetsChanged = TRUE;
             break;
         case 0x31:
