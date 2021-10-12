@@ -53,6 +53,13 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.4 : 12-Oct-2021 by wavemotion-dave
+  * Fixed horizontal and vertical offset/scrolling. Christmas Carol should now work.
+  * Improved memory handling so we can load larger games.
+  * Allow Manual/Instructions to be mapped to keys.
+  * Improved generic overlay graphic.
+  * Beta version of screen stretch/offset.  
+  
 V2.3 : 10-Oct-2021 by wavemotion-dave
   * New Custom Overlay Guide (see extras folder)
   * New Manual/Instructions Support (see extras folder)
