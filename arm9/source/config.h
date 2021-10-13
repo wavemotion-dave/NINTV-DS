@@ -40,17 +40,17 @@ struct Config_t
     UINT8  sound_clock_div;
     UINT8  dpad_config;
     UINT8  target_fps;
-    UINT8  brightness;
+    UINT8  spare0;
     UINT8  palette;
     UINT16 stretch_x;
     INT8   offset_x;
     UINT8  spare3;
     UINT8  spare4;
     UINT8  spare5;
-    UINT8  spare6;
-    UINT8  spare7;
-    UINT8  spare8;
-    UINT8  spare9;
+    UINT8  key_AX_map;
+    UINT8  key_XY_map;
+    UINT8  key_YB_map;
+    UINT8  key_BA_map;    
 };
 
 struct GlobalConfig_t
@@ -73,7 +73,7 @@ struct GlobalConfig_t
     UINT8  key_SELECT_map_default;
     UINT8  man_dir;
     UINT8  def_palette;
-    UINT8  spare2;
+    UINT8  brightness;
     UINT8  spare3;
     UINT8  spare4;
     UINT8  spare5;

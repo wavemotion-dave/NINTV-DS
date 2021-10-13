@@ -56,7 +56,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.def_sound_quality        = (isDSiMode() ? 1:2);
     myGlobalConfig.man_dir                  = 0;
     myGlobalConfig.def_palette              = 0;
-    myGlobalConfig.spare2                   = 0;
+    myGlobalConfig.brightness               = 0;
     myGlobalConfig.spare3                   = 0;
     myGlobalConfig.spare4                   = 0;
     myGlobalConfig.spare5                   = 1;
@@ -81,17 +81,17 @@ static void SetDefaultGameConfig(void)
     myConfig.sound_clock_div    = myGlobalConfig.def_sound_quality;
     myConfig.dpad_config        = 0;
     myConfig.target_fps         = 0;
-    myConfig.brightness         = 0;
+    myConfig.spare0             = 0;
     myConfig.palette            = myGlobalConfig.def_palette;
     myConfig.stretch_x          = ((160 / 256) << 8) | (160 % 256);
     myConfig.offset_x           = 0;
     myConfig.spare3             = 0;
     myConfig.spare4             = 0;
     myConfig.spare5             = 0;
-    myConfig.spare6             = 1;
-    myConfig.spare7             = 1;
-    myConfig.spare8             = 1;
-    myConfig.spare9             = 2;
+    myConfig.key_AX_map         = 0;
+    myConfig.key_XY_map         = 0;
+    myConfig.key_YB_map         = 0;
+    myConfig.key_BA_map         = 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -103,7 +103,7 @@ void SaveConfig(bool bShow)
     FILE *fp;
     int slot = 0;
     
-    if (bShow) dsPrintValue(2,20,0, (char*)"    SAVING CONFIGURATION     ");
+    if (bShow) dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
 
     // Set the global configuration version number...
     allConfigs.config_ver = CONFIG_VER;
@@ -247,13 +247,25 @@ const struct options_t Game_Option_Table[] =
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_START_map,    24},
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_SELECT_map,   24},
+    
+    {"A+X BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_AX_map,       24},
+
+    {"X+Y BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_XY_map,       24},
+
+    {"Y+B BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_YB_map,       24},
+
+    {"B+A BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_BA_map,       24},
+    
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
     {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                   &myConfig.frame_skip_opt,   3},
     {"SOUND DIV",   {"16 (BEST)", "20 (GOOD)", "24 (FAIR)", "28 (POOR)", "DISABLED"},                                                                                   &myConfig.sound_clock_div,  5},
     {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                &myConfig.target_fps,       7},
     {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myConfig.palette,          5},
-    {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myConfig.brightness,       4},
     {NULL,          {"",            ""},                                NULL,                   1},
 };
 
@@ -272,6 +284,7 @@ const struct options_t Global_Option_Table[] =
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_SELECT_map_default, 22},
     {"SOUND DEF",   {"16 (BEST)", "20 (GOOD)", "24 (FAIR)", "28 (POOR)", "DISABLED"},                                                                                   &myGlobalConfig.def_sound_quality,  5},
     {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myGlobalConfig.def_palette,        5},
+    {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myGlobalConfig.brightness,         4},
     
     {NULL,          {"",            ""},                                NULL,                   1},
 };
@@ -307,26 +320,24 @@ int display_options_list(bool bFullDisplay)
         while (true)
         {
             sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[len].label, Current_Option_Table[len].option[*(Current_Option_Table[len].option_val)]);
-            dsPrintValue(1,3+len, (len==0 ? 1:0), strBuf); len++;
+            dsPrintValue(1,2+len, (len==0 ? 1:0), strBuf); len++;
             if (Current_Option_Table[len].label == NULL) break;
         }
 
         // Blank out rest of the screen... option menus are of different lengths...
         for (int i=len; i<22; i++) 
         {
-            dsPrintValue(1,3+i, 0, (char *)"                               ");
+            dsPrintValue(1,2+i, 0, (char *)"                               ");
         }
     }
 
     dsPrintValue(0,22, 0, (char *)"D-PAD TOGGLE. A=EXIT, START=SAVE");
     if (options_shown == 0)
     {
-        dsPrintValue(2,20,0, (char*)"GAME SPECIFIC CONFIGURATION");
         dsPrintValue(0,23, 0, (char *)"PRESS SELECT FOR GLOBAL OPTIONS ");
     }
     else
     {
-        dsPrintValue(2,20,0, (char*)"    GLOBAL CONFIGURATION   ");
         dsPrintValue(0,23, 0, (char *)" PRESS SELECT FOR GAME OPTIONS  ");
     }
     return len;    
@@ -366,25 +377,25 @@ void dsChooseOptions(void)
             if (keysCurrent() & KEY_UP) // Previous option
             {
                 sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[optionHighlighted].label, Current_Option_Table[optionHighlighted].option[*(Current_Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,0, strBuf);
+                dsPrintValue(1,2+optionHighlighted,0, strBuf);
                 if (optionHighlighted > 0) optionHighlighted--; else optionHighlighted=(idx-1);
                 sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[optionHighlighted].label, Current_Option_Table[optionHighlighted].option[*(Current_Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
+                dsPrintValue(1,2+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_DOWN) // Next option
             {
                 sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[optionHighlighted].label, Current_Option_Table[optionHighlighted].option[*(Current_Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,0, strBuf);
+                dsPrintValue(1,2+optionHighlighted,0, strBuf);
                 if (optionHighlighted < (idx-1)) optionHighlighted++;  else optionHighlighted=0;
                 sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[optionHighlighted].label, Current_Option_Table[optionHighlighted].option[*(Current_Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
+                dsPrintValue(1,2+optionHighlighted,1, strBuf);
             }
 
             if (keysCurrent() & KEY_RIGHT)  // Toggle option clockwise
             {
                 *(Current_Option_Table[optionHighlighted].option_val) = (*(Current_Option_Table[optionHighlighted].option_val) + 1) % Current_Option_Table[optionHighlighted].option_max;
                 sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[optionHighlighted].label, Current_Option_Table[optionHighlighted].option[*(Current_Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
+                dsPrintValue(1,2+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_LEFT)  // Toggle option counterclockwise
             {
@@ -393,7 +404,7 @@ void dsChooseOptions(void)
                 else
                     *(Current_Option_Table[optionHighlighted].option_val) = (*(Current_Option_Table[optionHighlighted].option_val) - 1) % Current_Option_Table[optionHighlighted].option_max;
                 sprintf(strBuf, " %-11s : %-15s", Current_Option_Table[optionHighlighted].label, Current_Option_Table[optionHighlighted].option[*(Current_Option_Table[optionHighlighted].option_val)]);
-                dsPrintValue(1,3+optionHighlighted,1, strBuf);
+                dsPrintValue(1,2+optionHighlighted,1, strBuf);
             }
             if (keysCurrent() & KEY_START)  // Save Options
             {

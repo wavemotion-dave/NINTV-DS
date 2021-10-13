@@ -854,54 +854,104 @@ ITCM_CODE void pollInputs(void)
     // -------------------------------------------------------------------------------------
     // Now handle the main DS keys... these can be re-mapped to any Intellivision function
     // -------------------------------------------------------------------------------------
-    if (keys_pressed & KEY_A)       
+    if ((keys_pressed & KEY_A) && (keys_pressed & KEY_X))
     {
-        if (myConfig.key_A_map >= OVL_META_RESET)
+        if (myConfig.key_AX_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_AX_map);
         }
-        else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
+        else if (myConfig.key_AX_map >= OVL_BTN_FIRE) 
+            ds_key_input[ctrl_side][myConfig.key_AX_map]  = 1;
         else
-            ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
+            ds_key_input[ctrl_keys][myConfig.key_AX_map]  = 1;
+    }
+    else
+    if ((keys_pressed & KEY_X) && (keys_pressed & KEY_Y))
+    {
+        if (myConfig.key_XY_map >= OVL_META_RESET)
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_XY_map);
+        }
+        else if (myConfig.key_XY_map >= OVL_BTN_FIRE) 
+            ds_key_input[ctrl_side][myConfig.key_XY_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_XY_map]  = 1;
+    }
+    else
+    if ((keys_pressed & KEY_Y) && (keys_pressed & KEY_B))
+    {
+        if (myConfig.key_YB_map >= OVL_META_RESET)
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_YB_map);
+        }
+        else if (myConfig.key_YB_map >= OVL_BTN_FIRE) 
+            ds_key_input[ctrl_side][myConfig.key_YB_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_YB_map]  = 1;
+    }
+    else
+    if ((keys_pressed & KEY_B) && (keys_pressed & KEY_A))
+    {
+        if (myConfig.key_BA_map >= OVL_META_RESET)
+        {
+            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_BA_map);
+        }
+        else if (myConfig.key_BA_map >= OVL_BTN_FIRE) 
+            ds_key_input[ctrl_side][myConfig.key_BA_map]  = 1;
+        else
+            ds_key_input[ctrl_keys][myConfig.key_BA_map]  = 1;
+    }
+    else
+    {
+        if (keys_pressed & KEY_A)       
+        {
+            if (myConfig.key_A_map >= OVL_META_RESET)
+            {
+                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
+            }
+            else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
+        }
+
+        if (keys_pressed & KEY_B)
+        {
+            if (myConfig.key_B_map >= OVL_META_RESET)
+            {
+                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
+            }
+            else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
+        }
+
+        if (keys_pressed & KEY_X)
+        {
+            if (myConfig.key_X_map >= OVL_META_RESET)
+            {
+                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
+            }
+            else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
+        }
+
+        if (keys_pressed & KEY_Y)
+        {
+            if (myConfig.key_Y_map >= OVL_META_RESET)
+            {
+                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
+            }
+            else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
+        }
     }
     
-    if (keys_pressed & KEY_B)
-    {
-        if (myConfig.key_B_map >= OVL_META_RESET)
-        {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
-        }
-        else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
-    }
-
-    if (keys_pressed & KEY_X)
-    {
-        if (myConfig.key_X_map >= OVL_META_RESET)
-        {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
-        }
-        else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
-    }
-
-    if (keys_pressed & KEY_Y)
-    {
-        if (myConfig.key_Y_map >= OVL_META_RESET)
-        {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
-        }
-        else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
-    }
-
     if (keys_pressed & KEY_L)
     {
         if (myConfig.key_L_map >= OVL_META_RESET)
@@ -1557,7 +1607,7 @@ void dsInitPalette(void)
         BG_PALETTE[i]=RGB15(r,g,b);
     }
     
-    setBrightness(2, brightness[myConfig.brightness]);      // Subscreen Brightness
+    setBrightness(2, brightness[myGlobalConfig.brightness]);      // Subscreen Brightness
 }
 
 void dsInitScreenMain(void)
