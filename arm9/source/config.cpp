@@ -55,7 +55,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.rom_dir                  = 0;
     myGlobalConfig.def_sound_quality        = (isDSiMode() ? 1:2);
     myGlobalConfig.man_dir                  = 0;
-    myGlobalConfig.spare1                   = 0;
+    myGlobalConfig.def_palette              = 0;
     myGlobalConfig.spare2                   = 0;
     myGlobalConfig.spare3                   = 0;
     myGlobalConfig.spare4                   = 0;
@@ -82,7 +82,7 @@ static void SetDefaultGameConfig(void)
     myConfig.dpad_config        = 0;
     myConfig.target_fps         = 0;
     myConfig.brightness         = 0;
-    myConfig.palette            = 0;
+    myConfig.palette            = myGlobalConfig.def_palette;
     myConfig.stretch_x          = ((160 / 256) << 8) | (160 % 256);
     myConfig.offset_x           = 0;
     myConfig.spare3             = 0;
@@ -252,7 +252,7 @@ const struct options_t Game_Option_Table[] =
     {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                   &myConfig.frame_skip_opt,   3},
     {"SOUND DIV",   {"16 (BEST)", "20 (GOOD)", "24 (FAIR)", "28 (POOR)", "DISABLED"},                                                                                   &myConfig.sound_clock_div,  5},
     {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                &myConfig.target_fps,       7},
-    {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL"},                                                                                                             &myConfig.palette,          4},
+    {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myConfig.palette,          5},
     {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myConfig.brightness,       4},
     {NULL,          {"",            ""},                                NULL,                   1},
 };
@@ -271,6 +271,7 @@ const struct options_t Global_Option_Table[] =
     {"SELECT DEF",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_SELECT_map_default, 22},
     {"SOUND DEF",   {"16 (BEST)", "20 (GOOD)", "24 (FAIR)", "28 (POOR)", "DISABLED"},                                                                                   &myGlobalConfig.def_sound_quality,  5},
+    {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myGlobalConfig.def_palette,        5},
     
     {NULL,          {"",            ""},                                NULL,                   1},
 };

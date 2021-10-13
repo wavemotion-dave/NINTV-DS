@@ -43,6 +43,8 @@
 
 #define DEBUG_ENABLE 0
 
+char line[256];
+
 BOOL InitializeEmulator(void);
 
 typedef enum _RunState 
@@ -1123,7 +1125,6 @@ ITCM_CODE void Run(char *initial_file)
 unsigned int *customTiles = (unsigned int *) 0x06860000;   //128K of video memory
 unsigned short *customMap = (unsigned short *)0x068A0000;  //16K of video memory
 unsigned short customPal[512];
-char line[256];
 
 void load_custom_overlay(void)
 {
@@ -1471,10 +1472,52 @@ UINT32 default_Palette[32] =
     0xFF4E57,  0xA496FF,  0x75CC80,  0xB51A58,
 };
 
+UINT32 custom_Palette[32] = 
+{
+    // Optmized
+    0x000000,  0x002DFF,  0xFF3D10,  0xC8D271,
+    0x386B3F,  0x00A756,  0xFAEA50,  0xFFFFFF,
+    0x9B9DA1,  0x24B8FF,  0xFFB41F,  0x3D5A02,
+    0xFF4E57,  0xA496FF,  0x75CC80,  0xB51A58,
+     
+    0x000000,  0x002DFF,  0xFF3D10,  0xC8D271,
+    0x386B3F,  0x00A756,  0xFAEA50,  0xFFFFFF,
+    0x9B9DA1,  0x24B8FF,  0xFFB41F,  0x3D5A02,
+    0xFF4E57,  0xA496FF,  0x75CC80,  0xB51A58,
+};
+
 
 const INT8 brightness[] = {0, -3, -6, -9};
 void dsInitPalette(void) 
 {
+    static UINT8 bFirstTime = TRUE;
+    
+    if (bFirstTime)
+    {
+        // Load Custom Palette (if it exists)
+        FILE *fp;
+        fp = fopen("/data/NINTV-DS.PAL", "r");
+        if (fp != NULL)
+        {
+            UINT8 pal_idx=0;
+            while (!feof(fp))
+            {
+                fgets(line, 255, fp);
+                if (!feof(fp))
+                {
+                    if (strstr(line, "#") != NULL)
+                    {
+                        char *ptr = line;
+                        while (*ptr == ' ' || *ptr == '#') ptr++;
+                        custom_Palette[pal_idx] = strtoul(ptr, &ptr, 16);
+                        if (pal_idx < 31) pal_idx++;
+                    }
+                }
+            }
+            fclose(fp);   
+        }
+        bFirstTime = FALSE;
+    }
     if (!bFirstGameLoaded) return;
     
     // Init DS Specific palette for the Intellivision (16 colors...)
@@ -1498,6 +1541,11 @@ void dsInitPalette(void)
                 r = (unsigned char) ((pal_gamePalette[i%32] & 0x00ff0000) >> 19);
                 g = (unsigned char) ((pal_gamePalette[i%32] & 0x0000ff00) >> 11);
                 b = (unsigned char) ((pal_gamePalette[i%32] & 0x000000ff) >> 3);
+                break;
+            case 4: // CUSTOM
+                r = (unsigned char) ((custom_Palette[i%32] & 0x00ff0000) >> 19);
+                g = (unsigned char) ((custom_Palette[i%32] & 0x0000ff00) >> 11);
+                b = (unsigned char) ((custom_Palette[i%32] & 0x000000ff) >> 3);
                 break;
             default:
                 r = (unsigned char) ((default_Palette[i%32] & 0x00ff0000) >> 19);
