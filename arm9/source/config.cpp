@@ -83,9 +83,8 @@ static void SetDefaultGameConfig(void)
     myConfig.target_fps         = 0;
     myConfig.brightness         = 0;
     myConfig.palette            = 0;
-    myConfig.spare0             = 0;
-    myConfig.spare1             = 0;
-    myConfig.spare2             = 0;
+    myConfig.stretch_x          = ((160 / 256) << 8) | (160 % 256);
+    myConfig.offset_x           = 0;
     myConfig.spare3             = 0;
     myConfig.spare4             = 0;
     myConfig.spare5             = 0;
@@ -193,6 +192,7 @@ void FindAndLoadConfig(void)
                 if (allConfigs.game_config[slot].game_crc == currentRip->GetCRC())  // Got a match?!
                 {
                     memcpy(&myConfig, &allConfigs.game_config[slot], sizeof(struct Config_t));
+                    if (myConfig.stretch_x < 0x50) myConfig.stretch_x = ((160 / 256) << 8) | (160 % 256);   // If we haven't saved a stretch... set it to normal
                     break;                           
                 }
             }
@@ -289,6 +289,10 @@ void ApplyOptions(void)
     bStartSoundFifo=true;
 	// clears the emulator side of the audio mixer
 	audioMixer->resetProcessor();
+
+    // Set the screen scaling options for the game selected
+    REG_BG3PA = myConfig.stretch_x;
+    REG_BG3X = (myConfig.offset_x) << 8;
 }
 
 int display_options_list(bool bFullDisplay)

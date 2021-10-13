@@ -67,8 +67,6 @@ AudioMixer           *audioMixer = NULL;
 int debug1, debug2;
 UINT16 emu_frames=0;
 UINT16 frames=0;
-UINT16 stretch_x = ((160 / 256) << 8) | (160 % 256);
-INT16  offset_x = 0;
 
 
 struct Overlay_t defaultOverlay[OVL_MAX] =
@@ -425,10 +423,10 @@ void HandleScreenStretch(void)
     dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
     swiWaitForVBlank();
     
-    dsPrintValue(2, 5, 0, (char*)"PRESS UP/DN TO STRETCH SCREEN");
-    dsPrintValue(2, 7, 0, (char*)"LEFT/RIGHT TO SHIFT SCREEN");
+    dsPrintValue(2, 5, 0,  (char*)"PRESS UP/DN TO STRETCH SCREEN");
+    dsPrintValue(2, 7, 0,  (char*)"LEFT/RIGHT TO SHIFT SCREEN");
     dsPrintValue(2, 15, 0, (char*)"PRESS X TO RESET TO DEFAULTS");
-    dsPrintValue(2, 16,0, (char*)"PRESS B TO EXIT");
+    dsPrintValue(1, 16,0,  (char*)"START to SAVE, PRESS B TO EXIT");
     
     bool bDone = false;
     int last_stretch_x = -99;
@@ -438,40 +436,48 @@ void HandleScreenStretch(void)
         int keys_pressed = keysCurrent();
         if (keys_pressed & KEY_UP)    
         {
-            if (stretch_x > 0x0080) REG_BG3PA = --stretch_x;
+            if (myConfig.stretch_x > 0x0080) REG_BG3PA = --myConfig.stretch_x;
         }
         else if (keys_pressed & KEY_DOWN)
         {
-            if (stretch_x < 0x0100) REG_BG3PA = ++stretch_x;
+            if (myConfig.stretch_x < 0x0100) REG_BG3PA = ++myConfig.stretch_x;
         }
         else if (keys_pressed & KEY_RIGHT)
         {
-            REG_BG3X = (++offset_x) << 8;
+            REG_BG3X = (++myConfig.offset_x) << 8;
         }
         else if (keys_pressed & KEY_LEFT)
         {
-            REG_BG3X = (--offset_x) << 8;
+            REG_BG3X = (--myConfig.offset_x) << 8;
         }
         else if (keys_pressed & KEY_X)
         {
-            stretch_x = ((160 / 256) << 8) | (160 % 256);
-            offset_x = 0;
-            REG_BG3PA = stretch_x;
-            REG_BG3X = offset_x;
+            myConfig.stretch_x = ((160 / 256) << 8) | (160 % 256);
+            myConfig.offset_x = 0;
+            REG_BG3PA = myConfig.stretch_x;
+            REG_BG3X = (myConfig.offset_x) << 8;
         }
         else if ((keys_pressed & KEY_B) || (keys_pressed & KEY_A))
         {
             bDone = true;
         }
+        else if (keys_pressed & KEY_START)
+        {
+            extern void SaveConfig(bool bShow);
+            dsPrintValue(2,20,0, (char*)"    SAVING CONFIGURATION     ");
+            SaveConfig(FALSE);
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            dsPrintValue(2,20,0, (char*)"                             ");
+        }
         
         // If any values changed... output them.
-        if ((stretch_x != last_stretch_x) || (offset_x != last_offset_x))
+        if ((myConfig.stretch_x != last_stretch_x) || (myConfig.offset_x != last_offset_x))
         {
-            last_stretch_x = stretch_x;
-            last_offset_x = offset_x;
-            sprintf(tmpStr, "STRETCH_X = 0x%04X", stretch_x);
+            last_stretch_x = myConfig.stretch_x;
+            last_offset_x = myConfig.offset_x;
+            sprintf(tmpStr, "STRETCH_X = 0x%04X", myConfig.stretch_x);
             dsPrintValue(6, 11, 0, (char*)tmpStr);
-            sprintf(tmpStr, " OFFSET_X = %-5d", offset_x);
+            sprintf(tmpStr, " OFFSET_X = %-5d", myConfig.offset_x);
             dsPrintValue(6, 12, 0, (char*)tmpStr);
         }
 
@@ -1528,10 +1534,10 @@ void dsShowScreenEmu(void)
   bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_256x256, 0,0);
   memset((void*)0x06000000, 0x00, 128*1024);
 
-  REG_BG3PA = stretch_x;
+  REG_BG3PA = myConfig.stretch_x;
   REG_BG3PB = 0; REG_BG3PC = 0;
   REG_BG3PD = ((100 / 100)  << 8) | (100 % 100) ;
-  REG_BG3X = offset_x;
+  REG_BG3X = (myConfig.offset_x) << 8;
   REG_BG3Y = 0;
 
   dsInitPalette();

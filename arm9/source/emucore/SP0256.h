@@ -66,8 +66,8 @@ extern  INT32 bitsLeft;
 extern  INT32 currentBits;
 
 //registers
-extern  INT32 pc;
-extern  INT32 stack;
+extern  UINT16 pc;
+extern  UINT16 stack;
 extern  INT32 mode;
 extern  INT32 repeatPrefix;
 extern  INT32 command;

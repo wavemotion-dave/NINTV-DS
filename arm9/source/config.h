@@ -42,9 +42,8 @@ struct Config_t
     UINT8  target_fps;
     UINT8  brightness;
     UINT8  palette;
-    UINT8  spare0;
-    UINT8  spare1;
-    UINT8  spare2;
+    UINT16 stretch_x;
+    INT8   offset_x;
     UINT8  spare3;
     UINT8  spare4;
     UINT8  spare5;

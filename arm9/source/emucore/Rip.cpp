@@ -28,8 +28,8 @@
 #define ROM_TAG_RELEASE_DATE   0x05
 #define ROM_TAG_COMPATIBILITY  0x06
 
-UINT8 bin_image_buf[128 * 1024];
-UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf; //(UINT16 *) 0x06860000;
+UINT8 bin_image_buf[128 * 1024];                   // No .BIN or .ROM will be bigger than this... TODO: Bankswitched?
+UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf;
 
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),

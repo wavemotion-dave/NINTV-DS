@@ -24,8 +24,8 @@ INT8  amplitudeInterpolation    __attribute__((section(".dtcm")));
 
 INT32 bitsLeft                  __attribute__((section(".dtcm")));
 INT32 currentBits               __attribute__((section(".dtcm")));
-INT32 pc                        __attribute__((section(".dtcm")));
-INT32 stack                     __attribute__((section(".dtcm")));
+UINT16 pc                       __attribute__((section(".dtcm")));
+UINT16 stack                    __attribute__((section(".dtcm")));
 INT32 mode                      __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 
@@ -204,7 +204,7 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
         if (pc < 0x1800) {
             currentBits |= (ivoiceROM.peek8((UINT16)pc) << bitsLeft);
             bitsLeft += 8;
-            pc = (pc+1) & 0xFFFF;
+            pc++;
         }
         else if (pc == 0x1800 && fifoSize > 0) {
             currentBits |= (fifoBytes[fifoHead] << bitsLeft);
@@ -216,7 +216,7 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
             //error, read outside of bounds
             currentBits |= (0x03FF << bitsLeft);
             bitsLeft += 10;
-            pc = (pc+1) & 0xFFFF;
+            pc++;
         }
 
     }
@@ -234,7 +234,7 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
         if (pc < 0x1800) {
             currentBits |= (ivoiceROM.peek8((UINT16)pc) << bitsLeft);
             bitsLeft += 8;
-            pc = (pc+1) & 0xFFFF;
+            pc++;
         }
         else if (pc == 0x1800 && fifoSize > 0) {
             currentBits |= (fifoBytes[fifoHead] << bitsLeft);
@@ -246,7 +246,7 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
             //error, read outside of bounds
             currentBits |= (0x03FF << bitsLeft);
             bitsLeft += 10;
-            pc = (pc+1) & 0xFFFF;
+            pc++;
         }
 
     }
