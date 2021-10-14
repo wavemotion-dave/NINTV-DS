@@ -59,19 +59,34 @@ PINK        10/20    13/26
 RED         12/25    16/33
 PURPLE      15/30    20/40
 
-BOOKS (BLUE < PINK < PURPLE)
+BOOKS
 --------------------------------
-CLEAR COVER:  INCREASE WAR 
-SOLID COVER:  INCREASE SPIRIT
-X ON COVER:   BLUE=TRANSPORT
-              PINK=SEE THROUGH
-              PURP=MIDAS TOUCH
+CLEAR COVER:  WAR BOOK
+   BLUE : Turn HP BLUE   MAX 99
+   PINK : Turn HP TAN   MAX 149
+   PURP : Turn HP WHITE MAX 199
+
+SOLID COVER:  SPIRITUAL BOOK
+   BLUE : Turn SP BLUE   MAX 49
+   PINK : Turn SP TAN    MAX 69
+   PURP : Turn SP WHITE  MAX 99
+  
+X ON COVER:   SPECIAL BOOK
+  BLUE  : TRANSPORT THRU WALLS
+  PINK  : SEE THROUGH WALLS
+  PURP  : TURN OBJECT PLATINUM
+
+KEYS
+--------------------------------
+Tan Key opens Tan Containers
+Orange Key opens Tan + Orange
+Blue Key opens everything
 
 SENTIENT DOORS
 --------------------------------
 Lt.Blue - Hides Lg Blue Book
-Tan     - Hides Lg Purple Book
-Yellow  - Hides Lg Pink Book
+Tan     - Hides Lg Pink Book
+Yellow  - Hides Lg Purple Book
 
 WAR MONSTERS
 --------------------------------
