@@ -1560,7 +1560,8 @@ void dsInitPalette(void)
                         char *ptr = line;
                         while (*ptr == ' ' || *ptr == '#') ptr++;
                         custom_Palette[pal_idx] = strtoul(ptr, &ptr, 16);
-                        if (pal_idx < 31) pal_idx++;
+                        custom_Palette[pal_idx+16] = custom_Palette[pal_idx];
+                        if (pal_idx < 16) pal_idx++;
                     }
                 }
             }
