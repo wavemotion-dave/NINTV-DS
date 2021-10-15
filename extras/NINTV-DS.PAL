@@ -1,0 +1,19 @@
+; Primary Color Set
+#000000 ; 0 - Black
+#0000FF ; 1 - Blue
+#E40404 ; 2 - Red
+#CECE94 ; 3 - Tan
+#0F8223 ; 4 - Dark Green
+#04B640 ; 5 - Green
+#F6E806 ; 6 - Yellow
+#FFFBFF ; 7 - White
+; Pastel Color Set
+#A5ADA5 ; 8 - Grey
+#24B8FF ; 9 - Cyan
+#E39401 ; 10 - Orange
+#424A08 ; 11 - Brown
+#FF00A0 ; 12 - Pink
+#918FF5 ; 13 - Light Blue
+#27D305 ; 14 - Yellow-Green
+#8A229F ; 15 - Purple
+
