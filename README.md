@@ -53,6 +53,14 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.5 : 15-Oct-2021 by wavemotion-dave
+  * Horizontal Stretch/Offset now saved on a per-game basis.
+  * Custom Palette support (see example in 'extras' folder).
+  * Ability to map DS key to bring up manuals.
+  * Added combo key mapping (AX, XY, YB, BA) for diagonal shooting.
+  * Updated example .man manuals (see 'extras' folder).
+  
+  
 V2.4 : 12-Oct-2021 by wavemotion-dave
   * Fixed horizontal and vertical offset/scrolling. Christmas Carol should now work.
   * Improved memory handling so we can load larger games.
