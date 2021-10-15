@@ -1,12 +1,22 @@
 AD&D TREASURE OF TARMIN
 (c)1982 MATTEL ELECTRONICS
 
+The Minotaur guards the coveted
+Treasure of Tarmin - your goal
+is to decend to meet him in 
+battle and claim the treasure!
+
 GAMEPLAY LEVEL
 --------------------------------
-GAME 3:  EASIEST
-GAME 2:  EASY
-GAME 1:  HARD
-DISC:    HARDEST 
+GAME 3:  EASIEST - Minotaur Lv2
+GAME 2:  EASY    - Minotaur Lv4
+GAME 1:  HARD    - Minotaur Lv8
+DISC:    HARDEST - Minotaur Lv12
+
+On Hard and Hardest the damage 
+you receive when attacked is 
+full. On Easy and Easiest levels
+the damage is reduced.
 
 DUNGEON COLORS
 --------------------------------
