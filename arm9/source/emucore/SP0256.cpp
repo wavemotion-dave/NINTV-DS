@@ -29,6 +29,8 @@ UINT16 stack                    __attribute__((section(".dtcm")));
 INT32 mode                      __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 
+UINT8 sp_idle __attribute__((section(".dtcm"))) = 0;
+
 UINT16 bitMasks[16] __attribute__((section(".dtcm"))) = {
         0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF,
         0x01FF, 0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF };
@@ -110,7 +112,6 @@ void SP0256::resetProcessor()
     }
 }
 
-UINT8 sp_idle = 0;
 ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
     if (idle) 

@@ -31,7 +31,7 @@ AudioMixer::AudioMixer()
     sampleCount(0),
     sampleSize(0)
 {
-	memset(&audioProducers, 0, sizeof(audioProducers));
+    memset(&audioProducers, 0, sizeof(audioProducers));
 }
 
 AudioMixer::~AudioMixer()
@@ -88,18 +88,18 @@ void AudioMixer::resetProcessor()
     commonClocksPerTick = totalClockSpeed / getClockSpeed();
     for (UINT32 i = 0; i < audioProducerCount; i++) {
         audioProducers[i]->audioOutputLine->commonClocksPerSample = (totalClockSpeed / audioProducers[i]->getClockSpeed())
-				* audioProducers[i]->getClocksPerSample();
+                * audioProducers[i]->getClocksPerSample();
     }
 }
 
 void AudioMixer::init(UINT32 sampleRate)
 {
-	AudioMixer::release();
+    AudioMixer::release();
 
-	clockSpeed = sampleRate;
-	sampleSize = ( clockSpeed / 60.0 );
-	sampleBufferSize = sampleSize * sizeof(INT16);
-	sampleBuffer = (INT16*) audio_mixer_buffer;
+    clockSpeed = sampleRate;
+    sampleSize = ( clockSpeed / 60.0 );
+    sampleBufferSize = sampleSize * sizeof(INT16);
+    sampleBuffer = (INT16*) audio_mixer_buffer;
     memset(sampleBuffer, 0x00, SOUND_SIZE*sizeof(UINT16));
 }
 
@@ -114,36 +114,35 @@ void AudioMixer::release()
 
 INT32 AudioMixer::getClockSpeed()
 {
-	return clockSpeed;
+    return clockSpeed;
 }
 
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
+    INT32 totalSample = 0;
+    extern UINT8 sp_idle;
     if (myConfig.sound_clock_div == SOUND_DIV_DISABLE) return minimum;
-    
-    extern int sp_idle;
-    UINT8 apc = (sp_idle ? 1:audioProducerCount);
 
-    for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
+    if (sp_idle) // If the Intellivoice is idle, we only have one sound producer. 
     {
-        //mix and flush the sample buffers
-        INT32 totalSample = 0;
-        for (UINT32 i = 0; i < apc; i++) 
+        for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
         {
-            AudioOutputLine* nextLine = audioProducers[i]->audioOutputLine;
+            //mix and flush the sample buffers
+            AudioOutputLine* nextLine = audioProducers[0]->audioOutputLine;
 
             INT32 missingClocks = (this->commonClocksPerTick - nextLine->commonClockCounter);
             INT64 sampleToUse = (missingClocks < 0 ? nextLine->previousSample : nextLine->currentSample);
 
             //account for when audio producers idle by adding enough samples to each producer's buffer
-			//to fill the time since last sample calculation
+            //to fill the time since last sample calculation
             INT64 missingSampleCount = (missingClocks / nextLine->commonClocksPerSample);
-            if (missingSampleCount != 0) {
-			    nextLine->sampleBuffer += missingSampleCount * sampleToUse * nextLine->commonClocksPerSample;
+            if (missingSampleCount != 0) 
+            {
+                nextLine->sampleBuffer += missingSampleCount * sampleToUse * nextLine->commonClocksPerSample;
                 nextLine->commonClockCounter += missingSampleCount * nextLine->commonClocksPerSample;
                 missingClocks -= missingSampleCount * nextLine->commonClocksPerSample;
             }
-			INT64 partialSample = sampleToUse * missingClocks;
+            INT64 partialSample = sampleToUse * missingClocks;
 
             //calculate the sample for this line
             totalSample += (INT16)((nextLine->sampleBuffer + partialSample) / commonClocksPerTick);
@@ -152,21 +151,42 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             nextLine->sampleBuffer = -partialSample;
             nextLine->commonClockCounter = -missingClocks;
         }
-
-        if (apc > 1) 
+    }
+    else
+    {
+        for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
         {
-            totalSample = totalSample / apc;
-        }
+            //mix and flush the sample buffers
+            for (UINT32 i = 0; i < audioProducerCount; i++) 
+            {
+                AudioOutputLine* nextLine = audioProducers[i]->audioOutputLine;
 
-        audio_mixer_buffer[currentSampleIdx++] = totalSample;
-        if (currentSampleIdx == SOUND_SIZE) currentSampleIdx=0;
-        
-        if (++sampleCount == SOUND_SIZE) 
-        {
-            sampleCount = 0;
+                INT32 missingClocks = (this->commonClocksPerTick - nextLine->commonClockCounter);
+                INT64 sampleToUse = (missingClocks < 0 ? nextLine->previousSample : nextLine->currentSample);
+
+                //account for when audio producers idle by adding enough samples to each producer's buffer
+                //to fill the time since last sample calculation
+                INT64 missingSampleCount = (missingClocks / nextLine->commonClocksPerSample);
+                if (missingSampleCount != 0) 
+                {
+                    nextLine->sampleBuffer += missingSampleCount * sampleToUse * nextLine->commonClocksPerSample;
+                    nextLine->commonClockCounter += missingSampleCount * nextLine->commonClocksPerSample;
+                    missingClocks -= missingSampleCount * nextLine->commonClocksPerSample;
+                }
+                INT64 partialSample = sampleToUse * missingClocks;
+
+                //calculate the sample for this line
+                totalSample += (INT16)((nextLine->sampleBuffer + partialSample) / commonClocksPerTick);
+
+                //clear the sample buffer for this line
+                nextLine->sampleBuffer = -partialSample;
+                nextLine->commonClockCounter = -missingClocks;
+            }
+
+            totalSample = totalSample >> 1; // With Intellivoice there are 2 audio producers... so divide by 2
         }
     }
-
+    audio_mixer_buffer[currentSampleIdx++] = totalSample;
     return minimum;
 }
 
