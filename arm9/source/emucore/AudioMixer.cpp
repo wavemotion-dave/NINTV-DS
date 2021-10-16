@@ -18,6 +18,7 @@
 #include "../config.h"
 
 UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
+UINT32 sampleSize __attribute__((section(".dtcm")));
 UINT8 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
@@ -25,13 +26,10 @@ extern UINT64 lcm(UINT64, UINT64);
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
     audioProducerCount(0),
-    commonClocksPerTick(0),
-    sampleBuffer(NULL),
-    sampleBufferSize(0),
-    sampleCount(0),
-    sampleSize(0)
+    commonClocksPerTick(0)
 {
     memset(&audioProducers, 0, sizeof(audioProducers));
+    sampleSize = 0;        
 }
 
 AudioMixer::~AudioMixer()
@@ -71,10 +69,8 @@ void AudioMixer::resetProcessor()
 {
     //reset instance data
     commonClocksPerTick = 0;
-    sampleCount = 0;
 
     // Clear out the sample buffer...
-    memset(sampleBuffer, 0, sampleBufferSize);
     memset(audio_mixer_buffer,0x00, SOUND_SIZE*sizeof(UINT16));
 
     //iterate through my audio output lines to determine the common output clock
@@ -98,18 +94,11 @@ void AudioMixer::init(UINT32 sampleRate)
 
     clockSpeed = sampleRate;
     sampleSize = ( clockSpeed / 60.0 );
-    sampleBufferSize = sampleSize * sizeof(INT16);
-    sampleBuffer = (INT16*) audio_mixer_buffer;
-    memset(sampleBuffer, 0x00, SOUND_SIZE*sizeof(UINT16));
+    memset(audio_mixer_buffer,0x00, SOUND_SIZE*sizeof(UINT16));
 }
 
 void AudioMixer::release()
 {
-    if (sampleBuffer) {
-        sampleBufferSize = 0;
-        sampleSize = 0;
-        sampleCount = 0;
-    }
 }
 
 INT32 AudioMixer::getClockSpeed()
@@ -125,7 +114,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 
     if (sp_idle) // If the Intellivoice is idle, we only have one sound producer. 
     {
-        for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
+        for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
         {
             //mix and flush the sample buffers
             AudioOutputLine* nextLine = audioProducers[0]->audioOutputLine;
@@ -154,7 +143,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     }
     else
     {
-        for (int totalTicks = 0; totalTicks < minimum; totalTicks++) 
+        for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
         {
             //mix and flush the sample buffers
             for (UINT32 i = 0; i < audioProducerCount; i++) 
@@ -194,5 +183,4 @@ void AudioMixer::flushAudio()
 {
     //the platform subclass must copy the sampleBuffer to the device
     //before calling here (which discards the contents of sampleBuffer)
-    sampleCount = 0;
 }

@@ -27,7 +27,7 @@ extern  INT32 clockDivisor;
 
 //cached total output sample
 extern  UINT8 cachedTotalOutputIsDirty;
-extern  INT32 cachedTotalOutput;
+extern  INT16 cachedTotalOutput;
 
 //envelope data
 extern  UINT8 envelopeIdle;

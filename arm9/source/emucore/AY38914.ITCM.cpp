@@ -12,7 +12,7 @@
 #include "AY38914.h"
 #include "AudioMixer.h"
 
-INT32 amplitudes16Bit[16] __attribute__((section(".dtcm"))) = 
+UINT16 amplitudes16Bit[16] __attribute__((section(".dtcm"))) = 
 {
     0x003C, 0x0055, 0x0079, 0x00AB, 0x00F1, 0x0155, 0x01E3, 0x02AA,
     0x03C5, 0x0555, 0x078B, 0x0AAB, 0x0F16, 0x1555, 0x1E2B, 0x2AAA
@@ -26,7 +26,7 @@ INT32 clockDivisor __attribute__((section(".dtcm")));
 
 //cached total output sample
 UINT8 cachedTotalOutputIsDirty __attribute__((section(".dtcm")));
-INT32 cachedTotalOutput __attribute__((section(".dtcm")));
+INT16 cachedTotalOutput __attribute__((section(".dtcm")));
 
 //envelope data
 UINT8 envelopeIdle __attribute__((section(".dtcm")));
@@ -50,7 +50,6 @@ INT32 my_random __attribute__((section(".dtcm")));
 UINT8 noise __attribute__((section(".dtcm")));
 
 
-
 /**
  * The AY-3-8914 chip in the Intellivision, also know as the Programmable
  * Sound Generator (PSG).
@@ -64,7 +63,7 @@ AY38914::AY38914(UINT16 location, AY38914_InputOutput* io0,
 {
     this->psgIO0 = io0;
     this->psgIO1 = io1;
-    clockDivisor = 8; //TODO: was 1... trying to speed thigns up by lowering sound quality...
+    clockDivisor = 8; 
     registers.init(this);
 }
 
@@ -131,17 +130,19 @@ INT32 AY38914::getClockDivisor() {
  */
 ITCM_CODE INT32 AY38914::tick(INT32 minimum)
 {
-	INT32 totalTicks = 0;
-	do {
-    //iterate the envelope generator
-    envelopeCounter -= clockDivisor;
-    if (envelopeCounter <= 0) 
+    INT32 totalTicks = 0;
+    do 
     {
-        do {
+        //iterate the envelope generator
+        envelopeCounter -= clockDivisor;
+        while (envelopeCounter <= 0)
+        {
             envelopeCounter += envelopePeriodValue;
-            if (!envelopeIdle) {
+            if (!envelopeIdle) 
+            {
                 envelopeVolume += (envelopeAtak ? 1 : -1);
-                if (envelopeVolume > 15 || envelopeVolume < 0) {
+                if (envelopeVolume > 15 || envelopeVolume < 0) 
+                {
                     if (!envelopeCont) {
                         envelopeVolume = 0;
                         envelopeIdle = TRUE;
@@ -157,70 +158,57 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
                 }
             }
         }
-        while (envelopeCounter <= 0);
-    }
 
-    //iterate the noise generator
-    noiseCounter -= clockDivisor;
-    if (noiseCounter <= 0) 
-    {
-        do {
+        //iterate the noise generator
+        noiseCounter -= clockDivisor;
+        while (noiseCounter <= 0)
+        {
             noiseCounter += noisePeriodValue;
-            if (!noiseIdle) {
+            if (!noiseIdle) 
+            {
                 my_random = (my_random >> 1) ^ (noise ? 0x14000 : 0);
                 noise = (my_random & 1);
             }
         }
-        while (noiseCounter <= 0);
-    }
-        
-    //iterate the tone generator for channel 0
-    channel0.toneCounter -= clockDivisor;
-    if (channel0.toneCounter <= 0) 
-    {
-        do {
+
+        //iterate the tone generator for channel 0
+        channel0.toneCounter -= clockDivisor;
+        while (channel0.toneCounter <= 0)
+        {
             channel0.toneCounter += channel0.periodValue;
             channel0.tone = !channel0.tone;
         }
-        while (channel0.toneCounter <= 0);
-    }
 
-    //iterate the tone generator for channel 1
-    channel1.toneCounter -= clockDivisor;
-    if (channel1.toneCounter <= 0) 
-    {
-        do {
+        //iterate the tone generator for channel 1
+        channel1.toneCounter -= clockDivisor;
+        while (channel1.toneCounter <= 0)
+        {
             channel1.toneCounter += channel1.periodValue;
             channel1.tone = !channel1.tone;
         }
-        while (channel1.toneCounter <= 0);
-    }
 
-    //iterate the tone generator for channel 2
-    channel2.toneCounter -= clockDivisor;
-    if (channel2.toneCounter <= 0) 
-    {
-        do {
+        //iterate the tone generator for channel 2
+        channel2.toneCounter -= clockDivisor;
+        while (channel2.toneCounter <= 0)
+        {
             channel2.toneCounter += channel2.periodValue;
             channel2.tone = !channel2.tone;
         }
-        while (channel2.toneCounter <= 0);
-    }
-        
-    cachedTotalOutput  = amplitudes16Bit[(((channel0.toneDisabled | channel0.tone) & (channel0.noiseDisabled | noise)) ? (channel0.envelope ? envelopeVolume : channel0.volume) : 0)];
-    cachedTotalOutput += amplitudes16Bit[(((channel1.toneDisabled | channel1.tone) & (channel1.noiseDisabled | noise)) ? (channel1.envelope ? envelopeVolume : channel1.volume) : 0)];
-    cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
-    // Now place the sample onto the audio output line...
-    audioOutputLine->playSample((INT16)cachedTotalOutput);
+        cachedTotalOutput  = amplitudes16Bit[(((channel0.toneDisabled | channel0.tone) & (channel0.noiseDisabled | noise)) ? (channel0.envelope ? envelopeVolume : channel0.volume) : 0)];
+        cachedTotalOutput += amplitudes16Bit[(((channel1.toneDisabled | channel1.tone) & (channel1.noiseDisabled | noise)) ? (channel1.envelope ? envelopeVolume : channel1.volume) : 0)];
+        cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
-	totalTicks += (clockDivisor<<4);
+        // Now place the sample onto the audio output line...
+        audioOutputLine->playSample(cachedTotalOutput);
 
-	} while (totalTicks < minimum);
+        totalTicks += (clockDivisor<<4);
+
+    } while (totalTicks < minimum);
 
     //every tick here always uses some multiple of 4 CPU cycles
     //or 16 NTSC cycles
-	return totalTicks;
+    return totalTicks;
 }
 
 
