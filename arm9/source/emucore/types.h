@@ -86,10 +86,6 @@ typedef int						BOOL;
 typedef unsigned char			UCHAR;
 typedef unsigned short			USHORT;
 
-#ifndef FLOAT
-typedef float					FLOAT;
-#endif
-
 #ifndef GUID
 typedef struct
 {

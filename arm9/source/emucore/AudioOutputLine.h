@@ -16,7 +16,6 @@
 
 class AudioOutputLine
 {
-
     friend class AudioMixer;
 
     public:
@@ -27,11 +26,10 @@ class AudioOutputLine
         void reset();
 
         INT64 sampleBuffer;
-		INT64 previousSample;
-		INT64 currentSample;
 		INT64 commonClockCounter;
 		INT64 commonClocksPerSample;
-
+		INT16 previousSample;
+		INT16 currentSample;
 };
 
 #endif
