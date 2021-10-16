@@ -29,19 +29,9 @@
 extern UINT16 SOUND_FREQ;
 #define SOUND_SIZE  (SOUND_FREQ/60)
 
-typedef struct _StateChunk
-{
-    UINT32   id;
-    UINT32   size;
-} StateChunk;
 
 class Intellivision;
 
-#define MAX_PERIPHERALS     4
-
-/**
- *
- */
 class Emulator : public Peripheral
 {
     public:
@@ -92,7 +82,7 @@ class Emulator : public Peripheral
         void RemovePeripheral(Peripheral* p);
 
         Peripheral*     peripherals[MAX_PERIPHERALS];
-        BOOL            usePeripheralIndicators[MAX_PERIPHERALS];
+        UINT8           usePeripheralIndicators[MAX_PERIPHERALS];
         UINT8           peripheralCount;
 
         static Intellivision inty;

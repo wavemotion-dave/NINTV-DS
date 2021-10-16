@@ -21,9 +21,6 @@
 
 using namespace std;
 
-#define MAX_BIOSES      4
-#define MAX_PERIPHERALS 4
-
 typedef enum _PeripheralCompatibility
 {
     PERIPH_REQUIRED = 0,

@@ -66,14 +66,14 @@ TYPEDEF_STRUCT_PACK( _AY38914State
     INT32 noisePeriodValue;
     INT32 noiseCounter;
     INT32 random;
-    INT8  cachedTotalOutputIsDirty;
-    INT8  envelopeIdle;
-    INT8  envelopeHold;
-    INT8  envelopeAltr;
-    INT8  envelopeAtak;
-    INT8  envelopeCont;
-    INT8  noiseIdle;
-    INT8  noise;
+    UINT8 cachedTotalOutputIsDirty;
+    UINT8 envelopeIdle;
+    UINT8 envelopeHold;
+    UINT8 envelopeAltr;
+    UINT8 envelopeAtak;
+    UINT8 envelopeCont;
+    UINT8 noiseIdle;
+    UINT8 noise;
 } AY38914State; )
 
 

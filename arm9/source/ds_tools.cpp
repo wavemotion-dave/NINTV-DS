@@ -1152,22 +1152,29 @@ ITCM_CODE void Run(char *initial_file)
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            sprintf(tmp, "%4d %4d", debug1, debug2);
-            if (DEBUG_ENABLE==1) dsPrintValue(0,1,0,tmp);
-
-            // ------------------------------------------------
-            // Hack for Q*Bert...Keep life counter set to 3
-            // to avoid original Bliss core bug for this game.
-            // ------------------------------------------------
-            if (currentRip)
+            if (DEBUG_ENABLE==1)
             {
-                if (currentRip->GetCRC() == 0xD8C9856A)
+                sprintf(tmp, "%4d %4d", debug1, debug2);
+                dsPrintValue(0,1,0,tmp);
+            }
+        }
+        // ------------------------------------------------
+        // Hack for Q*Bert...Keep life counter set to 3
+        // to avoid original Bliss core bug for this game.
+        // ------------------------------------------------
+        if (currentRip)
+        {
+            if (currentRip->GetCRC() == 0xD8C9856A)
+            {
+                static UINT8 last_z=0;
+                if (currentEmu->memoryBus.peek(0x16D) != last_z)
                 {
-                    currentEmu->memoryBus.poke(0x173, 3);
+                    last_z=currentEmu->memoryBus.peek(0x16D);
+                    currentEmu->memoryBus.poke(0x173, currentEmu->memoryBus.peek(0x173)+1);
                 }
             }
-            
         }
+        
     }
 }
 

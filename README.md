@@ -29,11 +29,7 @@ Features :
 
 Missing / Known Issues :
 -----------------------
-* No ECS support - ECS games will not load/play.
-* Q-Bert - game will lose a life after completing every screen/board. Happens on the Windows
-version of BLISS and also happens on the MAME/MESS emulator for the same game. Edit: I've 
-updated the emulator to provide infinite lives for Q-Bert. It's still a bug but now you can
-at least play it as much as you want.
+* No ECS support - ECS games will not load/play. No bankswitch support either.
 * DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
@@ -53,6 +49,9 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.5a : 16-Oct-2021 by wavemotion-dave
+  * Patched Q-Bert so it doesn't lose a life after each board.
+
 V2.5 : 15-Oct-2021 by wavemotion-dave
   * Horizontal Stretch/Offset now saved on a per-game basis.
   * Custom Palette support (see example in 'extras' folder).
