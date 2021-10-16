@@ -233,7 +233,6 @@ class Peripheral
         UINT8             ramCount;
         ROM*		      roms[MAX_ROMS];
         UINT8             romCount;
-
 };
 
 #endif

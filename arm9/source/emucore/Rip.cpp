@@ -16,19 +16,15 @@
 #include "RAM.h"
 #include "ROM.h"
 #include "JLP.h"
-#include "ROMBanker.h"
 #include "CRC32.h"
 #include "../database.h"
-
-#define MAX_MEMORY_UNITS  16
-#define MAX_STRING_LENGTH 256
 
 #define ROM_TAG_TITLE          0x01
 #define ROM_TAG_PUBLISHER      0x02
 #define ROM_TAG_RELEASE_DATE   0x05
 #define ROM_TAG_COMPATIBILITY  0x06
 
-UINT8 bin_image_buf[128 * 1024];                   // No .BIN or .ROM will be bigger than this... TODO: Bankswitched?
+UINT8 bin_image_buf[128 * 1024];                   // No .BIN or .ROM will be bigger than this...
 UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf;
 
 Rip::Rip(UINT32 systemID)

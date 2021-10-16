@@ -26,29 +26,29 @@ class Intellivision;
 extern  INT32 clockDivisor;
 
 //cached total output sample
-extern  BOOL  cachedTotalOutputIsDirty;
+extern  UINT8 cachedTotalOutputIsDirty;
 extern  INT32 cachedTotalOutput;
 
 //envelope data
-extern  BOOL  envelopeIdle;
+extern  UINT8 envelopeIdle;
 extern  INT32 envelopePeriod;
 extern  INT32 envelopePeriodValue;
 extern  INT32 envelopeVolume;
-extern  BOOL  envelopeHold;
-extern  BOOL  envelopeAltr;
-extern  BOOL  envelopeAtak;
-extern  BOOL  envelopeCont;
+extern  UINT8 envelopeHold;
+extern  UINT8 envelopeAltr;
+extern  UINT8 envelopeAtak;
+extern  UINT8 envelopeCont;
 extern  INT32 envelopeCounter;        
 
 //noise data
-extern  BOOL  noiseIdle;
+extern  UINT8 noiseIdle;
 extern  INT32 noisePeriod;
 extern  INT32 noisePeriodValue;
 extern  INT32 noiseCounter;        
 
 //data for random number generator, used for white noise accuracy
 extern  INT32 my_random;
-extern  BOOL  noise;
+extern  UINT8 noise;
 
 TYPEDEF_STRUCT_PACK( _AY38914State
 {

@@ -21,7 +21,7 @@
 extern Emulator *currentEmu;
 extern Rip      *currentRip;
 
-#define CURRENT_SAVE_FILE_VER   0x0004
+#define CURRENT_SAVE_FILE_VER   0x0005
 
 struct 
 {

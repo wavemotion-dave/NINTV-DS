@@ -22,32 +22,32 @@ struct Channel_t channel0 __attribute__((section(".dtcm")));
 struct Channel_t channel1 __attribute__((section(".dtcm")));
 struct Channel_t channel2 __attribute__((section(".dtcm")));
 
-  INT32 clockDivisor __attribute__((section(".dtcm")));
+INT32 clockDivisor __attribute__((section(".dtcm")));
 
-  //cached total output sample
-  BOOL  cachedTotalOutputIsDirty __attribute__((section(".dtcm")));
-  INT32 cachedTotalOutput __attribute__((section(".dtcm")));
+//cached total output sample
+UINT8 cachedTotalOutputIsDirty __attribute__((section(".dtcm")));
+INT32 cachedTotalOutput __attribute__((section(".dtcm")));
 
-  //envelope data
-  BOOL  envelopeIdle __attribute__((section(".dtcm")));
-  INT32 envelopePeriod __attribute__((section(".dtcm")));
-  INT32 envelopePeriodValue __attribute__((section(".dtcm")));
-  INT32 envelopeVolume __attribute__((section(".dtcm")));
-  BOOL  envelopeHold __attribute__((section(".dtcm")));
-  BOOL  envelopeAltr __attribute__((section(".dtcm")));
-  BOOL  envelopeAtak __attribute__((section(".dtcm")));
-  BOOL  envelopeCont __attribute__((section(".dtcm")));
-  INT32 envelopeCounter __attribute__((section(".dtcm")));         
+//envelope data
+UINT8 envelopeIdle __attribute__((section(".dtcm")));
+INT32 envelopePeriod __attribute__((section(".dtcm")));
+INT32 envelopePeriodValue __attribute__((section(".dtcm")));
+INT32 envelopeVolume __attribute__((section(".dtcm")));
+UINT8 envelopeHold __attribute__((section(".dtcm")));
+UINT8 envelopeAltr __attribute__((section(".dtcm")));
+UINT8 envelopeAtak __attribute__((section(".dtcm")));
+UINT8 envelopeCont __attribute__((section(".dtcm")));
+INT32 envelopeCounter __attribute__((section(".dtcm")));         
 
-  //noise data
-  BOOL  noiseIdle __attribute__((section(".dtcm")));
-  INT32 noisePeriod __attribute__((section(".dtcm")));
-  INT32 noisePeriodValue __attribute__((section(".dtcm")));
-  INT32 noiseCounter __attribute__((section(".dtcm")));        
+//noise data
+UINT8 noiseIdle __attribute__((section(".dtcm")));
+INT32 noisePeriod __attribute__((section(".dtcm")));
+INT32 noisePeriodValue __attribute__((section(".dtcm")));
+INT32 noiseCounter __attribute__((section(".dtcm")));        
 
-  //data for random number generator, used for white noise accuracy
-  INT32 my_random __attribute__((section(".dtcm")));
-  BOOL  noise __attribute__((section(".dtcm")));
+//data for random number generator, used for white noise accuracy
+INT32 my_random __attribute__((section(".dtcm")));
+UINT8 noise __attribute__((section(".dtcm")));
 
 
 

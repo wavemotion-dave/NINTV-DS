@@ -20,12 +20,11 @@ struct Channel_t
     INT32   periodValue;
     INT32   volume;
     INT32   toneCounter;
-    BOOL    tone;
-    BOOL    envelope;
-    BOOL    toneDisabled;
-    BOOL    noiseDisabled;
-    BOOL    isDirty;
-    INT32   cachedSample;
+    UINT8   tone;
+    UINT8   envelope;
+    UINT8   toneDisabled;
+    UINT8   noiseDisabled;
+    UINT8   isDirty;
 };
 
 extern struct Channel_t channel0;
