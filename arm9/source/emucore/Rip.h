@@ -51,12 +51,6 @@ public:
 
     void SetName(const CHAR* p);
 
-    void SetProducer(const CHAR* p);
-    const CHAR* GetProducer() { return producer; }
-
-    void SetYear(const CHAR* y);
-    const CHAR* GetYear() { return year; }
-
     PeripheralCompatibility GetPeripheralUsage(const CHAR* periphName);
 
     //load a raw binary Intellivision image of a game
@@ -85,8 +79,6 @@ private:
     }
 
     UINT32 targetSystemID;
-    CHAR producer[64];
-    CHAR year[12];
 
     //peripheral compatibility indicators
     CHAR peripheralNames[MAX_PERIPHERALS][32];

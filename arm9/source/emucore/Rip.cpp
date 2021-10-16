@@ -33,8 +33,6 @@ Rip::Rip(UINT32 systemID)
   targetSystemID(systemID),
   crc(0)
 {
-    strcpy(producer, "");
-    strcpy(year, "");
     memset(filename, 0, sizeof(filename));
     JLP16Bit = NULL;
 }
@@ -50,16 +48,6 @@ Rip::~Rip()
 void Rip::SetName(const CHAR* n)
 {
     strcpy(peripheralName, n);
-}
-
-void Rip::SetProducer(const CHAR* p)
-{
-    strcpy(producer, p);
-}
-
-void Rip::SetYear(const CHAR* y)
-{
-    strcpy(year, y);
 }
 
 void Rip::AddPeripheralUsage(const CHAR* periphName, PeripheralCompatibility usage)
@@ -368,7 +356,6 @@ Rip* Rip::LoadRom(const CHAR* filename)
                     tmp_buf[i] = (char)read;
                 }
                 crc16 = (fgetc(infile) << 8) | fgetc(infile);
-                rip->SetProducer(tmp_buf);
             }
             break;
             case ROM_TAG_COMPATIBILITY:
