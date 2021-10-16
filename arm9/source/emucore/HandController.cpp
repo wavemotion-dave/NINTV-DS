@@ -60,16 +60,6 @@ HandController::~HandController()
 {
 }
 
-INT32 HandController::getInputConsumerObjectCount()
-{
-    return 0;
-}
-
-InputConsumerObject* HandController::getInputConsumerObject(INT32 i)
-{
-    return NULL;
-}
-
 int ds_key_input[3][16] = {0};   // Set to '1' if pressed... 0 if released
 int ds_disc_input[3][16] = {0};  // Set to '1' if pressed... 0 if released.
 

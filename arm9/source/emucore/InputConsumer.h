@@ -11,8 +11,6 @@
 
 #ifndef INPUTCONSUMER_H
 #define INPUTCONSUMER_H
-
-#include "InputConsumerObject.h"
 #include "types.h"
 
 /**
@@ -40,10 +38,6 @@ public:
         * vertical blank.
         */
     virtual void evaluateInputs() = 0;
-
-    //functions to get descriptive info about the input consumer
-    virtual INT32 getInputConsumerObjectCount() = 0;
-    virtual InputConsumerObject* getInputConsumerObject(INT32 i) = 0;
 
 private:
     INT32 id;

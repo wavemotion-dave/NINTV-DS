@@ -12,7 +12,6 @@
 #ifndef HANDCONTROLLER_H
 #define HANDCONTROLLER_H
 
-
 #include "AY38914_InputOutput.h"
 #include "InputConsumer.h"
 
@@ -34,10 +33,6 @@ class HandController : public AY38914_InputOutput, public InputConsumer
          */
         void evaluateInputs();
 
-        //functions to get descriptive info about the input consumer
-        INT32 getInputConsumerObjectCount();
-        InputConsumerObject* getInputConsumerObject(INT32 i);
-
         void setOutputValue(UINT16 value);
         UINT16 getInputValue();
 
@@ -45,7 +40,6 @@ class HandController : public AY38914_InputOutput, public InputConsumer
         const CHAR* name;
         UINT16 controllerID;
 
-        //InputConsumerObject* inputConsumerObjects[NUM_HAND_CONTROLLER_OBJECTS];
         UINT16            inputValue;
 
         static const UINT16 BUTTON_OUTPUT_VALUES[15];
