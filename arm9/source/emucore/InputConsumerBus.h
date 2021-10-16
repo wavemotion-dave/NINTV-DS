@@ -14,11 +14,10 @@
 
 #include "InputConsumer.h"
 
-const INT32 MAX_INPUT_CONSUMERS = 10;
+#define MAX_INPUT_CONSUMERS  4
 
 class InputConsumerBus
 {
-
     public:
         InputConsumerBus();
         void reset();
@@ -30,8 +29,7 @@ class InputConsumerBus
 
     private:
         InputConsumer*  inputConsumers[MAX_INPUT_CONSUMERS];
-        UINT32          inputConsumerCount;
-
+        UINT8          inputConsumerCount;
 };
 
 #endif
