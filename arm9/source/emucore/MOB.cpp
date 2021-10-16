@@ -36,7 +36,7 @@ void MOB::reset() {
     colorChanged      = TRUE;
 }
 
-void MOB::setXLocation(INT32 xLocation) {
+void MOB::setXLocation(INT16 xLocation) {
     if (xLocation == this->xLocation)
         return;
 
@@ -44,7 +44,7 @@ void MOB::setXLocation(INT32 xLocation) {
     boundsChanged = TRUE;
 }
 
-void MOB::setYLocation(INT32 yLocation) {
+void MOB::setYLocation(INT16 yLocation) {
     if (yLocation == this->yLocation)
         return;
 
@@ -53,7 +53,7 @@ void MOB::setYLocation(INT32 yLocation) {
 }
 
 
-void MOB::setForegroundColor(INT32 foregroundColor) {
+void MOB::setForegroundColor(UINT8 foregroundColor) {
     if (foregroundColor == this->foregroundColor)
         return;
 
@@ -61,7 +61,7 @@ void MOB::setForegroundColor(INT32 foregroundColor) {
     colorChanged = TRUE;
 }
 
-void MOB::setCardNumber(INT32 cardNumber) {
+void MOB::setCardNumber(INT16 cardNumber) {
     if (cardNumber == this->cardNumber)
         return;
 
@@ -155,8 +155,10 @@ void MOB::markClean() {
     colorChanged = FALSE;
 }
 
-MOBRect* MOB::getBounds() {
-    if (boundsChanged) {
+MOBRect* MOB::getBounds() 
+{
+    if (boundsChanged) 
+    {
         boundingRectangle.x = xLocation-8;
         boundingRectangle.y = yLocation-8;
         boundingRectangle.width = 8 * (doubleWidth ? 2 : 1);
@@ -184,6 +186,13 @@ void MOB::getState(MOBState *state)
     state->horizontalMirror = horizontalMirror;
     state->verticalMirror = verticalMirror;
     state->behindForeground = behindForeground;
+
+    // Probably don't need to save the bounding rectangle since
+    // it gets recalculated every frame - but it's small enough...
+    state->mob_rect_x      = boundingRectangle.x;
+    state->mob_rect_y      = boundingRectangle.y;
+    state->mob_rect_width  = boundingRectangle.width;
+    state->mob_rect_height = boundingRectangle.height;
 }
 
 void MOB::setState(MOBState *state)
@@ -203,6 +212,11 @@ void MOB::setState(MOBState *state)
     horizontalMirror = state->horizontalMirror;
     horizontalMirror = state->verticalMirror;
     behindForeground = state->behindForeground;
+    
+    boundingRectangle.x = state->mob_rect_x;
+    boundingRectangle.y = state->mob_rect_y;
+    boundingRectangle.width = state->mob_rect_width;
+    boundingRectangle.height = state->mob_rect_height;    
 
 	this->boundsChanged = TRUE;
 	this->shapeChanged = TRUE;

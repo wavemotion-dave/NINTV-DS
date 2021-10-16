@@ -22,7 +22,7 @@
 #include "GRAM.h"
 #include "GROM.h"
 
-#define AY38900_PIN_IN_SST 0
+#define AY38900_PIN_IN_SST  0
 #define AY38900_PIN_OUT_SR1 0
 #define AY38900_PIN_OUT_SR2 1
 
@@ -30,9 +30,9 @@ TYPEDEF_STRUCT_PACK( _AY38900State
 {
     BackTabRAMState backtab;
     MOBState        mobs[8];
-    INT32           horizontalOffset;
-    INT32           verticalOffset;
-    INT32           mode;
+    INT8            horizontalOffset;
+    INT8            verticalOffset;
+    INT8            mode;
     UINT16          registers[0x40];
     INT8            inVBlank;
     INT8            previousDisplayEnabled;
@@ -41,7 +41,6 @@ TYPEDEF_STRUCT_PACK( _AY38900State
     UINT8           borderColor;
     INT8            blockLeft;
     INT8            blockTop;
-    UINT8           _pad[1];
 } AY38900State; )
 
 
@@ -114,30 +113,30 @@ private:
     UINT8           backgroundBuffer[160*96];
 
     UINT8*          pixelBuffer;
-    UINT32          pixelBufferRowSize;
+    UINT16          pixelBufferRowSize;
 
     //memory listeners, for optimizations
     GROM*           grom;
     GRAM*           gram;
 
     //state info
-    BOOL            inVBlank;
-    INT32           mode;
-    BOOL            previousDisplayEnabled;
-    BOOL            displayEnabled;
-    BOOL            colorStackMode;
-    BOOL            colorModeChanged;
-    BOOL            bordersChanged;
-    BOOL            colorStackChanged;
-    BOOL            offsetsChanged;
-    BOOL            imageBufferChanged;
+    UINT8            inVBlank;
+    INT8             mode;
+    UINT8            previousDisplayEnabled;
+    UINT8            displayEnabled;
+    UINT8            colorStackMode;
+    UINT8            colorModeChanged;
+    UINT8            bordersChanged;
+    UINT8            colorStackChanged;
+    UINT8            offsetsChanged;
+    UINT8            imageBufferChanged;
 
     //register info
-    UINT8   borderColor;
-    BOOL    blockLeft;
-    BOOL    blockTop;
-    INT32   horizontalOffset;
-    INT32   verticalOffset;
+    UINT8  borderColor;
+    UINT8  blockLeft;
+    UINT8  blockTop;
+    INT8   horizontalOffset;
+    INT8   verticalOffset;
 };
 
 #endif

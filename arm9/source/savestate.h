@@ -39,7 +39,7 @@ struct _stateStruct
     RAMState            RAM16bitState;
     GRAMState           MyGRAMState; 
     IntellivoiceState   ivoiceState;
-    RAMState            ExtraCartRamState;
+    UINT16              extraRAM[0x800];
 };
 
 

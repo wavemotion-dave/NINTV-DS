@@ -16,20 +16,15 @@
 
 class MOBRect
 {
-
     public:
-        BOOL intersects(MOBRect* r) {
-	        return !((r->x + r->width <= x) ||
-		         (r->y + r->height <= y) ||
-		         (r->x >= x + width) ||
-		         (r->y >= y + height));
+        inline BOOL intersects(MOBRect* r) 
+        {
+	        return !((r->x + r->width <= x) || (r->y + r->height <= y) || (r->x >= x + width) || (r->y >= y + height));
         }
-
         INT16 x;
         INT16 y;
         UINT8 width;
         UINT8 height;
-
 };
 
 class AY38900;
@@ -37,11 +32,11 @@ class AY38900_Registers;
 
 TYPEDEF_STRUCT_PACK( _MOBState
 {
-    INT32   xLocation;
-    INT32   yLocation;
-    INT32   foregroundColor;
-    INT32   cardNumber;
+    INT16   xLocation;
+    INT16   yLocation;
+    INT16   cardNumber;
     UINT16  collisionRegister;
+    UINT8   foregroundColor;
     INT8    isGrom;
     INT8    isVisible;
     INT8    doubleWidth;
@@ -52,6 +47,10 @@ TYPEDEF_STRUCT_PACK( _MOBState
     INT8    horizontalMirror;
     INT8    verticalMirror;
     INT8    behindForeground;
+    INT16   mob_rect_x;
+    INT16   mob_rect_y;
+    UINT8   mob_rect_width;
+    UINT8   mob_rect_height;
 } MOBState; )
     
 class MOB
@@ -66,10 +65,10 @@ class MOB
     private:
         MOB() {};
         void reset();
-        void setXLocation(INT32 xLocation);
-        void setYLocation(INT32 yLocation);
-        void setForegroundColor(INT32 foregroundColor);
-        void setCardNumber(INT32 cardNumber);
+        void setXLocation(INT16 xLocation);
+        void setYLocation(INT16 yLocation);
+        void setForegroundColor(UINT8 foregroundColor);
+        void setCardNumber(INT16 cardNumber);
         void setVisible(BOOL isVisible);
         void setDoubleWidth(BOOL doubleWidth);
         void setDoubleYResolution(BOOL doubleYResolution);
@@ -85,7 +84,7 @@ class MOB
 
         INT16   xLocation;
         INT16   yLocation;
-        INT32   foregroundColor;
+        UINT16  foregroundColor;
         INT16   cardNumber;
         UINT16  collisionRegister;
         UINT8   isGrom;
@@ -102,7 +101,6 @@ class MOB
         UINT8   shapeChanged;
         UINT8   colorChanged;
         MOBRect boundingRectangle;
-
 };
 
 #endif

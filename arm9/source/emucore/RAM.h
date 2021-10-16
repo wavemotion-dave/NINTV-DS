@@ -24,7 +24,7 @@ TYPEDEF_STRUCT_PACK( _RAMState
     UINT16  readAddressMask;
     UINT16  writeAddressMask;
     UINT16  trimmer;
-    UINT16  image[0x400];
+    UINT16  image[0x300];
 } RAMState; )
     
     
