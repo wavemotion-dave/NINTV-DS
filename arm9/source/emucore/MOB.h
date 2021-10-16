@@ -12,8 +12,25 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "MOBRect.h"
 #include "types.h"
+
+class MOBRect
+{
+
+    public:
+        BOOL intersects(MOBRect* r) {
+	        return !((r->x + r->width <= x) ||
+		         (r->y + r->height <= y) ||
+		         (r->x >= x + width) ||
+		         (r->y >= y + height));
+        }
+
+        INT16 x;
+        INT16 y;
+        UINT8 width;
+        UINT8 height;
+
+};
 
 class AY38900;
 class AY38900_Registers;
