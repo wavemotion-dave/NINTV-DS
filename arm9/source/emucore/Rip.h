@@ -14,7 +14,6 @@
 
 #include <string.h>
 #include <vector>
-#include "ripxbf.h"
 #include "types.h"
 #include "Peripheral.h"
 #include "Memory.h"
@@ -24,6 +23,20 @@ using namespace std;
 
 #define MAX_BIOSES      4
 #define MAX_PERIPHERALS 4
+
+typedef enum _PeripheralCompatibility
+{
+    PERIPH_REQUIRED = 0,
+    PERIPH_OPTIONAL = 1,
+    PERIPH_COMPATIBLE = 2,
+    PERIPH_INCOMPATIBLE = 3
+} PeripheralCompatibility;
+
+//system IDs
+#define ID_SYSTEM_INTELLIVISION     0x4AC771F8
+#define ID_PERIPH_ECS               0x143D9A97
+#define ID_PERIPH_INTELLIVOICE      0x6EFF540A
+
 
 typedef struct _CartridgeConfiguration CartridgeConfiguration;
 
