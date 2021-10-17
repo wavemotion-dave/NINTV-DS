@@ -59,6 +59,7 @@ bool bStartSoundFifo = false;
 bool bUseJLP = false;
 bool bForceIvoice=false;
 bool bInitEmulator=false;
+bool bUseDiscOverlay=false;
 
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
@@ -105,13 +106,14 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
+struct Overlay_t myDisc[DISC_MAX];
 
 void dsInitPalette(void);
 
 int bg0, bg0b, bg1b;
 bool bFirstGameLoaded = false;
 
-ITCM_CODE void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
+void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 {
   u16 *pusEcran,*pusMap;
   u16 usCharac;
@@ -740,8 +742,9 @@ ITCM_CODE void pollInputs(void)
     
     // ---------------------------------------------------------------
     // Handle 8 directions on keypad... best we can do with the d-pad
+    // unless there is a custom .ovl overlay file mapping the disc.
     // ---------------------------------------------------------------
-    
+
     if (myConfig.dpad_config == 0)  // Normal handling
     {
         if (keys_pressed & KEY_UP)    
@@ -849,7 +852,6 @@ ITCM_CODE void pollInputs(void)
             ds_disc_input[ctrl_disc][12] = 1;
         }
     }    
-    
     
     // -------------------------------------------------------------------------------------
     // Now handle the main DS keys... these can be re-mapped to any Intellivision function
@@ -1009,7 +1011,18 @@ ITCM_CODE void pollInputs(void)
     {
         touchPosition touch;
         touchRead(&touch);
-
+        
+        // -----------------------------------------------------------
+        // Did we map any hotspots on the overlay to disc directions?
+        // -----------------------------------------------------------
+        if (bUseDiscOverlay) 
+        {
+            for (int i=0; i < DISC_MAX; i++)
+            {
+                if (touch.px > myDisc[i].x1  && touch.px < myDisc[i].x2 && touch.py > myDisc[i].y1 && touch.py < myDisc[i].y2) ds_disc_input[ctrl_disc][i] = 1;
+            }
+        }
+        
         // ----------------------------------------------------------------------
         // Handle the 12 keypad keys on the intellivision controller overlay...
         // ----------------------------------------------------------------------
@@ -1166,10 +1179,10 @@ ITCM_CODE void Run(char *initial_file)
         {
             if (currentRip->GetCRC() == 0xD8C9856A)
             {
-                static UINT8 last_z=0;
-                if (currentEmu->memoryBus.peek(0x16D) != last_z)
+                static UINT8 last_qbert_lives=0;
+                if (currentEmu->memoryBus.peek(0x16D) != last_qbert_lives)
                 {
-                    last_z=currentEmu->memoryBus.peek(0x16D);
+                    last_qbert_lives=currentEmu->memoryBus.peek(0x16D);
                     currentEmu->memoryBus.poke(0x173, currentEmu->memoryBus.peek(0x173)+1);
                 }
             }
@@ -1211,12 +1224,24 @@ void load_custom_overlay(void)
         strcat(filename, ".ovl");
         fp = fopen(filename, "rb");
     }
+    
+    // Default these to unused... 
+     bUseDiscOverlay = false;
+    for (UINT8 i=0; i < DISC_MAX; i++)
+    {
+        myDisc[i].x1 = 255;
+        myDisc[i].x2 = 255;
+        myDisc[i].y1 = 255;
+        myDisc[i].y2 = 255;
+    }
+    
     if (fp != NULL)
     {
-      int ov_idx = 0;
-      int tiles_idx=0;
-      int map_idx=0;
-      int pal_idx=0;
+      UINT8 ov_idx = 0;
+      UINT8 disc_idx=0;
+      UINT16 tiles_idx=0;
+      UINT16 map_idx=0;
+      UINT16 pal_idx=0;
       char *token;
 
       memset(customTiles, 0x00, 24*1024*sizeof(UINT32));
@@ -1241,6 +1266,22 @@ void load_custom_overlay(void)
             }
         }
 
+        // Handle Disc Line
+        if (strstr(line, ".disc") != NULL)
+        {
+            bUseDiscOverlay = true;
+            if (disc_idx < DISC_MAX)
+            {
+                char *ptr = strstr(line, ".disc");
+                ptr += 6;
+                myDisc[disc_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                myDisc[disc_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                myDisc[disc_idx].y1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                myDisc[disc_idx].y2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
+                disc_idx++;                
+            }
+        }
+          
         // Handle Tile Line
         if (strstr(line, ".tile") != NULL)
         {
@@ -1447,7 +1488,7 @@ UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
 UINT16 lastSample           __attribute__((section(".dtcm"))) = 0;
 UINT8 myCurrentSampleIdx    __attribute__((section(".dtcm"))) = 0;
 
-ITCM_CODE void VsoundHandlerDSi(void)
+void VsoundHandlerDSi(void)
 {
   extern UINT8 currentSampleIdx;
 
@@ -1460,7 +1501,7 @@ ITCM_CODE void VsoundHandlerDSi(void)
   sound_idx &= (2048-1);
 }
 
-ITCM_CODE void VsoundHandlerDS(void)
+void VsoundHandlerDS(void)
 {
   extern UINT8 currentSampleIdx;
 

@@ -49,8 +49,10 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V2.5a : 16-Oct-2021 by wavemotion-dave
-  * Patched Q-Bert so it doesn't lose a life after each board.
+V2.6 : 18-Oct-2021 by wavemotion-dave
+  * Added disc controller direction support to custom overlays. See Vectron.ovl in extras. 
+  * Patched Q-Bert so it doesn't lose a life after each board.  
+  * Fixed save states so we can save games with extra RAM (old save states will not work - sorry)
 
 V2.5 : 15-Oct-2021 by wavemotion-dave
   * Horizontal Stretch/Offset now saved on a per-game basis.

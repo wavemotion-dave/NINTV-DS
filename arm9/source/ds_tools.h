@@ -65,6 +65,7 @@ struct Overlay_t
 #define OVL_META_STRETCH 24
 
 #define OVL_MAX          25
+#define DISC_MAX         16
 
 extern struct Overlay_t myOverlay[OVL_MAX];
 
