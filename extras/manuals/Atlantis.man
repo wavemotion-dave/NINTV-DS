@@ -1,0 +1,232 @@
+ATLANTIS
+(c)1982 ACTIVISION, INC,(c)2001
+INTELLIVISION PRODUCTIONS, INC.
+
+Atlantis, the fabled city of
+antiquity, lies in peaceful
+waters. The major districts
+of the city - the Domed Palace
+and the Imperial Quarter -
+murmur with activity while vital
+generators whirl. All seems well.
+Three defense installations
+guard the skies over the
+metropolis. Acropolis Command
+Posts maintain close watch.
+
+Red Alert! The Gorgon Fleet,
+fierce warriors intent on
+demolishing Atlantis, attacks in
+force. General Tarrick, Imperial
+Commander of all Atlantean
+forces, mobilizes every citizen
+on emergency military stand-by.
+He issues Tactical Defense
+Instructions. "Review these
+quickly but carefully," he tells
+the assembled citizenry. "The
+very existence of Atlantis - and
+of us all - is in jeopardy. We
+must fight for our survival. How
+long Atlantis survives is up to
+you. To your stations!"
+
+OBJECTIVES:
+-----------
+# Blast Gorgon vessels before
+they can demolish sectors of
+Atlantis with their deathrays.
+# Deploy your weaponry wisely.
+# Use the cross-hair sights to
+aim shots fired from the two
+sentry posts stationed on the
+outskirts of Atlantis.
+# Launch the Sentinel Saucer and
+destroy Gorgon vessels.
+# Battle through day, dusk, and
+night.
+
+CONTROLS:
+---------
+Move Sight/Saucer - DISC
+Start - Press 1
+Reset - Press 3
+Difficulty - Press 4 for easy,
+5 for medium, 6 for hard
+Fire Left - TOP SIDE BUTTON
+Fire Right - LOWER SIDE BUTTON
+Launch Saucer - Press 0
+Pause- Press 1+9 or 3+7 together
+
+ATLANTIS ARSENAL:
+-----------------
+2 types of weapons make up the
+arsenal which defends Atlantis.
+
+Anti-aircraft Guns
+------------------
+One anti-aircraft gun is
+positioned at each sentry post
+on either side of Atlantis. Aim
+anti-aircraft shots with the
+floating cross-hair sight.
+
+# Anti-aircraft guns destroy any
+vessel in their line of fire.
+# Anti-aircraft guns have
+unlimited firing power.
+# Shots will fire from the anti-
+aircraft guns to the cross-hair
+sight.
+
+Sentinel Saucer
+---------------
+Launch the Sentinel Saucer to do
+battle with the Gorgon Fleet in
+the skies over Atlantis.
+
+To Launch the Sentinel Saucer:
+press "0". Sentinel Saucer will
+take off from its launch pad.
+Move the Sentinel Saucer with
+DISC. The Sentinel Saucer fires
+to the left and right.
+
+The Sentinel Saucer fuel level
+appears at the bottom center of
+the screen. When a Sentinel
+Saucer is launched:
+
+# Cross-hair sight disappears.
+# The fuel supply decreases by 1
+fuel unit at regular intervals.
+# A warning buzzer sounds when
+only 5 fuel units remain. To
+restore fuel supplies, return
+Sentinel Saucer to its launch
+pad. It refuels once inside.
+# Fuel level gradually increases
+at regular intervals to a
+maximum of 90 fuel levels.
+
+Be Careful! The Sentinel Saucer
+explodes whenever:
+
+# Its fuel reaches zero.
+# It crashes into any part of
+Atlantis. When Sentinel Saucer
+explodes or returns to its
+launch pad the cross-hair sight
+will reappear on the screen.
+
+NOTE: Avoid colliding with
+Gorgon vessels. Sentinel Saucer
+loses 10 fuel units per
+collision. If saucer explodes, a
+new saucer appears on the launch
+pad at dawn of the next day. 
+
+THE GORGON FLEET:
+-----------------
+General Tarrick's agents cracked
+tight Gorgon security and
+discovered the following:
+
+# There are 9 types of Gorgon
+vessels with variable flight
+patterns.
+
+# The Gorgon Fleet follows a
+rigid plan of attack. 4
+identical ships form a squadron.
+3 different squadrons form a
+wave. Exception - by Day 10,
+heavy casualties cause the
+Gorgon Fleet to mix ship types
+in each squadron.
+
+# Duration of attack: 1 wave at
+dawn; 1 wave at dusk; 1 wave at
+night - for as many days as
+Atlantis can survive. Enemies
+fly faster every day.
+
+# A squadron begins its approach
+high above Atlantis. Each enemy
+ship tries to make 4 passes,
+from the left or right. Each
+pass brings the ship one level
+closer to Atlantis. In its
+fourth and final pass, the enemy
+aircraft fires its sole weapon:
+the Gorgon deathray, which can
+demolish an entire sector of the
+city upon contact.
+
+Analysis
+--------
+Destroy Gorgon ships before they
+reach their fourth pass. For the
+duration of the attack, search-
+lights will automatically scan
+the skies over Atlantis at night.
+
+Point of Vulnerability
+----------------------
+Searchlights incompletely scan
+the sky. Defenders must 
+anticipate flight patterns.
+
+SCORING:
+--------
+# Day One
+~ 10 points for every hit scored
+by an anti-aircraft gun.
+~ 40 points for every enemy
+casualty caused by a saucer.
+
+# Day Two and After
+~ Each day Atlantis survives,
+your point award increases by 10
+points for each anti-aircraft
+gun hit and 40 points for each
+Sentinel Saucer strike.
+
+TACTICAL TIPS:
+--------------
+1. Study the pre-game screen of
+Atlantis before beginning play.
+You'll see different Gorgon
+ships and get a couple of clues
+on how to position the cross-
+hair sight for an effective
+defense.
+
+2. When learning to use the
+cross-hair sight, try keeping
+the sight at the top center of
+the screen. You can pick off
+Gorgon vessels as they cross
+your path of fire.
+
+3. Destroy every Gorgon vessel
+you can while it is making its
+first pass at the top of the
+screen. Once destroyed, it
+cannot fly lower.
+
+4. Practice anticipating the
+location, speed and movement of
+each squadron. This will help
+you when night falls and you
+must rely more heavily on your
+ability to anticipate the
+pattern of enemy action.
+
+5. Try using the Sentinel Saucer
+during night assaults. Let your
+fuel supplies build up during
+dusk assaults by the Gorgon
+Fleet, then launch your saucer
+and blast away. Be careful! Land
+before your fuel runs out.

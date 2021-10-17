@@ -1,0 +1,22 @@
+ISTAR
+(c)2010 DAVID AKERS
+
+This game started out as a set
+of programs called DSTAR for the
+TI graphical calculators created
+by Joe Wingbermuehle and Andrew
+Von Dollen. The Intellivision
+conversion includes the 25 
+"classic" levels from the TI-83
+calculator version, plus 11 all
+new levels.
+
+CONTROLS:
+---------
+Press 7 to select level
+Press 9 on the keypad while
+playing the game to switch to an
+editor. You can edit your own
+level and test it out.
+Unfortunately there is no way to
+save your level.

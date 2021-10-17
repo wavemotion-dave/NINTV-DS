@@ -1,0 +1,76 @@
+GRAIL OF THE GODS
+(c)2018 OSCAR TOLEDO GUTIERREZ,
+GRAPHICS BY KIWI, SOUND EFFECTS
+BY ARTRAG, MUSIC BY NYUUNDERE,
+INSTRUCTIONS BY MTHOMPSON
+
+Seek the Grail Of The Gods
+through 10 randomly generated
+levels. Battle 14 monsters, from
+the lowly rat to the mighty
+dragon. Discover 25 different
+weapons and armors.
+
+Note: JLP support required.
+
+CONTROLS:
+---------
+DISC - Move in 4 directions
+
+GAMEPLAY:
+---------
+The dungeon is revealed as you
+move through it. Get too close
+to a monster, and it's a fight
+to the death! Your sword and
+armor degrade with use, so be
+sure to find replacements. Shiny
+gold adds to your wealth and
+experience. Avoid deadly traps,
+and drink the healing potions on
+each level. Look for the Grail
+on level 10.
+
+GAME SCREEN:
+------------
+DP = Dungeon Depth
+LV = Experience Level
+XP = Experience Points on the
+current level, listed as N/M
+where N is how many points you
+currently have and M is the
+required number of points to
+gain one level in experience
+GD = Gold
+AT = Attack Level
+AR = Armor Level
+HP = Hit Points
+
+You get one experience point
+every time you kill a monster or
+pick up some gold. When you gain
+a level of experience, the
+counter is reset, but the goal
+is higher.
+
+AT indicates the quality of the
+weapon you currently are using.
+AT and AR are reduced to zero as
+you are fighting; therefore, you
+need to pick up new armor and
+weapons regularly.
+
+Hit points start at a high
+number (increasing as you gain
+experience levels) and are
+reduced every time a monster
+hits you. If you drink a healing
+potion, your hit points are
+restored to the highest possible
+at the experience level you
+currently are at. If you already
+have maximum hit points for your
+experience level, you won't see
+a difference. When you're below
+-0- hit points, you are dead,
+and the game is over.

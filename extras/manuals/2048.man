@@ -1,0 +1,48 @@
+2048
+(c)2016 OSCAR TOLEDO GUTIERREZ
+
+Numbered tiles appear on a 4x4
+grid. Your task is to combine
+tiles having the same number
+by sliding them horizontally
+and vertically into each other.
+The resulting tile will have a
+value equal to the sum of the
+first two.
+
+SELECT OPTIONS:
+---------------
+Press a side button for options. 
+Use keypad button "1" to select
+a theme for the game board.
+Select game type by using the
+"5" button. Toggle music On or
+Off at any time by pressing "2".
+
+
+HOW TO PLAY:
+------------
+Press up, down, left, and right
+on the Disc to move the tiles on
+the board. With each move, a new
+tile appears on the board with a
+value of either 2 or 4. Continue
+moving tiles until two of them
+combine to total 2048. When no
+tiles can be combined and no 
+space remains on the board, the
+game is over.
+
+EXTENDED PLAY:
+--------------
+For an even greater challenge,
+press 5 at the game's title
+screen to play to 4096 or 8192!
+
+SCORING:
+--------
+As tiles are combined during the
+game, you score points for each
+new tile that is created. The
+number of points awarded equals
+the value of the new tile.

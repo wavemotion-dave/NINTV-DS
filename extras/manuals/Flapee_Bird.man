@@ -1,0 +1,18 @@
+FLAPEE BIRD
+(c)2015 COLLECTORVISION,
+ORIGINAL GAME (c)GEARS STUDIOS
+
+Help Mr. Flapee get home. He
+must avoid dangerous pipes along
+the way.
+
+OBJECT OF THE GAME:
+-------------------
+Travel as far as you can without
+touching any obstacles or the
+ground.
+
+CONTROLS:
+---------
+Use any DISC direction or any
+SIDE ACTION BUTTON to flap.

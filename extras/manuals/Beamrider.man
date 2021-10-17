@@ -1,0 +1,213 @@
+BEAMRIDER
+(c)1983 ACTIVISION, INC, (c)2001
+INTELLIVISION PRODUCTIONS, INC.
+
+BEAMRIDER BASICS:
+-----------------
+The Restrictor Shield, 99
+sectors deep, now surrounds the
+Earth. You are the Beamrider,
+thrust from your Space Station,
+on a mission to clear the
+Shield. There you must demolish
+an onslaught of aliens as you
+dodge from beam to beam.
+
+CONTROLS:
+---------
+Move left or right - DISC
+Fire Lasers - TOP SIDE BUTTONS
+Torpedoes - LOWER SIDE BUTTONS
+Pause- Press 1+9 or 3+7 together
+
+GETTING STARTED:
+----------------
+You will start in the Space
+Station. Its control panel
+displays your score, two reserve
+ships, sector, number of enemy
+saucers in the sector and three
+torpedoes. To start the action,
+open the Space Station's hatch
+doors and enter the Restrictor
+Shield by pressing the DISC.
+
+Enemy Saucers
+-------------
+There are fifteen enemy saucers
+in each sector. They must all be
+destroyed before you can go to
+the next sector. Every time a
+saucer is hit, the number in the
+upper left corner of the screen
+will count down by one.
+
+Weapons
+-------
+Laser lariats are only effective
+against certain invaders (see
+Dangerous Encounters). Torpedoes
+however, will destroy the first
+object they meet on a beam. You
+are only given three torpedoes
+per sector. Use them sparingly
+since they are your only weapon
+against the Sector Sentinel (see
+Special Features).
+
+The Space Station
+-----------------
+Whenever your ship is destroyed,
+or when you complete a sector,
+you will return via hyperspace
+to the Space Station. When
+you're ready to continue, press
+any button or the DISC. The
+hatch doors will open and you'll
+be on your way.
+
+Scoring
+-------
+Points are scored each time an
+enemy saucer, chirper ship or
+Sector Sentinel is destroyed.
+Additionally, a sector bonus,
+added to all scores, increases
+as you progress to higher
+sectors. The higher the sector,
+the higher the bonus.
+
+White Saucers:    40 pts + bonus
+Yellow Chirper:  200 pts + bonus
+Sector Sentinel: 300 pts + bonus
+
+The exact point value for each
+hit appears in red, briefly
+replacing your score the moment
+an enemy craft is destroyed.
+
+Also, if you manage to destroy
+the Sector Sentinel, you'll
+receive the points described
+above plus a bonus for each ship
+in your fleet (each ship will
+light up and add 100 points plus
+a sector bonus to your score).
+
+You begin the game with one
+active ship and two on reserve.
+The game ends when all your
+ships are gone.
+
+SPECIAL FEATURES OF BEAMRIDER:
+------------------------------
+
+The Sector Sentinel
+-------------------
+When all fifteen white enemy
+saucers have been destroyed in a
+sector, their Sentinel ship will
+be defenseless and will cruise
+across the top of the beams.
+Only a torpedo can destroy it.
+
+Yellow Rejuvenators
+-------------------
+Occasionally yellow rejuvenators
+will float through the beam
+matrix. Allow them to land on
+you deck, as each connection
+will add a bonus ship to your
+fleet. If you shoot or torpedo a
+rejuvenator by mistake, it will
+turn red from the heated blast.
+Get out of the way! The wreckage
+will destroy you on contact. 
+
+DANGEROUS ENCOUNTERS:
+---------------------
+With the first swing of your
+laser lariat, the white enemy
+saucers approach. But there's
+more. As you progress through
+the Restrictor Shield, a
+sinister collection of aliens
+will materialize. A new danger
+is added with every other sector
+up to sector 14.
+
+Only "vulnerable" objects are
+affected by laser lariats
+(saucers and chirpers are
+destroyed; chargers and zig
+bombs are deflected). Everything
+else can only be dodged or in
+extreme cases, torpedoed.
+
+SEC  CRAFT           VULNERABLE?
+1    White Enemy Saucers    Yes
+2    Brown Space Debris      No
+4    Yellow Chirper Ships   Yes
+6    Green Blocker Ships     No
+8    Green Bounce Craft      No
+10   Blue Chargers          Yes
+12   Orange Trackers         No
+14   Red Zig Bombs          Yes
+
+HOW TO BE A "BEAMRIDER":
+------------------------
+Tips from Dave Rolfe, designer
+of Beamrider. Greetings from
+sector 26 and moving! If you
+want to make it to the outer
+sectors, pay attention to these
+tips.
+
+1. First of all, don't hold down
+the DISC. Maintain precise
+control by learning to TAP the
+DISC to move a single beam at a
+time. And stay near the center
+beams so you won't get boxed
+into a corner with nowhere to
+run.
+
+2. Zap the white enemy saucers as
+early in their approach as
+possible. And check this out:
+You can hit them when they're
+slightly off the beam, before
+they can drop their missiles.
+
+3. When you see a yellow
+rejuvenator, don't abandon all
+caution as you move to catch it,
+or you'll likely wreck your
+ship. If an invulnerable object
+is blocking it, you can use a
+torpedo to blast it out of the
+way. Then, catch the rejuvenator.
+But remember, you only have
+three torpedoes and they're your
+only weapon against the Sector
+Sentinel.
+
+4. And while we're on the
+subject, when the Sentinel is
+about to approach, don't sit on
+the beam you plan to shoot from.
+Green Blockers will swarm onto
+it immediately! Instead, wait on
+a beam you're not going to shoot
+from (like the one nearest the
+Sentinel's first sighting). As
+soon as the Blockers are
+'locked' onto that beam, zip
+over to an unblocked beam and
+torpedo the ship.
+
+5. Finally, take time to notice
+the enemy attack movements. They
+generally follow a pattern of
+motion that allows you to
+anticipate many of their moves.

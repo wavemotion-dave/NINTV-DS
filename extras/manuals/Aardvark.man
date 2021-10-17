@@ -1,0 +1,50 @@
+AARDVARK
+(c)2019 INTELLIVISIONREVOLUTION
+
+OBJECT OF THE GAME:
+-------------------
+Use the tip of the aardvark's
+tongue to eat all of the ant
+eggs inside each anthill. Lap up
+the various ants, worms, and
+caterpillars that also inhabit
+the anthill without getting
+stung on the backside of your
+tongue.
+
+CONTROLS:
+---------
+Extend Tongue - LEFT, RIGHT, UP
+or DOWN on the Disc
+Retract Tongue - Any side button
+Pause - Press 1 and 9 together
+
+SCORING:
+---------------------------
+Eggs              10 points
+Ants             100 points
+Red Ants         150 points
+Caterpillars     150 points
+Worms            200 points
+Spider           200 points
+Queen Ants     1,000 points
+Extra Lives   20,000 points
+
+GAMEPLAY:
+---------
+As you move from one anthill to
+the next, the game's difficulty
+increases. AARDVARK's randomized
+levels provide new challenges
+each time you play! Test your
+skill with Wild modes 1, 2 and 3
+which have stones blocking some
+routes plus other random
+elements and added difficulty.
+
+HIDDEN BONUS:
+-------------
+If you're able to clear an
+anthill without eating a queen
+ant, you'll unlock a secret
+hidden level!

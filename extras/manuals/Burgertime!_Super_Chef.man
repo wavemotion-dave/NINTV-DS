@@ -1,0 +1,148 @@
+SUPER CHEF BT
+(c)2013 INTELLIGENTVISION
+
+Freeze them or pepper them?
+Either way, decide quickly! The
+nasties are coming to get you!
+Do you have enough pepper to
+make your way through them or do
+you have to outsmart them? You
+are the chef and have a job to
+do. How many burgers will you be
+able to complete? Run!
+
+CONTROLS:
+---------
+DISC - Move chef in 4 directions
+UPPER BUTTONS - Freeze nasties
+LOWER BUTTONS - Throw pepper
+
+Playing Speed: DISC=Fastest,
+1=Fast, 2=Medium, 3=Slow
+
+Press ENTER to start game.
+
+HERE THEY COME:
+---------------
+You are Peter the Super Chef,
+and your job is to build burgers.
+Use the DISC to move Peter
+across the platforms, up and
+down the ladders running over
+the pieces dropping them down to
+complete the sandwich. You will
+be hunted down by sausages,
+pickles, and an egg trying to
+stop you. 
+
+When game play starts, Peter
+will always be at the same
+starting position; bottom left
+side of the screen. The nasties
+(sausages, eggs, and pickles)
+will always enter from the same
+four entry points on the side of
+the maze.
+
+THE PLAYERS:
+------------
+Everyone is after Peter the chef
+as they do not want to be part
+of his quality burgers! You are
+in control of him and your
+objective is to make burgers, as
+many as you can!
+
+You will assemble the burgers by
+navigating the different mazes
+and stomping down on the diff-
+erent components of the burger.
+All the pieces need to reach the
+bottom of the screen before you
+can move on to the next level.
+
+You may not want to run away
+from the nasties, but you
+definitely do not want to touch
+them as they will stop you from
+completing your task. The
+nasties include the sausage,
+egg and pickle. Each of them has
+their own personality.
+
+The first screens will consist
+of 3 sausages and one egg. The
+pickle does not appear in the
+game until screen 46 of level
+one. Once they do, they will
+replace 2 of the sausages.
+
+As game play continues, the
+nasties will begin to move
+faster. You may want to just
+complete the maze instead of
+trying to collect as many points
+as possible. Still convinced you
+want to focus on points? Then
+try to get the nasties to bunch
+up together and get them all to
+fall on one piece of sandwich.
+
+YOUR WEAPONS:
+-------------
+You do not have to just outsmart
+the nasties. You have a tool
+belt that converts condiments
+and snacks to weapons! Your
+weapon of choice is pepper!
+
+After you stomp and drop 3
+burger pieces, the condiments
+and snacks will show up in the
+maze. Collect fries, ketchup,
+mustard, tea and lemonade to add
+to your pepper stash. Not only
+will they come in handy during
+the game, collecting them adds
+points to your score!
+
+To freeze and stun one nasty,
+press the LOWER SIDE BUTTON and
+a small amount of pepper will be
+thrown in the direction you are
+running. You can then run past
+them. Do not wait around though,
+they will wake up and continue
+their pursuit.
+
+Pressing the TOP SIDE BUTTON
+will freeze ALL nasties! Doing
+this will use 2 units of pepper,
+so use this wisely. You need to
+plan ahead as they will not be
+stunned, so you can NOT run past
+them.
+
+INDICATORS:
+-----------
+The score is shown at the top
+left of the screen in yellow,
+the high score in the center.
+The amount of pepper in your
+inventory is shown on the bottom
+left, the number of remaining
+chefs on the bottom right.
+
+LEVELS, STAGES, AND STATISTICS:
+-------------------------------
+The game consists of 70 diff-
+erent stages. After a stage is
+completed, the following stage
+is randomly selected and will be
+a higher stage than what you
+last played. The level increases
+as you pass stage 70 and loops
+back to the first stages. When
+the game ends, you will see the
+level and stage reached and how
+many screens you played("Total").
