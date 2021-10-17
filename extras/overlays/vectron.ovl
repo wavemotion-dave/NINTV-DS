@@ -22,7 +22,7 @@
     .ovl  255,   255,    255,   255,    // META_SCORE
     .ovl  255,   255,    255,   255,    // META_QUIT
     .ovl  255,   255,    255,   255,    // META_STATE
-    .ovl  100,   155,     0,     17,    // META_MENU (top center)
+    .ovl  100,   155,     0,     30,    // META_MENU (top center)
     .ovl  255,   255,    255,   255,    // META_SWAP
     .ovl  255,   255,    255,   255,    // META_MANUAL    
     
