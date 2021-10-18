@@ -603,7 +603,9 @@ ITCM_CODE void AY38900::renderMOBs()
             continue;
         
         //start at this memory location
-        UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + (mobs[i].cardNumber << 3) : ((mobs[i].cardNumber & 0x3F) << 3));
+        UINT16 card = mobs[i].cardNumber;
+        if (mobs[i].doubleYResolution) card &= 0xFE;
+        UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + (card << 3) : ((card & 0x3F) << 3));
 
         //end at this memory location
         UINT16 lastMemoryLocation = (UINT16)(firstMemoryLocation + 8);
