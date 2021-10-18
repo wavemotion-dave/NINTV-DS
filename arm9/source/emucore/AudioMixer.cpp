@@ -17,9 +17,9 @@
 #include "../ds_tools.h"
 #include "../config.h"
 
-UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
+UINT16 audio_mixer_buffer[300] __attribute__((section(".dtcm")));
 UINT32 sampleSize __attribute__((section(".dtcm")));
-UINT8 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
+UINT16 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
 
@@ -71,7 +71,7 @@ void AudioMixer::resetProcessor()
     commonClocksPerTick = 0;
 
     // Clear out the sample buffer...
-    memset(audio_mixer_buffer,0x00, 256*sizeof(UINT16));
+    memset(audio_mixer_buffer,0x00, 300*sizeof(UINT16));
 
     //iterate through my audio output lines to determine the common output clock
     UINT64 totalClockSpeed = getClockSpeed();
@@ -94,7 +94,7 @@ void AudioMixer::init(UINT32 sampleRate)
 
     clockSpeed = sampleRate;
     sampleSize = ( clockSpeed / 60.0 );
-    memset(audio_mixer_buffer,0x00, 256*sizeof(UINT16));
+    memset(audio_mixer_buffer,0x00, 300*sizeof(UINT16));
 }
 
 void AudioMixer::release()
@@ -176,6 +176,8 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
         }
     }
     audio_mixer_buffer[currentSampleIdx++] = totalSample;
+    if (currentSampleIdx == SOUND_SIZE) currentSampleIdx=0;
+   
     return minimum;
 }
 

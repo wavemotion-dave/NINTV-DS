@@ -18,6 +18,8 @@
 
 char file[64];
 
+UINT16 __attribute__((section(".dtcm"))) mySoundFrequency = 16000;
+
 int main(int argc, char **argv) 
 {
   // Init sound
@@ -42,6 +44,8 @@ int main(int argc, char **argv)
     
   // Setup the main screen handling
   dsInitScreenMain();
+    
+  if (!isDSiMode()) mySoundFrequency = 12000;
   
   // Handle command line argument...
   if (argc > 1) 

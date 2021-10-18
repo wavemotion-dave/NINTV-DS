@@ -61,11 +61,16 @@ UINT32 fudge_timing = 0;
 #define FOREGROUND_BIT                   0x0010
 
 UINT16  mobBuffers[8][128] __attribute__((section(".dtcm")));
-//UINT8 stretch[16] __attribute__((section(".dtcm"))) = {0x00, 0x03, 0x0C, 0x0F, 0x30, 0x33, 0x3C, 0x3F, 0xC0, 0xC3, 0xCC, 0xCF, 0xF0, 0xF3, 0xFC, 0xFF};
-//UINT8 reverse[16] __attribute__((section(".dtcm"))) = {0x0, 0x8, 0x4, 0xC, 0x2, 0xA, 0x6, 0xE, 0x1, 0x9, 0x5, 0xD, 0x3, 0xB, 0x7, 0xF};
 UINT8 bLatched __attribute__((section(".dtcm"))) = false;
 
-UINT8 reverse[256] =
+UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_repeat_table[]  = {
+        0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,  
+        0x08080808,  0x09090909,  0x0A0A0A0A,  0x0B0B0B0B,  0x0C0C0C0C,  0x0D0D0D0D,  0x0E0E0E0E,  0x0F0F0F0F,  
+        0x10101010,  0x11111111,  0x12121212,  0x13131313,  0x14141414,  0x15151515,  0x16161616,  0x17171717,  
+        0x18181818,  0x19191919,  0x1A1A1A1A,  0x1B1B1B1B,  0x1C1C1C1C,  0x1D1D1D1D,  0x1E1E1E1E,  0x1F1F1F1F
+};
+
+UINT8  __attribute__ ((aligned (4))) __attribute__((section(".dtcm")))  reverse[256] =
 {
     0x00,0x80,0x40,0xC0,0x20,0xA0,0x60,0xE0,0x10,0x90,0x50,0xD0,0x30,0xB0,0x70,0xF0,
     0x08,0x88,0x48,0xC8,0x28,0xA8,0x68,0xE8,0x18,0x98,0x58,0xD8,0x38,0xB8,0x78,0xF8,
@@ -85,7 +90,7 @@ UINT8 reverse[256] =
     0x0F,0x8F,0x4F,0xCF,0x2F,0xAF,0x6F,0xEF,0x1F,0x9F,0x5F,0xDF,0x3F,0xBF,0x7F,0xFF
 };
 
-UINT16 stretch[256] =
+UINT16  __attribute__ ((aligned (4))) __attribute__((section(".dtcm")))  stretch[256] =
 {
     0x0000,0x0003,0x000C,0x000F,0x0030,0x0033,0x003C,0x003F,0x00C0,0x00C3,0x00CC,0x00CF,0x00F0,0x00F3,0x00FC,0x00FF,
     0x0300,0x0303,0x030C,0x030F,0x0330,0x0333,0x033C,0x033F,0x03C0,0x03C3,0x03CC,0x03CF,0x03F0,0x03F3,0x03FC,0x03FF,
@@ -541,7 +546,8 @@ ITCM_CODE void AY38900::renderBorders()
     //draw the top and bottom borders
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
-        UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
+        UINT32 borderColor32 = color_repeat_table[borderColor];
+        
         for (UINT8 y = 0; y < 8; y++) 
         {
             UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
@@ -555,7 +561,7 @@ ITCM_CODE void AY38900::renderBorders()
     else if (verticalOffset != 0) {
         //block the top rows of pixels depending on the amount of vertical offset
         UINT8 numRows = (UINT8)(verticalOffset<<1);
-        UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
+        UINT32 borderColor32 = color_repeat_table[borderColor];
         for (UINT8 y = 0; y < numRows; y++) 
         {
             UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
@@ -567,7 +573,7 @@ ITCM_CODE void AY38900::renderBorders()
     //draw the left and right borders
     if (blockLeft) {
         //move the image to the left 4 pixels and block the left and right 4 columns with the border
-         UINT32 borderColor32 = (borderColor << 24 | borderColor << 16 | borderColor << 8 | borderColor);
+         UINT32 borderColor32 = color_repeat_table[borderColor];
         for (UINT8 y = 0; y < 192; y++) {
             UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
             UINT32* buffer1 = buffer0 + (156/4);
@@ -1006,13 +1012,12 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     }
 }
 
-
 ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y, UINT8 fgcolor, UINT8 bgcolor)
 {
     if (nextbyte == 0x00)
     {
         UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
-        UINT32 bgColor32 = (bgcolor << 24 | bgcolor << 16 | bgcolor << 8 | bgcolor);    
+        UINT32 bgColor32 = color_repeat_table[bgcolor];
         *nextTargetPixel++ = bgColor32;
         *nextTargetPixel = bgColor32;
     }

@@ -347,7 +347,7 @@ BOOL InitializeEmulator(void)
     
 	//hook the audio and video up to the currentEmulator
 	currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
-    currentEmu->InitAudio(audioMixer, SOUND_FREQ);
+    currentEmu->InitAudio(audioMixer, mySoundFrequency);
     
     // Clear the audio mixer...
     audioMixer->resetProcessor();
@@ -1180,9 +1180,9 @@ extern UINT16 audio_mixer_buffer[];
 void dsInstallSoundEmuFIFO(void)
 {
     memset(audio_mixer_buffer2, 0x00, 2048*sizeof(UINT16));
-    TIMER2_DATA = TIMER_FREQ(isDSiMode() ? SOUND_FREQ : SOUND_FREQ/2);
+    TIMER2_DATA = TIMER_FREQ(mySoundFrequency);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
-    irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandler : VsoundHandlerDouble);
+    irqSet(IRQ_TIMER2, VsoundHandler);
     
     if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
         irqEnable(IRQ_TIMER2);
@@ -1191,7 +1191,7 @@ void dsInstallSoundEmuFIFO(void)
     
     FifoMessage msg;
     msg.SoundPlay.data = audio_mixer_buffer2;
-    msg.SoundPlay.freq = SOUND_FREQ;
+    msg.SoundPlay.freq = mySoundFrequency;
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -1208,35 +1208,19 @@ void dsInstallSoundEmuFIFO(void)
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
 UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
-UINT16 lastSample           __attribute__((section(".dtcm"))) = 0;
-UINT8 myCurrentSampleIdx    __attribute__((section(".dtcm"))) = 0;
-extern UINT8 currentSampleIdx;
+UINT16 myCurrentSampleIdx    __attribute__((section(".dtcm"))) = 0;
+extern UINT16 currentSampleIdx;
 
 void VsoundHandler(void)
 {
   // If there is a fresh sample...
   if (myCurrentSampleIdx != currentSampleIdx)
   {
-      lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
+      if (++myCurrentSampleIdx == SOUND_SIZE) myCurrentSampleIdx = 0;
   }
-  audio_mixer_buffer2[sound_idx++] = lastSample;
+  audio_mixer_buffer2[sound_idx++] = audio_mixer_buffer[myCurrentSampleIdx];
   sound_idx &= (2048-1);
 }
-
-void VsoundHandlerDouble(void)
-{
-  // If there is a fresh sample...
-  for (int i=0; i<2; i++)
-  {
-      if (myCurrentSampleIdx != currentSampleIdx)
-      {
-          lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
-      }
-      audio_mixer_buffer2[sound_idx++] = lastSample;
-      sound_idx &= (2048-1);
-  }
-}
-
 
 UINT32 muted_gamePalette[32] = 
 {

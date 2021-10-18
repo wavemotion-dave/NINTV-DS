@@ -29,6 +29,7 @@ extern UINT16 frames;
 extern UINT16 emu_frames;
 extern INT32 debug[];
 
+
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);

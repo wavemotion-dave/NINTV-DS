@@ -26,8 +26,8 @@
 #include "MemoryBus.h"
 #include "Memory.h"
 
-#define SOUND_FREQ  15360
-#define SOUND_SIZE  (SOUND_FREQ/60)
+extern UINT16 mySoundFrequency;
+#define SOUND_SIZE  (mySoundFrequency/60)
 
 class Intellivision;
 
