@@ -20,6 +20,7 @@
 UINT16 audio_mixer_buffer[300] __attribute__((section(".dtcm")));
 UINT32 sampleSize __attribute__((section(".dtcm")));
 UINT16 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
+UINT8 currentSampleIdx8 __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
 
@@ -177,6 +178,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     }
     audio_mixer_buffer[currentSampleIdx++] = totalSample;
     if (currentSampleIdx == SOUND_SIZE) currentSampleIdx=0;
+    currentSampleIdx8++;    // For the faster DSi sound handler...
    
     return minimum;
 }

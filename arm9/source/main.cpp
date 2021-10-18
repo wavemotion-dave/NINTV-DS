@@ -18,7 +18,7 @@
 
 char file[64];
 
-UINT16 __attribute__((section(".dtcm"))) mySoundFrequency = 16000;
+UINT16 __attribute__((section(".dtcm"))) mySoundFrequency = 15360;
 
 int main(int argc, char **argv) 
 {
