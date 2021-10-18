@@ -19,7 +19,8 @@
 
 UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
 UINT32 sampleSize __attribute__((section(".dtcm")));
-UINT16 currentSampleIdx __attribute__((section(".dtcm"))) = 0;
+UINT16 currentSampleIdx16 __attribute__((section(".dtcm"))) = 0;
+UINT8  currentSampleIdx8 __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
 
@@ -175,8 +176,9 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             totalSample = totalSample >> 1; // With Intellivoice there are 2 audio producers... so divide by 2
         }
     }
-    audio_mixer_buffer[currentSampleIdx++] = totalSample;
-    if (currentSampleIdx == SOUND_SIZE) currentSampleIdx=0;
+    audio_mixer_buffer[currentSampleIdx16++] = totalSample;
+    if (currentSampleIdx16 == SOUND_SIZE) currentSampleIdx16=0;
+    ++currentSampleIdx8;
    
     return minimum;
 }
