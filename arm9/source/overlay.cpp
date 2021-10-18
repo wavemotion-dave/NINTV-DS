@@ -39,7 +39,7 @@ extern char line[];
 extern Rip *currentRip;
 extern bool bUseDiscOverlay;
 
-const struct Overlay_t defaultOverlay[OVL_MAX] =
+struct Overlay_t defaultOverlay[OVL_MAX] =
 {
     {120,   155,    30,     60},    // KEY_1
     {158,   192,    30,     60},    // KEY_2

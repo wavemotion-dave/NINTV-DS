@@ -85,6 +85,7 @@ public:
     //registers
     AY38900_Registers registers;
     BackTabRAM         backtab;
+    MOB                mobs[8];
 
 private:
 	void setGraphicsBusVisible(BOOL visible);
@@ -109,7 +110,6 @@ private:
 
     MemoryBus*      memoryBus;
 
-    MOB             mobs[8];
     UINT8           backgroundBuffer[160*96];
 
     UINT8*          pixelBuffer;

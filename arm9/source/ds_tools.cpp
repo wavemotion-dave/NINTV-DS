@@ -31,8 +31,7 @@
 #include "Rip.h"
 #include "highscore.h"
 #include "overlay.h"
-
-#define DEBUG_ENABLE 0
+#include "debugger.h"
 
 char line[256];
 
@@ -58,9 +57,9 @@ Rip                  *currentRip = NULL;
 VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
-int debug1, debug2;
 UINT16 emu_frames=0;
 UINT16 frames=0;
+UINT8  oneSecTick=FALSE;
 
 void dsInitPalette(void);
 
@@ -966,6 +965,9 @@ ITCM_CODE void pollInputs(void)
         touchPosition touch;
         touchRead(&touch);
         
+#ifdef DEBUG_ENABLE
+        debugger_input(touch.px, touch.py);
+#endif
         // -----------------------------------------------------------
         // Did we map any hotspots on the overlay to disc directions?
         // -----------------------------------------------------------
@@ -1104,6 +1106,9 @@ ITCM_CODE void Run(char *initial_file)
                 bStartSoundFifo = false;
                 dsInstallSoundEmuFIFO();
             }
+#ifdef DEBUG_ENABLE
+            debug_frames++;
+#endif        
         }
         
         if (TIMER1_DATA >= 32728)   // 1000MS (1 sec)
@@ -1112,6 +1117,7 @@ ITCM_CODE void Run(char *initial_file)
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
+            oneSecTick=TRUE;
             if ((frames > 0) && (myGlobalConfig.show_fps > 0))
             {
                 if (frames==(target_frames[myConfig.target_fps]+1)) frames--;
@@ -1119,29 +1125,11 @@ ITCM_CODE void Run(char *initial_file)
                 dsPrintValue(0,0,0,tmp);
             }
             frames=0;
-            if (DEBUG_ENABLE==1)
-            {
-                sprintf(tmp, "%4d %4d", debug1, debug2);
-                dsPrintValue(0,1,0,tmp);
-            }
         }
-        // ------------------------------------------------
-        // Hack for Q*Bert...Keep life counter set to 3
-        // to avoid original Bliss core bug for this game.
-        // ------------------------------------------------
-        if (currentRip)
-        {
-            if (currentRip->GetCRC() == 0xD8C9856A)
-            {
-                static UINT8 last_qbert_lives=0;
-                if (currentEmu->memoryBus.peek(0x16D) != last_qbert_lives)
-                {
-                    last_qbert_lives=currentEmu->memoryBus.peek(0x16D);
-                    currentEmu->memoryBus.poke(0x173, currentEmu->memoryBus.peek(0x173)+1);
-                }
-            }
-        }
-        
+
+#ifdef DEBUG_ENABLE
+        debugger();
+#endif        
     }
 }
 
@@ -1164,7 +1152,12 @@ void dsShowScreenMain(bool bFull)
     }
 
     // Now show the bottom screen - usualy some form of overlay...
+#ifdef DEBUG_ENABLE
+    show_debug_overlay();
+#else
     show_overlay();
+#endif
+    
 }
 
 void dsMainLoop(char *initial_file)

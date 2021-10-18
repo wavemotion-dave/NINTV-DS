@@ -12,6 +12,7 @@
 #include <string.h>
 #include "CP1610.h"
 #include "types.h"
+#include "../debugger.h"
 
 #define MAX(v1, v2) (v1 > v2 ? v1 : v2)
 #define PEEK_FAST(x) *((UINT16 *)0x06880000 + (x))
@@ -102,6 +103,10 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
 
         //do the next instruction
         op = *((UINT16 *)0x06880000 + r[7]);
+#ifdef DEBUG_ENABLE        
+        debug_opcodes++;
+        debugger();
+#endif
         usedCycles += decode();
     } while ((usedCycles) < min_shifted);
 
@@ -1125,7 +1130,7 @@ INT32 CP1610::XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
 
 INT32 CP1610::decode(void)
 {
-    switch (op & 0x3FF) {
+    switch (op) {
         case 0x0000:
             return HLT();
         case 0x0001:

@@ -554,6 +554,8 @@ ITCM_CODE void AY38900::renderMOBs()
         //to be re-rendered into its buffer
         if (!mobs[i].shapeChanged && mobs[i].isGrom)
             continue;
+        
+        if (mobs[i].xLocation > 167) continue; // Out of range...
 
         //start at this memory location
         UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + (mobs[i].cardNumber << 3) : ((mobs[i].cardNumber & 0x3F) << 3));
@@ -908,6 +910,8 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     {
         if (mobs[i].xLocation == 0 || (!mobs[i].flagCollisions && !mobs[i].isVisible))
             continue;
+        
+        if (mobs[i].xLocation > 167) continue; // Out of range...
 
         BOOL borderCollision = FALSE;
         BOOL foregroundCollision = FALSE;

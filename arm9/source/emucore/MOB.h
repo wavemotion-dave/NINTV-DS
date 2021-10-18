@@ -81,7 +81,7 @@ class MOB
         void setGROM(BOOL grom);
         void markClean();
         MOBRect* getBounds();
-
+    public:
         INT16   xLocation;
         INT16   yLocation;
         UINT16  foregroundColor;

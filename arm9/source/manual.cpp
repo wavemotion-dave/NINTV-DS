@@ -69,8 +69,7 @@ static void ReadManual(void)
     {
         do
         {
-            fgets(filebuf, 127, fp);
-            if (!feof(fp))
+            if (fgets(filebuf, 127, fp) != NULL)
             {
                 filebuf[MAX_MAN_COLS] = NULL;
                 strcpy((char*)man_buf[buf_lines++], filebuf);

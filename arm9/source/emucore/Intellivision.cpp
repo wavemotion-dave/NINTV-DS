@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "Intellivision.h"
+#include "../debugger.h"
 #include "../savestate.h"
 
 /**
@@ -75,6 +76,10 @@ Intellivision::Intellivision()
 
     //add the STIC registers
     AddRAM(&stic.registers);
+
+#ifdef DEBUG_ENABLE
+    debug_stic = &stic;
+#endif
 
     //add the PSG
     AddProcessor(&psg);
