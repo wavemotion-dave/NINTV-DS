@@ -16,7 +16,6 @@
 #include "ds_tools.h"
 #include "highscore.h"
 
-UINT16 SOUND_FREQ __attribute__((section(".dtcm"))) = 15360;
 char file[64];
 
 int main(int argc, char **argv) 
@@ -31,12 +30,6 @@ int main(int argc, char **argv)
   {
       iprintf("Unable to initialize libfat!\n");
 	  return -1;
-  }
-    
-  // For the older DS-LITE and DS-PHAT hardware, we lower the sample rate
-  if (!isDSiMode())
-  {
-    SOUND_FREQ = 12000;
   }
     
   srand(time(0));

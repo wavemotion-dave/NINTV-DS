@@ -43,8 +43,8 @@ extern void dsChooseOptions(void);
 extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
 extern unsigned int dsWaitForRom(char *chosen_filename);
-extern void VsoundHandlerDSi(void);
-extern void VsoundHandlerDS(void);
+extern void VsoundHandler(void);
+extern void VsoundHandlerDouble(void);
 extern void dsInitPalette(void);
 
 #endif

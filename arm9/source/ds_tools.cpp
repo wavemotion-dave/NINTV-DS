@@ -1180,9 +1180,9 @@ extern UINT16 audio_mixer_buffer[];
 void dsInstallSoundEmuFIFO(void)
 {
     memset(audio_mixer_buffer2, 0x00, 2048*sizeof(UINT16));
-    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);
+    TIMER2_DATA = TIMER_FREQ(isDSiMode() ? SOUND_FREQ : SOUND_FREQ/2);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
-    irqSet(IRQ_TIMER2, (isDSiMode() ? VsoundHandlerDSi:VsoundHandlerDS));
+    irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandler : VsoundHandlerDouble);
     
     if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
         irqEnable(IRQ_TIMER2);
@@ -1203,18 +1203,17 @@ void dsInstallSoundEmuFIFO(void)
 }
 
 // ---------------------------------------------------------------------------
-// This is called very frequently (15,300 times per second) to fill the
-// pipeline of sound values from the pokey buffer into the Nintendo DS sound
+// This is called very frequently (15,360 times per second) to fill the
+// pipeline of sound values from the buffer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
 UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
 UINT16 lastSample           __attribute__((section(".dtcm"))) = 0;
 UINT8 myCurrentSampleIdx    __attribute__((section(".dtcm"))) = 0;
+extern UINT8 currentSampleIdx;
 
-void VsoundHandlerDSi(void)
+void VsoundHandler(void)
 {
-  extern UINT8 currentSampleIdx;
-
   // If there is a fresh sample...
   if (myCurrentSampleIdx != currentSampleIdx)
   {
@@ -1224,18 +1223,18 @@ void VsoundHandlerDSi(void)
   sound_idx &= (2048-1);
 }
 
-void VsoundHandlerDS(void)
+void VsoundHandlerDouble(void)
 {
-  extern UINT8 currentSampleIdx;
-
   // If there is a fresh sample...
-  if (myCurrentSampleIdx != currentSampleIdx)
+  for (int i=0; i<2; i++)
   {
-      lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
-      if (myCurrentSampleIdx == SOUND_SIZE) myCurrentSampleIdx=0;
+      if (myCurrentSampleIdx != currentSampleIdx)
+      {
+          lastSample = audio_mixer_buffer[myCurrentSampleIdx++];
+      }
+      audio_mixer_buffer2[sound_idx++] = lastSample;
+      sound_idx &= (2048-1);
   }
-  audio_mixer_buffer2[sound_idx++] = lastSample;
-  sound_idx &= (2048-1);
 }
 
 

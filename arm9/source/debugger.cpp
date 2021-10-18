@@ -36,12 +36,15 @@ UINT32 debug_opcodes=0;
 
 extern int bg0, bg0b, bg1b;
 extern struct Overlay_t defaultOverlay[OVL_MAX];
+extern Emulator             *currentEmu;
 
 AY38900 *debug_stic = NULL;
 
 void display_debug(void);
 
 #define PEEK_FAST(x) *((UINT16 *)0x06880000 + (x))
+
+#define PEEK_SLOW(x) currentEmu->memoryBus.peek(x)
 
 struct Overlay_t debuggerOverlay[OVL_MAX] =
 {
@@ -3250,7 +3253,7 @@ UINT8 debugger_input(int tx, int ty)
     if ((tx > 198) && (tx < 236)  && (ty > 180)) 
     {
         debug_clear_scr(); 
-        if (debug_show == DBG_SHOW_STIC) debug_show_stic = (debug_show_stic+1) % 4;
+        if (debug_show == DBG_SHOW_STIC) debug_show_stic = (debug_show_stic+1) % 8;
         else debug_show_stic = 0;
         debug_show = DBG_SHOW_STIC;
     }
@@ -3416,6 +3419,34 @@ void display_debug(void)
                 for (UINT16 addr = 0x2C0; addr <= 0x2EF; addr += 5)
                 {
                     sprintf(dbg, "%03X : %04X %04X %04X %04X %04X", addr, PEEK_FAST(addr), PEEK_FAST(addr+1), PEEK_FAST(addr+2), PEEK_FAST(addr+3), PEEK_FAST(addr+4));
+                    dsPrintValue(0, idx++, 0, dbg);
+                }
+                break;
+            case 4:
+                for (UINT16 addr = 0x3800; addr <= 0x387F; addr += 8)
+                {
+                    sprintf(dbg, "%04X: %02X %02X %02X %02X %02X %02X %02X %02X", addr, PEEK_SLOW(addr)&0xFF, PEEK_SLOW(addr+1)&0xFF, PEEK_SLOW(addr+2)&0xFF, PEEK_SLOW(addr+3)&0xFF, PEEK_SLOW(addr+4)&0xFF, PEEK_SLOW(addr+5)&0xFF, PEEK_SLOW(addr+6)&0xFF, PEEK_SLOW(addr+7)&0xFF);
+                    dsPrintValue(0, idx++, 0, dbg);
+                }
+                break;
+            case 5:
+                for (UINT16 addr = 0x3880; addr <= 0x38FF; addr += 8)
+                {
+                    sprintf(dbg, "%04X: %02X %02X %02X %02X %02X %02X %02X %02X", addr, PEEK_SLOW(addr)&0xFF, PEEK_SLOW(addr+1)&0xFF, PEEK_SLOW(addr+2)&0xFF, PEEK_SLOW(addr+3)&0xFF, PEEK_SLOW(addr+4)&0xFF, PEEK_SLOW(addr+5)&0xFF, PEEK_SLOW(addr+6)&0xFF, PEEK_SLOW(addr+7)&0xFF);
+                    dsPrintValue(0, idx++, 0, dbg);
+                }
+                break;
+            case 6:
+                for (UINT16 addr = 0x3900; addr <= 0x397F; addr += 8)
+                {
+                    sprintf(dbg, "%04X: %02X %02X %02X %02X %02X %02X %02X %02X", addr, PEEK_SLOW(addr)&0xFF, PEEK_SLOW(addr+1)&0xFF, PEEK_SLOW(addr+2)&0xFF, PEEK_SLOW(addr+3)&0xFF, PEEK_SLOW(addr+4)&0xFF, PEEK_SLOW(addr+5)&0xFF, PEEK_SLOW(addr+6)&0xFF, PEEK_SLOW(addr+7)&0xFF);
+                    dsPrintValue(0, idx++, 0, dbg);
+                }
+                break;
+            case 7:
+                for (UINT16 addr = 0x3980; addr <= 0x39FF; addr += 8)
+                {
+                    sprintf(dbg, "%04X: %02X %02X %02X %02X %02X %02X %02X %02X", addr, PEEK_SLOW(addr)&0xFF, PEEK_SLOW(addr+1)&0xFF, PEEK_SLOW(addr+2)&0xFF, PEEK_SLOW(addr+3)&0xFF, PEEK_SLOW(addr+4)&0xFF, PEEK_SLOW(addr+5)&0xFF, PEEK_SLOW(addr+6)&0xFF, PEEK_SLOW(addr+7)&0xFF);
                     dsPrintValue(0, idx++, 0, dbg);
                 }
                 break;

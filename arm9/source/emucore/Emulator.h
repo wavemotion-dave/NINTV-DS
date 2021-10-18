@@ -26,9 +26,8 @@
 #include "MemoryBus.h"
 #include "Memory.h"
 
-extern UINT16 SOUND_FREQ;
+#define SOUND_FREQ  15360
 #define SOUND_SIZE  (SOUND_FREQ/60)
-
 
 class Intellivision;
 

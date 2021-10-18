@@ -71,7 +71,7 @@ void AudioMixer::resetProcessor()
     commonClocksPerTick = 0;
 
     // Clear out the sample buffer...
-    memset(audio_mixer_buffer,0x00, SOUND_SIZE*sizeof(UINT16));
+    memset(audio_mixer_buffer,0x00, 256*sizeof(UINT16));
 
     //iterate through my audio output lines to determine the common output clock
     UINT64 totalClockSpeed = getClockSpeed();
@@ -94,7 +94,7 @@ void AudioMixer::init(UINT32 sampleRate)
 
     clockSpeed = sampleRate;
     sampleSize = ( clockSpeed / 60.0 );
-    memset(audio_mixer_buffer,0x00, SOUND_SIZE*sizeof(UINT16));
+    memset(audio_mixer_buffer,0x00, 256*sizeof(UINT16));
 }
 
 void AudioMixer::release()

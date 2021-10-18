@@ -15,7 +15,7 @@
 #include "types.h"
 #include "AY38900.h"
 
-//#define DEBUG_ENABLE
+//define DEBUG_ENABLE
 
 extern UINT32 debug_frames;
 extern UINT32 debug_opcodes;
