@@ -176,9 +176,16 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             totalSample = totalSample >> 1; // With Intellivoice there are 2 audio producers... so divide by 2
         }
     }
-    audio_mixer_buffer[currentSampleIdx16++] = totalSample;
-    if (currentSampleIdx16 == SOUND_SIZE) currentSampleIdx16=0;
-    ++currentSampleIdx8;
+    
+    if (b_dsi_mode)
+    {
+        audio_mixer_buffer[currentSampleIdx8++] = totalSample;
+    }
+    else
+    {
+        audio_mixer_buffer[currentSampleIdx16++] = totalSample;
+        if (currentSampleIdx16 == SOUND_SIZE) currentSampleIdx16=0;
+    }
    
     return minimum;
 }

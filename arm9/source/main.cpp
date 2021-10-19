@@ -36,6 +36,8 @@ int main(int argc, char **argv)
     
   srand(time(0));
     
+  if (!isDSiMode()) mySoundFrequency = 12000;
+    
   // Init the high-score tables...
   highscore_init();
 
@@ -45,8 +47,6 @@ int main(int argc, char **argv)
   // Setup the main screen handling
   dsInitScreenMain();
     
-  if (!isDSiMode()) mySoundFrequency = 12000;
-  
   // Handle command line argument...
   if (argc > 1) 
   {

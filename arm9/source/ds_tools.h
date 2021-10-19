@@ -29,6 +29,7 @@ extern UINT16 frames;
 extern UINT16 emu_frames;
 extern INT32 debug[];
 
+extern UINT8 b_dsi_mode;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 

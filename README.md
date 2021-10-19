@@ -30,7 +30,6 @@ Features :
 Missing / Known Issues :
 -----------------------
 * No ECS support - ECS games will not load/play. No bankswitch support either.
-* DK ARCADE - Minor graphical glitch when the ape climbs the girders. No play issues.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
@@ -49,6 +48,12 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.7 : 19-Oct-2021 by wavemotion-dave
+  * Fixed graphical glitches on D1K and D2K!
+  * Proper fix for Q-Bert so it plays perfectly (no patch needed).
+  * Fix for .man manuals sometimes missing last line.
+  * Minor sound cleanup and other under-the-hood improvements for speed.
+
 V2.6 : 18-Oct-2021 by wavemotion-dave
   * Added disc controller direction support to custom overlays. See Vectron.ovl in extras. 
   * Patched Q-Bert so it doesn't lose a life after each board.  

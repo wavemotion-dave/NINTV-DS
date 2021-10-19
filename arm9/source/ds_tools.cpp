@@ -1179,7 +1179,7 @@ UINT16 audio_mixer_buffer2[2048];
 extern UINT16 audio_mixer_buffer[];
 // ---------------------------------------------------------------------------
 // This is called very frequently (15,360 times per second) to fill the
-// pipeline of sound values from the buffer into the Nintendo DS sound
+// pipeline of sound values from the Audio Mixer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
 UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
@@ -1207,19 +1207,23 @@ ITCM_CODE void VsoundHandler(void)
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
-      lastSample = audio_mixer_buffer[currentSampleIdx16++];
-      if (currentSampleIdx16 == SOUND_SIZE) currentSampleIdx16=0;
+      lastSample = audio_mixer_buffer[myCurrentSampleIdx16++];
+      if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
   }
   audio_mixer_buffer2[sound_idx++] = lastSample;
   sound_idx &= (2048-1);
 }
 
+UINT8 b_dsi_mode = true;
 void dsInstallSoundEmuFIFO(void)
 {
     memset(audio_mixer_buffer2, 0x00, 2048*sizeof(UINT16));
     TIMER2_DATA = TIMER_FREQ(mySoundFrequency);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandlerDSi:VsoundHandler);
+    
+    if (isDSiMode()) b_dsi_mode = true;
+    else b_dsi_mode = false;
     
     if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
         irqEnable(IRQ_TIMER2);
