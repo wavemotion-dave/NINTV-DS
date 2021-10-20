@@ -1177,7 +1177,7 @@ void dsMainLoop(char *initial_file)
 }
 
 #define ARM7_XFER_BUFFER_SIZE (2048)
-#define ARM7_SOUND_CHANNEL    2
+#define ARM7_SOUND_CHANNEL    1
 //---------------------------------------------------------------------------------
 UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
 extern UINT16 audio_mixer_buffer[];

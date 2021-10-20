@@ -77,7 +77,8 @@ void soundEmuCommandHandler(u32 command, void* userdata) {
 }
 
 //---------------------------------------------------------------------------------
-void installSoundEmuFIFO(void) {
+void installSoundEmuFIFO(void) 
+{
 	fifoSetDatamsgHandler(FIFO_USER_01, soundEmuDataHandler, 0);
 	fifoSetValue32Handler(FIFO_USER_01, soundEmuCommandHandler, 0);
 }
