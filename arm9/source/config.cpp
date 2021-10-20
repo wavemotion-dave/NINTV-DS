@@ -311,7 +311,7 @@ void ApplyOptions(void)
 
 int display_options_list(bool bFullDisplay)
 {
-    char strBuf[33];
+    char strBuf[35];
     int len=0;
     
     if (bFullDisplay)
@@ -355,7 +355,7 @@ void dsChooseOptions(void)
     bool bDone=false;
     int keys_pressed;
     int last_keys_pressed = 999;
-    char strBuf[33];
+    char strBuf[35];
 
     options_shown = 0; // Always start with GAME options
     

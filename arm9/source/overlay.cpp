@@ -79,11 +79,11 @@ extern int bg0, bg0b, bg1b;
 
 unsigned int *customTiles = (unsigned int *) 0x06860000;          //128K of video memory
 unsigned short *customMap = (unsigned short *)0x068A0000;         //16K of video memory
-unsigned short *customPal = (unsigned short *)(0x068A0000-1024);  //1K of video memory - back end of previous block
+unsigned short customPal[512];
 
+char filename[128];
 void load_custom_overlay(void)
 {
-    char filename[128];
     FILE *fp = NULL;
     // Read the associated .ovl file and parse it...
     if (currentRip != NULL)

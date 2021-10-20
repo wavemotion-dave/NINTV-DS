@@ -48,6 +48,10 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.8 : 20-Oct-2021 by wavemotion-dave
+  * First round of sound cleanup - two new improved settings in configuration.
+  * Fixed crash with 'complex' custom overlay (out of memory) coming out of menu/config.
+  
 V2.7 : 19-Oct-2021 by wavemotion-dave
   * Fixed graphical glitches on D1K and D2K!
   * Proper fix for Q-Bert so it plays perfectly (no patch needed).
