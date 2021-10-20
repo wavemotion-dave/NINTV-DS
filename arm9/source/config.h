@@ -21,7 +21,7 @@
 
 #define MAX_CONFIGS 300
 
-#define SOUND_DIV_DISABLE  4
+#define SOUND_DIV_DISABLE  64
 
 struct Config_t 
 {

@@ -35,6 +35,8 @@
 
 char line[256];
 
+#define SOUND_VOLUME  127 /* Max volume */
+
 BOOL InitializeEmulator(void);
 
 typedef enum _RunState 
@@ -580,13 +582,13 @@ void ds_handle_meta(int meta_key)
                     dsPrintValue(0,1,0, (char*) "UNKNOWN GAME ");
                 }
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
   
         case OVL_META_CONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions();
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
@@ -600,7 +602,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
 
         case OVL_META_STATE:
@@ -611,7 +613,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
 
         case OVL_META_MENU:
@@ -622,7 +624,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
 
         case OVL_META_SWITCH:
@@ -637,7 +639,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
             
         case OVL_META_STRETCH:
@@ -648,13 +650,13 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
             
         case OVL_META_QUIT:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitOnQuit()){ runState = Quit; }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
             break;
     }
 }
@@ -1174,8 +1176,10 @@ void dsMainLoop(char *initial_file)
     Run(initial_file);
 }
 
+#define ARM7_XFER_BUFFER_SIZE (2048)
+#define ARM7_SOUND_CHANNEL    2
 //---------------------------------------------------------------------------------
-UINT16 audio_mixer_buffer2[2048];
+UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
 extern UINT16 audio_mixer_buffer[];
 // ---------------------------------------------------------------------------
 // This is called very frequently (15,360 times per second) to fill the
@@ -1196,8 +1200,8 @@ ITCM_CODE void VsoundHandlerDSi(void)
   {
       lastSample = audio_mixer_buffer[myCurrentSampleIdx8++];
   }
-  audio_mixer_buffer2[sound_idx++] = lastSample;
-  sound_idx &= (2048-1);
+  audio_arm7_xfer_buffer[sound_idx++] = lastSample;
+  sound_idx &= (ARM7_XFER_BUFFER_SIZE-1);
 }
 
 ITCM_CODE void VsoundHandler(void)
@@ -1210,14 +1214,14 @@ ITCM_CODE void VsoundHandler(void)
       lastSample = audio_mixer_buffer[myCurrentSampleIdx16++];
       if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
   }
-  audio_mixer_buffer2[sound_idx++] = lastSample;
-  sound_idx &= (2048-1);
+  audio_arm7_xfer_buffer[sound_idx++] = lastSample;
+  sound_idx &= (ARM7_XFER_BUFFER_SIZE-1);
 }
 
 UINT8 b_dsi_mode = true;
 void dsInstallSoundEmuFIFO(void)
 {
-    memset(audio_mixer_buffer2, 0x00, 2048*sizeof(UINT16));
+    memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
     TIMER2_DATA = TIMER_FREQ(mySoundFrequency);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandlerDSi:VsoundHandler);
@@ -1231,14 +1235,14 @@ void dsInstallSoundEmuFIFO(void)
         irqDisable(IRQ_TIMER2);
     
     FifoMessage msg;
-    msg.SoundPlay.data = audio_mixer_buffer2;
+    msg.SoundPlay.data = audio_arm7_xfer_buffer;
     msg.SoundPlay.freq = mySoundFrequency;
-    msg.SoundPlay.volume = 127;
+    msg.SoundPlay.volume = SOUND_VOLUME;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
-    msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
+    msg.SoundPlay.format = ((ARM7_SOUND_CHANNEL)<<4) | SoundFormat_16Bit;
     msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = (2048*sizeof(UINT16)) >> 2;
+    msg.SoundPlay.dataSize = (ARM7_XFER_BUFFER_SIZE*sizeof(UINT16)) >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 }

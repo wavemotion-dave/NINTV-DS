@@ -53,7 +53,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.key_START_map_default    = 11;
     myGlobalConfig.key_SELECT_map_default   = 21;
     myGlobalConfig.rom_dir                  = 0;
-    myGlobalConfig.def_sound_quality        = (isDSiMode() ? 1:2);
+    myGlobalConfig.def_sound_quality        = (isDSiMode() ? 1:3);
     myGlobalConfig.man_dir                  = 0;
     myGlobalConfig.def_palette              = 0;
     myGlobalConfig.brightness               = 0;
@@ -263,7 +263,7 @@ const struct options_t Game_Option_Table[] =
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
     {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                   &myConfig.frame_skip_opt,   3},
-    {"SOUND DIV",   {"16 (BEST)", "20 (GOOD)", "24 (FAIR)", "28 (POOR)", "DISABLED"},                                                                                   &myConfig.sound_clock_div,  5},
+    {"SOUND DIV",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (AVERAGE)", "24 (FAIR)", "DISABLED"},                                                               &myConfig.sound_clock_div,  6},
     {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                &myConfig.target_fps,       7},
     {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myConfig.palette,          5},
     {NULL,          {"",            ""},                                NULL,                   1},
@@ -282,7 +282,7 @@ const struct options_t Global_Option_Table[] =
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_START_map_default, 22},
     {"SELECT DEF",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_SELECT_map_default, 22},
-    {"SOUND DEF",   {"16 (BEST)", "20 (GOOD)", "24 (FAIR)", "28 (POOR)", "DISABLED"},                                                                                   &myGlobalConfig.def_sound_quality,  5},
+    {"SOUND DEF",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                                                  &myGlobalConfig.def_sound_quality,  6},
     {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myGlobalConfig.def_palette,        5},
     {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myGlobalConfig.brightness,         4},
     
@@ -295,7 +295,7 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern  INT32 clockDivisor;
-    static UINT32 sound_divs[] = {16,20,24,28,64};
+    static UINT32 sound_divs[] = {12,14,16,20,24,SOUND_DIV_DISABLE};
     clockDivisor = sound_divs[myConfig.sound_clock_div];
 
     // Check if the sound changed...

@@ -107,11 +107,12 @@ INT32 AudioMixer::getClockSpeed()
     return clockSpeed;
 }
 
+extern  INT32 clockDivisor;
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
     INT32 totalSample = 0;
     extern UINT8 sp_idle;
-    if (myConfig.sound_clock_div == SOUND_DIV_DISABLE) return minimum;
+    if (clockDivisor == SOUND_DIV_DISABLE) return minimum;
 
     if (sp_idle) // If the Intellivoice is idle, we only have one sound producer. 
     {
