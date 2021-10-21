@@ -1193,7 +1193,6 @@ extern UINT16 audio_mixer_buffer[];
 // pipeline of sound values from the Audio Mixer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
-UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
 UINT16 lastSample[2]         __attribute__((section(".dtcm"))) = {0,0};    
 UINT16 lastSample2          __attribute__((section(".dtcm"))) = 0;    
@@ -1214,24 +1213,24 @@ ITCM_CODE void VsoundHandlerDSi(void)
   }
   *aptr++ = *((UINT32*)lastSample);
   if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
-  //audio_arm7_xfer_buffer[sound_idx++] = lastSample;
-  //audio_arm7_xfer_buffer[sound_idx++] = lastSample2;
-  //sound_idx = (sound_idx + 2) & (ARM7_XFER_BUFFER_SIZE-1);
-  //if (sound_idx == 0) aptr = (UINT32*) audio_arm7_xfer_buffer;
 }
 
 ITCM_CODE void VsoundHandler(void)
 {
-  extern UINT16 currentSampleIdx16;
+  extern UINT8 currentSampleIdx16;
 
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
-      lastSample[0] = audio_mixer_buffer[myCurrentSampleIdx16++];
-      if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
+      if ((UINT8)(myCurrentSampleIdx16+1) != currentSampleIdx16)
+      {
+          lastSample[0] = audio_mixer_buffer[myCurrentSampleIdx16++];
+          lastSample[1] = audio_mixer_buffer[myCurrentSampleIdx16++];
+          if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
+      }
   }
-  audio_arm7_xfer_buffer[sound_idx++] = lastSample[0];
-  sound_idx &= (ARM7_XFER_BUFFER_SIZE-1);
+  *aptr++ = *((UINT32*)lastSample);
+  if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
 }
 
 UINT8 b_dsi_mode = true;
@@ -1239,7 +1238,9 @@ void dsInstallSoundEmuFIFO(void)
 {
     // Clear out the sound buffers...
     extern UINT8 currentSampleIdx8;
+    extern UINT16 currentSampleIdx16;
     currentSampleIdx8 = 0;
+    currentSampleIdx16 = 0;
     aptr = (UINT32*) audio_arm7_xfer_buffer;
     memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
     memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
