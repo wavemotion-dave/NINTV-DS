@@ -933,18 +933,15 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
     else // No borders and no offsets...
     {
         // This is the fastest of them all... no offsets and no borders so everything will be a multiple of 4...
-        if (horizontalOffset == 0 && verticalOffset == 0)
+        UINT32* backColor = (UINT32*)(&backgroundBuffer[0]);
+        for (int y = 0; y < 96; y++) 
         {
-            UINT32* backColor = (UINT32*)(&backgroundBuffer[0]);
-            for (int y = 0; y < 96; y++) 
+            UINT32* nextPixelStore0 = (UINT32*)(&pixelBuffer[y*PIXEL_BUFFER_ROW_SIZE*2]);
+            UINT32* nextPixelStore1 = nextPixelStore0 + (PIXEL_BUFFER_ROW_SIZE/4);
+            for (int x = 0; x < PIXEL_BUFFER_ROW_SIZE/4; x++) 
             {
-                UINT32* nextPixelStore0 = (UINT32*)(&pixelBuffer[y*PIXEL_BUFFER_ROW_SIZE*2]);
-                UINT32* nextPixelStore1 = nextPixelStore0 + (PIXEL_BUFFER_ROW_SIZE/4);
-                for (int x = 0; x < PIXEL_BUFFER_ROW_SIZE/4; x++) 
-                {
-                    *nextPixelStore0++ = *backColor;
-                    *nextPixelStore1++ = *backColor++;
-                }
+                *nextPixelStore0++ = *backColor;
+                *nextPixelStore1++ = *backColor++;
             }
         }
     }

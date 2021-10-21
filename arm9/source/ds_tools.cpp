@@ -68,6 +68,15 @@ void dsInitPalette(void);
 int bg0, bg0b, bg1b;
 bool bFirstGameLoaded = false;
 
+
+void reset_emu_frames(void)
+{
+    TIMER0_CR=0;
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE | TIMER_DIV_1024;
+    emu_frames=0;
+}
+
 void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 {
   u16 *pusEcran,*pusMap;
@@ -99,15 +108,15 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 class AudioMixerDS : public AudioMixer
 {
 public:
-	AudioMixerDS();
-	void resetProcessor();
-	void flushAudio();
-	void init(UINT32 sampleRate);
-	void release();
+    AudioMixerDS();
+    void resetProcessor();
+    void flushAudio();
+    void init(UINT32 sampleRate);
+    void release();
 
-	UINT16* outputBuffer;
-	UINT16  outputBufferSize;
-	UINT16  outputBufferWritePosition;
+    UINT16* outputBuffer;
+    UINT16  outputBufferSize;
+    UINT16  outputBufferWritePosition;
 };
 
 AudioMixerDS::AudioMixerDS()
@@ -115,43 +124,48 @@ AudioMixerDS::AudioMixerDS()
     outputBufferSize(0),
     outputBufferWritePosition(0)
 {
-	this->outputBufferWritePosition = 0;
-	this->outputBufferSize = SOUND_SIZE;
+    this->outputBufferWritePosition = 0;
+    this->outputBufferSize = SOUND_SIZE;
 }
 
 void AudioMixerDS::resetProcessor()
 {
-	if (outputBuffer) 
+    if (outputBuffer) 
     {
-		outputBufferWritePosition = 0;
-	}
+        outputBufferWritePosition = 0;
+    }
 
     fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
-    bStartSoundFifo=true;
+   
+    // clears the emulator side of the audio mixer
+    AudioMixer::resetProcessor();
     
-	// clears the emulator side of the audio mixer
-	AudioMixer::resetProcessor();
+    // restarts the ARM7 side of the audio...
+    bStartSoundFifo = true;
+    
+    // Set the emulation back to the start...
+    reset_emu_frames();
 }
 
 
 void AudioMixerDS::init(UINT32 sampleRate)
 {
-	release();
+    release();
 
-	outputBufferWritePosition = 0;
+    outputBufferWritePosition = 0;
 
-	AudioMixer::init(sampleRate);
+    AudioMixer::init(sampleRate);
 }
 
 void AudioMixerDS::release()
 {
-	AudioMixer::release();
+    AudioMixer::release();
 }
 
 
 void AudioMixerDS::flushAudio()
 {
-	AudioMixer::flushAudio();
+    AudioMixer::flushAudio();
 }
 
 class VideoBusDS : public VideoBus
@@ -167,21 +181,21 @@ VideoBusDS::VideoBusDS()  { }
 
 void VideoBusDS::init(UINT32 width, UINT32 height)
 {
-	release();
+    release();
 
-	// initialize the pixelBuffer
-	VideoBus::init(width, height);
+    // initialize the pixelBuffer
+    VideoBus::init(width, height);
 }
 
 void VideoBusDS::release()
 {
-	VideoBus::release();
+    VideoBus::release();
 }
 
 ITCM_CODE void VideoBusDS::render()
 {
     frames++;
-	VideoBus::render();
+    VideoBus::render();
 
     // Any level of frame skip will skip the render()
     if (myConfig.frame_skip_opt)
@@ -193,9 +207,12 @@ ITCM_CODE void VideoBusDS::render()
     
     for (int j=0; j<192; j++)
     {
-        memcpy(ds_video, source_video, 160);
-        ds_video += 64;
-        source_video += 40;
+        for (int x=0; x<159/4; x++)
+        {
+            *ds_video++ = *source_video++;
+        }
+        *ds_video++ = *source_video++ & 0x00FFFFFF;     // The Intellivision STIC does NOT render the final column of pixels at 160 (so the last column drawn is 159)
+        ds_video += 24;
     }    
 }
 
@@ -248,19 +265,18 @@ BOOL LoadCart(const CHAR* filename)
     bFirstGameLoaded = TRUE;    
     bInitEmulator = true;    
     
-    dsInstallSoundEmuFIFO();
-    WAITVBL;WAITVBL;
+    bStartSoundFifo = true;
     
     return TRUE;
 }
 
 BOOL LoadPeripheralRoms(Peripheral* peripheral)
 {
-	UINT16 count = peripheral->GetROMCount();
-	for (UINT16 i = 0; i < count; i++) {
-		ROM* r = peripheral->GetROM(i);
-		if (r->isLoaded())
-			continue;
+    UINT16 count = peripheral->GetROMCount();
+    for (UINT16 i = 0; i < count; i++) {
+        ROM* r = peripheral->GetROM(i);
+        if (r->isLoaded())
+            continue;
 
         CHAR nextFile[MAX_PATH];
         
@@ -286,25 +302,18 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
         {
             return FALSE;
         }
-	}
+    }
 
     return TRUE;
 }
 
-void reset_emu_frames(void)
-{
-    TIMER0_CR=0;
-    TIMER0_DATA=0;
-    TIMER0_CR=TIMER_ENABLE | TIMER_DIV_1024;
-    emu_frames=0;
-}
 
 BOOL InitializeEmulator(void)
 {
     //find the currentEmulator required to run this RIP
     if (currentRip == NULL) return FALSE;
     
-	currentEmu = Emulator::GetEmulator();
+    currentEmu = Emulator::GetEmulator();
     if (currentEmu == NULL) 
     {
         return FALSE;
@@ -347,15 +356,15 @@ BOOL InitializeEmulator(void)
     // No audio to start... it will turn on 1 frame in...
     TIMER2_CR=0; irqDisable(IRQ_TIMER2);
     
-	//hook the audio and video up to the currentEmulator
-	currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
+    //hook the audio and video up to the currentEmulator
+    currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
     currentEmu->InitAudio(audioMixer, mySoundFrequency);
     
     // Clear the audio mixer...
     audioMixer->resetProcessor();
 
     //put the RIP in the currentEmulator
-	currentEmu->SetRip(currentRip);
+    currentEmu->SetRip(currentRip);
     
     // Load up the fast ROM memory for quick fetches
     currentEmu->LoadFastMemory();
@@ -363,11 +372,11 @@ BOOL InitializeEmulator(void)
     //Reset everything
     currentEmu->Reset();
     
-    // And put the Sound Fifo back at the start...
-    bStartSoundFifo = true;
-    
     // Make sure we're starting fresh...
     reset_emu_frames();
+    
+    // And put the sound engine back to the start...
+    bStartSoundFifo = true;
 
     return TRUE;
 }
@@ -582,13 +591,13 @@ void ds_handle_meta(int meta_key)
                     dsPrintValue(0,1,0, (char*) "UNKNOWN GAME ");
                 }
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
   
         case OVL_META_CONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions();
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
@@ -602,7 +611,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
 
         case OVL_META_STATE:
@@ -613,7 +622,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
 
         case OVL_META_MENU:
@@ -624,7 +633,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
 
         case OVL_META_SWITCH:
@@ -639,7 +648,7 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
             
         case OVL_META_STRETCH:
@@ -650,13 +659,13 @@ void ds_handle_meta(int meta_key)
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
             
         case OVL_META_QUIT:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitOnQuit()){ runState = Quit; }
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (SOUND_VOLUME) | SOUND_SET_VOLUME);
+            bStartSoundFifo = true;
             break;
     }
 }
@@ -1065,8 +1074,16 @@ ITCM_CODE void Run(char *initial_file)
         }
     }
     
-	while(runState == Running) 
+    while(runState == Running) 
     {
+        // If we have been told to start up the sound FIFO... do so here...
+        if (bStartSoundFifo)
+        {
+            dsInstallSoundEmuFIFO();
+            bStartSoundFifo = false;
+            reset_emu_frames();
+        }
+    
         // Time 1 frame...
         while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*(emu_frames+1)))
             ;
@@ -1078,7 +1095,7 @@ ITCM_CODE void Run(char *initial_file)
         }       
         
         //poll the input
-		pollInputs();
+        pollInputs();
         
         if (bInitEmulator)  // If the inputs told us we loaded a new file... cleanup and start over...
         {
@@ -1090,24 +1107,12 @@ ITCM_CODE void Run(char *initial_file)
 
         if (bFirstGameLoaded)
         {
-            //flush the audio  -  normaly this would be done AFTER run/render but this gives us maximum accuracy on audio timing
-            if (!bStartSoundFifo)
-            {
-                currentEmu->FlushAudio();
-            }
-            
             //run the emulation
             currentEmu->Run();
 
             // render the output
             currentEmu->Render();
             
-            // Trick to start the fifo after the first round of sound is in the buffer...
-            if (bStartSoundFifo)
-            {
-                bStartSoundFifo = false;
-                dsInstallSoundEmuFIFO();
-            }
 #ifdef DEBUG_ENABLE
             debug_frames++;
 #endif        
@@ -1176,10 +1181,12 @@ void dsMainLoop(char *initial_file)
     Run(initial_file);
 }
 
-#define ARM7_XFER_BUFFER_SIZE (2048)
+#define ARM7_XFER_BUFFER_SIZE (4096)
 #define ARM7_SOUND_CHANNEL    1
 //---------------------------------------------------------------------------------
 UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
+UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) audio_arm7_xfer_buffer;
+UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) &audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
 extern UINT16 audio_mixer_buffer[];
 // ---------------------------------------------------------------------------
 // This is called very frequently (15,360 times per second) to fill the
@@ -1188,7 +1195,8 @@ extern UINT16 audio_mixer_buffer[];
 // ---------------------------------------------------------------------------
 UINT16 sound_idx            __attribute__((section(".dtcm"))) = 0;
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
-UINT16 lastSample           __attribute__((section(".dtcm"))) = 0;    
+UINT16 lastSample[2]         __attribute__((section(".dtcm"))) = {0,0};    
+UINT16 lastSample2          __attribute__((section(".dtcm"))) = 0;    
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
 
 ITCM_CODE void VsoundHandlerDSi(void)
@@ -1198,10 +1206,18 @@ ITCM_CODE void VsoundHandlerDSi(void)
   // If there is a fresh sample...
   if (myCurrentSampleIdx8 != currentSampleIdx8)
   {
-      lastSample = audio_mixer_buffer[myCurrentSampleIdx8++];
+      if ((UINT8)(myCurrentSampleIdx8+1) != currentSampleIdx8)
+      {
+          lastSample[1] = audio_mixer_buffer[myCurrentSampleIdx8++];
+          lastSample[0] = audio_mixer_buffer[myCurrentSampleIdx8++];
+      }
   }
-  audio_arm7_xfer_buffer[sound_idx++] = lastSample;
-  sound_idx &= (ARM7_XFER_BUFFER_SIZE-1);
+  *aptr++ = *((UINT32*)lastSample);
+  if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
+  //audio_arm7_xfer_buffer[sound_idx++] = lastSample;
+  //audio_arm7_xfer_buffer[sound_idx++] = lastSample2;
+  //sound_idx = (sound_idx + 2) & (ARM7_XFER_BUFFER_SIZE-1);
+  //if (sound_idx == 0) aptr = (UINT32*) audio_arm7_xfer_buffer;
 }
 
 ITCM_CODE void VsoundHandler(void)
@@ -1211,28 +1227,25 @@ ITCM_CODE void VsoundHandler(void)
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
-      lastSample = audio_mixer_buffer[myCurrentSampleIdx16++];
+      lastSample[0] = audio_mixer_buffer[myCurrentSampleIdx16++];
       if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
   }
-  audio_arm7_xfer_buffer[sound_idx++] = lastSample;
+  audio_arm7_xfer_buffer[sound_idx++] = lastSample[0];
   sound_idx &= (ARM7_XFER_BUFFER_SIZE-1);
 }
 
 UINT8 b_dsi_mode = true;
 void dsInstallSoundEmuFIFO(void)
 {
+    // Clear out the sound buffers...
+    extern UINT8 currentSampleIdx8;
+    currentSampleIdx8 = 0;
+    aptr = (UINT32*) audio_arm7_xfer_buffer;
     memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
-    TIMER2_DATA = TIMER_FREQ(mySoundFrequency);
-    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
-    irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandlerDSi:VsoundHandler);
+    memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
     
-    if (isDSiMode()) b_dsi_mode = true;
-    else b_dsi_mode = false;
-    
-    if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
-        irqEnable(IRQ_TIMER2);
-    else
-        irqDisable(IRQ_TIMER2);
+    fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
+    swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to stop...
     
     FifoMessage msg;
     msg.SoundPlay.data = audio_arm7_xfer_buffer;
@@ -1245,6 +1258,22 @@ void dsInstallSoundEmuFIFO(void)
     msg.SoundPlay.dataSize = (ARM7_XFER_BUFFER_SIZE*sizeof(UINT16)) >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
+    
+    swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to start chugging...
+
+    // Now setup to feed the audio mixer buffer into the ARM7 core via shared memory
+    TIMER2_DATA = TIMER_FREQ(mySoundFrequency/2);
+    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
+    irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandlerDSi:VsoundHandler);
+    
+    if (isDSiMode()) b_dsi_mode = true;
+    else b_dsi_mode = false;
+    
+    if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
+        irqEnable(IRQ_TIMER2);
+    else
+        irqDisable(IRQ_TIMER2);
+    
 }
 
 
