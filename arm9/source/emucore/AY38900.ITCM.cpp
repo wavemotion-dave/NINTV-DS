@@ -60,8 +60,9 @@ UINT32 fudge_timing = 0;
 #define LOCATION_GRAM                    0x3800
 #define FOREGROUND_BIT                   0x0010
 
-UINT16  mobBuffers[8][128] __attribute__((section(".dtcm")));
-UINT8 bLatched __attribute__((section(".dtcm"))) = false;
+UINT16 global_frames        __attribute__((section(".dtcm"))) = 0;
+UINT16  mobBuffers[8][128]  __attribute__((section(".dtcm")));
+UINT8 bLatched              __attribute__((section(".dtcm"))) = false;
 
 UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_repeat_table[]  = {
         0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,  
@@ -152,6 +153,8 @@ void AY38900::resetProcessor()
     borderColor = 0;
     blockLeft = blockTop = FALSE;
     horizontalOffset = verticalOffset = 0;
+    
+    global_frames = 0;
 }
 
 ITCM_CODE void AY38900::setGraphicsBusVisible(BOOL visible) {
@@ -487,8 +490,6 @@ void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 
 ITCM_CODE void AY38900::renderFrame()
 {
-    static int dampen_frame_render=0;
-    
     //render the next frame
     renderBackground();
     renderMOBs();
@@ -502,8 +503,7 @@ ITCM_CODE void AY38900::renderFrame()
     // -------------------------------------------------------------------------------------
     if (myConfig.frame_skip_opt)
     {
-        extern UINT16 frames;
-        if (!((frames & 1)  == (myConfig.frame_skip_opt==1 ? 1:0)))        // Skip ODD or EVEN Frames as configured
+        if (!((global_frames & 1)  == (myConfig.frame_skip_opt==1 ? 1:0)))        // Skip ODD or EVEN Frames as configured
         {
             renderBorders();
             copyBackgroundBufferToStagingArea();

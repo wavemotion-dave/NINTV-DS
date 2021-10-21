@@ -25,7 +25,6 @@ typedef struct FICtoLoad {
   bool directory;
 } FICA_INTV;
 
-extern UINT16 frames;
 extern UINT16 emu_frames;
 extern INT32 debug[];
 

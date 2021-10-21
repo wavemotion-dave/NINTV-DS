@@ -60,7 +60,7 @@ VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
 UINT16 emu_frames=0;
-UINT16 frames=0;
+UINT16 frames_per_sec_calc=0;
 UINT8  oneSecTick=FALSE;
 
 void dsInitPalette(void);
@@ -194,13 +194,16 @@ void VideoBusDS::release()
 
 ITCM_CODE void VideoBusDS::render()
 {
-    frames++;
+    extern UINT16 global_frames;
+    
+    frames_per_sec_calc++;
+    global_frames++;
     VideoBus::render();
 
     // Any level of frame skip will skip the render()
     if (myConfig.frame_skip_opt)
     {
-        if ((frames & 1) == (myConfig.frame_skip_opt==1 ? 1:0)) return;        // Skip ODD or EVEN Frames as configured
+        if ((global_frames & 1) == (myConfig.frame_skip_opt==1 ? 1:0)) return;        // Skip ODD or EVEN Frames as configured
     }
     UINT32 *ds_video=(UINT32*)0x06000000;
     UINT32 *source_video = (UINT32*)pixelBuffer;
@@ -1100,7 +1103,6 @@ ITCM_CODE void Run(char *initial_file)
         if (bInitEmulator)  // If the inputs told us we loaded a new file... cleanup and start over...
         {
             InitializeEmulator();
-            frames=0;
             bInitEmulator = false;
             continue;
         }        
@@ -1125,13 +1127,13 @@ ITCM_CODE void Run(char *initial_file)
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             oneSecTick=TRUE;
-            if ((frames > 0) && (myGlobalConfig.show_fps > 0))
+            if ((frames_per_sec_calc > 0) && (myGlobalConfig.show_fps > 0))
             {
-                if (frames==(target_frames[myConfig.target_fps]+1)) frames--;
-                sprintf(tmp, "%03d", frames);
+                if (frames_per_sec_calc==(target_frames[myConfig.target_fps]+1)) frames_per_sec_calc--;
+                sprintf(tmp, "%03d", frames_per_sec_calc);
                 dsPrintValue(0,0,0,tmp);
             }
-            frames=0;
+            frames_per_sec_calc=0;
         }
 
 #ifdef DEBUG_ENABLE

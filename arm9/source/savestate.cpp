@@ -20,6 +20,7 @@
 
 extern Emulator *currentEmu;
 extern Rip      *currentRip;
+extern UINT16 global_frames;
 
 #define CURRENT_SAVE_FILE_VER   0x0006
 
@@ -49,7 +50,7 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
 
     // Ask the emulator to save it's state...
     currentEmu->SaveState(&saveState.slot[slot]);
-    saveState.slot[slot].frames = frames;
+    saveState.slot[slot].global_frames = global_frames;
     saveState.slot[slot].emu_frames = emu_frames;
 
     // Only a few games utilize extra RAM that isn't specifically JLP RAM - Chess and Land Battle
@@ -95,7 +96,7 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
             currentEmu->LoadState(&saveState.slot[slot]);
             for (int i=0; i<0x800; i++) jlp_ram[i] = saveState.slot[slot].extraRAM[i];
             if (currentRip->JLP16Bit) currentRip->JLP16Bit->setState(&jlpState[slot]);
-            frames = saveState.slot[slot].frames;
+            global_frames = saveState.slot[slot].global_frames;
             emu_frames = saveState.slot[slot].emu_frames;
 
             if (myGlobalConfig.erase_saves)
