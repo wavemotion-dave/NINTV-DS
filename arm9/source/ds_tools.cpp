@@ -210,11 +210,11 @@ ITCM_CODE void VideoBusDS::render()
     
     for (int j=0; j<192; j++)
     {
-        for (int x=0; x<159/4; x++)
+        for (int x=0; x<160/4; x++)
         {
             *ds_video++ = *source_video++;
         }
-        *ds_video++ = *source_video++ & 0x00FFFFFF;     // The Intellivision STIC does NOT render the final column of pixels at 160 (so the last column drawn is 159)
+        //*ds_video++ = *source_video++ & 0x00FFFFFF;     // The Intellivision STIC does NOT render the final column of pixels at 160 (so the last column drawn is 159)
         ds_video += 24;
     }    
 }
