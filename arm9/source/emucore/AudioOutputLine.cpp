@@ -13,7 +13,7 @@
 #include "AudioMixer.h"
 
 INT64 sampleBuffer[2]              __attribute__((section(".dtcm")));
-INT64 commonClockCounter[2]        __attribute__((section(".dtcm")));
+INT32 commonClockCounter[2]        __attribute__((section(".dtcm")));
 INT64 commonClocksPerSample[2]     __attribute__((section(".dtcm")));
 INT16 previousSample[2]            __attribute__((section(".dtcm")));
 INT16 currentSample[2]             __attribute__((section(".dtcm")));

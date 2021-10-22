@@ -3456,7 +3456,6 @@ void display_debug(void)
 
 void debugger(void)
 {
-    debug[2]++;
     static UINT32 myLastFrame = 0;
     
     if (debug_mode == DBG_MODE_PLAY) 

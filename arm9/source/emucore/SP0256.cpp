@@ -77,6 +77,11 @@ SP0256::SP0256()
     registers.init(this);
 }
 
+SP0256::~SP0256()
+{
+ sp_idle = 1;   
+}
+
 INT32 SP0256::getClockSpeed() {
     return 10000;
 }
@@ -101,6 +106,7 @@ void SP0256::resetProcessor()
     fifoHead = 0;
     fifoSize = 0;
     speaking = FALSE;
+    sp_idle = 1;
 
     amplitude = 0;
     period = 0;
@@ -112,16 +118,25 @@ void SP0256::resetProcessor()
     }
 }
 
+UINT8 cleared = false;
 ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
     if (idle) 
     {
-        for (int i = 0; i < minimum; i++)
-            playSample1(0);
-        sp_idle = 1;
+        if (!cleared)
+        {
+            cleared = true;
+            for (int i = 0; i < minimum; i++)
+                playSample1(0);
+        }
+        else // Effective delay 1 tick...
+        {
+            sp_idle = 1;
+        }
         return minimum;
     } else sp_idle=0;
 
+    cleared = false;
     INT32 totalTicks = 0;
     do {
         if (!speaking) {

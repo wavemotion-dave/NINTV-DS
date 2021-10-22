@@ -13,6 +13,7 @@
 #include <string.h>
 #include "AY38914.h"
 #include "AY38914_Registers.h"
+#include "../ds_tools.h"
 
 AY38914_Registers::AY38914_Registers(UINT16 address)
 : RAM(0x10, address, 0xFFFF, 0xFFFF)

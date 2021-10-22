@@ -23,6 +23,7 @@ struct Channel_t channel1 __attribute__((section(".dtcm")));
 struct Channel_t channel2 __attribute__((section(".dtcm")));
 
 INT32 clockDivisor __attribute__((section(".dtcm")));
+INT32 clocksPerSample __attribute__((section(".dtcm")));
 
 //cached total output sample
 UINT8 cachedTotalOutputIsDirty __attribute__((section(".dtcm")));
@@ -113,7 +114,8 @@ void AY38914::resetProcessor()
     channel2.isDirty = TRUE;
 }
 
-void AY38914::setClockDivisor(INT32 clockDivisor) {
+void AY38914::setClockDivisor(INT32 clockDivisor) 
+{
     clockDivisor = clockDivisor;
 }
 
@@ -202,7 +204,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         // Now place the sample onto the audio output line...
         playSample0(cachedTotalOutput);
 
-        totalTicks += (clockDivisor<<4);
+        totalTicks += clocksPerSample;
 
     } while (totalTicks < minimum);
 
@@ -264,5 +266,6 @@ void AY38914::setState(AY38914State *state)
     envelopeCont = state->envelopeCont;
     noiseIdle = state->noiseIdle;
     noise = state->noise;
+    clocksPerSample = clockDivisor<<4;
 }
 

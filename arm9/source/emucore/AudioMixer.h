@@ -16,9 +16,7 @@
 #include "types.h"
 #include "Processor.h"
 
-#define MAX_AUDIO_PRODUCERS 10
-
-template<typename A, typename W> class EmulatorTmpl;
+#define MAX_AUDIO_PRODUCERS 3
 
 class AudioMixer : public Processor
 {
@@ -47,9 +45,7 @@ class AudioMixer : public Processor
         INT32 clockSpeed;
 
         AudioProducer*     audioProducers[MAX_AUDIO_PRODUCERS];
-        UINT32             audioProducerCount;
-
-        INT64 commonClocksPerTick;
+        UINT16             audioProducerCount;
 };
 
 #endif

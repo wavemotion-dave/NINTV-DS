@@ -18,19 +18,17 @@
 #include "../config.h"
 
 UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
-UINT32 sampleSize __attribute__((section(".dtcm")));
 UINT16 currentSampleIdx16 __attribute__((section(".dtcm"))) = 0;
 UINT8  currentSampleIdx8 __attribute__((section(".dtcm"))) = 0;
-
+UINT32 commonClocksPerTick __attribute__((section(".dtcm"))) = 0;
 extern UINT64 lcm(UINT64, UINT64);
 
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
-    audioProducerCount(0),
-    commonClocksPerTick(0)
+    audioProducerCount(0)
 {
     memset(&audioProducers, 0, sizeof(audioProducers));
-    sampleSize = 0;        
+    commonClocksPerTick = 0;
 }
 
 AudioMixer::~AudioMixer()
@@ -61,6 +59,7 @@ void AudioMixer::removeAll()
         removeAudioProducer(audioProducers[0]);
 }
 
+
 void AudioMixer::resetProcessor()
 {
     //reset instance data
@@ -79,9 +78,9 @@ void AudioMixer::resetProcessor()
 
     //iterate again to determine the clock factor of each
     commonClocksPerTick = totalClockSpeed / getClockSpeed();
-    for (UINT32 i = 0; i < audioProducerCount; i++) {
-        commonClocksPerSample[i] = (totalClockSpeed / audioProducers[i]->getClockSpeed())
-                * audioProducers[i]->getClocksPerSample();
+    for (UINT32 i = 0; i < audioProducerCount; i++) 
+    {
+        commonClocksPerSample[i] = (totalClockSpeed / audioProducers[i]->getClockSpeed()) * audioProducers[i]->getClocksPerSample();
     }
 }
 
@@ -90,7 +89,6 @@ void AudioMixer::init(UINT32 sampleRate)
     AudioMixer::release();
 
     clockSpeed = sampleRate;
-    sampleSize = ( clockSpeed / 60.0 );
     memset(audio_mixer_buffer,0x00, 256*sizeof(UINT16));
 }
 
@@ -116,19 +114,19 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
         {
             //mix and flush the sample buffers
 
-            INT32 missingClocks = (this->commonClocksPerTick - commonClockCounter[0]);
-            INT64 sampleToUse = (missingClocks < 0 ? previousSample[0] : currentSample[0]);
+            INT32 missingClocks = (commonClocksPerTick - commonClockCounter[0]);
+            INT32 sampleToUse = (missingClocks < 0 ? previousSample[0] : currentSample[0]);
 
             //account for when audio producers idle by adding enough samples to each producer's buffer
             //to fill the time since last sample calculation
-            INT64 missingSampleCount = (missingClocks / commonClocksPerSample[0]);
+            INT32 missingSampleCount = (missingClocks / commonClocksPerSample[0]);
             if (missingSampleCount != 0) 
             {
-                sampleBuffer[0] += missingSampleCount * sampleToUse * commonClocksPerSample[0];
+                sampleBuffer[0] += (INT64)missingSampleCount * sampleToUse * commonClocksPerSample[0];
                 commonClockCounter[0] += missingSampleCount * commonClocksPerSample[0];
                 missingClocks -= missingSampleCount * commonClocksPerSample[0];
             }
-            INT64 partialSample = sampleToUse * missingClocks;
+            INT64 partialSample = (INT64)sampleToUse * (INT64)missingClocks;
 
             //calculate the sample for this line
             totalSample += (INT16)((sampleBuffer[0] + partialSample) / commonClocksPerTick);
@@ -145,19 +143,19 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             //mix and flush the sample buffers
             for (UINT32 i = 0; i < audioProducerCount; i++) 
             {
-                INT32 missingClocks = (this->commonClocksPerTick - commonClockCounter[i]);
-                INT64 sampleToUse = (missingClocks < 0 ? previousSample[i] : currentSample[i]);
+                INT32 missingClocks = (commonClocksPerTick - commonClockCounter[i]);
+                INT32 sampleToUse = (missingClocks < 0 ? previousSample[i] : currentSample[i]);
 
                 //account for when audio producers idle by adding enough samples to each producer's buffer
                 //to fill the time since last sample calculation
-                INT64 missingSampleCount = (missingClocks / commonClocksPerSample[i]);
+                INT32 missingSampleCount = (missingClocks / commonClocksPerSample[i]);
                 if (missingSampleCount != 0) 
                 {
-                    sampleBuffer[i] += missingSampleCount * sampleToUse * commonClocksPerSample[i];
+                    sampleBuffer[i] += (INT64)missingSampleCount * sampleToUse * commonClocksPerSample[i];
                     commonClockCounter[i] += missingSampleCount * commonClocksPerSample[i];
                     missingClocks -= missingSampleCount * commonClocksPerSample[i];
                 }
-                INT64 partialSample = sampleToUse * missingClocks;
+                INT64 partialSample = (INT64)sampleToUse * (INT64)missingClocks;
 
                 //calculate the sample for this line
                 totalSample += (INT16)((sampleBuffer[i] + partialSample) / commonClocksPerTick);

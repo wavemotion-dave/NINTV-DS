@@ -14,7 +14,7 @@
 
 #include "types.h"
 extern INT64 sampleBuffer[2];
-extern INT64 commonClockCounter[2];
+extern INT32 commonClockCounter[2];
 extern INT64 commonClocksPerSample[2];
 extern INT16 previousSample[2];
 extern INT16 currentSample[2];

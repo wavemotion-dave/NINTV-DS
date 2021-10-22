@@ -78,6 +78,7 @@ class SP0256 : public Processor, public AudioProducer
 
     public:
         SP0256();
+        ~SP0256();
         void resetProcessor();
         INT32 getClockSpeed();
         INT32 getClocksPerSample();

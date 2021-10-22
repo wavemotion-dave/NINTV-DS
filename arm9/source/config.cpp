@@ -294,9 +294,10 @@ struct options_t *Current_Option_Table;
 void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
-    extern  INT32 clockDivisor;
+    extern  INT32 clockDivisor, clocksPerSample;
     static UINT32 sound_divs[] = {12,14,16,20,24,SOUND_DIV_DISABLE};
     clockDivisor = sound_divs[myConfig.sound_clock_div];
+    clocksPerSample = clockDivisor<<4;
 
     // Check if the sound changed...
     fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
