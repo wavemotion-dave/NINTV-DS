@@ -8,6 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+#include <nds.h>
 #include <stdio.h>
 #include "MemoryBus.h"
 
@@ -253,7 +254,7 @@ void MemoryBus::removeAll()
         removeMemory(mappedMemories[0]);
 }
 
-UINT16 MemoryBus::peek(UINT16 location)
+ITCM_CODE UINT16 MemoryBus::peek(UINT16 location)
 {
     UINT8 numMemories = readableMemoryCounts[location];
     
@@ -265,7 +266,7 @@ UINT16 MemoryBus::peek(UINT16 location)
     return value;
 }
 
-void MemoryBus::poke(UINT16 location, UINT16 value)
+ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
 {
     UINT8 numMemories = writeableMemoryCounts[location];
 

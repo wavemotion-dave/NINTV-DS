@@ -71,7 +71,7 @@ void CP1610::resetProcessor()
  */
 ITCM_CODE INT32 CP1610::tick(INT32 minimum)
 {
-    int usedCycles = 0;
+    INT32 usedCycles = 0;
     
     // ---------------------------------------------------------------------
     // Small speedup so we don't have to shift usedCycles on every loop..
@@ -114,7 +114,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
 }
 
 
-inline UINT16 CP1610::getIndirect(UINT16 registerNum)
+ITCM_CODE UINT16 CP1610::getIndirect(UINT16 registerNum)
 {
     UINT16 value;
     if (registerNum == 6) 
