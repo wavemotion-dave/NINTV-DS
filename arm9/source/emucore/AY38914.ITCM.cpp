@@ -200,7 +200,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
         // Now place the sample onto the audio output line...
-        audioOutputLine->playSample(cachedTotalOutput);
+        playSample0(cachedTotalOutput);
 
         totalTicks += (clockDivisor<<4);
 

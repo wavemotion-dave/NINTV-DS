@@ -13,24 +13,16 @@
 #define AUDIOOUTPUTLINE_H
 
 #include "types.h"
+extern INT64 sampleBuffer[2];
+extern INT64 commonClockCounter[2];
+extern INT64 commonClocksPerSample[2];
+extern INT16 previousSample[2];
+extern INT16 currentSample[2];
 
-class AudioOutputLine
-{
-    friend class AudioMixer;
+extern void playSample0(INT16 sample);
+extern void playSample1(INT16 sample);
+extern void audio_output_line_reset();
 
-    public:
-        void playSample(INT16 sample);
-
-    private:
-        AudioOutputLine();
-        void reset();
-
-        INT64 sampleBuffer;
-		INT64 commonClockCounter;
-		INT64 commonClocksPerSample;
-		INT16 previousSample;
-		INT16 currentSample;
-};
 
 #endif
 

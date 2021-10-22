@@ -22,9 +22,7 @@ template<typename A, typename W> class EmulatorTmpl;
 
 class AudioMixer : public Processor
 {
-
     friend class ProcessorBus;
-    friend class AudioOutputLine;
 
     public:
         AudioMixer();

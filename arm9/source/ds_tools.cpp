@@ -253,7 +253,7 @@ BOOL LoadCart(const CHAR* filename)
     // ---------------------------------------------------------------------
     // New game is loaded... (would have returned FALSE above otherwise)
     // ---------------------------------------------------------------------
-    extern UINT32 fudge_timing;
+    extern UINT16 fudge_timing;
     extern UINT8 bLatched;
     fudge_timing = 0;
     bLatched = false;
@@ -1183,22 +1183,19 @@ void dsMainLoop(char *initial_file)
     Run(initial_file);
 }
 
-#define ARM7_XFER_BUFFER_SIZE (4096)
-#define ARM7_SOUND_CHANNEL    1
-//---------------------------------------------------------------------------------
-UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
-UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) audio_arm7_xfer_buffer;
-UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) &audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
-extern UINT16 audio_mixer_buffer[];
 // ---------------------------------------------------------------------------
 // This is called very frequently (15,360 times per second) to fill the
 // pipeline of sound values from the Audio Mixer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
+#define ARM7_XFER_BUFFER_SIZE (4096)
+UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
+UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) audio_arm7_xfer_buffer;
+UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) &audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
-UINT16 lastSample[2]         __attribute__((section(".dtcm"))) = {0,0};    
-UINT16 lastSample2          __attribute__((section(".dtcm"))) = 0;    
+UINT32 lastSample            __attribute__((section(".dtcm"))) = 0;    
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
+extern UINT16 audio_mixer_buffer[];
 
 ITCM_CODE void VsoundHandlerDSi(void)
 {
@@ -1209,11 +1206,11 @@ ITCM_CODE void VsoundHandlerDSi(void)
   {
       if ((UINT8)(myCurrentSampleIdx8+1) != currentSampleIdx8)
       {
-          lastSample[1] = audio_mixer_buffer[myCurrentSampleIdx8++];
-          lastSample[0] = audio_mixer_buffer[myCurrentSampleIdx8++];
+          lastSample = *((UINT32*)&audio_mixer_buffer[myCurrentSampleIdx8++]);
+          myCurrentSampleIdx8++;
       }
   }
-  *aptr++ = *((UINT32*)lastSample);
+  *aptr++ = lastSample;
   if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
 }
 
@@ -1226,12 +1223,11 @@ ITCM_CODE void VsoundHandler(void)
   {
       if ((UINT8)(myCurrentSampleIdx16+1) != currentSampleIdx16)
       {
-          lastSample[0] = audio_mixer_buffer[myCurrentSampleIdx16++];
-          lastSample[1] = audio_mixer_buffer[myCurrentSampleIdx16++];
-          if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
+          lastSample = *((UINT32*)&audio_mixer_buffer[myCurrentSampleIdx16++]);
+          if (++myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
       }
   }
-  *aptr++ = *((UINT32*)lastSample);
+  *aptr++ = lastSample;
   if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
 }
 
@@ -1256,7 +1252,7 @@ void dsInstallSoundEmuFIFO(void)
     msg.SoundPlay.volume = SOUND_VOLUME;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
-    msg.SoundPlay.format = ((ARM7_SOUND_CHANNEL)<<4) | SoundFormat_16Bit;
+    msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
     msg.SoundPlay.loopPoint = 0;
     msg.SoundPlay.dataSize = (ARM7_XFER_BUFFER_SIZE*sizeof(UINT16)) >> 2;
     msg.type = EMUARM7_PLAY_SND;
@@ -1265,7 +1261,7 @@ void dsInstallSoundEmuFIFO(void)
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to start chugging...
 
     // Now setup to feed the audio mixer buffer into the ARM7 core via shared memory
-    TIMER2_DATA = TIMER_FREQ(mySoundFrequency/2);
+    TIMER2_DATA = TIMER_FREQ((mySoundFrequency/2)+2);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandlerDSi:VsoundHandler);
     

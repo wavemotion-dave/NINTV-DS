@@ -29,7 +29,7 @@ UINT16 stack                    __attribute__((section(".dtcm")));
 INT32 mode                      __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 
-UINT8 sp_idle __attribute__((section(".dtcm"))) = 0;
+UINT8 sp_idle __attribute__((section(".dtcm"))) = 1;
 
 UINT16 bitMasks[16] __attribute__((section(".dtcm"))) = {
         0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF,
@@ -117,7 +117,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
     if (idle) 
     {
         for (int i = 0; i < minimum; i++)
-            audioOutputLine->playSample(0);
+            playSample1(0);
         sp_idle = 1;
         return minimum;
     } else sp_idle=0;
@@ -184,7 +184,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
         if (sample > 2047) sample = 2047;
         else if (sample < -2048) sample = -2048;
 
-        audioOutputLine->playSample((INT16)(sample << 4));
+        playSample1((INT16)(sample << 4));
 
         totalTicks++;
 

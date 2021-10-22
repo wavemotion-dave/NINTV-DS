@@ -46,7 +46,7 @@
 #define MODE_RENDER_ROW_11          26
 #define MODE_FETCH_ROW_12           27
 
-UINT32 fudge_timing = 0;
+UINT16 fudge_timing = 0;
 
 #define TICK_LENGTH_SCANLINE             228
 #define TICK_LENGTH_FRAME                (59736+fudge_timing)

@@ -8,33 +8,42 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include "AudioOutputLine.h"
 #include "AudioMixer.h"
 
-AudioOutputLine::AudioOutputLine()
-  : sampleBuffer(0),
-	previousSample(0),
-	currentSample(0),
-	commonClockCounter(0),
-	commonClocksPerSample(0)
-{}
+INT64 sampleBuffer[2]              __attribute__((section(".dtcm")));
+INT64 commonClockCounter[2]        __attribute__((section(".dtcm")));
+INT64 commonClocksPerSample[2]     __attribute__((section(".dtcm")));
+INT16 previousSample[2]            __attribute__((section(".dtcm")));
+INT16 currentSample[2]             __attribute__((section(".dtcm")));
 
-void AudioOutputLine::reset()
+void audio_output_line_reset(void)
 {
-    sampleBuffer = 0;
-	previousSample = 0;
-	currentSample = 0;
-	commonClockCounter = 0;
-	commonClocksPerSample = 0;
+    for (int i=0; i<2; i++)
+    {
+        sampleBuffer[i] = 0;
+        previousSample[i] = 0;
+        currentSample[i] = 0;
+        commonClockCounter[i] = 0;
+        commonClocksPerSample[i] = 0;
+    }
 }
 
-void AudioOutputLine::playSample(INT16 sample)
+ITCM_CODE void playSample0(INT16 sample)
 {
-    sampleBuffer += currentSample * commonClocksPerSample;
-    commonClockCounter += commonClocksPerSample;
-	previousSample = currentSample;
-	currentSample = sample;
+    sampleBuffer[0] += currentSample[0] * commonClocksPerSample[0];
+    commonClockCounter[0] += commonClocksPerSample[0];
+    previousSample[0] = currentSample[0];
+    currentSample[0] = sample;
+}
+
+ITCM_CODE void playSample1(INT16 sample)
+{
+    sampleBuffer[1] += currentSample[1] * commonClocksPerSample[1];
+    commonClockCounter[1] += commonClocksPerSample[1];
+	previousSample[1] = currentSample[1];
+	currentSample[1] = sample;
 }
 
 
