@@ -26,6 +26,9 @@
 #include "overlay.h"
 #include "debugger.h"
 #include "AY38914_Channel.h"
+#include "AY38914.h"
+#include "AudioOutputLine.h"
+#include "AudioMixer.h"
 
 #ifdef DEBUG_ENABLE
 
@@ -108,6 +111,7 @@ UINT8 debug_show = DBG_SHOW_CPU;
 
 UINT8 debug_show_ram = 0;
 UINT8 debug_show_stic = 0;
+UINT8 debug_show_psg = 0;
 
 
 const char *dbg_opcode(UINT16 op)
@@ -3248,6 +3252,8 @@ UINT8 debugger_input(int tx, int ty)
     if ((tx > 163) && (tx < 198)  && (ty > 180)) 
     {
         debug_clear_scr(); 
+        if (debug_show == DBG_SHOW_PSG) debug_show_psg = (debug_show_psg+1) % 2;
+        else debug_show_psg = 0;
         debug_show = DBG_SHOW_PSG;
     }
     if ((tx > 198) && (tx < 236)  && (ty > 180)) 
@@ -3339,24 +3345,80 @@ void display_debug(void)
         extern struct Channel_t channel0;
         extern struct Channel_t channel1;
         extern struct Channel_t channel2;
-        sprintf(dbg, "          CHAN1  CHAN2  CHAN3");
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Period:   %-5d   %-5d   %-5d", channel0.period, channel1.period, channel2.period);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "PerVal:   %-5d   %-5d   %-5d", channel0.periodValue, channel1.periodValue, channel2.periodValue);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Volume:   %-5d   %-5d   %-5d", channel0.volume, channel1.volume, channel2.volume);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "ToneCt:   %-5d   %-5d   %-5d", channel0.toneCounter, channel1.toneCounter, channel2.toneCounter);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Tone:     %-5d   %-5d   %-5d", channel0.tone, channel1.tone, channel2.tone);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Envlop:   %-5d   %-5d   %-5d", channel0.envelope, channel1.envelope, channel2.envelope);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "TonDis:   %-5d   %-5d   %-5d", channel0.toneDisabled, channel1.toneDisabled, channel2.toneDisabled);
-        dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "NoiDis:   %-5d   %-5d   %-5d", channel0.noiseDisabled, channel1.noiseDisabled, channel2.noiseDisabled);
-        dsPrintValue(0, idx++, 0, dbg);
+        
+        switch (debug_show_psg)
+        {
+            case 0:
+                sprintf(dbg, "          CHAN1  CHAN2  CHAN3");
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "Period:   %-5d   %-5d   %-5d", channel0.period, channel1.period, channel2.period);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "PerVal:   %-5d   %-5d   %-5d", channel0.periodValue, channel1.periodValue, channel2.periodValue);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "Volume:   %-5d   %-5d   %-5d", channel0.volume, channel1.volume, channel2.volume);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "ToneCt:   %-5d   %-5d   %-5d", channel0.toneCounter, channel1.toneCounter, channel2.toneCounter);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "Tone:     %-5d   %-5d   %-5d", channel0.tone, channel1.tone, channel2.tone);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "Envlop:   %-5d   %-5d   %-5d", channel0.envelope, channel1.envelope, channel2.envelope);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "TonDis:   %-5d   %-5d   %-5d", channel0.toneDisabled, channel1.toneDisabled, channel2.toneDisabled);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "NoiDis:   %-5d   %-5d   %-5d", channel0.noiseDisabled, channel1.noiseDisabled, channel2.noiseDisabled);
+                dsPrintValue(0, idx++, 0, dbg);
+                idx++;
+                sprintf(dbg, "clockDivisor:     %-9d", clockDivisor);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "clocksPerSample:  %-9d", clocksPerSample);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "envelopeIdle:     %-9d", envelopeIdle);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "envelopePeriod:   %-9d", envelopePeriod);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "envelopePValue:   %-9d", envelopePeriodValue);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "noiseIdle:        %-9d", noiseIdle);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "noisePeriod:      %-9d", noisePeriod);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "noisePeriodValue: %-9d", noisePeriodValue);
+                dsPrintValue(0, idx++, 0, dbg);
+                break;
+                
+            case 1:
+                sprintf(dbg, "AUDIO MIXER BUFFER");
+                dsPrintValue(0, idx++, 0, dbg); idx++;
+                sprintf(dbg, "curSampIdx8   %-4d", currentSampleIdx8);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "curSampIdx16  %-4d", currentSampleIdx16);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "comClksPerTik %-9d", commonClocksPerTick);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "sampleBuf[0]  %-17lld", (long long)sampleBuffer[0]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "sampleBuf[1]  %-17lld", (long long)sampleBuffer[1]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "comClkCntr[0] %-17lld", (long long)commonClockCounter[0]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "comClkCntr[1] %-17lld", (long long)commonClockCounter[1]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "comClkPerS[0] %-17lld", (long long)commonClocksPerSample[0]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "comClkPerS[1] %-17lld", (long long)commonClocksPerSample[1]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "prevSample[]  %04X %04X", previousSample[0], previousSample[1]);
+                dsPrintValue(0, idx++, 0, dbg);
+                sprintf(dbg, "curSample[]   %04X %04X", currentSample[0], currentSample[1]);
+                dsPrintValue(0, idx++, 0, dbg);
+                idx++;
+                for (UINT16 i=0; i<30; i+=6)
+                {
+                    sprintf(dbg, "%04X %04X %04X %04X %04X %04X", audio_mixer_buffer[i], audio_mixer_buffer[i+1], audio_mixer_buffer[i+2], audio_mixer_buffer[i+3], audio_mixer_buffer[i+4], audio_mixer_buffer[i+5]);
+                    dsPrintValue(0, idx++, 0, dbg);
+                }
+                break;
+        }
     }    
 
     if (debug_show == DBG_SHOW_STIC)

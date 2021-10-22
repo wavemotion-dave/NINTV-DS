@@ -24,6 +24,7 @@ class Intellivision;
     
 //divisor for slowing down the clock speed for the AY38914
 extern  INT32 clockDivisor;
+extern INT32 clocksPerSample;
 
 //cached total output sample
 extern  UINT8 cachedTotalOutputIsDirty;

@@ -32,6 +32,7 @@
 #include "highscore.h"
 #include "overlay.h"
 #include "debugger.h"
+#include "AudioMixer.h"
 
 char line[256];
 
@@ -1195,12 +1196,9 @@ UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) &audio_arm7_xfer_buff
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
 UINT32 lastSample            __attribute__((section(".dtcm"))) = 0;    
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
-extern UINT16 audio_mixer_buffer[];
 
 ITCM_CODE void VsoundHandlerDSi(void)
 {
-  extern UINT8 currentSampleIdx8;
-
   // If there is a fresh sample...
   if (myCurrentSampleIdx8 != currentSampleIdx8)
   {
@@ -1216,12 +1214,10 @@ ITCM_CODE void VsoundHandlerDSi(void)
 
 ITCM_CODE void VsoundHandler(void)
 {
-  extern UINT8 currentSampleIdx16;
-
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
-      if ((UINT8)(myCurrentSampleIdx16+1) != currentSampleIdx16)
+      if ((UINT16)(myCurrentSampleIdx16+1) != currentSampleIdx16)
       {
           lastSample = *((UINT32*)&audio_mixer_buffer[myCurrentSampleIdx16++]);
           if (++myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
@@ -1235,8 +1231,6 @@ UINT8 b_dsi_mode = true;
 void dsInstallSoundEmuFIFO(void)
 {
     // Clear out the sound buffers...
-    extern UINT8 currentSampleIdx8;
-    extern UINT16 currentSampleIdx16;
     currentSampleIdx8 = 0;
     currentSampleIdx16 = 0;
     aptr = (UINT32*) audio_arm7_xfer_buffer;
