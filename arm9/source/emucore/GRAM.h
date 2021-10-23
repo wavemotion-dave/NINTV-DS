@@ -44,7 +44,7 @@ class GRAM : public RAM
         void poke(UINT16 location, UINT16 value);
 
         void markClean();
-        BOOL isDirty();
+        inline BOOL isDirty() {return dirtyRAM;}
         BOOL isCardDirty(UINT16 cardLocation);
         
         void getState(GRAMState *state);

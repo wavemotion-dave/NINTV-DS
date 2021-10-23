@@ -110,8 +110,6 @@ private:
 
     MemoryBus*      memoryBus;
 
-    UINT8           backgroundBuffer[160*96];
-
     UINT8*          pixelBuffer;
     UINT16          pixelBufferRowSize;
 

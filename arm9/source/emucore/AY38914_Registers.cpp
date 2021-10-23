@@ -29,7 +29,7 @@ void AY38914_Registers::reset()
     memset(memory, 0, sizeof(memory));
 }
 
-void AY38914_Registers::poke(UINT16 location, UINT16 value)
+ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
 {
     location &= 0x0F;
     switch(location) {
@@ -176,7 +176,7 @@ void AY38914_Registers::poke(UINT16 location, UINT16 value)
     }
 }
 
-UINT16 AY38914_Registers::peek(UINT16 location)
+ITCM_CODE UINT16 AY38914_Registers::peek(UINT16 location)
 {
     location &= 0x0F;
     switch(location) {

@@ -8,7 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include "BackTabRAM.h"
 
 
@@ -26,12 +26,12 @@ void BackTabRAM::reset()
     }
 }
 
-UINT16 BackTabRAM::peek(UINT16 location)
+ITCM_CODE UINT16 BackTabRAM::peek(UINT16 location)
 {
     return image[location-BACKTAB_LOCATION];
 }
 
-void BackTabRAM::poke(UINT16 location, UINT16 value)
+ITCM_CODE void BackTabRAM::poke(UINT16 location, UINT16 value)
 {
     location -= BACKTAB_LOCATION;
 
@@ -45,7 +45,7 @@ void BackTabRAM::poke(UINT16 location, UINT16 value)
     dirtyBytes[location] = TRUE;
 }
 
-void BackTabRAM::markClean() {
+ITCM_CODE void BackTabRAM::markClean() {
     for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
         dirtyBytes[i] = FALSE;
     colorAdvanceBitsDirty = FALSE;
@@ -61,7 +61,7 @@ BOOL BackTabRAM::isDirty(UINT16 location) {
 }
 
 
-void BackTabRAM::LatchRow(UINT8 row)
+ITCM_CODE void BackTabRAM::LatchRow(UINT8 row)
 {
     for (int i=(row*20); i<((row+1)*20); i++) 
     {
@@ -70,7 +70,7 @@ void BackTabRAM::LatchRow(UINT8 row)
     }
 }
 
-void BackTabRAM::markCleanLatched() 
+ITCM_CODE void BackTabRAM::markCleanLatched() 
 {
     for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
         dirtyBytesLatched[i] = FALSE;

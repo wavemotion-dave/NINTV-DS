@@ -48,6 +48,8 @@
 
 UINT16 fudge_timing = 0;
 
+UINT8 backgroundBuffer[160*96];
+
 #define TICK_LENGTH_SCANLINE             228
 #define TICK_LENGTH_FRAME                (59736+fudge_timing)
 #define TICK_LENGTH_VBLANK               (15164+fudge_timing)

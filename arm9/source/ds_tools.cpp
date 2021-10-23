@@ -1191,8 +1191,9 @@ void dsMainLoop(char *initial_file)
 // ---------------------------------------------------------------------------
 #define ARM7_XFER_BUFFER_SIZE (4096)
 UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
-UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) audio_arm7_xfer_buffer;
-UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) &audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
+UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
+UINT32* sptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
+UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0xA000000/2);
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
 UINT32 lastSample            __attribute__((section(".dtcm"))) = 0;    
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
@@ -1209,7 +1210,7 @@ ITCM_CODE void VsoundHandlerDSi(void)
       }
   }
   *aptr++ = lastSample;
-  if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
+  if (aptr == eptr) aptr = sptr;
 }
 
 ITCM_CODE void VsoundHandler(void)
@@ -1224,7 +1225,7 @@ ITCM_CODE void VsoundHandler(void)
       }
   }
   *aptr++ = lastSample;
-  if (aptr == eptr) aptr = (UINT32*) audio_arm7_xfer_buffer;
+  if (aptr == eptr) aptr =  sptr;
 }
 
 UINT8 b_dsi_mode = true;
@@ -1233,7 +1234,22 @@ void dsInstallSoundEmuFIFO(void)
     // Clear out the sound buffers...
     currentSampleIdx8 = 0;
     currentSampleIdx16 = 0;
-    aptr = (UINT32*) audio_arm7_xfer_buffer;
+    if (isDSiMode())
+    {
+        b_dsi_mode = true;
+        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
+        sptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
+        eptr = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0xA000000/2);
+    }
+    else
+    {
+        b_dsi_mode = false;
+        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
+        sptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
+        eptr = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0x00400000/2);
+    }
+    
+    aptr = sptr;
     memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
     memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
     
@@ -1257,10 +1273,7 @@ void dsInstallSoundEmuFIFO(void)
     // Now setup to feed the audio mixer buffer into the ARM7 core via shared memory
     TIMER2_DATA = TIMER_FREQ((mySoundFrequency/2)+2);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
-    irqSet(IRQ_TIMER2, isDSiMode() ? VsoundHandlerDSi:VsoundHandler);
-    
-    if (isDSiMode()) b_dsi_mode = true;
-    else b_dsi_mode = false;
+    irqSet(IRQ_TIMER2, b_dsi_mode ? VsoundHandlerDSi:VsoundHandler);
     
     if (myConfig.sound_clock_div != SOUND_DIV_DISABLE)
         irqEnable(IRQ_TIMER2);

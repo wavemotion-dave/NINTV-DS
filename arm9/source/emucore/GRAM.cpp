@@ -31,7 +31,7 @@ void GRAM::reset()
         dirtyCards[i] = TRUE;
 }
 
-void GRAM::poke(UINT16 location, UINT16 value)
+ITCM_CODE void GRAM::poke(UINT16 location, UINT16 value)
 {
     if (!enabled) return;
     location &= 0x01FF;
@@ -41,7 +41,7 @@ void GRAM::poke(UINT16 location, UINT16 value)
     dirtyRAM = TRUE;
 }
 
-void GRAM::markClean() {
+ITCM_CODE void GRAM::markClean() {
     if (!dirtyRAM)
         return;
 
@@ -50,11 +50,7 @@ void GRAM::markClean() {
     dirtyRAM = FALSE;
 }
 
-BOOL GRAM::isDirty() {
-    return dirtyRAM;
-}
-
-BOOL GRAM::isCardDirty(UINT16 cardLocation) {
+ITCM_CODE BOOL GRAM::isCardDirty(UINT16 cardLocation) {
     return dirtyCards[cardLocation>>3];
 }
 
