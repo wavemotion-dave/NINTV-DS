@@ -95,7 +95,6 @@ void ProcessorBus::run()
 {
     running = true;
     while (running) {
-		// TODO: jeremiah sypult, saw crash when NULL
 		if (startQueue->next == NULL) {
 			break;
 		}

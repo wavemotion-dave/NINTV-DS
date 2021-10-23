@@ -37,7 +37,7 @@ public:
 MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
-    UINT64 i;
+    UINT32 i;
     writeableMemoryCounts = new UINT8[size];
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
@@ -65,8 +65,8 @@ MemoryBus::MemoryBus()
 
 MemoryBus::~MemoryBus()
 {
-    UINT64 size = 1 << (sizeof(UINT16) << 3);
-    UINT64 i;
+    UINT32 size = 1 << (sizeof(UINT16) << 3);
+    UINT32 i;
     delete[] writeableMemoryCounts;
     for (i = 0; i < size; i++)
         delete[] writeableMemorySpace[i];
@@ -115,7 +115,7 @@ void MemoryBus::addMemory(Memory* m)
             UINT16 nextAddress = readAddress | orMask;
             UINT16 nextEnd = nextAddress + readSize - 1;
 
-            for (UINT64 k = nextAddress; k <= nextEnd; k++) {
+            for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = readableMemoryCounts[k];
                 readableMemorySpace[k][memCount] = m;
                 readableMemoryCounts[k]++;
@@ -141,7 +141,7 @@ void MemoryBus::addMemory(Memory* m)
             UINT16 nextAddress = writeAddress | orMask;
             UINT16 nextEnd = nextAddress + writeSize - 1;
 
-            for (UINT64 k = nextAddress; k <= nextEnd; k++) {
+            for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = writeableMemoryCounts[k];
                 writeableMemorySpace[k][memCount] = m;
                 writeableMemoryCounts[k]++;
@@ -186,7 +186,7 @@ void MemoryBus::removeMemory(Memory* m)
             UINT16 nextAddress = readAddress | orMask;
             UINT16 nextEnd = nextAddress + readSize - 1;
 
-            for (UINT64 k = nextAddress; k <= nextEnd; k++) {
+            for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = readableMemoryCounts[k];
                 for (UINT16 n = 0; n < memCount; n++) {
                     if (readableMemorySpace[k][n] == m) {
@@ -220,7 +220,7 @@ void MemoryBus::removeMemory(Memory* m)
             UINT16 nextAddress = writeAddress | orMask;
             UINT16 nextEnd = nextAddress + writeSize - 1;
 
-            for (UINT64 k = nextAddress; k <= nextEnd; k++) {
+            for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = writeableMemoryCounts[k];
                 for (UINT16 n = 0; n < memCount; n++) {
                     if (writeableMemorySpace[k][n] == m) {

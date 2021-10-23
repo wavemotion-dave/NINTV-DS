@@ -97,12 +97,12 @@ UINT16 RAM::getWriteAddressMask()
     return writeAddressMask;
 }
 
-UINT16 RAM::peek(UINT16 location)
+ITCM_CODE UINT16 RAM::peek(UINT16 location)
 {
     return image[(location&readAddressMask) - this->location];
 }
 
-void RAM::poke(UINT16 location, UINT16 value)
+ITCM_CODE void RAM::poke(UINT16 location, UINT16 value)
 {
     image[(location&writeAddressMask)-this->location] = (value & trimmer);
 }

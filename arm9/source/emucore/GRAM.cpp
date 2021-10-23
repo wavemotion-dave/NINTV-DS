@@ -50,10 +50,6 @@ ITCM_CODE void GRAM::markClean() {
     dirtyRAM = FALSE;
 }
 
-ITCM_CODE BOOL GRAM::isCardDirty(UINT16 cardLocation) {
-    return dirtyCards[cardLocation>>3];
-}
-
 void GRAM::getState(GRAMState *state)
 {
     for (int i=0; i<GRAM_SIZE; i++)         state->gram_image[i] = gram_image[i];

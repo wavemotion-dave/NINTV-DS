@@ -48,7 +48,7 @@
 
 UINT16 fudge_timing = 0;
 
-UINT8 backgroundBuffer[160*96];
+UINT8 backgroundBuffer[160*96] __attribute__ ((aligned (4)));
 
 #define TICK_LENGTH_SCANLINE             228
 #define TICK_LENGTH_FRAME                (59736+fudge_timing)
@@ -63,8 +63,8 @@ UINT8 backgroundBuffer[160*96];
 #define FOREGROUND_BIT                   0x0010
 
 UINT16 global_frames        __attribute__((section(".dtcm"))) = 0;
-UINT16  mobBuffers[8][128]  __attribute__((section(".dtcm")));
-UINT8 bLatched              __attribute__((section(".dtcm"))) = false;
+UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
+UINT8  bLatched             __attribute__((section(".dtcm"))) = false;
 
 UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_repeat_table[]  = {
         0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,  
@@ -73,7 +73,7 @@ UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_rep
         0x18181818,  0x19191919,  0x1A1A1A1A,  0x1B1B1B1B,  0x1C1C1C1C,  0x1D1D1D1D,  0x1E1E1E1E,  0x1F1F1F1F
 };
 
-UINT8  __attribute__ ((aligned (4))) reverse[256] =
+UINT8  __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) reverse[256] =
 {
     0x00,0x80,0x40,0xC0,0x20,0xA0,0x60,0xE0,0x10,0x90,0x50,0xD0,0x30,0xB0,0x70,0xF0,
     0x08,0x88,0x48,0xC8,0x28,0xA8,0x68,0xE8,0x18,0x98,0x58,0xD8,0x38,0xB8,0x78,0xF8,
@@ -93,7 +93,7 @@ UINT8  __attribute__ ((aligned (4))) reverse[256] =
     0x0F,0x8F,0x4F,0xCF,0x2F,0xAF,0x6F,0xEF,0x1F,0x9F,0x5F,0xDF,0x3F,0xBF,0x7F,0xFF
 };
 
-UINT16  __attribute__ ((aligned (4))) stretch[256] =
+UINT16  __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) stretch[256] =
 {
     0x0000,0x0003,0x000C,0x000F,0x0030,0x0033,0x003C,0x003F,0x00C0,0x00C3,0x00CC,0x00CF,0x00F0,0x00F3,0x00FC,0x00FF,
     0x0300,0x0303,0x030C,0x030F,0x0330,0x0333,0x033C,0x033F,0x03C0,0x03C3,0x03CC,0x03CF,0x03F0,0x03F3,0x03FC,0x03FF,

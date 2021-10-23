@@ -8,7 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include "SP0256.h"
 #include "SP0256_Registers.h"
 
@@ -21,7 +21,7 @@ void SP0256_Registers::init(SP0256* ms)
     this->ms = ms;
 }
 
-void SP0256_Registers::poke(UINT16 location, UINT16 value)
+ITCM_CODE void SP0256_Registers::poke(UINT16 location, UINT16 value)
 {
     switch(location) {
         //a poke of any value into $80 means that the SP0256 should
@@ -49,7 +49,7 @@ void SP0256_Registers::poke(UINT16 location, UINT16 value)
     }
 }
 
-UINT16 SP0256_Registers::peek(UINT16 location) {
+ITCM_CODE UINT16 SP0256_Registers::peek(UINT16 location) {
     switch(location) {
         case 0x0080:
             return (ms->lrqHigh ? 0x8000 : 0);
