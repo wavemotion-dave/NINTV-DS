@@ -23,13 +23,11 @@ void BackTabRAM::reset()
     for (UINT16 i = 0; i < BACKTAB_SIZE; i++) {
         image[i] = 0;
         dirtyBytes[i] = TRUE;
+        imageLatched[i] = 0;
+        dirtyBytesLatched[i] = TRUE;
     }
 }
 
-ITCM_CODE UINT16 BackTabRAM::peek(UINT16 location)
-{
-    return image[location-BACKTAB_LOCATION];
-}
 
 ITCM_CODE void BackTabRAM::poke(UINT16 location, UINT16 value)
 {
@@ -51,15 +49,6 @@ ITCM_CODE void BackTabRAM::markClean() {
     colorAdvanceBitsDirty = FALSE;
 }
 
-BOOL BackTabRAM::areColorAdvanceBitsDirty() {
-    return colorAdvanceBitsDirty;
-}
-
-
-BOOL BackTabRAM::isDirty(UINT16 location) {
-    return dirtyBytes[location-BACKTAB_LOCATION];
-}
-
 
 ITCM_CODE void BackTabRAM::LatchRow(UINT8 row)
 {
@@ -77,19 +66,27 @@ ITCM_CODE void BackTabRAM::markCleanLatched()
     colorAdvanceBitsDirty = FALSE;
 }
 
-
+extern UINT8 bLatched;
 void BackTabRAM::getState(BackTabRAMState *state)
 {
-    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = image[i];
-    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = dirtyBytes[i];
+    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = (bLatched ? imageLatched[i] : image[i]);
+    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = (bLatched ? dirtyBytes[i] : dirtyBytesLatched[i]);
     state->dirtyRAM = dirtyRAM;
     state->colorAdvanceBitsDirty = colorAdvanceBitsDirty;
 }
 
 void BackTabRAM::setState(BackTabRAMState *state)
 {
-    for (int i=0; i<BACKTAB_SIZE; i++)  image[i] = state->image[i];
-    for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = state->dirtyBytes[i];
+    if (bLatched)
+    {
+        for (int i=0; i<BACKTAB_SIZE; i++)  imageLatched[i] = state->image[i];
+        for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytesLatched[i] = state->dirtyBytes[i];
+    }
+    else
+    {
+        for (int i=0; i<BACKTAB_SIZE; i++)  image[i] = state->image[i];
+        for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = state->dirtyBytes[i];
+    }
     dirtyRAM = state->dirtyRAM;
     colorAdvanceBitsDirty = state->colorAdvanceBitsDirty;
 }

@@ -254,10 +254,10 @@ void MemoryBus::removeAll()
         removeMemory(mappedMemories[0]);
 }
 
-ITCM_CODE UINT16 MemoryBus::peek(UINT16 location)
+ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
 {
     UINT8 numMemories = readableMemoryCounts[location];
-    
+
     UINT16 value = 0xFFFF;
     for (UINT16 i = 0; i < numMemories; i++)
     {

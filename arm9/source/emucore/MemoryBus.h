@@ -35,7 +35,8 @@ class MemoryBus
 
         void reset();
 
-        UINT16 peek(UINT16 location);
+        inline UINT16 peek(UINT16 location) {if (readableMemoryCounts[location] == 1) return readableMemorySpace[location][0]->peek(location); else return peek_slow(location);}
+        UINT16 peek_slow(UINT16 location);
         
         // Since PC fetched memory should be static and 16-bits... we pre-load into fast_memory[] for blazingly (relatively!) fast access...
         //inline UINT16 peek_pc(void) {return fast_memory[r[7]];}        
