@@ -1131,7 +1131,10 @@ ITCM_CODE void Run(char *initial_file)
             if ((frames_per_sec_calc > 0) && (myGlobalConfig.show_fps > 0))
             {
                 if (frames_per_sec_calc==(target_frames[myConfig.target_fps]+1)) frames_per_sec_calc--;
-                sprintf(tmp, "%03d", frames_per_sec_calc);
+                tmp[0] = '0' + (frames_per_sec_calc/100);
+                tmp[1] = '0' + ((frames_per_sec_calc % 100) /10);
+                tmp[2] = '0' + ((frames_per_sec_calc % 100) %10);
+                tmp[3] = 0;
                 dsPrintValue(0,0,0,tmp);
             }
             frames_per_sec_calc=0;
@@ -1234,17 +1237,21 @@ void dsInstallSoundEmuFIFO(void)
     // Clear out the sound buffers...
     currentSampleIdx8 = 0;
     currentSampleIdx16 = 0;
+    
+    // -----------------------------------------------------------------------------
+    // We are going to move out the memory access to the non-cached mirros since
+    // this audio buffer is shared between ARM7 and ARM9 and we want to ensure
+    // that the data is never cached as we want the ARM7 to have updated values.
+    // -----------------------------------------------------------------------------
     if (isDSiMode())
     {
         b_dsi_mode = true;
-        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
         sptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
         eptr = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0xA000000/2);
     }
     else
     {
         b_dsi_mode = false;
-        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
         sptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
         eptr = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0x00400000/2);
     }

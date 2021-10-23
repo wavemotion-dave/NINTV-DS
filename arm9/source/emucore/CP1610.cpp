@@ -107,7 +107,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
         debug_opcodes++;
         debugger();
 #endif
-        usedCycles += decode();
+     usedCycles += decode();
     } while ((usedCycles) < min_shifted);
 
     return (usedCycles<<2);
