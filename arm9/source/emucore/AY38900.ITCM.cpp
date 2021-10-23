@@ -769,11 +769,9 @@ ITCM_CODE void AY38900::renderColorStackMode()
                 csPtr = (UINT8)((csPtr+1) & 0x03);
 
             BOOL isGrom = (nextCard & 0x0800) == 0;
-            UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8)
-                : (nextCard & 0x01F8));
+            UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8) : (nextCard & 0x01F8));
 
-            if (renderAll || backtab.isDirtyDirect(h) ||
-                (!isGrom && gram->isCardDirty(memoryLocation))) 
+            if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
                 UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
                 UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
@@ -1021,6 +1019,13 @@ ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y, UINT8 fgcolor, 
         UINT32 bgColor32 = color_repeat_table[bgcolor];
         *nextTargetPixel++ = bgColor32;
         *nextTargetPixel = bgColor32;
+    }
+    else if (nextbyte == 0xFF)
+    {
+        UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
+        UINT32 fgColor32 = color_repeat_table[fgcolor];
+        *nextTargetPixel++ = fgColor32;
+        *nextTargetPixel = fgColor32;
     }
     else
     {

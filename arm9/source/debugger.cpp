@@ -3462,6 +3462,10 @@ void display_debug(void)
                 dsPrintValue(0, idx++, 0, dbg);
                 sprintf(dbg, "%03X %03X %03X %03X %03X %03X %03X %03X", debug_stic->mobs[0].collisionRegister, debug_stic->mobs[1].collisionRegister, debug_stic->mobs[2].collisionRegister, debug_stic->mobs[3].collisionRegister, debug_stic->mobs[4].collisionRegister, debug_stic->mobs[5].collisionRegister, debug_stic->mobs[6].collisionRegister, debug_stic->mobs[7].collisionRegister);
                 dsPrintValue(0, idx++, 0, dbg);
+//                sprintf(dbg, "BC=%02X BL=%d BT=%d HOff=%d VOff=%d", debug_stic->borderColor, debug_stic->blockLeft, debug_stic->blockTop, debug_stic->horizontalOffset, debug_stic->verticalOffset);
+//                dsPrintValue(0, idx++, 0, dbg);
+//                sprintf(dbg, "MO=%2d INV=%d PDE=%d DE=%d CSM=%d", debug_stic->mode, debug_stic->inVBlank, debug_stic->previousDisplayEnabled, debug_stic->displayEnabled, debug_stic->colorStackMode);
+//                dsPrintValue(0, idx++, 0, dbg);
                 break;
             case 1:
                 for (UINT16 addr = 0x200; addr <= 0x25F; addr += 5)
