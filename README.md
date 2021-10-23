@@ -50,7 +50,7 @@ History :
 --------------------------------------------------------------------------------
 V2.9 : 24-Oct-2021 by wavemotion-dave
   * Minor sound improvement across the board.
-  * Significant speed improvement - games run 5-10% faster. DS-LITE will run more games.
+  * Significant speed improvement - games run 6-12% faster. DS-LITE will run more games.
   
 V2.8 : 20-Oct-2021 by wavemotion-dave
   * First round of sound cleanup - two new improved settings in configuration.
