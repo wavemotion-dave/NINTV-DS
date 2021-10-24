@@ -65,7 +65,7 @@ UINT8  oneSecTick=FALSE;
 void dsInitPalette(void);
 
 int bg0, bg0b, bg1b;
-bool bFirstGameLoaded = false;
+bool bGameLoaded = false;
 
 
 void reset_emu_frames(void)
@@ -191,6 +191,14 @@ void VideoBusDS::release()
     VideoBus::release();
 }
 
+UINT8 renderz[4][4] = 
+{
+    {1,1,1,1},
+    {1,0,1,0},
+    {0,1,0,1},
+    {1,0,0,0}
+};
+    
 ITCM_CODE void VideoBusDS::render()
 {
     extern UINT16 global_frames;
@@ -199,23 +207,20 @@ ITCM_CODE void VideoBusDS::render()
     global_frames++;
     VideoBus::render();
 
-    // Any level of frame skip will skip the render()
-    if (myConfig.frame_skip_opt)
+    if (renderz[myConfig.frame_skip_opt][global_frames&3])
     {
-        if ((global_frames & 1) == (myConfig.frame_skip_opt==1 ? 1:0)) return;        // Skip ODD or EVEN Frames as configured
-    }
-    UINT32 *ds_video=(UINT32*)0x06000000;
-    UINT32 *source_video = (UINT32*)pixelBuffer;
-    
-    for (int j=0; j<192; j++)
-    {
-        for (int x=0; x<160/4; x++)
+        UINT32 *ds_video=(UINT32*)0x06000000;
+        UINT32 *source_video = (UINT32*)pixelBuffer;
+
+        for (int j=0; j<192; j++)
         {
-            *ds_video++ = *source_video++;
-        }
-        //*ds_video++ = *source_video++ & 0x00FFFFFF;     // The Intellivision STIC does NOT render the final column of pixels at 160 (so the last column drawn is 159)
-        ds_video += 24;
-    }    
+            for (int x=0; x<160/4; x++)
+            {
+                *ds_video++ = *source_video++;
+            }
+            ds_video += 24;
+        }    
+    }
 }
 
 
@@ -264,7 +269,7 @@ BOOL LoadCart(const CHAR* filename)
     dsShowScreenEmu();
     dsShowScreenMain(false);
     
-    bFirstGameLoaded = TRUE;    
+    bGameLoaded = TRUE;    
     bInitEmulator = true;    
     
     bStartSoundFifo = true;
@@ -569,7 +574,7 @@ void ds_handle_meta(int meta_key)
     switch (meta_key)
     {
         case OVL_META_RESET:
-            if (bFirstGameLoaded)
+            if (bGameLoaded)
             {
                 currentEmu->Reset();
                 // And put the Sound Fifo back at the start...
@@ -1106,7 +1111,7 @@ ITCM_CODE void Run(char *initial_file)
             continue;
         }        
 
-        if (bFirstGameLoaded)
+        if (bGameLoaded)
         {
             //run the emulation
             currentEmu->Run();
@@ -1390,7 +1395,7 @@ void dsInitPalette(void)
         }
         bFirstTime = FALSE;
     }
-    if (!bFirstGameLoaded) return;
+    if (!bGameLoaded) return;
     
     // Init DS Specific palette for the Intellivision (16 colors...)
     for(int i = 0; i < 256; i++)   

@@ -262,7 +262,7 @@ const struct options_t Game_Option_Table[] =
     
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
-    {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                                   &myConfig.frame_skip_opt,   3},
+    {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                                      &myConfig.frame_skip_opt,   4},
     {"SOUND DIV",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (AVERAGE)", "24 (FAIR)", "DISABLED"},                                                               &myConfig.sound_clock_div,  6},
     {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "MAX SPEED"},                                &myConfig.target_fps,       7},
     {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myConfig.palette,          5},

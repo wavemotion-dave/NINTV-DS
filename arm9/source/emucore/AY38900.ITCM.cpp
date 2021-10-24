@@ -493,6 +493,8 @@ void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
     AY38900::pixelBufferRowSize = rowSize;
 }
 
+extern UINT8 renderz[4][4];
+
 ITCM_CODE void AY38900::renderFrame()
 {
     //render the next frame
@@ -506,15 +508,7 @@ ITCM_CODE void AY38900::renderFrame()
     // -------------------------------------------------------------------------------------
     // If we are skipping frames, we can skip rendering the pixels to the staging area...
     // -------------------------------------------------------------------------------------
-    if (myConfig.frame_skip_opt)
-    {
-        if (!((global_frames & 1)  == (myConfig.frame_skip_opt==1 ? 1:0)))        // Skip ODD or EVEN Frames as configured
-        {
-            renderBorders();
-            copyBackgroundBufferToStagingArea();
-        }
-    }
-    else
+    if (renderz[myConfig.frame_skip_opt][global_frames&3])
     {
         renderBorders();
         copyBackgroundBufferToStagingArea();
