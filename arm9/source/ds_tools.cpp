@@ -989,7 +989,7 @@ void dsShowScreenMain(bool bFull)
 // pipeline of sound values from the Audio Mixer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
-#define ARM7_XFER_BUFFER_SIZE (4096)
+#define ARM7_XFER_BUFFER_SIZE (2)
 UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
 UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
 UINT32* sptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
@@ -1003,14 +1003,11 @@ ITCM_CODE void VsoundHandlerDSi(void)
   // If there is a fresh sample...
   if (myCurrentSampleIdx8 != currentSampleIdx8)
   {
-      if ((UINT8)(myCurrentSampleIdx8+1) != currentSampleIdx8)
-      {
-          lastSample = *((UINT32*)&audio_mixer_buffer[myCurrentSampleIdx8++]);
-          myCurrentSampleIdx8++;
-      }
+      UINT16 sample[2];
+      sample[0] = audio_mixer_buffer[myCurrentSampleIdx8++]; 
+      sample[1] = sample[0];
+      *aptr = *((UINT32*)&sample);
   }
-  *aptr++ = lastSample;
-  if (aptr == eptr) aptr = sptr;
 }
 
 ITCM_CODE void VsoundHandler(void)
@@ -1018,14 +1015,12 @@ ITCM_CODE void VsoundHandler(void)
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
-      if ((UINT16)(myCurrentSampleIdx16+1) != currentSampleIdx16)
-      {
-          lastSample = *((UINT32*)&audio_mixer_buffer[myCurrentSampleIdx16++]);
-          if (++myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
-      }
+      UINT16 sample[2];
+      sample[0] = audio_mixer_buffer[myCurrentSampleIdx16++]; 
+      sample[1] = sample[0];
+      *aptr = *((UINT32*)&sample);
+      if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
   }
-  *aptr++ = lastSample;
-  if (aptr == eptr) aptr =  sptr;
 }
 
 UINT8 b_dsi_mode = true;
@@ -1062,7 +1057,7 @@ void dsInstallSoundEmuFIFO(void)
     
     FifoMessage msg;
     msg.SoundPlay.data = audio_arm7_xfer_buffer;
-    msg.SoundPlay.freq = mySoundFrequency;
+    msg.SoundPlay.freq = mySoundFrequency*2;
     msg.SoundPlay.volume = SOUND_VOLUME;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -1075,7 +1070,7 @@ void dsInstallSoundEmuFIFO(void)
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to start chugging...
 
     // Now setup to feed the audio mixer buffer into the ARM7 core via shared memory
-    TIMER2_DATA = TIMER_FREQ((mySoundFrequency/2)+2);
+    TIMER2_DATA = TIMER_FREQ((mySoundFrequency)+2);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, b_dsi_mode ? VsoundHandlerDSi:VsoundHandler);
     
