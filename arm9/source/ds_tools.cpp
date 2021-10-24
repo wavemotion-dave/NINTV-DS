@@ -1049,6 +1049,7 @@ void dsInstallSoundEmuFIFO(void)
     }
     
     aptr = sptr;
+    *aptr = 0x00000000;
     memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
     memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
     
