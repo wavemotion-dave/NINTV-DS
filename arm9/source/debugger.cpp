@@ -37,7 +37,6 @@ INT32 debug[6] = {0};
 UINT32 debug_frames=0;
 UINT32 debug_opcodes=0;
 
-extern int bg0, bg0b, bg1b;
 extern struct Overlay_t defaultOverlay[OVL_MAX];
 extern Emulator             *currentEmu;
 

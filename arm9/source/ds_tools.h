@@ -20,15 +20,30 @@ typedef enum {
   EMUARM7_PLAY_SND = 0x123E,
 } FifoMesType;
 
-typedef struct FICtoLoad {
-  char filename[255];
-  bool directory;
-} FICA_INTV;
+typedef enum _RunState 
+{
+    Stopped,
+    Paused,
+    Running,
+    Quit
+} RunState;
+
 
 extern UINT16 emu_frames;
 extern INT32 debug[];
 
 extern UINT8 b_dsi_mode;
+
+extern int bg0, bg0b, bg1b;
+
+extern bool bStartSoundFifo;
+extern bool bUseJLP;
+extern bool bForceIvoice;
+extern bool bInitEmulator;
+extern bool bUseDiscOverlay;
+extern bool bGameLoaded;
+
+extern UINT16 global_frames;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -43,7 +58,6 @@ extern bool dsWaitOnQuit(void);
 extern void dsChooseOptions(void);
 extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
-extern unsigned int dsWaitForRom(char *chosen_filename);
 extern void VsoundHandler(void);
 extern void VsoundHandlerDouble(void);
 extern void dsInitPalette(void);

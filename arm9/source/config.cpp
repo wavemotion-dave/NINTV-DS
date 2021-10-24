@@ -29,7 +29,6 @@ struct GlobalConfig_t   myGlobalConfig;
 struct AllConfig_t      allConfigs;
 
 extern AudioMixer *audioMixer;
-extern int bg0, bg0b, bg1b;
 extern bool bStartSoundFifo;
 extern Rip *currentRip;
 

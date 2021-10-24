@@ -74,7 +74,6 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
 
 struct Overlay_t myOverlay[OVL_MAX];
 struct Overlay_t myDisc[DISC_MAX];
-extern int bg0, bg0b, bg1b;
 
 
 unsigned int *customTiles = (unsigned int *) 0x06860000;          //128K of video memory

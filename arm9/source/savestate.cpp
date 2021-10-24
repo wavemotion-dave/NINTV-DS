@@ -243,7 +243,6 @@ void show_slot_info(UINT8 slot)
 void savestate_entry(void)
 {
     UINT8 current_entry = 0;
-    extern int bg0, bg0b, bg1b;
     char bDone = 0;
 
     just_read_save_file();

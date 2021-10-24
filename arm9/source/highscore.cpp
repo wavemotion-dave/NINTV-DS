@@ -55,9 +55,6 @@ struct highscore_full_t
 } highscores;
 
 
-extern int bg0, bg0b,bg1b;
-
-
 uint32 highscore_checksum(void)
 {
     char *ptr = (char *)&highscores;
