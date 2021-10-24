@@ -34,8 +34,6 @@
 #include "debugger.h"
 #include "AudioMixer.h"
 
-char line[256];
-
 #define SOUND_VOLUME  127 /* Max volume */
 
 BOOL InitializeEmulator(void);
@@ -1362,6 +1360,7 @@ UINT32 custom_Palette[32] =
 const INT8 brightness[] = {0, -3, -6, -9};
 void dsInitPalette(void) 
 {
+    extern char szName[];
     static UINT8 bFirstTime = TRUE;
     
     if (bFirstTime)
@@ -1374,12 +1373,12 @@ void dsInitPalette(void)
             UINT8 pal_idx=0;
             while (!feof(fp))
             {
-                fgets(line, 255, fp);
+                fgets(szName, 255, fp);
                 if (!feof(fp))
                 {
-                    if (strstr(line, "#") != NULL)
+                    if (strstr(szName, "#") != NULL)
                     {
-                        char *ptr = line;
+                        char *ptr = szName;
                         while (*ptr == ' ' || *ptr == '#') ptr++;
                         custom_Palette[pal_idx] = strtoul(ptr, &ptr, 16);
                         custom_Palette[pal_idx+16] = custom_Palette[pal_idx];
@@ -1436,12 +1435,13 @@ void dsInitPalette(void)
 void dsInitScreenMain(void)
 {
     // Init vbl and hbl func
-    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - 
-    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - 
-    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - 
-    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -
-    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -
-    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - 
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - Used for Memory Bus Read Counter
+    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Custom Tile Overlay Buffer
+    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart "Fast Buffer" 64k x 16 = 128k (so also spills into F,G,H below)
+    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
+    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
+    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
+    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Used for Custom Tile Map Buffer
     
     WAITVBL;
 }
@@ -1450,7 +1450,6 @@ void dsShowScreenEmu(void)
 {
   videoSetMode(MODE_5_2D);
   vramSetBankA(VRAM_A_MAIN_BG_0x06000000);  // The main emulated (top screen) display.
-  vramSetBankB(VRAM_B_MAIN_BG_0x06060000);  // This is where we will put our frame buffers to aid DMA Copy routines...
     
   bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_256x256, 0,0);
   memset((void*)0x06000000, 0x00, 128*1024);
@@ -1484,7 +1483,6 @@ FICA_INTV intvromlist[512];
 unsigned short int countintv=0, ucFicAct=0;
 char szName[256];
 char szName2[256];
-
 
 // Find files (.int) available
 int intvFilescmp (const void *c1, const void *c2) 

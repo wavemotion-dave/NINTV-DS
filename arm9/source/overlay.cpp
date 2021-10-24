@@ -35,7 +35,7 @@
 #include "Emulator.h"
 #include "Rip.h"
 
-extern char line[];
+extern char szName[];
 extern Rip *currentRip;
 extern bool bUseDiscOverlay;
 
@@ -135,13 +135,13 @@ void load_custom_overlay(void)
 
       do
       {
-        fgets(line, 255, fp);
+        fgets(szName, 255, fp);
         // Handle Overlay Line
-        if (strstr(line, ".ovl") != NULL)
+        if (strstr(szName, ".ovl") != NULL)
         {
             if (ov_idx < OVL_MAX)
             {
-                char *ptr = strstr(line, ".ovl");
+                char *ptr = strstr(szName, ".ovl");
                 ptr += 5;
                 myOverlay[ov_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myOverlay[ov_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -152,12 +152,12 @@ void load_custom_overlay(void)
         }
 
         // Handle Disc Line
-        if (strstr(line, ".disc") != NULL)
+        if (strstr(szName, ".disc") != NULL)
         {
             bUseDiscOverlay = true;
             if (disc_idx < DISC_MAX)
             {
-                char *ptr = strstr(line, ".disc");
+                char *ptr = strstr(szName, ".disc");
                 ptr += 6;
                 myDisc[disc_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myDisc[disc_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -168,9 +168,9 @@ void load_custom_overlay(void)
         }
           
         // Handle Tile Line
-        if (strstr(line, ".tile") != NULL)
+        if (strstr(szName, ".tile") != NULL)
         {
-            char *ptr = strstr(line, ".tile");
+            char *ptr = strstr(szName, ".tile");
             ptr += 6;
             customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -183,9 +183,9 @@ void load_custom_overlay(void)
         }
 
         // Handle Map Line
-        if (strstr(line, ".map") != NULL)
+        if (strstr(szName, ".map") != NULL)
         {
-            char *ptr = strstr(line, ".map");
+            char *ptr = strstr(szName, ".map");
             ptr += 4;
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -198,9 +198,9 @@ void load_custom_overlay(void)
         }              
 
         // Handle Palette Line
-        if (strstr(line, ".pal") != NULL)
+        if (strstr(szName, ".pal") != NULL)
         {
-            char *ptr = strstr(line, ".pal");
+            char *ptr = strstr(szName, ".pal");
             ptr += 4;
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;

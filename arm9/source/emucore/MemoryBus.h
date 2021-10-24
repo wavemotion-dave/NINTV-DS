@@ -73,7 +73,7 @@ class MemoryBus
         UINT16      mappedMemoryCount;
         UINT8*      writeableMemoryCounts;
         Memory***   writeableMemorySpace;
-        UINT8*      readableMemoryCounts;
+        UINT16*     readableMemoryCounts;
         Memory***   readableMemorySpace;
 };
 

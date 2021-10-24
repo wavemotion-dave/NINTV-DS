@@ -49,8 +49,8 @@ MemoryBus::MemoryBus()
             writeableMemorySpace[i][j] = &MyUnusedMemory;
         }
     }
-    readableMemoryCounts = new UINT8[size];
-    memset(readableMemoryCounts, 0, sizeof(UINT8) * size);
+    readableMemoryCounts = (UINT16 *) 0x06820000; // Use video memory ... slightly faster
+    memset(readableMemoryCounts, 0, sizeof(UINT16) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
@@ -71,7 +71,7 @@ MemoryBus::~MemoryBus()
     for (i = 0; i < size; i++)
         delete[] writeableMemorySpace[i];
     delete[] writeableMemorySpace;
-    delete[] readableMemoryCounts;
+    //delete[] readableMemoryCounts;
     for (i = 0; i < size; i++)
         delete[] readableMemorySpace[i];
     delete[] readableMemorySpace;
@@ -256,7 +256,7 @@ void MemoryBus::removeAll()
 
 ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
 {
-    UINT8 numMemories = readableMemoryCounts[location];
+    UINT16 numMemories = readableMemoryCounts[location];
 
     UINT16 value = 0xFFFF;
     for (UINT16 i = 0; i < numMemories; i++)

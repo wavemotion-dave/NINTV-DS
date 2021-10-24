@@ -21,6 +21,7 @@
 #include "BackTabRAM.h"
 #include "GRAM.h"
 #include "GROM.h"
+#include "../debugger.h"
 
 #define AY38900_PIN_IN_SST  0
 #define AY38900_PIN_OUT_SR1 0
@@ -85,7 +86,6 @@ public:
     //registers
     AY38900_Registers registers;
     BackTabRAM         backtab;
-    MOB                mobs[8];
 
 private:
 	void setGraphicsBusVisible(BOOL visible);
@@ -101,7 +101,7 @@ private:
     void renderColorStackModeLatched();
 	void copyBackgroundBufferToStagingArea();
 	void copyMOBsToStagingArea();
-	void renderLine(UINT8 nextByte, INT32 x, INT32 y, UINT8 fgcolor, UINT8 bgcolor);
+	void renderLine(UINT8 nextByte, INT32 x, INT32 y);
 	void renderColoredSquares(INT32 x, INT32 y, UINT8 color0, UINT8 color1, UINT8 color2, UINT8 color3);
 	void determineMOBCollisions();
 	BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);
@@ -117,6 +117,12 @@ private:
     GROM*           grom;
     GRAM*           gram;
 
+#ifdef DEBUG_ENABLE
+public:
+#endif
+    // Movable objects
+    MOB              mobs[8];
+    
     //state info
     UINT8            inVBlank;
     INT8             mode;

@@ -66,6 +66,9 @@ UINT16 global_frames        __attribute__((section(".dtcm"))) = 0;
 UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
 UINT8  bLatched             __attribute__((section(".dtcm"))) = false;
 
+UINT8 fgcolor              __attribute__((section(".dtcm"))) = 0;
+UINT8 bgcolor              __attribute__((section(".dtcm"))) = 0;
+
 UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_repeat_table[]  = {
         0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,  
         0x08080808,  0x09090909,  0x0A0A0A0A,  0x0B0B0B0B,  0x0C0C0C0C,  0x0D0D0D0D,  0x0E0E0E0E,  0x0F0F0F0F,  
@@ -687,15 +690,15 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
         //and one of the eight bytes in gram that make up this card have changed
         if (colorModeChanged || backtab.isDirtyDirect(i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
         {
-            UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
-            UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+            fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+            bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
             Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
             for (UINT16 j = 0; j < 8; j++)
-                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
         }
     }
 }
@@ -714,15 +717,15 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
         //and one of the eight bytes in gram that make up this card have changed
         if (colorModeChanged || backtab.isDirtyLatched(i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
         {
-            UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
-            UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+            fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+            bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
             Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
             for (UINT16 j = 0; j < 8; j++)
-                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
         }
     }
 }
@@ -773,19 +776,19 @@ ITCM_CODE void AY38900::renderColorStackMode()
 
             if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
-                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
-                UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
+                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
+                bgcolor = (UINT8)memory[0x28 + csPtr];
                 if (isGrom)
                 {
                     Memory* memory = (Memory*)grom;
                     UINT16 address = memory->getReadAddress()+memoryLocation;
                     for (UINT16 j = 0; j < 8; j++)
-                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
                 }
                 else
                 {
                     for (UINT16 j = 0; j < 8; j++)
-                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j, fgcolor, bgcolor);
+                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j);
                 }
             }
         }
@@ -844,21 +847,20 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
 
             if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
-                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) |
-                    (nextCard & 0x0007) | FOREGROUND_BIT);
-                UINT8 bgcolor = (UINT8)memory[0x28 + csPtr];
+                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
+                bgcolor = (UINT8)memory[0x28 + csPtr];
                 
                 if (isGrom)
                 {
                     Memory* memory = (Memory*)grom;
                     UINT16 address = memory->getReadAddress()+memoryLocation;
                     for (UINT16 j = 0; j < 8; j++)
-                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
                 }
                 else
                 {
                     for (UINT16 j = 0; j < 8; j++)
-                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j, fgcolor, bgcolor);
+                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j);
                 }
             }
         }
@@ -1011,7 +1013,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     }
 }
 
-ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y, UINT8 fgcolor, UINT8 bgcolor)
+ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y)
 {
     if (nextbyte == 0x00)
     {

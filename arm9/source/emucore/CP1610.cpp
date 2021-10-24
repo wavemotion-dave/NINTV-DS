@@ -36,8 +36,6 @@ UINT8 interruptible __attribute__((section(".dtcm")));
 //the four external lines
 INT8 ext __attribute__((section(".dtcm")));
 
-#pragma warning(disable:4786)    // Suppress STL debug info > 255 chars messages
-
 CP1610::CP1610(MemoryBus* m, UINT16 resetAddress,
         UINT16 interruptAddress)
     : Processor("CP1610"),
@@ -107,7 +105,8 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
         debug_opcodes++;
         debugger();
 #endif
-     usedCycles += decode();
+        // Handle the instruction 
+        usedCycles += decode();
     } while ((usedCycles) < min_shifted);
 
     return (usedCycles<<2);
@@ -140,11 +139,11 @@ ITCM_CODE UINT16 CP1610::getIndirect(UINT16 registerNum)
     return value;
 }
 
-INT32 CP1610::HLT() {
+UINT16 CP1610::HLT() {
     return 4;
 }
 
-INT32 CP1610::SDBD() {
+UINT16 CP1610::SDBD() {
     r[7]++;
     interruptible = FALSE;
 
@@ -153,7 +152,7 @@ INT32 CP1610::SDBD() {
     return 4;
 }
 
-INT32 CP1610::EIS() {
+UINT16 CP1610::EIS() {
     r[7]++;
     interruptible = FALSE;
 
@@ -163,7 +162,7 @@ INT32 CP1610::EIS() {
     return 4;
 }
 
-INT32 CP1610::DIS() {
+UINT16 CP1610::DIS() {
     r[7]++;
     interruptible = FALSE;
 
@@ -173,7 +172,7 @@ INT32 CP1610::DIS() {
     return 4;
 }
 
-INT32 CP1610::TCI() {
+UINT16 CP1610::TCI() {
     r[7]++;
     interruptible = FALSE;
 
@@ -183,7 +182,7 @@ INT32 CP1610::TCI() {
     return 4;
 }
 
-INT32 CP1610::CLRC() {
+UINT16 CP1610::CLRC() {
     r[7]++;
     interruptible = FALSE;
 
@@ -193,7 +192,7 @@ INT32 CP1610::CLRC() {
     return 4;
 }
 
-INT32 CP1610::SETC() {
+UINT16 CP1610::SETC() {
     r[7]++;
     interruptible = FALSE;
 
@@ -203,7 +202,7 @@ INT32 CP1610::SETC() {
     return 4;
 }
 
-INT32 CP1610::J(UINT16 target) {
+UINT16 CP1610::J(UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
@@ -211,7 +210,7 @@ INT32 CP1610::J(UINT16 target) {
     return 12;
 }
 
-INT32 CP1610::JSR(UINT16 registerNum, UINT16 target) {
+UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
     r[registerNum] = r[7]+3;
     r[7] = target;
     interruptible = TRUE;
@@ -220,7 +219,7 @@ INT32 CP1610::JSR(UINT16 registerNum, UINT16 target) {
     return 12;
 }
 
-INT32 CP1610::JE(UINT16 target) {
+UINT16 CP1610::JE(UINT16 target) {
     I = TRUE;
     r[7] = target;
     interruptible = TRUE;
@@ -229,7 +228,7 @@ INT32 CP1610::JE(UINT16 target) {
     return 12;
 }
 
-INT32 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
+UINT16 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
     I = TRUE;
     r[registerNum] = r[7]+3;
     r[7] = target;
@@ -239,7 +238,7 @@ INT32 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
     return 12;
 }
 
-INT32 CP1610::JD(UINT16 target) {
+UINT16 CP1610::JD(UINT16 target) {
     I = FALSE;
     r[7] = target;
     interruptible = TRUE;
@@ -248,7 +247,7 @@ INT32 CP1610::JD(UINT16 target) {
     return 12;
 }
 
-INT32 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
+UINT16 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
     I = FALSE;
     r[registerNum] = r[7]+3;
     r[7] = target;
@@ -258,7 +257,7 @@ INT32 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
     return 12;
 }
 
-INT32 CP1610::INCR(UINT16 registerNum) {
+UINT16 CP1610::INCR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -271,7 +270,7 @@ INT32 CP1610::INCR(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::DECR(UINT16 registerNum) {
+UINT16 CP1610::DECR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -284,7 +283,7 @@ INT32 CP1610::DECR(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::NEGR(UINT16 registerNum) {
+UINT16 CP1610::NEGR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -300,7 +299,7 @@ INT32 CP1610::NEGR(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::ADCR(UINT16 registerNum) {
+UINT16 CP1610::ADCR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -317,7 +316,7 @@ INT32 CP1610::ADCR(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::RSWD(UINT16 registerNum) {
+UINT16 CP1610::RSWD(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -331,7 +330,7 @@ INT32 CP1610::RSWD(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::GSWD(UINT16 registerNum) {
+UINT16 CP1610::GSWD(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -344,7 +343,7 @@ INT32 CP1610::GSWD(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::NOP(UINT16) {
+UINT16 CP1610::NOP(UINT16) {
     r[7]++;
     interruptible = TRUE;
 
@@ -352,7 +351,7 @@ INT32 CP1610::NOP(UINT16) {
     return 6;
 }
 
-INT32 CP1610::SIN(UINT16) {
+UINT16 CP1610::SIN(UINT16) {
     r[7]++;
     interruptible = TRUE;
 
@@ -362,7 +361,7 @@ INT32 CP1610::SIN(UINT16) {
     return 6;
 }
 
-INT32 CP1610::SWAP_1(UINT16 registerNum) {
+UINT16 CP1610::SWAP_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -376,7 +375,7 @@ INT32 CP1610::SWAP_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SWAP_2(UINT16 registerNum) {
+UINT16 CP1610::SWAP_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -390,7 +389,7 @@ INT32 CP1610::SWAP_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::COMR(UINT16 registerNum) {
+UINT16 CP1610::COMR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -403,7 +402,7 @@ INT32 CP1610::COMR(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SLL_1(UINT16 registerNum) {
+UINT16 CP1610::SLL_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -416,7 +415,7 @@ INT32 CP1610::SLL_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SLL_2(UINT16 registerNum) {
+UINT16 CP1610::SLL_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -429,7 +428,7 @@ INT32 CP1610::SLL_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::RLC_1(UINT16 registerNum) {
+UINT16 CP1610::RLC_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -445,7 +444,7 @@ INT32 CP1610::RLC_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::RLC_2(UINT16 registerNum) {
+UINT16 CP1610::RLC_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -463,7 +462,7 @@ INT32 CP1610::RLC_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::SLLC_1(UINT16 registerNum) {
+UINT16 CP1610::SLLC_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -478,7 +477,7 @@ INT32 CP1610::SLLC_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SLLC_2(UINT16 registerNum) {
+UINT16 CP1610::SLLC_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -494,7 +493,7 @@ INT32 CP1610::SLLC_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::SLR_1(UINT16 registerNum) {
+UINT16 CP1610::SLR_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -507,7 +506,7 @@ INT32 CP1610::SLR_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SLR_2(UINT16 registerNum) {
+UINT16 CP1610::SLR_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -520,7 +519,7 @@ INT32 CP1610::SLR_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::SAR_1(UINT16 registerNum) {
+UINT16 CP1610::SAR_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -534,7 +533,7 @@ INT32 CP1610::SAR_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SAR_2(UINT16 registerNum) {
+UINT16 CP1610::SAR_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -549,7 +548,7 @@ INT32 CP1610::SAR_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::RRC_1(UINT16 registerNum) {
+UINT16 CP1610::RRC_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -565,7 +564,7 @@ INT32 CP1610::RRC_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::RRC_2(UINT16 registerNum) {
+UINT16 CP1610::RRC_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -583,7 +582,7 @@ INT32 CP1610::RRC_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::SARC_1(UINT16 registerNum) {
+UINT16 CP1610::SARC_1(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -598,7 +597,7 @@ INT32 CP1610::SARC_1(UINT16 registerNum) {
     return 6;
 }
 
-INT32 CP1610::SARC_2(UINT16 registerNum) {
+UINT16 CP1610::SARC_2(UINT16 registerNum) {
     r[7]++;
     interruptible = FALSE;
 
@@ -615,7 +614,7 @@ INT32 CP1610::SARC_2(UINT16 registerNum) {
     return 8;
 }
 
-INT32 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
+UINT16 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -628,7 +627,7 @@ INT32 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
     return (destReg >= 6 ? 7 : 6);
 }
 
-INT32 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
+UINT16 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -645,7 +644,7 @@ INT32 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-INT32 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
+UINT16 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -662,7 +661,7 @@ INT32 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-INT32 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
+UINT16 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -678,7 +677,7 @@ INT32 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-INT32 CP1610::ANDR(UINT16 sourceReg, UINT16 destReg) {
+UINT16 CP1610::ANDR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -691,7 +690,7 @@ INT32 CP1610::ANDR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-INT32 CP1610::XORR(UINT16 sourceReg, UINT16 destReg) {
+UINT16 CP1610::XORR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -704,7 +703,7 @@ INT32 CP1610::XORR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-INT32 CP1610::BEXT(UINT16 condition, INT16 displacement) {
+UINT16 CP1610::BEXT(UINT16 condition, INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -718,7 +717,7 @@ INT32 CP1610::BEXT(UINT16 condition, INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::B(INT16 displacement) {
+UINT16 CP1610::B(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -728,7 +727,7 @@ INT32 CP1610::B(INT16 displacement) {
     return 9;
 }
 
-INT32 CP1610::NOPP(INT16) {
+UINT16 CP1610::NOPP(INT16) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -736,7 +735,7 @@ INT32 CP1610::NOPP(INT16) {
     return 7;
 }
 
-INT32 CP1610::BC(INT16 displacement) {
+UINT16 CP1610::BC(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -750,7 +749,7 @@ INT32 CP1610::BC(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BNC(INT16 displacement) {
+UINT16 CP1610::BNC(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -764,7 +763,7 @@ INT32 CP1610::BNC(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BOV(INT16 displacement) {
+UINT16 CP1610::BOV(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -778,7 +777,7 @@ INT32 CP1610::BOV(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BNOV(INT16 displacement) {
+UINT16 CP1610::BNOV(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -792,7 +791,7 @@ INT32 CP1610::BNOV(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BPL(INT16 displacement) {
+UINT16 CP1610::BPL(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -806,7 +805,7 @@ INT32 CP1610::BPL(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BMI(INT16 displacement) {
+UINT16 CP1610::BMI(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -820,7 +819,7 @@ INT32 CP1610::BMI(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BEQ(INT16 displacement) {
+UINT16 CP1610::BEQ(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -834,7 +833,7 @@ INT32 CP1610::BEQ(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BNEQ(INT16 displacement) {
+UINT16 CP1610::BNEQ(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -848,7 +847,7 @@ INT32 CP1610::BNEQ(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BLT(INT16 displacement) {
+UINT16 CP1610::BLT(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -862,7 +861,7 @@ INT32 CP1610::BLT(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BGE(INT16 displacement) {
+UINT16 CP1610::BGE(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -876,7 +875,7 @@ INT32 CP1610::BGE(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BLE(INT16 displacement) {
+UINT16 CP1610::BLE(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -890,7 +889,7 @@ INT32 CP1610::BLE(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BGT(INT16 displacement) {
+UINT16 CP1610::BGT(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -904,7 +903,7 @@ INT32 CP1610::BGT(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BUSC(INT16 displacement) {
+UINT16 CP1610::BUSC(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -918,7 +917,7 @@ INT32 CP1610::BUSC(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::BESC(INT16 displacement) {
+UINT16 CP1610::BESC(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -932,7 +931,7 @@ INT32 CP1610::BESC(INT16 displacement) {
     return 7;
 }
 
-INT32 CP1610::MVO(UINT16 registerNum, UINT16 address) {
+UINT16 CP1610::MVO(UINT16 registerNum, UINT16 address) {
     r[7] += 2;
     interruptible = FALSE;
 
@@ -942,7 +941,7 @@ INT32 CP1610::MVO(UINT16 registerNum, UINT16 address) {
     return 11;
 }
 
-INT32 CP1610::MVO_ind(UINT16 registerWithAddress, UINT16 registerToMove) {
+UINT16 CP1610::MVO_ind(UINT16 registerWithAddress, UINT16 registerToMove) {
     r[7]++;
     interruptible = FALSE;
 
@@ -956,7 +955,7 @@ INT32 CP1610::MVO_ind(UINT16 registerWithAddress, UINT16 registerToMove) {
     return 9;
 }
 
-INT32 CP1610::MVI(UINT16 address, UINT16 registerNum) {
+UINT16 CP1610::MVI(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -966,7 +965,7 @@ INT32 CP1610::MVI(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-INT32 CP1610::MVI_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::MVI_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -976,7 +975,7 @@ INT32 CP1610::MVI_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-INT32 CP1610::ADD(UINT16 address, UINT16 registerNum) {
+UINT16 CP1610::ADD(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -993,7 +992,7 @@ INT32 CP1610::ADD(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-INT32 CP1610::ADD_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::ADD_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -1010,7 +1009,7 @@ INT32 CP1610::ADD_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-INT32 CP1610::SUB(UINT16 address, UINT16 registerNum) {
+UINT16 CP1610::SUB(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1027,7 +1026,7 @@ INT32 CP1610::SUB(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-INT32 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -1044,7 +1043,7 @@ INT32 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-INT32 CP1610::CMP(UINT16 address, UINT16 registerNum) {
+UINT16 CP1610::CMP(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1060,7 +1059,7 @@ INT32 CP1610::CMP(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-INT32 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -1076,7 +1075,7 @@ INT32 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-INT32 CP1610::AND(UINT16 address, UINT16 registerNum) {
+UINT16 CP1610::AND(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1089,7 +1088,7 @@ INT32 CP1610::AND(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-INT32 CP1610::AND_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::AND_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -1102,7 +1101,7 @@ INT32 CP1610::AND_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-INT32 CP1610::XOR(UINT16 address, UINT16 registerNum) {
+UINT16 CP1610::XOR(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1115,7 +1114,7 @@ INT32 CP1610::XOR(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-INT32 CP1610::XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -1128,7 +1127,7 @@ INT32 CP1610::XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-INT32 CP1610::decode(void)
+UINT16 CP1610::decode(void)
 {
     switch (op) {
         case 0x0000:
@@ -2781,116 +2780,116 @@ INT32 CP1610::decode(void)
                 PEEK_FAST((UINT16)(r[7] + 1)));
 
         case 0x0220:
-            return B(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return B(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0221:
-            return BC(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BC(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0222:
-            return BOV(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BOV(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0223:
-            return BPL(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BPL(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0224:
-            return BEQ(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BEQ(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0225:
-            return BLT(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BLT(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0226:
-            return BLE(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BLE(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0227:
-            return BUSC(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BUSC(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0228:
-            return NOPP(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return NOPP(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0229:
-            return BNC(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BNC(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x022A:
-            return BNOV(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BNOV(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x022B:
-            return BMI(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BMI(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x022C:
-            return BNEQ(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BNEQ(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x022D:
-            return BGE(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BGE(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x022E:
-            return BGT(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BGT(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x022F:
-            return BESC(-memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+            return BESC(-PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0230:
             return BEXT(0,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0231:
             return BEXT(1,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0232:
             return BEXT(2,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0233:
             return BEXT(3,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0234:
             return BEXT(4,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0235:
             return BEXT(5,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0236:
             return BEXT(6,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0237:
             return BEXT(7,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0238:
             return BEXT(8,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0239:
             return BEXT(9,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x023A:
             return BEXT(10,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x023B:
             return BEXT(11,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x023C:
             return BEXT(12,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x023D:
             return BEXT(13,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x023E:
             return BEXT(14,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x023F:
             return BEXT(15,
-                -memoryBus->peek((UINT16)(r[7] + 1)) - 1);
+                -PEEK_FAST((UINT16)(r[7] + 1)) - 1);
 
         case 0x0240:
             return MVO(0, PEEK_FAST((UINT16)(r[7] + 1)));
