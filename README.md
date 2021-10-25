@@ -48,7 +48,13 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V2.9 : 24-Oct-2021 by wavemotion-dave
+V3.0 : 25-Oct-2021 by wavemotion-dave
+  * Sound fixed - no more zingers!
+  * New global menu option for green vs white font.
+  * New Agressive frameskip to help with older DS-LITE/PHAT play.
+  * Many small cleanups and improvements under the hood.
+
+V2.9 : 23-Oct-2021 by wavemotion-dave
   * Minor sound improvement across the board.
   * Significant speed improvement - games run 6-12% faster. DS-LITE will run more games.
   
