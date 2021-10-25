@@ -19,13 +19,14 @@ Features :
  * All known games run at full speed on a DSi or above.
  * Many games run very close to full speed on the older DS-LITE and
  DS-PHAT hardware but you can play with config settings to get the 
- most out of these games (even if you have to disable sound to gain the speed).
+ most out of these games.
  * Custom Overlay Support. See the 'extras' folder for details.
- * Manual instruction Support. See the 'extras' folder for an example.
+ * Manual/Instruction Support. See the 'extras' folder for an example.
  * Save Sate support (3 save slots per game).
- * Tons of button / controller mapping options. 
+ * High Scores for up to 10 scores pre game with various sorting options.
+ * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions, extra RAM and flash memory. When loading a game,
- use the X button to load and force JLP support ON.
+ use the X button to load and force JLP support ON if not auto-detected.
 
 Missing / Known Issues :
 -----------------------
