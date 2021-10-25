@@ -500,20 +500,23 @@ void ds_handle_meta(int meta_key)
   
         case OVL_META_CONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            dsChooseOptions(0);
+            if (currentRip != NULL) 
+            {
+                dsChooseOptions(0);
+                reset_emu_frames();
+                dsInitPalette();
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
             bStartSoundFifo = true;
-            reset_emu_frames();
-            dsInitPalette();
-            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             break;
 
         case OVL_META_GCONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions(1);
-            bStartSoundFifo = true;
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            bStartSoundFifo = true;
             break;
             
         case OVL_META_SCORES:
@@ -540,17 +543,17 @@ void ds_handle_meta(int meta_key)
 
         case OVL_META_MENU:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            if (currentRip != NULL) 
-            {
-                ds_handle_meta(menu_entry());
-                dsShowScreenMain(false);
-                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-            }
+            ds_handle_meta(menu_entry());
+            dsShowScreenMain(false);
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
             break;
 
         case OVL_META_SWITCH:
-            myConfig.controller_type = 1-myConfig.controller_type;
+            if (currentRip != NULL) 
+            {
+                myConfig.controller_type = 1-myConfig.controller_type;
+            }
             break;
             
         case OVL_META_MANUAL:
