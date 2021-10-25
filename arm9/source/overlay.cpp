@@ -70,6 +70,8 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     { 23,    82,    161,   181},    // META_MENU
     {255,   255,    255,   255},    // META_SWAP
     {255,   255,    255,   255},    // META_MANUAL
+    {255,   255,    255,   255},    // META_STRETCH
+    {255,   255,    255,   255},    // META_GCONFIG        
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
