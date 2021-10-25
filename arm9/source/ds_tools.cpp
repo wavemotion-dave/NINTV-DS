@@ -357,7 +357,7 @@ void HandleScreenStretch(void)
     }
 }
 
-#define MAIN_MENU_ITEMS 9
+#define MAIN_MENU_ITEMS 10
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
     "RESET EMULATOR",  
@@ -367,6 +367,7 @@ const char *main_menu[MAIN_MENU_ITEMS] =
     "SAVE/RESTORE STATE",  
     "GAME MANUAL",  
     "SCREEN STRETCH",
+    "GLOBAL CONFIG",  
     "QUIT EMULATOR",  
     "EXIT THIS MENU",  
 };
@@ -434,9 +435,12 @@ int menu_entry(void)
                         return OVL_META_STRETCH;
                         break;
                     case 7:
-                        return OVL_META_QUIT;
+                        return OVL_META_GCONFIG;
                         break;
                     case 8:
+                        return OVL_META_QUIT;
+                        break;
+                    case 9:
                         bDone=1;
                         break;
                 }
@@ -496,13 +500,22 @@ void ds_handle_meta(int meta_key)
   
         case OVL_META_CONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            dsChooseOptions();
+            dsChooseOptions(0);
             bStartSoundFifo = true;
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             break;
 
+        case OVL_META_GCONFIG:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            dsChooseOptions(1);
+            bStartSoundFifo = true;
+            reset_emu_frames();
+            dsInitPalette();
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            break;
+            
         case OVL_META_SCORES:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (currentRip != NULL) 

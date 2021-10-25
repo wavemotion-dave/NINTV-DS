@@ -350,7 +350,7 @@ int display_options_list(bool bFullDisplay)
 // Allows the user to move the cursor up and down through the various table 
 // enties  above to select options for the game they wish to play. 
 // -----------------------------------------------------------------------------
-void dsChooseOptions(void)
+void dsChooseOptions(int global)
 {
     int optionHighlighted;
     int idx;
@@ -359,7 +359,7 @@ void dsChooseOptions(void)
     int last_keys_pressed = 999;
     char strBuf[35];
 
-    options_shown = 0; // Always start with GAME options
+    options_shown = global; // Always start with GAME options unless told otherwise
     
     // Show the Options background...
     dsShowMenu();

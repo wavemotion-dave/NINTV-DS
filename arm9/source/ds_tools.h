@@ -55,7 +55,7 @@ extern void dsInitTimer(void);
 extern void dsFreeEmu(void);
 extern void dsShowScreenEmu(void);
 extern bool dsWaitOnQuit(void);
-extern void dsChooseOptions(void);
+extern void dsChooseOptions(int global);
 extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
 extern void VsoundHandler(void);
