@@ -20,8 +20,8 @@
 #include "config.h"
 #include "bgBottom.h"
 #include "bgTop.h"
-#include "bgFileSel.h"
-#include "bgHighScore.h"
+#include "bgMenu-Green.h"
+#include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
 #include "loadgame.h"
@@ -260,11 +260,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
   strcpy(chosen_filename, "tmpz");
   intvFindFiles();   // Initial get of files...
     
-  decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-  decompress(bgFileSelMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-  dmaCopy((void *) bgFileSelPal,(u16*) BG_PALETTE_SUB,256*2);
-  unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-  dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+  dsShowMenu();
 
   nbRomPerPage = (countintv>=17 ? 17 : countintv);
   uNbRSPage = (countintv>=5 ? 5 : countintv);

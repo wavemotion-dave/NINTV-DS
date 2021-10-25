@@ -61,5 +61,6 @@ extern void ApplyOptions(void);
 extern void VsoundHandler(void);
 extern void VsoundHandlerDouble(void);
 extern void dsInitPalette(void);
+extern void dsShowMenu(void);
 
 #endif

@@ -15,7 +15,8 @@
 #include <unistd.h>
 #include "ds_tools.h"
 #include "highscore.h"
-#include "bgHighScore.h"
+#include "bgMenu-Green.h"
+#include "bgMenu-White.h"
 #include "bgBottom.h"
 
 #define MAX_HS_GAMES    300
@@ -530,11 +531,7 @@ void highscore_display(UINT32 crc)
     short firstBlank = -1;
     char bDone = 0;
 
-    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    dsShowMenu();
     swiWaitForVBlank();
 
     // ---------------------------------------------------------------------------------

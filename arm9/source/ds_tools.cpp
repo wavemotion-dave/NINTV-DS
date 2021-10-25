@@ -24,9 +24,8 @@
 #include "manual.h"
 #include "bgBottom.h"
 #include "bgTop.h"
-#include "bgFileSel.h"
-#include "bgHighScore.h"
-#include "bgOptions.h"
+#include "bgMenu-Green.h"
+#include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
 #include "highscore.h"
@@ -292,11 +291,8 @@ BOOL InitializeEmulator(void)
 void HandleScreenStretch(void)
 {
     char tmpStr[33];
-    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    
+    dsShowMenu();
     swiWaitForVBlank();
     
     dsPrintValue(2, 5, 0,  (char*)"PRESS UP/DN TO STRETCH SCREEN");
@@ -382,11 +378,7 @@ int menu_entry(void)
     extern int bg0, bg0b, bg1b;
     char bDone = 0;
 
-    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    dsShowMenu();
     swiWaitForVBlank();
     dsPrintValue(8,3,0, (char*)"MAIN MENU");
     dsPrintValue(4,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");
@@ -1240,6 +1232,27 @@ void dsInitScreenMain(void)
     WAITVBL;
 }
 
+
+void dsShowMenu(void)
+{
+    if (myGlobalConfig.menu_color == 0)
+    {
+        decompress(bgMenu_WhiteTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+        decompress(bgMenu_WhiteMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+        dmaCopy((void *) bgMenu_WhitePal,(u16*) BG_PALETTE_SUB,256*2);
+        unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+        dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }
+    else
+    {
+        decompress(bgMenu_GreenTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+        decompress(bgMenu_GreenMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+        dmaCopy((void *) bgMenu_GreenPal,(u16*) BG_PALETTE_SUB,256*2);
+        unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+        dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    }        
+}
+
 void dsShowScreenEmu(void)
 {
   videoSetMode(MODE_5_2D);
@@ -1277,12 +1290,8 @@ bool dsWaitOnQuit(void)
   unsigned int posdeb=0;
   char szName[32];
 
-  decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-  decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-  dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
-  unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-  dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-
+  dsShowMenu();
+    
   strcpy(szName,"Quit NINTV-DS?");
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   sprintf(szName,"%s","A TO CONFIRM, B TO GO BACK");

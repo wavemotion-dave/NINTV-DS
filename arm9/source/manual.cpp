@@ -20,7 +20,8 @@
 #include "manual.h"
 #include "CRC32.h"
 #include "bgBottom.h"
-#include "bgHighScore.h"
+#include "bgMenu-Green.h"
+#include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
 
@@ -104,13 +105,8 @@ void dsShowManual(void)
     int keys_pressed;
     static int last_keys = -1;
     
-    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
-    swiWaitForVBlank();
-    
+    dsShowMenu();
+    swiWaitForVBlank();    
     
     if (last_crc != currentRip->GetCRC())
     {

@@ -77,7 +77,7 @@ struct GlobalConfig_t
     UINT8  spare3;
     UINT8  spare4;
     UINT8  spare5;
-    UINT8  spare6;
+    UINT8  menu_color;
     UINT8  reserved[512];               // Not used yet... future use...
 };
 

@@ -15,7 +15,8 @@
 #include <unistd.h>
 #include "ds_tools.h"
 #include "savestate.h"
-#include "bgHighScore.h"
+#include "bgMenu-Green.h"
+#include "bgMenu-White.h"
 #include "config.h"
 
 extern Emulator *currentEmu;
@@ -246,12 +247,8 @@ void savestate_entry(void)
     char bDone = 0;
 
     just_read_save_file();
-    
-    decompress(bgHighScoreTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgHighScoreMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgHighScorePal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+
+    dsShowMenu();
     swiWaitForVBlank();
     dsPrintValue(8,3,0, (char*)"SAVE/RESTORE STATE");
     dsPrintValue(4,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");

@@ -20,7 +20,8 @@
 #include "CRC32.h"
 #include "bgBottom.h"
 #include "config.h"
-#include "bgOptions.h"
+#include "bgMenu-Green.h"
+#include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
 
@@ -59,7 +60,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.spare3                   = 0;
     myGlobalConfig.spare4                   = 0;
     myGlobalConfig.spare5                   = 1;
-    myGlobalConfig.spare6                   = 1;
+    myGlobalConfig.menu_color               = 1;
     memset(myGlobalConfig.reserved, 0x00, 256);
 }
 
@@ -284,6 +285,7 @@ const struct options_t Global_Option_Table[] =
     {"SOUND DEF",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                                                  &myGlobalConfig.def_sound_quality,  6},
     {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myGlobalConfig.def_palette,        5},
     {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myGlobalConfig.brightness,         4},
+    {"MENU COLOR",  {"WHITE", "GREEN"},                                                                                                                                 &myGlobalConfig.menu_color,         2},
     
     {NULL,          {"",            ""},                                NULL,                   1},
 };
@@ -360,11 +362,7 @@ void dsChooseOptions(void)
     options_shown = 0; // Always start with GAME options
     
     // Show the Options background...
-    decompress(bgOptionsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-    decompress(bgOptionsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-    dmaCopy((void *) bgOptionsPal,(u16*) BG_PALETTE_SUB,256*2);
-    unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
-    dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
+    dsShowMenu();
 
     idx=display_options_list(true);
     optionHighlighted = 0;
