@@ -24,6 +24,7 @@
 #include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
+#include "CRC32.h"
 #include "loadgame.h"
 #include "debugger.h"
 
@@ -33,6 +34,8 @@ char szName[256];
 char szName2[256];
 
 extern Rip *currentRip;
+
+bool bFavsOnlyMode = false;
 
 BOOL LoadCart(const CHAR* filename)
 {
@@ -86,6 +89,123 @@ BOOL LoadCart(const CHAR* filename)
     
     return TRUE;
 }
+void CheckFirstTimeLoad(void)
+{
+  static bool bFirstTime = true;
+    
+  // First time in we use the config setting to determine where we open files...
+  if (bFirstTime)
+  {
+      bFirstTime = false;
+      if (myGlobalConfig.rom_dir == 1)
+      {
+         chdir("/ROMS");
+      }
+      else if (myGlobalConfig.rom_dir == 2)
+      {
+         chdir("/ROMS/INTV");
+      }
+  }
+}
+
+void FindAndLoadExec(char *szFoundName)
+{
+  // Look through all files in the current directory to see if we get a CRC32 match...
+  DIR *pdir;
+  struct dirent *pent;
+
+  CheckFirstTimeLoad();
+    
+  pdir = opendir(".");
+
+  if (pdir) 
+  {
+    while (((pent=readdir(pdir))!=NULL)) 
+    {
+      if (pent->d_type != DT_DIR)
+      {
+        struct stat st;
+        stat(pent->d_name, &st);
+        if (st.st_size == 8192)
+        {
+            if (CRC32::getCrc(pent->d_name) == 0xcbce86f7)
+            {
+                // Found it!!
+                strcpy(szFoundName, pent->d_name);
+                break;
+            }
+        }
+      }
+    }
+    closedir(pdir);
+  }    
+}
+
+void FindAndLoadGrom(char *szFoundName)
+{
+  // Look through all files in the current directory to see if we get a CRC32 match...
+  DIR *pdir;
+  struct dirent *pent;
+
+  CheckFirstTimeLoad();
+    
+  pdir = opendir(".");
+
+  if (pdir) 
+  {
+    while (((pent=readdir(pdir))!=NULL)) 
+    {
+      if (pent->d_type != DT_DIR)
+      {
+        struct stat st;
+        stat(pent->d_name, &st);
+        if (st.st_size == 2048)
+        {
+            if (CRC32::getCrc(pent->d_name) == 0x683a4158)
+            {
+                // Found it!!
+                strcpy(szFoundName, pent->d_name);
+                break;
+            }
+        }
+      }
+    }
+    closedir(pdir);
+  }    
+}
+
+void FindAndLoadIVoice(char *szFoundName)
+{
+  // Look through all files in the current directory to see if we get a CRC32 match...
+  DIR *pdir;
+  struct dirent *pent;
+
+  CheckFirstTimeLoad();
+    
+  pdir = opendir(".");
+
+  if (pdir) 
+  {
+    while (((pent=readdir(pdir))!=NULL)) 
+    {
+      if (pent->d_type != DT_DIR)
+      {
+        struct stat st;
+        stat(pent->d_name, &st);
+        if (st.st_size == 2048)
+        {
+            if (CRC32::getCrc(pent->d_name) == 0x0de7579d)
+            {
+                // Found it!!
+                strcpy(szFoundName, pent->d_name);
+                break;
+            }
+        }
+      }
+    }
+    closedir(pdir);
+  }    
+}
 
 BOOL LoadPeripheralRoms(Peripheral* peripheral)
 {
@@ -117,13 +237,26 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
         strcat(nextFile, r->getDefaultFileName());
         if (!r->load(nextFile, r->getDefaultFileOffset())) 
         {
-            return FALSE;
+            if (strstr(nextFile, "grom") != NULL) FindAndLoadGrom(nextFile);
+            if (strstr(nextFile, "exec") != NULL) FindAndLoadExec(nextFile);
+            if (strstr(nextFile, "ivoice") != NULL) FindAndLoadIVoice(nextFile);
+            
+            if (!r->load(nextFile, r->getDefaultFileOffset()))
+            {
+                return FALSE;
+            }
         }
     }
 
     return TRUE;
 }
 
+
+void dsDisplayLoadInstructions(void)
+{
+  dsPrintValue(1,22,0,(char*)"SEL=MARK, STA=SAVEFAV, L/R=FAVS");
+  dsPrintValue(1,23,0,(char*)"A=LOAD, X=JLP, Y=IVOICE, B=BACK");
+}
 
 // Find files (.int) available
 int intvFilescmp (const void *c1, const void *c2) 
@@ -142,13 +275,57 @@ int intvFilescmp (const void *c1, const void *c2)
   return strcasecmp (p1->filename, p2->filename);    
 }
 
-void intvFindFiles(void) 
+
+bool isFavorite(char *filename)
+{
+    for (int i=0; i<64; i++)
+    {
+        if (myGlobalConfig.favorites[i] != 0x00000000)
+        {
+            if (myGlobalConfig.favorites[i] == CRC32::getCrc((UINT8* )filename, strlen(filename)))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void setFavorite(char *filename)
+{    
+    for (int i=0; i<64; i++)
+    {
+        if (myGlobalConfig.favorites[i] == 0x00000000)
+        {
+            myGlobalConfig.favorites[i] = CRC32::getCrc((UINT8* )filename, strlen(filename));
+            break;
+        }
+    }
+}
+
+void clrFavorite(char *filename)
+{
+    for (int i=0; i<64; i++)
+    {
+        if (myGlobalConfig.favorites[i] != 0x00000000)
+        {
+            if (myGlobalConfig.favorites[i] == CRC32::getCrc((UINT8* )filename, strlen(filename)))
+            {
+                myGlobalConfig.favorites[i] = 0x00000000;
+            }
+        }
+    }
+}
+
+
+ITCM_CODE void intvFindFiles(void) 
 {
   static bool bFirstTime = true;
   DIR *pdir;
   struct dirent *pent;
 
   countintv = 0;
+  memset(intvromlist, 0x00, sizeof(intvromlist));
 
   // First time in we use the config setting to determine where we open files...
   if (bFirstTime)
@@ -166,8 +343,8 @@ void intvFindFiles(void)
     
   pdir = opendir(".");
 
-  if (pdir) {
-
+  if (pdir) 
+  {
     while (((pent=readdir(pdir))!=NULL)) 
     {
       strcpy(szName2,pent->d_name);
@@ -187,22 +364,21 @@ void intvFindFiles(void)
         if (strcasecmp(szName2, "grom.bin") == 0) continue;
         if (strcasecmp(szName2, "exec.bin") == 0) continue;
         if (strcasecmp(szName2, "ivoice.bin") == 0) continue;
-          if (strcasecmp(szName2, "ecs.bin") == 0) continue;
+        if (strcasecmp(szName2, "ecs.bin") == 0) continue;
         if (strstr(szName2, "[BIOS]") != NULL) continue;
         if (strstr(szName2, "[bios]") != NULL) continue;
-          
-        if (strlen(szName2)>4) {
-          if ( (strcasecmp(strrchr(szName2, '.'), ".int") == 0) )  {
-            intvromlist[countintv].directory = false;
-            strcpy(intvromlist[countintv].filename,szName2);
-            countintv++;
-          }
-          if ( (strcasecmp(strrchr(szName2, '.'), ".bin") == 0) )  {
-            intvromlist[countintv].directory = false;
-            strcpy(intvromlist[countintv].filename,szName2);
-            countintv++;
-          }
-          if ( (strcasecmp(strrchr(szName2, '.'), ".rom") == 0) )  {
+        
+        if (strlen(szName2)>4) 
+        {
+          if ( (strcasecmp(strrchr(szName2, '.'), ".int") == 0) ||
+               (strcasecmp(strrchr(szName2, '.'), ".bin") == 0) ||
+               (strcasecmp(strrchr(szName2, '.'), ".rom") == 0) )
+          {
+            intvromlist[countintv].favorite = isFavorite(szName2);
+            if (bFavsOnlyMode && !intvromlist[countintv].favorite) 
+            {
+                continue;
+            }
             intvromlist[countintv].directory = false;
             strcpy(intvromlist[countintv].filename,szName2);
             countintv++;
@@ -216,20 +392,22 @@ void intvFindFiles(void)
     qsort (intvromlist, countintv, sizeof (FICA_INTV), intvFilescmp);
 }
 
-void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
+ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 {
   unsigned int ucBcl,ucGame;
 
   // Display all games if possible
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) (bgGetMapPtr(bg1b)),32*24*2);
-  sprintf(szName,"%04d/%04d GAMES",(int)(1+ucSel+NoDebGame),countintv);
+  sprintf(szName,"%04d/%04d %s",(int)(1+ucSel+NoDebGame),countintv, (bFavsOnlyMode ? "FAVS":"GAMES"));
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   dsPrintValue(31,4,0,(char *) (NoDebGame>0 ? "<" : " "));
-  dsPrintValue(31,21,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
-  sprintf(szName, "A=LOAD, X=JLP, Y=IVOICE, B=BACK");
-  dsPrintValue(16-strlen(szName)/2,23,0,szName);
-  for (ucBcl=0;ucBcl<17; ucBcl++) {
+  dsPrintValue(31,20,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
+
+  dsDisplayLoadInstructions();
+    
+  for (ucBcl=0;ucBcl<17; ucBcl++) 
+  {
     ucGame= ucBcl+NoDebGame;
     if (ucGame < countintv)
     {
@@ -243,7 +421,11 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
       }
       else
       {
-        dsPrintValue(1,4+ucBcl,(ucSel == ucBcl ? 1 : 0),szName);
+          if (intvromlist[ucGame].favorite)
+          {
+             dsPrintValue(0,4+ucBcl,0, (char*)"@");
+          }
+          dsPrintValue(1,4+ucBcl,(ucSel == ucBcl ? 1 : 0),szName);
       }
     }
   }
@@ -276,6 +458,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
     romSelected=0;
   }
   dsDisplayFiles(firstRomDisplay,romSelected);
+    
+  // -----------------------------------------------------
+  // Until the user selects a file or exits the menu...
+  // -----------------------------------------------------
   while (!bDone)
   {
     if (keysCurrent() & KEY_UP)
@@ -336,7 +522,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
     else {
       ucBas = 0;
     }
-    if ((keysCurrent() & KEY_R) || (keysCurrent() & KEY_RIGHT))
+    if (keysCurrent() & KEY_RIGHT)
     {
       if (!ucSBas)
       {
@@ -357,7 +543,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
     else {
       ucSBas = 0;
     }
-    if ((keysCurrent() & KEY_L) || (keysCurrent() & KEY_LEFT))
+    if (keysCurrent() & KEY_LEFT)
     {
       if (!ucSHaut)
       {
@@ -379,13 +565,57 @@ unsigned int dsWaitForRom(char *chosen_filename)
     else {
       ucSHaut = 0;
     }
+      
+    if (keysCurrent() & (KEY_L | KEY_R))
+    {
+        bFavsOnlyMode = !bFavsOnlyMode;
+        intvFindFiles();
+        ucFicAct = 0;
+        nbRomPerPage = (countintv>=16 ? 16 : countintv);
+        uNbRSPage = (countintv>=5 ? 5 : countintv);
+        if (ucFicAct>countintv-nbRomPerPage) {
+          firstRomDisplay=countintv-nbRomPerPage;
+          romSelected=ucFicAct-countintv+nbRomPerPage;
+        }
+        else {
+          firstRomDisplay=ucFicAct;
+          romSelected=0;
+        }
+        dsDisplayFiles(firstRomDisplay,romSelected);
+        while (keysCurrent() & (KEY_L | KEY_R))
+            ;
+        WAITVBL;
+    }
 
     if ( keysCurrent() & KEY_B )
     {
       bDone=true;
       while (keysCurrent() & KEY_B);
     }
+      
+    if ( keysCurrent() & KEY_SELECT )
+    {
+        if (!intvromlist[ucFicAct].directory)
+        {
+            if (intvromlist[ucFicAct].favorite)
+                clrFavorite(intvromlist[ucFicAct].filename);
+            else
+                setFavorite(intvromlist[ucFicAct].filename);
+            intvromlist[ucFicAct].favorite = isFavorite(intvromlist[ucFicAct].filename);
+            dsDisplayFiles(firstRomDisplay,romSelected);
+            while (keysCurrent() & KEY_SELECT);
+        }
+    }
 
+    if ( keysCurrent() & KEY_START )
+    {
+        dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
+        SaveConfig(false);
+        WAITVBL;WAITVBL;WAITVBL;
+        dsDisplayLoadInstructions();
+        while (keysCurrent() & KEY_START);
+    }
+      
     if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y || keysCurrent() & KEY_X)
     {
       if (!intvromlist[ucFicAct].directory)

@@ -59,9 +59,9 @@ struct GlobalConfig_t
     char   last_game[256];              // Not used yet... maybe for the future
     char   exec_bios_filename[256];     // Not used yet... maybe for the future
     char   grom_bios_filename[256];     // Not used yet... maybe for the future
-    char   ecs_bios_filename[256];      // Not used yet... maybe for the future
     char   ivoice_bios_filename[256];   // Not used yet... maybe for the future
-    UINT32 favorites[10];               // Not used yet... maybe for the future
+    UINT32 favorites[64];
+    UINT32 reserved32[10];              // Not used yet... maybe for the future
     UINT8  bios_dir;
     UINT8  save_dir;
     UINT8  ovl_dir;
@@ -95,5 +95,6 @@ extern struct AllConfig_t    allConfigs;
 
 extern void FindAndLoadConfig(void);
 extern void dsChooseOptions(void);
+void SaveConfig(bool bShow);
 
 #endif

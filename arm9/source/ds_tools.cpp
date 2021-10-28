@@ -47,6 +47,8 @@ bool bGameLoaded = false;
 
 void Run(char *initial_file);
 
+UINT8 b_dsi_mode __attribute__((section(".dtcm"))) = true;
+
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
 Rip                  *currentRip = NULL;
@@ -58,7 +60,6 @@ UINT16 frames_per_sec_calc=0;
 UINT8  oneSecTick=FALSE;
 
 int bg0, bg0b, bg1b;
-
 
 void reset_emu_frames(void)
 {
@@ -199,16 +200,17 @@ ITCM_CODE void VideoBusDS::render()
 
     if (renderz[myConfig.frame_skip_opt][global_frames&3])
     {
+        UINT8 chan = 0;
         UINT32 *ds_video=(UINT32*)0x06000000;
         UINT32 *source_video = (UINT32*)pixelBuffer;
 
         for (int j=0; j<192; j++)
         {
-            for (int x=0; x<160/4; x++)
-            {
-                *ds_video++ = *source_video++;
-            }
-            ds_video += 24;
+            while (dmaBusy(chan)) asm("nop");
+            dmaCopyWordsAsynch (chan, source_video, ds_video, 160);
+            source_video += 40;
+            ds_video += 64;
+            chan = (chan + 1) & 3;
         }    
     }
 }
@@ -965,32 +967,6 @@ ITCM_CODE void pollInputs(void)
     
 }
 
-void dsShowScreenMain(bool bFull) 
-{
-    // Init BG mode for 16 bits colors
-    if (bFull)
-    {
-      videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
-      videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
-      vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
-      bg0 = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
-      bg0b = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
-      bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
-      bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
-
-      decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
-      decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
-      dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
-    }
-
-    // Now show the bottom screen - usualy some form of overlay...
-#ifdef DEBUG_ENABLE
-    show_debug_overlay();
-#else
-    show_overlay();
-#endif
-    
-}
 
 // ---------------------------------------------------------------------------
 // This is called very frequently (15,360 times per second) to fill the
@@ -1000,10 +976,7 @@ void dsShowScreenMain(bool bFull)
 #define ARM7_XFER_BUFFER_SIZE (2)
 UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
 UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
-UINT32* sptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
-UINT32* eptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0xA000000/2);
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
-UINT32 lastSample            __attribute__((section(".dtcm"))) = 0;    
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
 
 ITCM_CODE void VsoundHandlerDSi(void)
@@ -1031,7 +1004,7 @@ ITCM_CODE void VsoundHandler(void)
   }
 }
 
-UINT8 b_dsi_mode = true;
+
 void dsInstallSoundEmuFIFO(void)
 {
     // Clear out the sound buffers...
@@ -1046,17 +1019,14 @@ void dsInstallSoundEmuFIFO(void)
     if (isDSiMode())
     {
         b_dsi_mode = true;
-        sptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
-        eptr = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0xA000000/2);
+        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
     }
     else
     {
         b_dsi_mode = false;
-        sptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
-        eptr = (UINT32*) (&audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE] + 0x00400000/2);
+        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
     }
     
-    aptr = sptr;
     *aptr = 0x00000000;
     memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
     memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
@@ -1233,6 +1203,33 @@ void dsInitPalette(void)
     }
     
     setBrightness(2, brightness[myGlobalConfig.brightness]);      // Subscreen Brightness
+}
+
+
+void dsShowScreenMain(bool bFull) 
+{
+    // Init BG mode for 16 bits colors
+    if (bFull)
+    {
+      videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
+      videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
+      vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
+      bg0 = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
+      bg0b = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
+      bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
+      bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
+
+      decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
+      decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
+      dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
+    }
+
+    // Now show the bottom screen - usualy some form of overlay...
+#ifdef DEBUG_ENABLE
+    show_debug_overlay();
+#else
+    show_overlay();
+#endif
 }
 
 void dsInitScreenMain(void)
@@ -1421,21 +1418,17 @@ ITCM_CODE void Run(char *initial_file)
 
             // render the output
             currentEmu->Render();
-            
-#ifdef DEBUG_ENABLE
-            debug_frames++;
-#endif        
         }
         
         if (TIMER1_DATA >= 32728)   // 1000MS (1 sec)
         {
-            char tmp[15];
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             oneSecTick=TRUE;
             if ((frames_per_sec_calc > 0) && (myGlobalConfig.show_fps > 0))
             {
+                char tmp[15];
                 if (frames_per_sec_calc==(target_frames[myConfig.target_fps]+1)) frames_per_sec_calc--;
                 tmp[0] = '0' + (frames_per_sec_calc/100);
                 tmp[1] = '0' + ((frames_per_sec_calc % 100) /10);

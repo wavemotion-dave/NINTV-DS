@@ -30,8 +30,6 @@ class CRC32
         //static void formInternalFilename(CHAR*, const CHAR*, const CHAR*);
 
         UINT32 crc;
-        UINT32 crc32_table[256];
-
 };
 
 #endif

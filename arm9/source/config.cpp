@@ -43,8 +43,14 @@ static void SetDefaultGlobalConfig(void)
     memset(myGlobalConfig.last_game,            0x00, 256);
     memset(myGlobalConfig.exec_bios_filename,   0x00, 256);
     memset(myGlobalConfig.grom_bios_filename,   0x00, 256);
-    memset(myGlobalConfig.ecs_bios_filename,    0x00, 256);
     memset(myGlobalConfig.ivoice_bios_filename, 0x00, 256);
+    
+    memset(myGlobalConfig.favorites,            0x00, 256);
+    
+    for (int i=0; i<10; i++)
+    {
+        myGlobalConfig.reserved32[i]        = 0;
+    }
     
     myGlobalConfig.bios_dir                 = 0;
     myGlobalConfig.save_dir                 = 0;

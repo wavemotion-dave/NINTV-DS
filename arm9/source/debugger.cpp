@@ -34,7 +34,6 @@
 
 INT32 debug[6] = {0};
 
-UINT32 debug_frames=0;
 UINT32 debug_opcodes=0;
 
 extern struct Overlay_t defaultOverlay[OVL_MAX];
@@ -3287,7 +3286,7 @@ void display_debug(void)
         idx++;
         sprintf(dbg, "OP: %03X [%-15s]", op, dbg_opcode(op));   dsPrintValue(0, idx++, 0, dbg);
         idx++;
-        sprintf(dbg, "Total Frames: %u", debug_frames);   dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Total Frames: %u", global_frames);   dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Total OpCode: %u", debug_opcodes);   dsPrintValue(0, idx++, 0, dbg);
 
         idx=0;
@@ -3533,9 +3532,9 @@ void debugger(void)
         return;
     }
     
-    if (((debug_mode == DBG_MODE_FRAME) && (myLastFrame != debug_frames)) || (debug_mode == DBG_MODE_STEP) || (debug_mode == DBG_MODE_STOP))
+    if (((debug_mode == DBG_MODE_FRAME) && (myLastFrame != global_frames)) || (debug_mode == DBG_MODE_STEP) || (debug_mode == DBG_MODE_STOP))
     {
-        myLastFrame = debug_frames;
+        myLastFrame = global_frames;
         display_debug();
         debugger_wait_for_input();
     }
