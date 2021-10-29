@@ -47,6 +47,9 @@ bool bGameLoaded = false;
 
 void Run(char *initial_file);
 
+UINT16 target_frames[]         = {60,  66,   72,  78,  84,  90,  999};
+UINT32 target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
+
 UINT8 b_dsi_mode __attribute__((section(".dtcm"))) = true;
 
 RunState             runState = Stopped;
@@ -1049,7 +1052,12 @@ void dsInstallSoundEmuFIFO(void)
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to start chugging...
 
     // Now setup to feed the audio mixer buffer into the ARM7 core via shared memory
-    TIMER2_DATA = TIMER_FREQ((mySoundFrequency)+2);
+    UINT16 tFreq = mySoundFrequency;
+    if (target_frames[myConfig.target_fps] != 999)  // If not running MAX, adjust sound to match speed emulator is running at.
+    {
+        tFreq = (UINT16)(((UINT32)mySoundFrequency * (UINT32)target_frames[myConfig.target_fps]) / (UINT32)60) + 2;
+    }
+    TIMER2_DATA = TIMER_FREQ(tFreq);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, b_dsi_mode ? VsoundHandlerDSi:VsoundHandler);
     
@@ -1355,9 +1363,6 @@ void dsMainLoop(char *initial_file)
     Run(initial_file);
 }
 
-
-UINT16 target_frames[]         = {60,  66,   72,  78,  84,  90,  999};
-UINT32 target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
 
 ITCM_CODE void Run(char *initial_file)
 {
