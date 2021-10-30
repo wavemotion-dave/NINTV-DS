@@ -27,6 +27,11 @@
 UINT8 bin_image_buf[128 * 1024];                   // No .BIN or .ROM will be bigger than this...
 UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf;
 
+extern UINT8 bUseJLP;
+extern UINT8 bForceIvoice;
+extern UINT8 bUseJLP;
+
+
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
   peripheralCount(0),
@@ -123,7 +128,6 @@ Rip* Rip::LoadBin(const CHAR* filename)
     }
 
     // Add the JLP RAM module if required...
-    extern bool bUseJLP;
     if (bUseJLP)
     {
         rip->JLP16Bit = new JLP();
@@ -134,7 +138,6 @@ Rip* Rip::LoadBin(const CHAR* filename)
         rip->JLP16Bit = NULL;
     }
     
-    extern bool bForceIvoice;
     if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
 
     rip->SetFileName(filename);
@@ -394,9 +397,6 @@ Rip* Rip::LoadRom(const CHAR* filename)
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
 
-    extern bool bUseJLP;
-    extern bool bForceIvoice;
-    
     // See if we have any special overrides...
     const struct SpecialRomDatabase_t *db_entry = FindRomDatabaseEntry(rip->crc); // Try to find the CRC in our internal database...    
     if (db_entry != NULL)

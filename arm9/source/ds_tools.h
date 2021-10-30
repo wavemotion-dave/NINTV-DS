@@ -36,12 +36,12 @@ extern UINT8 b_dsi_mode;
 
 extern int bg0, bg0b, bg1b;
 
-extern bool bStartSoundFifo;
-extern bool bUseJLP;
-extern bool bForceIvoice;
-extern bool bInitEmulator;
-extern bool bUseDiscOverlay;
-extern bool bGameLoaded;
+extern UINT8 bStartSoundFifo;
+extern UINT8 bUseJLP;
+extern UINT8 bForceIvoice;
+extern UINT8 bInitEmulator;
+extern UINT8 bUseDiscOverlay;
+extern UINT8 bGameLoaded;
 
 extern UINT16 global_frames;
 

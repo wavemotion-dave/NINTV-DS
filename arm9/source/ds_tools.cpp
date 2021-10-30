@@ -39,12 +39,12 @@
 // how to load it. These are not accessed often enough
 // to warrant putting them in .dtcm fast memory.
 // --------------------------------------------------------
-bool bStartSoundFifo = false;
-bool bUseJLP = false;
-bool bForceIvoice=false;
-bool bInitEmulator=false;
-bool bUseDiscOverlay=false;
-bool bGameLoaded = false;
+UINT8 bStartSoundFifo   = false;
+UINT8 bUseJLP           = false;
+UINT8 bForceIvoice      = false;
+UINT8 bInitEmulator     = false;
+UINT8 bUseDiscOverlay   = false;
+UINT8 bGameLoaded       = false;
 
 // -------------------------------------------------------------
 // This one is accessed rather often so we'll put it in .dtcm
@@ -239,8 +239,10 @@ void VideoBusDS::release()
 }
 
 // -----------------------------------------------------------------------------
-// Use DMA copy as it's found to be slightly more efficient. We are utilizing
-// all four DMA channels because there isn't anything else using it...
+// Here we take the fully rendered Intellivision 'pixelBuffer' which is 160x192
+// and copy it over to the NDS video memory. We use DMA copy as it's found to 
+// be slightly more efficient. We are utilizing all four DMA channels because
+// there isn't anything else using it...
 // -----------------------------------------------------------------------------
 ITCM_CODE void VideoBusDS::render()
 {
@@ -260,7 +262,7 @@ ITCM_CODE void VideoBusDS::render()
             dmaCopyWordsAsynch (chan, source_video, ds_video, 160);
             source_video += 40;
             ds_video += 64;
-            chan = (chan + 1) & 3;
+            chan = (chan + 1) & 3;  // Use all 4 DMA channels...
         }    
     }
 }
@@ -299,11 +301,13 @@ BOOL InitializeEmulator(void)
         }
 
         BOOL loaded = LoadPeripheralRoms(p);
-        if (loaded) {
+        if (loaded) 
+        {
             //peripheral loaded, might as well use it.
             currentEmu->UsePeripheral(i, TRUE);
         }
-        else if (usage == PERIPH_OPTIONAL) {
+        else if (usage == PERIPH_OPTIONAL) 
+        {
             //didn't load, but the peripheral is optional, so just skip it
             currentEmu->UsePeripheral(i, FALSE);
         }

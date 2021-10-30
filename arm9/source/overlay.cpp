@@ -37,7 +37,6 @@
 
 extern char szName[];
 extern Rip *currentRip;
-extern bool bUseDiscOverlay;
 
 struct Overlay_t defaultOverlay[OVL_MAX] =
 {

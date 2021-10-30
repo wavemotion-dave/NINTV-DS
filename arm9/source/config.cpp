@@ -30,7 +30,6 @@ struct GlobalConfig_t   myGlobalConfig;
 struct AllConfig_t      allConfigs;
 
 extern AudioMixer *audioMixer;
-extern bool bStartSoundFifo;
 extern Rip *currentRip;
 
 UINT8 options_shown = 0;        // Start with GAME config... can toggle to '1' for Global Options...
