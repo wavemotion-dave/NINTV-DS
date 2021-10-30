@@ -8,7 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include <stdio.h>
 #include <string.h>
 #include "VideoBus.h"
@@ -78,7 +78,7 @@ void VideoBus::init(UINT32 width, UINT32 height)
 		videoProducers[i]->setPixelBuffer(pixelBuffer, pixelBufferRowSize);
 }
 
-void VideoBus::render()
+ITCM_CODE void VideoBus::render()
 {
     //tell each of the video producers that they can now output their
     //video contents onto the video device

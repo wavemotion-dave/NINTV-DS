@@ -8,7 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include "Emulator.h"
 #include "Intellivision.h"
 
@@ -225,18 +225,18 @@ void Emulator::RemovePeripheral(Peripheral* p)
         inputConsumerBus.removeInputConsumer(p->GetInputConsumer(i));
 }
 
-void Emulator::Run()
+ITCM_CODE void Emulator::Run()
 {
     inputConsumerBus.evaluateInputs();
     processorBus.run();
 }
 
-void Emulator::Render()
+ITCM_CODE void Emulator::Render()
 {
     videoBus->render();
 }
 
-void Emulator::FlushAudio()
+ITCM_CODE void Emulator::FlushAudio()
 {
     audioMixer->flushAudio();
 }

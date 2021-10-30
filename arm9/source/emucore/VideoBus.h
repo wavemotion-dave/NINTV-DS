@@ -15,7 +15,7 @@
 #include "types.h"
 #include "VideoProducer.h"
 
-const INT32 MAX_VIDEO_PRODUCERS = 2;
+#define MAX_VIDEO_PRODUCERS 2
 
 class VideoBus
 {

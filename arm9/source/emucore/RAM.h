@@ -40,7 +40,7 @@ class RAM : public Memory
         UINT16 getReadSize();
         UINT16 getReadAddress();
         UINT16 getReadAddressMask();
-        virtual UINT16 peek(UINT16 location);
+        virtual UINT16 peek(UINT16 location) {return image[(location&readAddressMask) - this->location];}
 
         UINT16 getWriteSize();
         UINT16 getWriteAddress();
