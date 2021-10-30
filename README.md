@@ -49,6 +49,12 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.1 : 30-Oct-2021 by wavemotion-dave
+  * Favorites support - you can select up to 64 games as 'favs'
+  * Sound sync when running faster than 60FPS
+  * If BIOS files not found, emulator will search for them (slow but effective)
+  * Tiny bit more speed and optimization
+
 V3.0 : 25-Oct-2021 by wavemotion-dave
   * Sound fixed - no more zingers!
   * New global menu option for green vs white font.

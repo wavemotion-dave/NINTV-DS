@@ -34,10 +34,11 @@
 #include "debugger.h"
 #include "AudioMixer.h"
 
-#define SOUND_VOLUME  127 /* Max volume */
-
-BOOL InitializeEmulator(void);
-
+// --------------------------------------------------------
+// A set of boolean values so we know what to load and 
+// how to load it. These are not accessed often enough
+// to warrant putting them in .dtcm fast memory.
+// --------------------------------------------------------
 bool bStartSoundFifo = false;
 bool bUseJLP = false;
 bool bForceIvoice=false;
@@ -45,25 +46,46 @@ bool bInitEmulator=false;
 bool bUseDiscOverlay=false;
 bool bGameLoaded = false;
 
-void Run(char *initial_file);
-
-UINT16 target_frames[]         = {60,  66,   72,  78,  84,  90,  999};
-UINT32 target_frame_timing[]   = {546, 496, 454, 420, 390, 364,    0};
-
+// -------------------------------------------------------------
+// This one is accessed rather often so we'll put it in .dtcm
+// -------------------------------------------------------------
 UINT8 b_dsi_mode __attribute__((section(".dtcm"))) = true;
 
+// ------------------------------------------------------------------------------
+// The user can configure how many frames should be run per second (FPS). 
+// This is useful for games like Treasure of Tarmin where the user might
+// want to run the game at 120% speed to get faster gameplay in the same time.
+// ------------------------------------------------------------------------------
+UINT16 target_frames[]         __attribute__((section(".dtcm"))) = {60,  66,   72,  78,  84,  90,  999};
+UINT32 target_frame_timing[]   __attribute__((section(".dtcm"))) = {546, 496, 454, 420, 390, 364,    0};
+
+// ---------------------------------------------------------------------------------
+// Here are the main classes for the emulator, the RIP (game rom), video bus, etc.
+// ---------------------------------------------------------------------------------
 RunState             runState = Stopped;
 Emulator             *currentEmu = NULL;
 Rip                  *currentRip = NULL;
 VideoBus             *videoBus   = NULL;
 AudioMixer           *audioMixer = NULL;
 
+// ---------------------------------------------------------------------------------
+// Some emulator frame calcualtions and once/second computations for frame rate...
+// ---------------------------------------------------------------------------------
 UINT16 emu_frames=0;
 UINT16 frames_per_sec_calc=0;
 UINT8  oneSecTick=FALSE;
 
+
+// -------------------------------------------------------------
+// Background screen buffer indexes for the DS video engine...
+// -------------------------------------------------------------
 int bg0, bg0b, bg1b;
 
+
+// ---------------------------------------------------------------
+// When we hit our target frames per second (default NTSC 60 FPS)
+// we start again - clear the timer and clear the counter...
+// ---------------------------------------------------------------
 void reset_emu_frames(void)
 {
     TIMER0_CR=0;
@@ -72,6 +94,12 @@ void reset_emu_frames(void)
     emu_frames=0;
 }
 
+// ---------------------------------------------------------------------------------
+// A handy function to output a simple pre-built font that is stored just below
+// the 192 pixel row marker on the lower screen background image... this is
+// our "printf()" for the DS lower screen and is used to give simple error 
+// messages, produce the menu/file loading text and output the FPS counter.
+// ---------------------------------------------------------------------------------
 void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 {
   u16 *pusEcran,*pusMap;
@@ -219,7 +247,9 @@ ITCM_CODE void VideoBusDS::render()
 }
 
 
-
+// ------------------------------------------------------------------
+// Setup the emulator and basic perhipheral chips (BIOS, etc). 
+// ------------------------------------------------------------------
 BOOL InitializeEmulator(void)
 {
     //find the currentEmulator required to run this RIP
@@ -293,6 +323,12 @@ BOOL InitializeEmulator(void)
     return TRUE;
 }
 
+// ----------------------------------------------------------------------------------
+// The Intellivision renders output at 160x192 but the DS is 256x192... so there
+// is some stretching involved but it's not CPU intensive since the DS hardware
+// has an aline stretch built in... but we allow the user to tweak these stretch
+// and offset settings to try and produce the best video output possible...
+// ----------------------------------------------------------------------------------
 void HandleScreenStretch(void)
 {
     char tmpStr[33];
@@ -362,6 +398,12 @@ void HandleScreenStretch(void)
     }
 }
 
+// -------------------------------------------------------------------------------------
+// The main menu provides a full set of options the user can pick. We started to run
+// out of room on the main screen to show all the possible things the user can pick
+// so we now just store all the extra goodies in this menu... By default the SELECT
+// button will bring this up.
+// -------------------------------------------------------------------------------------
 #define MAIN_MENU_ITEMS 10
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
@@ -461,6 +503,10 @@ int menu_entry(void)
     return OVL_MAX;
 }
 
+// -------------------------------------------------------------------------------------
+// Meta keys are things that aren't specifically emulating the Intellivision controller.
+// For example: Game Config, Quit or Load Game are all meta-commands.
+// -------------------------------------------------------------------------------------
 char newFile[256];
 void ds_handle_meta(int meta_key)
 {
@@ -591,6 +637,11 @@ void ds_handle_meta(int meta_key)
     }
 }
 
+// -------------------------------------------------------------------------------------------------
+// Read the DS keys for input and handle it... this could be meta commands (LOAD, QUIT, CONFIG) or
+// it could be actual intellivision keypad emulation (KEY_1, KEY_2, DISC movement, etc).
+// This is called every frame - so 60 times per second which is fairly responsive...
+// -------------------------------------------------------------------------------------------------
 ITCM_CODE void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
@@ -976,9 +1027,8 @@ ITCM_CODE void pollInputs(void)
 // pipeline of sound values from the Audio Mixer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
-#define ARM7_XFER_BUFFER_SIZE (2)
-UINT16 audio_arm7_xfer_buffer[ARM7_XFER_BUFFER_SIZE];
-UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
+UINT32 audio_arm7_xfer_buffer = 0;
+UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
 
@@ -1022,30 +1072,29 @@ void dsInstallSoundEmuFIFO(void)
     if (isDSiMode())
     {
         b_dsi_mode = true;
-        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0xA000000/2);
+        aptr = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
     }
     else
     {
         b_dsi_mode = false;
-        aptr = (UINT32*) (&audio_arm7_xfer_buffer[0] + 0x00400000/2);
+        aptr = (UINT32*) (&audio_arm7_xfer_buffer + 0x00400000/4);
     }
     
     *aptr = 0x00000000;
-    memset(audio_arm7_xfer_buffer, 0x00, ARM7_XFER_BUFFER_SIZE*sizeof(UINT16));
     memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
     
     fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to stop...
     
     FifoMessage msg;
-    msg.SoundPlay.data = audio_arm7_xfer_buffer;
+    msg.SoundPlay.data = &audio_arm7_xfer_buffer;
     msg.SoundPlay.freq = mySoundFrequency*2;
-    msg.SoundPlay.volume = SOUND_VOLUME;
+    msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
     msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
     msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = (ARM7_XFER_BUFFER_SIZE*sizeof(UINT16)) >> 2;
+    msg.SoundPlay.dataSize = (4 >> 2);  // Just 1 32-bit value
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
     
@@ -1214,6 +1263,10 @@ void dsInitPalette(void)
 }
 
 
+// ------------------------------------------------------------------------------
+// This shows the main upper screen which is where the emulation takes place... 
+// the lower screen is used for overlay and debugger information.
+// ------------------------------------------------------------------------------
 void dsShowScreenMain(bool bFull) 
 {
     // Init BG mode for 16 bits colors
@@ -1240,6 +1293,14 @@ void dsShowScreenMain(bool bFull)
 #endif
 }
 
+// --------------------------------------------------------------------------------------------------------
+// Most of the main screen video memory is not used so we we will re-purpose it for emulation memory. 
+// The DS VRAM is 16-bit access and you can only write 16-bits at a time... but this is fine for the
+// Intellivision 16-bit CPU. The memory is not as fast as a main memory cache-hit but is much faster 
+// than a main memory cache miss... so on average this memory tends to be quite useful! Also, since
+// this emulator is using a large chunk of the 4MB available in the older DS-LITE/PHAT hardware, using
+// almost 400k of video memory reduces the burden of memory usage on the older hardware.
+// --------------------------------------------------------------------------------------------------------
 void dsInitScreenMain(void)
 {
     vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - Used for Memory Bus Read Counter
@@ -1254,6 +1315,11 @@ void dsInitScreenMain(void)
 }
 
 
+// ---------------------------------------------------------------------------------------------------
+// Generic show-menu which is just the lower screen that is mostly blank with the NINTELLIVISION 
+// banner at the top. The menu has 2 font choices... a high-contrast white on black and a more 
+// retro feel green on black (default). The user can change this option in global configuration.
+// ---------------------------------------------------------------------------------------------
 void dsShowMenu(void)
 {
     if (myGlobalConfig.menu_color == 0)
@@ -1274,6 +1340,12 @@ void dsShowMenu(void)
     }        
 }
 
+
+// ------------------------------------------------------------------------------------------
+// Generic show the top screen... which is rendered as an 8-bit bitmap handling. The video 
+// render code will basically dump the internal Intellivision "pixelBuffer" into the video
+// memory via a DMA copy (slightly faster than memcpy or for-loops).
+// ------------------------------------------------------------------------------------------
 void dsShowScreenEmu(void)
 {
   videoSetMode(MODE_5_2D);
@@ -1292,18 +1364,27 @@ void dsShowScreenEmu(void)
   swiWaitForVBlank();
 }
 
+// ------------------------------------------------------------------------------------------
+// Start Timer 0 - this is our frame timer counter...
+// ------------------------------------------------------------------------------------------
 ITCM_CODE void dsInitTimer(void)
 {
     TIMER0_DATA=0;
     TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
 }
 
+// ------------------------------------------------------------------------------------------
+// When we're done with the emulator, we stop the audio... 
+// ------------------------------------------------------------------------------------------
 void dsFreeEmu(void) 
 {
   // Stop timer of sound
   TIMER2_CR=0; irqDisable(IRQ_TIMER2);
 }
 
+// ------------------------------------------------------------------------------------------
+// When the user asks to QUIT we want to confirm and make sure before we shut down...
+// ------------------------------------------------------------------------------------------
 bool dsWaitOnQuit(void)
 {
   bool bRet=false, bDone=false;
@@ -1349,21 +1430,11 @@ bool dsWaitOnQuit(void)
 }
 
 
-void dsMainLoop(char *initial_file)
-{
-    // -----------------------------------------------------------------------------------------
-    // Eventually these will be used to write to the DS screen and produce DS audio output...
-    // -----------------------------------------------------------------------------------------
-    videoBus = new VideoBusDS();
-    audioMixer = new AudioMixerDS();
-    
-    FindAndLoadConfig();
-    dsShowScreenMain(true);
-    
-    Run(initial_file);
-}
-
-
+// ------------------------------------------------------------------------------------------
+// Our main loop! This is the top leel master loop which runs the emulation... we sit in 
+// this loop looking for input and calling into the emulation engine to handle 1 frame at
+// a time and then render that frame to the DS video screen... it all starts here folks!
+// ------------------------------------------------------------------------------------------
 ITCM_CODE void Run(char *initial_file)
 {
     // Setup 1 second timer for things like FPS
@@ -1451,5 +1522,22 @@ ITCM_CODE void Run(char *initial_file)
 }
 
 
-// End of Line
+// ----------------------------------------------------------------------------------------------
+// Entry point called from main(). Optionally can be passed a file to start running - this 
+// is necessary for TWL++ which may pass us a .int file on the command line.
+// ----------------------------------------------------------------------------------------------
+void dsMainLoop(char *initial_file)
+{
+    // -------------------------------------------------------------------------
+    // These are used to write to the DS screen and produce DS audio output...
+    // -------------------------------------------------------------------------
+    videoBus = new VideoBusDS();
+    audioMixer = new AudioMixerDS();
+    
+    FindAndLoadConfig();
+    dsShowScreenMain(true);
+    
+    Run(initial_file);      // This will only return if the user opts to QUIT
+}
 
+// End of Line
