@@ -128,6 +128,10 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
   }
 }
 
+// ---------------------------------------------------------------------
+// The Audio Mixer receives audio data from the AudioMixer.cpp buffers 
+// and this is what translates that into NDS sounds. 
+// ---------------------------------------------------------------------
 class AudioMixerDS : public AudioMixer
 {
 public:
@@ -191,6 +195,25 @@ void AudioMixerDS::flushAudio()
     AudioMixer::flushAudio();
 }
 
+
+// ---------------------------------------------------------------
+// Our main frameskip boolean table... a 1 in this table means
+// that we will render the full display on that frame.
+// ---------------------------------------------------------------
+UINT8 renderz[4][4] __attribute__((section(".dtcm")))  = 
+{
+    {1,1,1,1},      // Frameskip Off
+    {1,0,1,0},      // Frameskip Odd
+    {0,1,0,1},      // Frameskip Even
+    {1,0,0,0}       // Frameskip Agressive
+};
+
+// ---------------------------------------------------------------------
+// The Video Bus allows the NDS to copy out the internal Intellivision
+// 'pixelBuffer' and render it onto the actual top screen display.
+// We use DMA copy to do this because it's slightly more efficient...
+// ---------------------------------------------------------------------
+
 class VideoBusDS : public VideoBus
 {
 public:
@@ -215,14 +238,10 @@ void VideoBusDS::release()
     VideoBus::release();
 }
 
-UINT8 renderz[4][4] = 
-{
-    {1,1,1,1},      // Frameskip Off
-    {1,0,1,0},      // Frameskip Odd
-    {0,1,0,1},      // Frameskip Even
-    {1,0,0,0}       // Frameskip Agressive
-};
-    
+// -----------------------------------------------------------------------------
+// Use DMA copy as it's found to be slightly more efficient. We are utilizing
+// all four DMA channels because there isn't anything else using it...
+// -----------------------------------------------------------------------------
 ITCM_CODE void VideoBusDS::render()
 {
     frames_per_sec_calc++;
@@ -1028,10 +1047,10 @@ ITCM_CODE void pollInputs(void)
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
 UINT32 audio_arm7_xfer_buffer __attribute__ ((aligned (4))) = 0;
-UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
-UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
-UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
-UINT16 sample[2]    __attribute__((section(".dtcm"))) __attribute__ ((aligned (4)));    
+UINT32* aptr                  __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
+UINT16 myCurrentSampleIdx16   __attribute__((section(".dtcm"))) = 0;
+UINT8  myCurrentSampleIdx8    __attribute__((section(".dtcm"))) = 0;    
+UINT16 sample[2]              __attribute__((section(".dtcm"))) __attribute__ ((aligned (4)));    
 
 ITCM_CODE void VsoundHandlerDSi(void)
 {
@@ -1057,6 +1076,11 @@ ITCM_CODE void VsoundHandler(void)
 }
 
 
+// -----------------------------------------------------------------------------------------------------------------
+// This starts the sound engine... the ARM7 is told about the 1-sample buffer and runs at 2x the normal processing
+// frequency so that it samples fast enough that no sounds are dropped (Nyquist would have something to say here).
+// The internal VSoundHandler() is setup to run at the frequency at which we want to place samples into the buffer.
+// -----------------------------------------------------------------------------------------------------------------
 void dsInstallSoundEmuFIFO(void)
 {
     // Clear out the sound buffers...
@@ -1117,6 +1141,10 @@ void dsInstallSoundEmuFIFO(void)
 }
 
 
+// ------------------------------------------------------------------
+// Game palette arrays... we support 3 built-in palettes and one
+// custom palette that can be read from NINTV-DS.PAL
+// ------------------------------------------------------------------
 UINT32 muted_gamePalette[32] = 
 {
     0x000000,  0x0021AD,  0xE03904,  0xCECE94,
@@ -1186,6 +1214,11 @@ UINT32 custom_Palette[32] =
 };
 
 
+// ---------------------------------------------------------------------------------------
+// To save battery and/or if the user simply wants to de-ephasize the bottom "overlay" 
+// screen while playing on the top screen, we support dimming that bottom screen. This
+// is easy since the NDS has hardware support for this...
+// ---------------------------------------------------------------------------------------
 const INT8 brightness[] = {0, -3, -6, -9};
 void dsInitPalette(void) 
 {
