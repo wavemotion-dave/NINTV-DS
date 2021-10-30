@@ -16,7 +16,7 @@
 #include "types.h"
 #include "AudioMixer.h"
 
-const INT32 MAX_PROCESSORS = 15;
+#define MAX_PROCESSORS  8
 
 class ScheduleQueue;
 

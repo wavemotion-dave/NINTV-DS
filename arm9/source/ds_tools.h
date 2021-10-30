@@ -14,12 +14,6 @@
 #include <nds.h>
 #include "types.h"
 
-typedef enum {
-  EMUARM7_INIT_SND = 0x123C,
-  EMUARM7_STOP_SND = 0x123D,
-  EMUARM7_PLAY_SND = 0x123E,
-} FifoMesType;
-
 typedef enum _RunState 
 {
     Stopped,
@@ -30,6 +24,9 @@ typedef enum _RunState
 
 
 extern UINT16 emu_frames;
+extern UINT16 frames_per_sec_calc;
+extern UINT8  oneSecTick;
+
 extern INT32 debug[];
 
 extern UINT8 b_dsi_mode;
@@ -45,11 +42,12 @@ extern UINT8 bGameLoaded;
 
 extern UINT16 global_frames;
 
+extern UINT16 target_frames[];
+
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);
 extern void dsMainLoop(char *initial_file);
-extern void dsInstallSoundEmuFIFO(void);
 extern void dsInitScreenMain(void);
 extern void dsInitTimer(void);
 extern void dsFreeEmu(void);
@@ -58,9 +56,7 @@ extern bool dsWaitOnQuit(void);
 extern void dsChooseOptions(int global);
 extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
-extern void VsoundHandler(void);
-extern void VsoundHandlerDouble(void);
-extern void dsInitPalette(void);
 extern void dsShowMenu(void);
+extern void reset_emu_frames(void);
 
 #endif
