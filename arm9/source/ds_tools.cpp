@@ -1027,17 +1027,17 @@ ITCM_CODE void pollInputs(void)
 // pipeline of sound values from the Audio Mixer into the Nintendo DS sound
 // buffer which will be processed in the background by the ARM 7 processor.
 // ---------------------------------------------------------------------------
-UINT32 audio_arm7_xfer_buffer = 0;
+UINT32 audio_arm7_xfer_buffer __attribute__ ((aligned (4))) = 0;
 UINT32* aptr __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
 UINT16 myCurrentSampleIdx16  __attribute__((section(".dtcm"))) = 0;
 UINT8  myCurrentSampleIdx8   __attribute__((section(".dtcm"))) = 0;    
+UINT16 sample[2]    __attribute__((section(".dtcm"))) __attribute__ ((aligned (4)));    
 
 ITCM_CODE void VsoundHandlerDSi(void)
 {
   // If there is a fresh sample...
   if (myCurrentSampleIdx8 != currentSampleIdx8)
   {
-      UINT16 sample[2];
       sample[0] = audio_mixer_buffer[myCurrentSampleIdx8++]; 
       sample[1] = sample[0];
       *aptr = *((UINT32*)&sample);
@@ -1049,7 +1049,6 @@ ITCM_CODE void VsoundHandler(void)
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
-      UINT16 sample[2];
       sample[0] = audio_mixer_buffer[myCurrentSampleIdx16++]; 
       sample[1] = sample[0];
       *aptr = *((UINT32*)&sample);
