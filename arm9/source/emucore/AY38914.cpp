@@ -119,7 +119,7 @@ void AY38914::setClockDivisor(INT32 clockDivisor)
     clockDivisor = clockDivisor;
 }
 
-INT32 AY38914::getClockDivisor() {
+ITCM_CODE INT32 AY38914::getClockDivisor() {
     return clockDivisor;
 }
 
