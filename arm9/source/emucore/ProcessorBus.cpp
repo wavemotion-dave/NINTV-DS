@@ -8,7 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include "ProcessorBus.h"
 
 ProcessorBus::ProcessorBus()
@@ -91,7 +91,7 @@ void ProcessorBus::reset()
     }
 }
 
-void ProcessorBus::run()
+ITCM_CODE void ProcessorBus::run()
 {
     running = true;
     while (running) {

@@ -33,6 +33,10 @@ UINT16 op __attribute__((section(".dtcm")));
 //indicates whether the last executed instruction is interruptible
 UINT8 interruptible __attribute__((section(".dtcm")));
 
+UINT8 bCP1610_PIN_IN_BUSRQ   __attribute__((section(".dtcm")));
+UINT8 bCP1610_PIN_IN_INTRM   __attribute__((section(".dtcm"))); 
+UINT8 bCP1610_PIN_OUT_BUSAK  __attribute__((section(".dtcm")));
+
 //the four external lines
 INT8 ext __attribute__((section(".dtcm")));
 
@@ -54,7 +58,7 @@ void CP1610::resetProcessor()
     //the four external lines
     ext = 0;
 
-    pinOut[CP1610_PIN_OUT_BUSAK]->isHigh = TRUE;
+    bCP1610_PIN_OUT_BUSAK = TRUE;
     interruptible = FALSE;
     S = C = O = Z = I = D = FALSE;
     for (INT32 i = 0; i < 7; i++)
@@ -80,15 +84,15 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
     do {
         if (interruptible) 
         {
-            if (!pinIn[CP1610_PIN_IN_BUSRQ]->isHigh) 
+            if (!bCP1610_PIN_IN_BUSRQ) 
             {
-                pinOut[CP1610_PIN_OUT_BUSAK]->isHigh = pinIn[CP1610_PIN_IN_BUSRQ]->isHigh;
+                bCP1610_PIN_OUT_BUSAK = bCP1610_PIN_IN_BUSRQ;
                 return MAX((usedCycles<<2), minimum);
             }
 
-            if (I && !pinIn[CP1610_PIN_IN_INTRM]->isHigh) 
+            if (I && !bCP1610_PIN_IN_INTRM) 
             {
-                pinIn[CP1610_PIN_IN_INTRM]->isHigh = TRUE;
+                bCP1610_PIN_IN_INTRM = TRUE;
                 interruptible = false;
                 memoryBus->poke(r[6], r[7]);
                 r[6]++;

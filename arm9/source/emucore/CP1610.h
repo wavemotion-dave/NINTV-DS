@@ -13,7 +13,6 @@
 #define CP1610_H
 
 #include "Processor.h"
-#include "SignalLine.h"
 #include "MemoryBus.h"
 
 #define CP1610_PIN_IN_INTRM 0
@@ -22,6 +21,11 @@
 #define CP1610_PIN_OUT_BUSAK 0
     
 extern UINT8 interruptible;
+
+extern UINT8 bCP1610_PIN_IN_BUSRQ;
+extern UINT8 bCP1610_PIN_IN_INTRM; 
+extern UINT8 bCP1610_PIN_OUT_BUSAK;
+
 
 TYPEDEF_STRUCT_PACK( _CP1610State
 {
@@ -56,12 +60,12 @@ class CP1610 : public Processor
         void setState(CP1610State *state);
 
         BOOL isIdle() {
-            if (!pinIn[CP1610_PIN_IN_BUSRQ]->isHigh && interruptible) {
-                pinOut[CP1610_PIN_OUT_BUSAK]->isHigh = FALSE;
+            if (!bCP1610_PIN_IN_BUSRQ && interruptible) {
+                bCP1610_PIN_OUT_BUSAK = FALSE;
                 return TRUE;
             }
             else {
-                pinOut[CP1610_PIN_OUT_BUSAK]->isHigh = TRUE;
+                bCP1610_PIN_OUT_BUSAK = TRUE;
                 return FALSE;
             }
         }

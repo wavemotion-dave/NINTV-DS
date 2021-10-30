@@ -116,6 +116,10 @@ UINT16  __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) stretch[
     0xFF00,0xFF03,0xFF0C,0xFF0F,0xFF30,0xFF33,0xFF3C,0xFF3F,0xFFC0,0xFFC3,0xFFCC,0xFFCF,0xFFF0,0xFFF3,0xFFFC,0xFFFF
 };
 
+extern UINT8 bCP1610_PIN_IN_BUSRQ;
+extern UINT8 bCP1610_PIN_IN_INTRM;
+extern UINT8 bCP1610_PIN_OUT_BUSAK;
+
 
 AY38900::AY38900(MemoryBus* mb, GROM* go, GRAM* ga)
     : Processor("AY-3-8900"),
@@ -144,8 +148,8 @@ void AY38900::resetProcessor()
 
     //reset the state variables
     mode = -1;
-    pinOut[AY38900_PIN_OUT_SR1]->isHigh = TRUE;
-    pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
+    bCP1610_PIN_IN_INTRM = TRUE;
+    bCP1610_PIN_IN_BUSRQ = TRUE;
     previousDisplayEnabled = TRUE;
     displayEnabled         = FALSE;
     colorStackMode         = FALSE;
@@ -188,10 +192,10 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             processorBus->stop();
 
             //release SR2, allowing the CPU to run
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
 
             //kick the irq line
-            pinOut[AY38900_PIN_OUT_SR1]->isHigh = FALSE;
+            bCP1610_PIN_IN_INTRM = FALSE;
 
             totalTicks += TICK_LENGTH_VBLANK;
             if (totalTicks >= minimum) {
@@ -200,7 +204,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_START_ACTIVE_DISPLAY:
-            pinOut[AY38900_PIN_OUT_SR1]->isHigh = TRUE;
+            bCP1610_PIN_IN_INTRM = TRUE;
 
             //if the display is not enabled, skip the rest of the modes
             if (!displayEnabled) {
@@ -216,7 +220,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
             else {
                 previousDisplayEnabled = TRUE;
-                pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+                bCP1610_PIN_IN_BUSRQ = FALSE;
                 totalTicks += TICK_LENGTH_START_ACTIVE_DISPLAY;
                 if (totalTicks >= minimum) {
                     mode = MODE_IDLE_ACTIVE_DISPLAY;
@@ -227,13 +231,13 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
         case MODE_IDLE_ACTIVE_DISPLAY:
             //switch to bus isolation mode, but only if the CPU has
             //acknowledged ~SR2 by asserting ~SST
-            if (!pinIn[AY38900_PIN_IN_SST]->isHigh) {
-                pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            if (!bCP1610_PIN_OUT_BUSAK) {
+                bCP1610_PIN_OUT_BUSAK = TRUE;
                 setGraphicsBusVisible(FALSE);
             }
 
             //release SR2
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
 
             totalTicks += TICK_LENGTH_IDLE_ACTIVE_DISPLAY +
                 (2*verticalOffset*TICK_LENGTH_SCANLINE);
@@ -243,7 +247,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_0:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(0);
@@ -252,8 +256,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_0:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_1;
@@ -261,7 +265,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_1:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(1);
@@ -270,8 +274,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_1:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_2;
@@ -279,7 +283,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_2:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(2);
@@ -288,8 +292,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_2:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_3;
@@ -297,7 +301,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_3:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(3);
@@ -306,8 +310,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_3:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_4;
@@ -315,7 +319,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_4:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(4);
@@ -324,8 +328,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_4:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_5;
@@ -333,7 +337,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_5:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(5);
@@ -342,8 +346,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_5:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_6;
@@ -351,7 +355,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_6:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(6);
@@ -360,8 +364,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_6:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_7;
@@ -369,7 +373,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_7:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(7);
@@ -378,8 +382,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_7:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_8;
@@ -387,7 +391,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_8:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(8);
@@ -396,8 +400,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_8:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_9;
@@ -405,7 +409,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_9:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(9);
@@ -414,8 +418,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_9:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_10;
@@ -423,7 +427,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_10:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(10);
@@ -432,8 +436,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_10:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
-            pinIn[AY38900_PIN_IN_SST]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
+            bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
                 mode = MODE_FETCH_ROW_11;
@@ -441,7 +445,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_FETCH_ROW_11:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (bLatched) backtab.LatchRow(11);
@@ -450,7 +454,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             }
 
         case MODE_RENDER_ROW_11:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = TRUE;
+            bCP1610_PIN_IN_BUSRQ = TRUE;
 
             //this mode could be cut off in tick length if the vertical
             //offset is greater than 1
@@ -475,7 +479,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_12:
         default:
-            pinOut[AY38900_PIN_OUT_SR2]->isHigh = FALSE;
+            bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_SCANLINE;
             mode = MODE_VBLANK;
             break;

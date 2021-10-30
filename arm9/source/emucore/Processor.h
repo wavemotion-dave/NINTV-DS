@@ -12,10 +12,8 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include "SignalLine.h"
 #include "types.h"
 #include "MemoryBus.h"
-#define MAX_PINS 16
 
 class ProcessorBus;
 class ScheduleQueue;
@@ -50,22 +48,15 @@ class Processor
          */
         virtual INT32 tick(INT32 i) = 0;
 
-        virtual void connectPinOut(UINT8 pinOutNum, Processor* targetProcessor,
-                UINT8 targetPinInNum);
-        virtual void disconnectPinOut(UINT8 pinOutNum);
-
         virtual BOOL isIdle() { return FALSE; };
 
     protected:
         Processor(const char* name);
 
         const char* name;
-        SignalLine* pinIn[MAX_PINS];
-        SignalLine* pinOut[MAX_PINS];
 
 		ProcessorBus* processorBus;
 		ScheduleQueue* scheduleQueue;
-
 };
 
 #endif
