@@ -38,11 +38,6 @@ Intellivision::Intellivision()
     videoWidth = 160;
     videoHeight = 192;
 
-    //make the pin connections from the CPU to the STIC
-    //stic.connectPinOut(AY38900_PIN_OUT_SR1, &cpu, CP1610_PIN_IN_INTRM);
-    //stic.connectPinOut(AY38900_PIN_OUT_SR2, &cpu, CP1610_PIN_IN_BUSRQ);
-    //cpu.connectPinOut(CP1610_PIN_OUT_BUSAK, &stic, AY38900_PIN_IN_SST);
-
     //add the player one hand controller
     AddInputConsumer(&player1Controller);
 

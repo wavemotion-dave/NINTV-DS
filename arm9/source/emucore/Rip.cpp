@@ -211,59 +211,60 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
             int cfg_mode=0;
             while (!feof(cfgFile)) 
             {
-                fgets(nextLine, 127, cfgFile);
-                if (feof(cfgFile)) continue;
-                if (strstr(nextLine, "[mapping]") != NULL)          cfg_mode = 1;
-                else if (strstr(nextLine, "[memattr]") != NULL)     cfg_mode = 2;
-                else if (strstr(nextLine, "[vars]") != NULL)        cfg_mode = 3;
-                else
+                if (fgets(nextLine, 127, cfgFile) != NULL)
                 {
-                    char *ptr = nextLine;
-                    while (*ptr == ' ') ptr++;
-                    if (cfg_mode == 1)  // [mapping] Mode
+                    if (strstr(nextLine, "[mapping]") != NULL)          cfg_mode = 1;
+                    else if (strstr(nextLine, "[memattr]") != NULL)     cfg_mode = 2;
+                    else if (strstr(nextLine, "[vars]") != NULL)        cfg_mode = 3;
+                    else
                     {
-                        if (*ptr == '$')
+                        char *ptr = nextLine;
+                        while (*ptr == ' ') ptr++;
+                        if (cfg_mode == 1)  // [mapping] Mode
                         {
-                            ptr++;
-                            UINT16 start_addr = strtoul(ptr, &ptr, 16);
-                            while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
-                            UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
-                            while (*ptr == ' ' || *ptr == '=' || *ptr == '$') ptr++;
-                            UINT16 map_addr = strtoul(ptr, &ptr, 16);
-                            rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr));
-                        }
-                    }
-                    if (cfg_mode == 2)  // [memattr] Mode
-                    {
-                        if (*ptr == '$')
-                        {
-                            ptr++;
-                            UINT16 start_addr = strtoul(ptr, &ptr, 16);
-                            while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
-                            UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
-                            if (strstr(ptr, "RAM 8") != NULL)
+                            if (*ptr == '$')
                             {
-                                rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 8));
-                            }
-                            else if (strstr(ptr, "RAM 16") != NULL)
-                            {
-                                rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 16));
+                                ptr++;
+                                UINT16 start_addr = strtoul(ptr, &ptr, 16);
+                                while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
+                                UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
+                                while (*ptr == ' ' || *ptr == '=' || *ptr == '$') ptr++;
+                                UINT16 map_addr = strtoul(ptr, &ptr, 16);
+                                rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr));
                             }
                         }
-                    }
-                    if (cfg_mode == 3)  // [vars] Mode
-                    {
-                        if (strstr(ptr, "jlp"))
+                        if (cfg_mode == 2)  // [memattr] Mode
                         {
-                            rip->JLP16Bit = new JLP();
-                            rip->AddRAM(rip->JLP16Bit);
+                            if (*ptr == '$')
+                            {
+                                ptr++;
+                                UINT16 start_addr = strtoul(ptr, &ptr, 16);
+                                while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
+                                UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
+                                if (strstr(ptr, "RAM 8") != NULL)
+                                {
+                                    rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 8));
+                                }
+                                else if (strstr(ptr, "RAM 16") != NULL)
+                                {
+                                    rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 16));
+                                }
+                            }
                         }
-                        if (strstr(ptr, "voice"))
+                        if (cfg_mode == 3)  // [vars] Mode
                         {
-                            rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+                            if (strstr(ptr, "jlp"))
+                            {
+                                rip->JLP16Bit = new JLP();
+                                rip->AddRAM(rip->JLP16Bit);
+                            }
+                            if (strstr(ptr, "voice"))
+                            {
+                                rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+                            }
                         }
-                    }
-                }                
+                    }                
+                }
             }
             fclose(cfgFile);
         }

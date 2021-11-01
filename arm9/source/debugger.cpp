@@ -17,6 +17,7 @@
 #include <fat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <malloc.h>    // for mallinfo()
 
 #include "ds_tools.h"
 #include "bgBottom.h"
@@ -31,6 +32,11 @@
 #include "AudioMixer.h"
 
 #ifdef DEBUG_ENABLE
+
+int getMemUsed() {    // returns the amount of used memory in bytes
+        struct mallinfo mi = mallinfo();
+        return mi.uordblks;
+}
 
 INT32 debug[6] = {0};
 
@@ -110,6 +116,7 @@ UINT8 debug_show = DBG_SHOW_CPU;
 UINT8 debug_show_ram = 0;
 UINT8 debug_show_stic = 0;
 UINT8 debug_show_psg = 0;
+
 
 
 const char *dbg_opcode(UINT16 op)
@@ -3284,10 +3291,10 @@ void display_debug(void)
         sprintf(dbg, " I: %02X", I);    dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, " D: %02X", D);    dsPrintValue(0, idx++, 0, dbg);
         idx++;
-        sprintf(dbg, "OP: %03X [%-15s]", op, dbg_opcode(op));   dsPrintValue(0, idx++, 0, dbg);
-        idx++;
-        sprintf(dbg, "Total Frames: %u", global_frames);   dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Total OpCode: %u", debug_opcodes);   dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "OP: %03X [%-15s]", op, dbg_opcode(op)); dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Total Frames: %-9u ", global_frames);   dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Total OpCode: %-9u ", debug_opcodes);   dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Memory Used:  %-9d ", getMemUsed());    dsPrintValue(0, idx++, 0, dbg);        
 
         idx=0;
         for (UINT16 addr = r[7]-3; addr <= r[7]+4; addr++)
