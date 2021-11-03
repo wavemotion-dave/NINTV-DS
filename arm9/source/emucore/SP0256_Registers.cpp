@@ -42,7 +42,7 @@ ITCM_CODE void SP0256_Registers::poke(UINT16 location, UINT16 value)
                 ms->resetProcessor();
             }
             else if (ms->fifoSize < FIFO_MAX_SIZE) {
-                ms->fifoBytes[(ms->fifoHead+ms->fifoSize) & 0x3F] = value;
+                fifoBytes[(ms->fifoHead+ms->fifoSize) & 0x3F] = value;
                 ms->fifoSize++;
             }
             break;

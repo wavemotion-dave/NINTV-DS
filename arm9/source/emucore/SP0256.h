@@ -72,6 +72,9 @@ extern  INT32 mode;
 extern  INT32 repeatPrefix;
 extern  INT32 command;
 
+extern INT32 fifoBytes[64];
+
+
 class SP0256 : public Processor, public AudioProducer
 {
     friend class SP0256_Registers;
@@ -116,12 +119,11 @@ class SP0256 : public Processor, public AudioProducer
         void decode();
         static INT32 flipEndian(INT32 value, INT32 bits);
         
-        BOOL                     idle;
-        BOOL                     lrqHigh;
-        BOOL                     speaking;
-        INT32                    fifoBytes[64];
-        INT32                    fifoHead;
-        INT32                    fifoSize;
+        UINT8                    idle;
+        UINT8                    lrqHigh;
+        UINT8                    speaking;
+        INT16                    fifoHead;
+        INT16                    fifoSize;
         INT32                    command;
         INT32                    random;
         INT32                    page;

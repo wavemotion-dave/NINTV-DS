@@ -29,6 +29,8 @@ UINT16 stack                    __attribute__((section(".dtcm")));
 INT32 mode                      __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 
+INT32 fifoBytes[64] __attribute__((section(".dtcm")));
+
 UINT8 sp_idle __attribute__((section(".dtcm"))) = 1;
 
 UINT16 bitMasks[16] __attribute__((section(".dtcm"))) = {
