@@ -114,7 +114,6 @@ void dsInstallSoundEmuFIFO(void)
         irqEnable(IRQ_TIMER2);
     else
         irqDisable(IRQ_TIMER2);
-    
 }
 
 
@@ -125,7 +124,7 @@ void dsInstallSoundEmuFIFO(void)
 // Game palette arrays... we support 3 built-in palettes and one
 // custom palette that can be read from NINTV-DS.PAL
 // ------------------------------------------------------------------
-UINT32 muted_gamePalette[32] = 
+const UINT32 muted_gamePalette[32] = 
 {
     0x000000,  0x0021AD,  0xE03904,  0xCECE94,
     0x1E4912,  0x01812E,  0xF7E64A,  0xFFFFFF,
@@ -138,7 +137,7 @@ UINT32 muted_gamePalette[32] =
     0xFF3173,  0x9A8AEF,  0x4AA552,  0x950457,
 };
 
-UINT32 bright_gamePalette[32] = 
+const UINT32 bright_gamePalette[32] = 
 {
     0x000000,    0x1438F7,    0xE35B0E,    0xCBF168,
     0x009428,    0x07C200,    0xFFFF01,    0xFFFFFF,
@@ -151,7 +150,7 @@ UINT32 bright_gamePalette[32] =
     0xF0463C,    0xD383FF,    0x7CED00,    0xB81178,
 };
 
-UINT32 pal_gamePalette[32] = 
+const UINT32 pal_gamePalette[32] = 
 {
     0x000000,  0x0075FF,  0xFF4C39,  0xD1B951,
     0x09B900,  0x30DF10,  0xFFE501,  0xFFFFFF,
