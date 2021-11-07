@@ -35,9 +35,16 @@
 #include "Emulator.h"
 #include "Rip.h"
 
+// ------------------------------------------------
+// Reuse the char buffer from the game load... 
+// we wouldn't need to use this at the same time.
+// ------------------------------------------------
 extern char szName[];
 extern Rip *currentRip;
 
+// ----------------------------------------------------------------------------------------
+// This is the default overlay that matches the main non-custom overlay bottom screen.
+// ----------------------------------------------------------------------------------------
 struct Overlay_t defaultOverlay[OVL_MAX] =
 {
     {120,   155,    30,     60},    // KEY_1
@@ -77,11 +84,20 @@ struct Overlay_t myOverlay[OVL_MAX];
 struct Overlay_t myDisc[DISC_MAX];
 
 
+// -------------------------------------------------------------
+// Rather than take up precious RAM, we use some video memory.
+// -------------------------------------------------------------
 unsigned int *customTiles = (unsigned int *) 0x06860000;          //128K of video memory
 unsigned short *customMap = (unsigned short *)0x068A0000;         //16K of video memory
 unsigned short customPal[512];
 
 char filename[128];
+
+// -----------------------------------------------------------------------------------------------
+// Custom overlays are read in and must be in a very strict format. See the documenatation
+// for custom overlays for details on the format this must be in. We could probably use a
+// bit more error checking here... but we expect customer overlay designers to know what's up.
+// -----------------------------------------------------------------------------------------------
 void load_custom_overlay(void)
 {
     FILE *fp = NULL;
@@ -226,6 +242,10 @@ void load_custom_overlay(void)
     }    
 }
 
+// ---------------------------------------------------------------------------
+// This puts the overlay on the main screen. It can be one of the built-in 
+// overlays or it might be a custom overlay that will be rendered...
+// ---------------------------------------------------------------------------
 void show_overlay(void)
 {
     // Assume default overlay... custom can change it below...
@@ -305,5 +325,5 @@ void show_overlay(void)
     
     swiWaitForVBlank();    
 }
-// End of Line
 
+// End of Line

@@ -28,6 +28,9 @@
 
 extern void savestate_entry(void);
 
+// ---------------------------------------------------------------------------------
+// This represents a single game save slot... it's our whole Intellivision world!
+// ---------------------------------------------------------------------------------
 struct _stateStruct
 {
     UINT16              global_frames;

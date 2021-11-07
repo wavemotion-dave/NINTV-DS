@@ -14,9 +14,10 @@
 #include <nds.h>
 #include "types.h"
 
-// ---------------------------
-// Overlay handling...
-// ---------------------------
+// -------------------------------------------------
+// Overlay handling... This defines a 'hot spot' 
+// which can be presed on the touch screen.
+// -------------------------------------------------
 struct Overlay_t
 {
     UINT8   x1;

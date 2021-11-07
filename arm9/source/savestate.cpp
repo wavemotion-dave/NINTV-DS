@@ -25,6 +25,9 @@ extern UINT16 global_frames;
 
 #define CURRENT_SAVE_FILE_VER   0x0006
 
+// ------------------------------------------------------
+// We allow up to 3 saves per game. More than enough.
+// ------------------------------------------------------
 struct 
 {
     UINT16                  saveFileVersion;
@@ -39,6 +42,9 @@ extern UINT16 jlp_ram[];
 
 char savefilename[128];
 
+// ----------------------------------------------------------------------------------------------------
+// Write a new save file to disc. We stamp out the slot that is being written using the NDS timestamp.
+// ----------------------------------------------------------------------------------------------------
 BOOL do_save(const CHAR* filename, UINT8 slot)
 {
     BOOL didSave = FALSE;
@@ -60,7 +66,7 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
     // Only a few games utilize JLP RAM...
     if (currentRip->JLP16Bit) currentRip->JLP16Bit->getState(&jlpState[slot]);
 
-    
+    // Write the entire save states as a single file... overwrite if it exists.
 	FILE* file = fopen(filename, "wb+");
 
 	if (file != NULL) 
@@ -74,6 +80,9 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
 	return didSave;
 }
 
+// ----------------------------------------------------------------------------------
+// Load a save state from a slot... caller should check that the slot is populated.
+// ----------------------------------------------------------------------------------
 BOOL do_load(const CHAR* filename, UINT8 slot)
 {
 	BOOL didLoadState = FALSE;
@@ -112,6 +121,12 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
 	return didLoadState;
 }
 
+
+// -------------------------------------------------------------------------
+// Store the save state file - use global config to determine where to 
+// place the .sav file (or, by default, it goes in the same directory 
+// as the game .rom or .bin file that was loaded).
+// -------------------------------------------------------------------------
 void get_save_filename(void)
 {
     if (myGlobalConfig.save_dir == 1) 
@@ -142,6 +157,11 @@ void get_save_filename(void)
     strcat(savefilename, ".sav");
 }
 
+// -----------------------------------------------------------------------------
+// Read the save file into memory... we purosely keep this fairly small (less
+// than 32k) for 2 reasons - it takes up valuable RAM and we would prefer that
+// this take up less than 1 sector on the SD card (default sector size is 32k).
+// -----------------------------------------------------------------------------
 void just_read_save_file(void)
 {
     if (currentRip != NULL)
@@ -163,6 +183,10 @@ void just_read_save_file(void)
 }
 
 
+// -----------------------------------------------------------------------------
+// Call into all the objects in the system to gather the save state information
+// and then write that set of data out to the disc...
+// -----------------------------------------------------------------------------
 void state_save(UINT8 slot)
 {
     if (currentRip != NULL)
@@ -175,6 +199,10 @@ void state_save(UINT8 slot)
     }
 }
 
+// ------------------------------------------------------------------------------
+// Pull back state information and call into all of the objects to restore
+// the saved state and get us back to the save point... 
+// ------------------------------------------------------------------------------
 BOOL state_restore(UINT8 slot)
 {
     if (currentRip != NULL)
@@ -193,6 +221,9 @@ BOOL state_restore(UINT8 slot)
 }
 
 
+// -----------------------------------
+// Wipe the save file from disc... 
+// -----------------------------------
 void clear_save_file(void)
 {
     if (currentRip != NULL)
@@ -206,6 +237,11 @@ void clear_save_file(void)
 }
 
 
+// ------------------------------------------------------------------
+// A mini state machine / menu so the user can pick which of the
+// three possible save slots to use for save / restore. They can
+// also erase the save file if they choose...
+// ------------------------------------------------------------------
 #define SAVE_MENU_ITEMS 8
 const char *savestate_menu[SAVE_MENU_ITEMS] = 
 {
@@ -219,6 +255,11 @@ const char *savestate_menu[SAVE_MENU_ITEMS] =
     "EXIT THIS MENU",  
 };
 
+// ------------------------------------------------------------------------
+// Show to the user if this slot has any data -- if it has data, we also
+// show the date and time at which the game was saved... we use the NDS
+// time/date for the saved timestamp.
+// ------------------------------------------------------------------------
 void show_slot_info(UINT8 slot)
 {
     if (slot == 255)
@@ -241,6 +282,9 @@ void show_slot_info(UINT8 slot)
     }
 }
 
+// ------------------------------------------------------------------------
+// Show the save/restore menu and let the user pick an option (or exit).
+// ------------------------------------------------------------------------
 void savestate_entry(void)
 {
     UINT8 current_entry = 0;

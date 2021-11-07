@@ -19,6 +19,14 @@
 #include "CRC32.h"
 #include "Rip.h"
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This is our internal database for .bin and .int files. Since intellivision ROMs can be mapped to various segments in the 16-bit memory, we need to know
+// where to load the various chunks of data in the .int or .bin file.  We have a smaller table below this for .ROM files... those don't need a memory map
+// as the .ROM contains that information... but .ROMs are really bad at setting things like iVoice or JLP flags so we force that if needed...
+//
+// Note: there is nothing magical about 5 mappe segments... we just limit to that so the table isn't huge. It can be expanded if needed in the future.
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 const struct Database_t database[] =
 {
     {0xD7C78754, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -232,6 +240,9 @@ const struct Database_t database[] =
 };
 
 
+// ------------------------------------------------------------------------------------------------------------------------
+// For .ROM files we can force the user of JLP or Intellivoice if needed... sometimes the .ROM files don't get this right.
+// ------------------------------------------------------------------------------------------------------------------------
 const struct SpecialRomDatabase_t rom_database[] =
 {
     {0xef662b2b, "Grail of the Gods (JLP)",                     0,  1,  0},    
@@ -242,6 +253,9 @@ const struct SpecialRomDatabase_t rom_database[] =
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0}
 };
 
+// --------------------------------------------------------------------------------------------------------------------------
+// See if the current .bin or .rom file is in the database. We use the file CRC to look that up as it's a good unique index.
+// --------------------------------------------------------------------------------------------------------------------------
 const struct Database_t *FindDatabaseEntry(UINT32 crc)
 {
     int idx=0;
@@ -256,6 +270,9 @@ const struct Database_t *FindDatabaseEntry(UINT32 crc)
     return NULL;   
 }
 
+// ---------------------------------------------------------
+// Look up a .ROM by CRC in the internal rom database...
+// ---------------------------------------------------------
 const struct SpecialRomDatabase_t *FindRomDatabaseEntry(UINT32 crc)
 {
     int idx=0;
@@ -271,4 +288,3 @@ const struct SpecialRomDatabase_t *FindRomDatabaseEntry(UINT32 crc)
 }
 
 // End of Line
-
