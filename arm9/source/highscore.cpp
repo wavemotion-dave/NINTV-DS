@@ -19,26 +19,39 @@
 #include "bgMenu-White.h"
 #include "bgBottom.h"
 
+// ------------------------------------------------------------------------------
+// With only 125 released games plus 25-50 prototypes and 50-ish homebrews,
+// this 300 game limit should be more than enough to handle the entire library.
+// ------------------------------------------------------------------------------
 #define MAX_HS_GAMES    300
-#define HS_VERSION      0x0002
+#define HS_VERSION      0x0002      // Changing this will wipe high scores on the next install
 
+// --------------------------------------------------------------------------
+// We allow sorting on various criteria. By default sorting is high-to-low.
+// --------------------------------------------------------------------------
 #define HS_OPT_SORTMASK  0x0003
 #define HS_OPT_SORTLOW   0x0001
 #define HS_OPT_SORTTIME  0x0002
 #define HS_OPT_SORTASCII 0x0003
 
-#pragma pack(1)
+#pragma pack(1)     // Keep things tight...
 
+// ---------------------------------------------------------
+// Each score has this stuff... Initials, score and date.
+// ---------------------------------------------------------
 struct score_t 
 {
-    char    initials[4];
-    char    score[7];
-    char    reserved[5];
-    uint16  year;
+    char    initials[4];        // With NULL this is only 3 ascii characters
+    char    score[7];           // Six digits of score 
+    char    reserved[5];        // For the future...
+    uint16  year;               // Date score was achieved. We'll auto-fill this from DS time
     uint8   month;
     uint8   day;
 };
 
+// -------------------------------------------------------------------------------------------
+// We have up to 10 scores for each game... along with some notes and the sorting options...
+// -------------------------------------------------------------------------------------------
 struct highscore_t
 {
     UINT32  crc;
@@ -47,6 +60,11 @@ struct highscore_t
     struct score_t scores[10];
 };
 
+// -----------------------------------------------------------------------------------
+// We save up to 300 games worth of scores. We also have a spot for default initials 
+// so we can re-use the last initials for the last high-score entered. Saves time 
+// for most people who are always the ones using their DS system.
+// -----------------------------------------------------------------------------------
 struct highscore_full_t
 {
     uint16 version;
@@ -56,6 +74,17 @@ struct highscore_full_t
 } highscores;
 
 
+// -----------------------------------------------------
+// A single score entry and high-score line to edit...
+// -----------------------------------------------------
+struct score_t score_entry;
+char hs_line[33];
+
+
+// ------------------------------------------------------------------------------------
+// Run through the entire highscores data and get a checksum. Mostly to make sure
+// that it hasn't been tampered with or corrupted on disk.
+// ------------------------------------------------------------------------------------
 uint32 highscore_checksum(void)
 {
     char *ptr = (char *)&highscores;
@@ -68,6 +97,11 @@ uint32 highscore_checksum(void)
     return sum;
 }
 
+
+// ------------------------------------------------------------------------------
+// Read the high score file, if it exists. If it doesn't exist or if the file
+// is not the right version and/or is corrupt (crc check), reset to defaults.
+// ------------------------------------------------------------------------------
 void highscore_init(void) 
 {
     bool create_defaults = 0;
@@ -84,6 +118,10 @@ void highscore_init(void)
         fread(&highscores, sizeof(highscores), 1, fp);
         fclose(fp);
         
+        // --------------------------------------------
+        // If the high score version is wrong or if 
+        // the checksum is wrong, reset to defaults
+        // --------------------------------------------
         if (highscores.version != HS_VERSION) create_defaults = 1;
         if (highscore_checksum() != highscores.checksum) create_defaults = 1;
     }
@@ -116,6 +154,10 @@ void highscore_init(void)
 }
 
 
+// ------------------------------------------------------------------------------------
+// Save the high score file to disc. This gets saved in the /data directory and this
+// directory is created if it doesn't exist (mostly likely does if using TWL++)
+// ------------------------------------------------------------------------------------
 void highscore_save(void) 
 {
     FILE *fp;
@@ -123,29 +165,38 @@ void highscore_save(void)
     DIR* dir = opendir("/data");
     if (dir)
     {
-        /* Directory exists. */
-        closedir(dir);
+        closedir(dir);  // Directory exists... close it out and move on.
     }
     else
     {
-        mkdir("/data", 0777);
+        mkdir("/data", 0777);   // Otherwise create the directory...
     }
     
-    // Ensure version and checksum are right...
+    // --------------------------------------------------------
+    // Set our current highscore file version and checksum...
+    // --------------------------------------------------------
     highscores.version = HS_VERSION;
     highscores.checksum = highscore_checksum();
 
+    // -------------------------------------------------------
+    // Open file in binary mode... overwrite if it exists...
+    // -------------------------------------------------------
     fp = fopen("/data/NINTV-DS.hi", "wb+");
     if (fp != NULL)
     {
+        // -----------------------------------------
+        // And write the whole shebang!
+        // -----------------------------------------
         fwrite(&highscores, sizeof(highscores), 1, fp);
         fclose(fp);
     }
 }
 
-struct score_t score_entry;
-char hs_line[33];
 
+// ------------------------------------------------------------------------
+// We provide 4 different sorting options... show them for the user...
+// Note: the default is high-to-low which does to show clarification text.
+// ------------------------------------------------------------------------
 void highscore_showoptions(uint16 options)
 {
     if ((options & HS_OPT_SORTMASK) == HS_OPT_SORTLOW)
@@ -166,6 +217,9 @@ void highscore_showoptions(uint16 options)
     }
 }
 
+// -----------------------------------------------------
+// Show the 10 scores for this game... 
+// -----------------------------------------------------
 void show_scores(short foundIdx, bool bShowLegend)
 {
     dsPrintValue(3,3,0, (char*)highscores.highscore_table[foundIdx].notes);
@@ -197,6 +251,11 @@ void show_scores(short foundIdx, bool bShowLegend)
     highscore_showoptions(highscores.highscore_table[foundIdx].options);
 }
 
+// -------------------------------------------------------------------------------
+// We need to sort the scores according to the sorting options. We are using a
+// very simple bubblesort which is very slow but with only 10 scores, this is
+// still blazingly fast on the NDS.
+// -------------------------------------------------------------------------------
 char cmp1[21];
 char cmp2[21];
 void highscore_sort(short foundIdx)
@@ -257,6 +316,12 @@ void highscore_sort(short foundIdx)
     }    
 }
 
+
+// -------------------------------------------------------------------------
+// Let the user enter a new highscore. We look for up/down and other entry
+// keys and show the new score on the screen. This is old-school up/down to
+// "dial-in" the score by moving from digit to digit. Much like the Arcade.
+// -------------------------------------------------------------------------
 void highscore_entry(short foundIdx, UINT32 crc)
 {
     char bEntryDone = 0;
@@ -390,6 +455,9 @@ void highscore_entry(short foundIdx, UINT32 crc)
     show_scores(foundIdx, true);
 }
 
+// ----------------------------------------------------------------
+// Let the user enter options and notes for the current game...
+// ----------------------------------------------------------------
 void highscore_options(short foundIdx, UINT32 crc)
 {
     uint16 options = 0x0000;
@@ -525,6 +593,12 @@ void highscore_options(short foundIdx, UINT32 crc)
     show_scores(foundIdx, true);
 }
 
+// ------------------------------------------------------------------------
+// Entry point for the high score table. We are passed in the crc of the 
+// current game. We use the crc to check the high score database and see
+// if there is already saved highscore data for this game.  At the point
+// where this is called, the high score init has already been called.
+// ------------------------------------------------------------------------
 void highscore_display(UINT32 crc) 
 {
     short foundIdx = -1;

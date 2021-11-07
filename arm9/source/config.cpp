@@ -25,6 +25,16 @@
 #include "Emulator.h"
 #include "Rip.h"
 
+// -------------------------------------------------------------------------
+// Configuration structures - we keep configuration at two levels:
+//   Global - things that apply to all games (or defaults for new games)
+//   Game   - things that apply only to one game - indexed by game CRC32
+// We use a master config struct to hold one global config and up to 300
+// individual game configs... and we save them out with version number
+// and CRC to the SD card. The version number is critical because we can
+// change that to force a reset to defaults if we change our master
+// configration defaults in code...
+// -------------------------------------------------------------------------
 struct Config_t         myConfig;
 struct GlobalConfig_t   myGlobalConfig;
 struct AllConfig_t      allConfigs;
@@ -32,10 +42,15 @@ struct AllConfig_t      allConfigs;
 extern AudioMixer *audioMixer;
 extern Rip *currentRip;
 
+// 0 = Game Options
+// 1 = Global Options
 UINT8 options_shown = 0;        // Start with GAME config... can toggle to '1' for Global Options...
 
 int display_options_list(bool);
 
+// --------------------------------------------
+// Set the global configuration defaults...
+// --------------------------------------------
 static void SetDefaultGlobalConfig(void)
 {
     memset(myGlobalConfig.last_path,            0x00, 256);
@@ -69,39 +84,43 @@ static void SetDefaultGlobalConfig(void)
     memset(myGlobalConfig.reserved, 0x00, 256);
 }
 
+// --------------------------------------------
+// Set one game-specific default. We track 
+// this in the myConfig global data struct.
+// --------------------------------------------
 static void SetDefaultGameConfig(void)
 {
-    myConfig.game_crc           = 0x00000000;
-    myConfig.frame_skip_opt     = 1;
-    myConfig.overlay_selected   = 0;
-    myConfig.key_A_map          = 12;
-    myConfig.key_B_map          = 12;
-    myConfig.key_X_map          = 13;
-    myConfig.key_Y_map          = 14;
-    myConfig.key_L_map          = 0;
-    myConfig.key_R_map          = 1;
-    myConfig.key_START_map      = myGlobalConfig.key_START_map_default;
-    myConfig.key_SELECT_map     = myGlobalConfig.key_SELECT_map_default;
-    myConfig.controller_type    = 0;
-    myConfig.sound_clock_div    = myGlobalConfig.def_sound_quality;
-    myConfig.dpad_config        = 0;
-    myConfig.target_fps         = 0;
-    myConfig.spare0             = 0;
-    myConfig.palette            = myGlobalConfig.def_palette;
-    myConfig.stretch_x          = ((160 / 256) << 8) | (160 % 256);
-    myConfig.offset_x           = 0;
-    myConfig.spare3             = 0;
-    myConfig.spare4             = 0;
-    myConfig.spare5             = 0;
-    myConfig.key_AX_map         = 0;
-    myConfig.key_XY_map         = 0;
-    myConfig.key_YB_map         = 0;
-    myConfig.key_BA_map         = 0;
+    myConfig.game_crc                       = 0x00000000;
+    myConfig.frame_skip_opt                 = 1;
+    myConfig.overlay_selected               = 0;
+    myConfig.key_A_map                      = 12;
+    myConfig.key_B_map                      = 12;
+    myConfig.key_X_map                      = 13;
+    myConfig.key_Y_map                      = 14;
+    myConfig.key_L_map                      = 0;
+    myConfig.key_R_map                      = 1;
+    myConfig.key_START_map                  = myGlobalConfig.key_START_map_default;
+    myConfig.key_SELECT_map                 = myGlobalConfig.key_SELECT_map_default;
+    myConfig.controller_type                = 0;
+    myConfig.sound_clock_div                = myGlobalConfig.def_sound_quality;
+    myConfig.dpad_config                    = 0;
+    myConfig.target_fps                     = 0;
+    myConfig.spare0                         = 0;
+    myConfig.palette                        = myGlobalConfig.def_palette;
+    myConfig.stretch_x                      = ((160 / 256) << 8) | (160 % 256);
+    myConfig.offset_x                       = 0;
+    myConfig.spare3                         = 0;
+    myConfig.spare4                         = 0;
+    myConfig.spare5                         = 0;
+    myConfig.key_AX_map                     = 0;
+    myConfig.key_XY_map                     = 0;
+    myConfig.key_YB_map                     = 0;
+    myConfig.key_BA_map                     = 0;
 }
 
 // ---------------------------------------------------------------------------
-// Write out the XEGS.DAT configuration file to capture the settings for
-// each game.
+// Write out the NINTV-DS.DAT configuration file to capture the settings for
+// each game.  This one file contains global settings + 300 game settings.
 // ---------------------------------------------------------------------------
 void SaveConfig(bool bShow)
 {
@@ -136,7 +155,9 @@ void SaveConfig(bool bShow)
         memcpy(&allConfigs.game_config[slot], &myConfig, sizeof(struct Config_t));
     }
     
+    // -------------------------------------------------------------------------------------
     // Compute the CRC32 of everything and we can check this as integrity in the future...
+    // -------------------------------------------------------------------------------------
     allConfigs.crc32 = CRC32::getCrc((UINT8*)&allConfigs, sizeof(allConfigs) - sizeof(UINT32));
 
     DIR* dir = opendir("/data");
@@ -163,6 +184,10 @@ void SaveConfig(bool bShow)
 }
 
 
+// -------------------------------------------------------------------------
+// Find the NINTV-DS.DAT file and load it... if it doesn't exist, then
+// default values will be used for the entire configuration database...
+// -------------------------------------------------------------------------
 void FindAndLoadConfig(void)
 {
     FILE *fp;
@@ -297,6 +322,10 @@ const struct options_t Global_Option_Table[] =
 
 struct options_t *Current_Option_Table;
 
+// -------------------------------------------------------------------------------------------------
+// After settings hae changed, we call this to apply the new options to the game being played.
+// This is also called when loading a game and after the configuration if read from NINTV-DS.DAT
+// -------------------------------------------------------------------------------------------------
 void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
@@ -316,6 +345,11 @@ void ApplyOptions(void)
     REG_BG3X = (myConfig.offset_x) << 8;
 }
 
+
+// ------------------------------------------------------------------
+// Display the current list of options: either the global list
+// or the individual game list of options...
+// ------------------------------------------------------------------
 int display_options_list(bool bFullDisplay)
 {
     char strBuf[35];

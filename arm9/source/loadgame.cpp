@@ -28,21 +28,31 @@
 #include "loadgame.h"
 #include "debugger.h"
 
+// -------------------------------------------------------------
+// We support up to 512 files per directory. More than enough.
+// -------------------------------------------------------------
 FICA_INTV intvromlist[512];
-unsigned short int countintv=0, ucFicAct=0;
+u16 countintv=0, ucFicAct=0;
 char szName[256];
 char szName2[256];
 
 extern Rip *currentRip;
 
-bool bFavsOnlyMode = false;
+u8 bFavsOnlyMode = false;
 
+// -------------------------------------------------------------------------------
+// Load the cart from a file on disk. We support .bin/.int (raw binary) and we 
+// also support .ROM (intellicart). The .bin file must have a matching CRC in
+// our internal database or else must have a matching <filename>.cfg file so 
+// we know how to load the binary into memory. The intellivision allows the 
+// ROM to be located in many possible memory segments... the .ROM will give
+// us this information and is easier to deal with as a self-contained file.
+// -------------------------------------------------------------------------------
 BOOL LoadCart(const CHAR* filename)
 {
     if (strlen(filename) < 5)
         return FALSE;
 
-    //convert .bin and .rom to .rip, since our emulation only knows how to run .rip
     const CHAR* extStart = filename + strlen(filename) - 4;
     if (strcmpi(extStart, ".int") == 0 || strcmpi(extStart, ".bin") == 0)
     {
@@ -89,6 +99,13 @@ BOOL LoadCart(const CHAR* filename)
     
     return TRUE;
 }
+
+// -----------------------------------------------------------------------
+// If this is the first time we are being asked to load a directory of
+// games, we will check the configuration to see if we should start in
+// one of the common directories:  /roms or /roms/intv ... otherwise
+// we will just open up in the last directory the user picked.
+// -----------------------------------------------------------------------
 void CheckFirstTimeLoad(void)
 {
   static bool bFirstTime = true;
@@ -108,6 +125,12 @@ void CheckFirstTimeLoad(void)
   }
 }
 
+// ---------------------------------------------------------------------------------------------
+// If the exec.bin was not found, we will do a search for it in the current directory
+// to see if we get a match via CRC32.  We keep our search as fast as possible, we 
+// will only look at files that are exactly 8k in size.  This will still take a solid
+// second or two on the NDS - it's better if the user has the right filename to avoid this.
+// ---------------------------------------------------------------------------------------------
 void FindAndLoadExec(char *szFoundName)
 {
   // Look through all files in the current directory to see if we get a CRC32 match...
@@ -141,6 +164,13 @@ void FindAndLoadExec(char *szFoundName)
   }    
 }
 
+
+// ---------------------------------------------------------------------------------------------
+// If the grom.bin was not found, we will do a search for it in the current directory
+// to see if we get a match via CRC32.  We keep our search as fast as possible, we 
+// will only look at files that are exactly 2k in size.  This will still take a solid
+// second or two on the NDS - it's better if the user has the right filename to avoid this.
+// ---------------------------------------------------------------------------------------------
 void FindAndLoadGrom(char *szFoundName)
 {
   // Look through all files in the current directory to see if we get a CRC32 match...
@@ -174,6 +204,13 @@ void FindAndLoadGrom(char *szFoundName)
   }    
 }
 
+
+// ---------------------------------------------------------------------------------------------
+// If the ivoice.bin was not found, we will do a search for it in the current directory
+// to see if we get a match via CRC32.  We keep our search as fast as possible, we 
+// will only look at files that are exactly 2k in size.  This will still take a solid
+// second or two on the NDS - it's better if the user has the right filename to avoid this.
+// ---------------------------------------------------------------------------------------------
 void FindAndLoadIVoice(char *szFoundName)
 {
   // Look through all files in the current directory to see if we get a CRC32 match...
@@ -207,6 +244,10 @@ void FindAndLoadIVoice(char *szFoundName)
   }    
 }
 
+
+// ---------------------------------------------------------------------------------------------
+// Peripheral roms are basically our BIOS files... grom.bin, exec.bin and ivoice.bin
+// ---------------------------------------------------------------------------------------------
 BOOL LoadPeripheralRoms(Peripheral* peripheral)
 {
     UINT16 count = peripheral->GetROMCount();
@@ -252,13 +293,19 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 }
 
 
+// ---------------------------------------------------------------------------------------------
+// Let the user know what buttons they can press to load various peripheral roms...
+// ---------------------------------------------------------------------------------------------
 void dsDisplayLoadInstructions(void)
 {
   dsPrintValue(1,22,0,(char*)"SEL=MARK, STA=SAVEFAV, L/R=FAVS");
   dsPrintValue(1,23,0,(char*)"A=LOAD, X=JLP, Y=IVOICE, B=BACK");
 }
 
-// Find files (.int) available
+// ---------------------------------------------------------------------------------------------
+// This is our custom sorting compare routine. Directories always sort to the top otherwise
+// we do a case-insensitive sort.
+// ---------------------------------------------------------------------------------------------
 int intvFilescmp (const void *c1, const void *c2) 
 {
   FICA_INTV *p1 = (FICA_INTV *) c1;
@@ -275,7 +322,10 @@ int intvFilescmp (const void *c1, const void *c2)
   return strcasecmp (p1->filename, p2->filename);    
 }
 
-
+// ----------------------------------------------------------------------------------------------
+// Determine if this game is one of our 'favs'. We do a hash crc32 on the title of the game
+// which is much faster than trying to get CRCs of the actual files in a directory (too slow).
+// ----------------------------------------------------------------------------------------------
 bool isFavorite(char *filename)
 {
     for (int i=0; i<64; i++)
@@ -291,6 +341,9 @@ bool isFavorite(char *filename)
     return false;
 }
 
+// ----------------------------------------------------------------------------------------
+// Set the current filename as a favorite. We use the CRC32 of the filename as the hash.
+// ----------------------------------------------------------------------------------------
 void setFavorite(char *filename)
 {    
     for (int i=0; i<64; i++)
@@ -303,6 +356,10 @@ void setFavorite(char *filename)
     }
 }
 
+
+// ----------------------------------------------------------------------------------------
+// Clear the current filename as a favorite. We use the CRC32 of the filename as the hash.
+// ----------------------------------------------------------------------------------------
 void clrFavorite(char *filename)
 {
     for (int i=0; i<64; i++)
@@ -318,6 +375,11 @@ void clrFavorite(char *filename)
 }
 
 
+// ----------------------------------------------------------------------------------------
+// Find all .bin, .int and .rom files in the current directory (or, if this is the first
+// time we are loading up files, use the global configuration to determine what directory
+// we should be starting in... after the first time we just load up the current directory).
+// ----------------------------------------------------------------------------------------
 ITCM_CODE void intvFindFiles(void) 
 {
   static bool bFirstTime = true;
@@ -360,7 +422,9 @@ ITCM_CODE void intvFindFiles(void)
       }
       else 
       {
+        // ------------------------------------------------
         // Filter out the BIOS files from the list...
+        // ------------------------------------------------
         if (strcasecmp(szName2, "grom.bin") == 0) continue;
         if (strcasecmp(szName2, "exec.bin") == 0) continue;
         if (strcasecmp(szName2, "ivoice.bin") == 0) continue;
@@ -388,10 +452,22 @@ ITCM_CODE void intvFindFiles(void)
     }
     closedir(pdir);
   }
+    
+  // ----------------------------------------------
+  // If we found any files, go sort the list...
+  // ----------------------------------------------
   if (countintv)
+  {
     qsort (intvromlist, countintv, sizeof (FICA_INTV), intvFilescmp);
+  }
 }
 
+// --------------------------------------------------------------------------
+// Display the files - up to 18 in a page. This is carried over from the 
+// oldest emulators I've worked on and there is some bug in here where
+// it occasinoally gets out of sync... it's minor enough to not be an
+// issue but at some point this routine should be re-written...
+// --------------------------------------------------------------------------
 ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 {
   unsigned int ucBcl,ucGame;
@@ -433,6 +509,9 @@ ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 
 
 
+// --------------------------------------------------------------------------
+// Let the user see all relevant ROM files and pick the one they want...
+// --------------------------------------------------------------------------
 unsigned int dsWaitForRom(char *chosen_filename)
 {
   bool bDone=false, bRet=false;
@@ -522,6 +601,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
     else {
       ucBas = 0;
     }
+      
+    // -------------------------------------------------------------
+    // Left and Right on the D-Pad will scroll 1 page at a time...
+    // -------------------------------------------------------------
     if (keysCurrent() & KEY_RIGHT)
     {
       if (!ucSBas)
@@ -543,6 +626,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
     else {
       ucSBas = 0;
     }
+      
+    // -------------------------------------------------------------
+    // Left and Right on the D-Pad will scroll 1 page at a time...
+    // -------------------------------------------------------------
     if (keysCurrent() & KEY_LEFT)
     {
       if (!ucSHaut)
@@ -565,7 +652,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
     else {
       ucSHaut = 0;
     }
-      
+    
+    // --------------------------------------------------------------------
+    // L/R Shoulder Buttons will toggle between all games and just favs...
+    // --------------------------------------------------------------------
     if (keysCurrent() & (KEY_L | KEY_R))
     {
         bFavsOnlyMode = !bFavsOnlyMode;
@@ -587,12 +677,18 @@ unsigned int dsWaitForRom(char *chosen_filename)
         WAITVBL;
     }
 
+    // -------------------------------------------------------------------------
+    // They B key will exit out of the ROM selection without picking a new game
+    // -------------------------------------------------------------------------
     if ( keysCurrent() & KEY_B )
     {
       bDone=true;
       while (keysCurrent() & KEY_B);
     }
       
+    // -------------------------------------------------------
+    // The SELECT key will toggle this game as a 'favorite'
+    // -------------------------------------------------------
     if ( keysCurrent() & KEY_SELECT )
     {
         if (!intvromlist[ucFicAct].directory)
@@ -607,6 +703,9 @@ unsigned int dsWaitForRom(char *chosen_filename)
         }
     }
 
+    // --------------------------------------------------------------------------
+    // Since the user can select favorites, we also allow saving those out here.
+    // --------------------------------------------------------------------------
     if ( keysCurrent() & KEY_START )
     {
         dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
@@ -616,6 +715,9 @@ unsigned int dsWaitForRom(char *chosen_filename)
         while (keysCurrent() & KEY_START);
     }
       
+    // -------------------------------------------------------------------
+    // Any of these keys will pick the current ROM and try to load it...
+    // -------------------------------------------------------------------
     if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y || keysCurrent() & KEY_X)
     {
       if (!intvromlist[ucFicAct].directory)
@@ -646,8 +748,10 @@ unsigned int dsWaitForRom(char *chosen_filename)
         while (keysCurrent() & KEY_A);
       }
     }
-      
+    
+    // --------------------------------------------
     // If the filename is too long... scroll it.
+    // --------------------------------------------
     if (strlen(intvromlist[ucFicAct].filename) > 29) 
     {
       ucFlip++;
@@ -675,10 +779,12 @@ unsigned int dsWaitForRom(char *chosen_filename)
     swiWaitForVBlank();
   }
 
+  // ----------------------------------------------------------------------
+  // We are going back to the main emulation now - restore bottom screen.
+  // ----------------------------------------------------------------------
   dsShowScreenMain(false);
 
   return bRet;
 }
 
 // End of Line
-

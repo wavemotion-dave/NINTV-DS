@@ -21,7 +21,6 @@
 
 #define FIFO_LOCATION 0x1800
 #define FIFO_MAX_SIZE 64
-//#define FIFO_END      (FIFO_LOCATION + FIFO_MAX_SIZE)
 
 TYPEDEF_STRUCT_PACK( _SP0256State
 {
@@ -72,7 +71,7 @@ extern  INT32 mode;
 extern  INT32 repeatPrefix;
 extern  INT32 command;
 
-extern INT32 fifoBytes[64];
+extern UINT16 fifoBytes[64];
 
 
 class SP0256 : public Processor, public AudioProducer

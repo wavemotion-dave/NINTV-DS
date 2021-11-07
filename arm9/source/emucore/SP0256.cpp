@@ -29,7 +29,7 @@ UINT16 stack                    __attribute__((section(".dtcm")));
 INT32 mode                      __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 
-INT32 fifoBytes[64] __attribute__((section(".dtcm")));
+UINT16 fifoBytes[64] __attribute__((section(".dtcm")));
 
 UINT8 sp_idle __attribute__((section(".dtcm"))) = 1;
 
@@ -796,7 +796,7 @@ void SP0256::PAUSE(INT32 immed4) {
     periodInterpolation = 0;
 }
 
-void SP0256::decode() {
+ITCM_CODE void SP0256::decode() {
     INT32 immed4 = readBits(4);
     INT32 nextInstruction = readBitsReverse(4);
     switch (nextInstruction) {
@@ -854,7 +854,7 @@ void SP0256::decode() {
     }
 }
 
-INT32 SP0256::flipEndian(INT32 value, INT32 bits) {
+ITCM_CODE INT32 SP0256::flipEndian(INT32 value, INT32 bits) {
     INT32 output = 0;
     INT32 bitMask = 1;
     for (INT32 i = 0; i < bits; i++) {
