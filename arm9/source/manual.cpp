@@ -25,6 +25,14 @@
 #include "Emulator.h"
 #include "Rip.h"
 
+// -------------------------------------------------------------------
+// We have a buffer to snarf in the entire text of the .man file. 
+// This is plenty big - even the most complex manuals are less than 
+// about 8k and we support twice that (roughly 16k max).
+//
+// The .man files must not exceed 32 bytes per line - they will be
+// cut-off otherwise.  Such is life with a small screen!
+// -------------------------------------------------------------------
 UINT16 buf_lines = 0;
 char man_buf[MAX_MAN_ROWS][MAX_MAN_COLS +1];
 
@@ -85,7 +93,11 @@ static void ReadManual(void)
     }
 }
 
-void DisplayManual(UINT16 start_line)
+
+// -------------------------------------------------------------------------
+// Show one page (16 lines) of the manual starting at start_line
+// -------------------------------------------------------------------------
+void DisplayManualPage(UINT16 start_line)
 {
     char strBuf[MAX_MAN_COLS +1];
     UINT16 idx=0;
@@ -97,6 +109,11 @@ void DisplayManual(UINT16 start_line)
     dsPrintValue(0, 23, 0, (char*)"UP/DN TO SCROLL, LEFT/RIGHT PAGE");
 }
 
+// -------------------------------------------------------------------------
+// Show the manual on the lower screen... we show up to 16 rows at a time 
+// and allow the user to scroll up/down 1 line at a time using the dpad L/R
+// or a whole page at a time using the left and right buttons.
+// -------------------------------------------------------------------------
 void dsShowManual(void)
 {
     static UINT16 top_line = 0;
@@ -114,7 +131,7 @@ void dsShowManual(void)
         ReadManual();
         last_crc = currentRip->GetCRC();
     }
-    DisplayManual(top_line);
+    DisplayManualPage(top_line);
     while (!bDone)
     {
         keys_pressed = keysCurrent();
@@ -123,7 +140,7 @@ void dsShowManual(void)
             if (top_line > 0) 
             {
                 top_line--;
-                DisplayManual(top_line);
+                DisplayManualPage(top_line);
             }
         }
         if (keys_pressed & KEY_DOWN) 
@@ -131,7 +148,7 @@ void dsShowManual(void)
             if (top_line < (MAX_MAN_ROWS-ROWS_PER_PAGE)) 
             {
                 top_line++;
-                DisplayManual(top_line);
+                DisplayManualPage(top_line);
             }
         }
         
@@ -149,14 +166,14 @@ void dsShowManual(void)
                 {
                     top_line = 0;
                 }
-                DisplayManual(top_line);
+                DisplayManualPage(top_line);
             }
             if (keys_pressed & KEY_RIGHT) 
             {
                 if (top_line < (MAX_MAN_ROWS-ROWS_PER_PAGE)) 
                 {
                     top_line += ROWS_PER_PAGE;
-                    DisplayManual(top_line);
+                    DisplayManualPage(top_line);
                 }
             }
             if ((keys_pressed & KEY_B) || (keys_pressed & KEY_A))

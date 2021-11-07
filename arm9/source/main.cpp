@@ -16,8 +16,14 @@
 #include "ds_tools.h"
 #include "highscore.h"
 
+// ------------------------------------------------------------------------
+// If we are being passed a file on the command line - we store it here.
+// ------------------------------------------------------------------------
 char file[64];
 
+// --------------------------------------------------------
+// DSi default is 15KHz but we reduce this for DS mode...
+// --------------------------------------------------------
 UINT16 __attribute__((section(".dtcm"))) mySoundFrequency = 15360;
 
 int main(int argc, char **argv) 
@@ -36,6 +42,7 @@ int main(int argc, char **argv)
     
   srand(time(0));
     
+  // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
   if (!isDSiMode()) mySoundFrequency = 12000;
     
   // Init the high-score tables...
@@ -47,7 +54,7 @@ int main(int argc, char **argv)
   // Setup the main screen handling
   dsInitScreenMain();
     
-  // Handle command line argument...
+  // Handle command line argument... mostly for TWL++
   if (argc > 1) 
   {
       // We want to start in the directory where the file is being launched...
@@ -82,3 +89,4 @@ int main(int argc, char **argv)
   return 0;
 }
 
+// End of file

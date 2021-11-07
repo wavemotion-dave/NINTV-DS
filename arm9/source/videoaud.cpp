@@ -364,6 +364,9 @@ ITCM_CODE void VideoBusDS::render()
     global_frames++;
     VideoBus::render();
 
+    // ------------------------------------------------------
+    // Check if we are skipping rendering this frame...
+    // ------------------------------------------------------
     if (renderz[myConfig.frame_skip_opt][global_frames&3])
     {
         UINT8 chan = 0;

@@ -14,6 +14,9 @@
 #include <nds.h>
 #include "types.h"
 
+// ----------------------------------------------------
+// This is roughly 16k of text... more than enough...
+// ----------------------------------------------------
 #define MAX_MAN_COLS    32
 #define MAX_MAN_ROWS    512
 #define ROWS_PER_PAGE   18

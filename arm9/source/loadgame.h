@@ -14,10 +14,11 @@
 #include <nds.h>
 #include "types.h"
 
-typedef struct FICtoLoad {
-  char   filename[128];
-  bool   directory;
-  bool   favorite;
+typedef struct FICtoLoad 
+{
+    char   filename[128];
+    bool   directory;
+    bool   favorite;
 } FICA_INTV;
 
 extern BOOL LoadCart(const CHAR* filename);
