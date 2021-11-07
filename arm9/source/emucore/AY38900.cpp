@@ -607,6 +607,7 @@ ITCM_CODE void AY38900::renderMOBs()
         
         //start at this memory location
         UINT16 card = mobs[i].cardNumber;
+        // If we are double Y, the STIC requires the card be on an even boundary. Without this we get glitches in the ape climbing in D1K/D2K
         if (mobs[i].doubleYResolution) card &= 0xFE;
         UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + (card << 3) : ((card & 0x3F) << 3));
 

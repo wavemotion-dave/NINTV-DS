@@ -17,6 +17,9 @@
 #define BACKTAB_SIZE     0xF0
 #define BACKTAB_LOCATION 0x200
 
+extern UINT16  bt_image[BACKTAB_SIZE];
+extern UINT16  bt_imageLatched[BACKTAB_SIZE];
+
 TYPEDEF_STRUCT_PACK(_BackTabRAMState
 {
     UINT16       image[BACKTAB_SIZE];
@@ -31,9 +34,9 @@ class BackTabRAM : public RAM
         BackTabRAM();
         void reset();
 
-        inline UINT16 peek(UINT16 location) {return image[location-BACKTAB_LOCATION];}
+        inline UINT16 peek(UINT16 location) {return bt_image[location-BACKTAB_LOCATION];}
         void poke(UINT16 location, UINT16 value);
-        inline UINT16 peek_direct(UINT16 offset) { return image[offset]; }
+        inline UINT16 peek_direct(UINT16 offset) { return bt_image[offset]; }
 
         inline BOOL areColorAdvanceBitsDirty() {return colorAdvanceBitsDirty;}
         inline BOOL isDirty(UINT16 location) {return dirtyBytes[location-BACKTAB_LOCATION];}
@@ -43,18 +46,16 @@ class BackTabRAM : public RAM
         void LatchRow(UINT8 row);
         void markCleanLatched();
         inline BOOL isDirtyLatched(UINT16 location) { return dirtyBytesLatched[location];}
-        inline UINT16 peek_latched(UINT16 offset) { return imageLatched[offset]; }
+        inline UINT16 peek_latched(UINT16 offset) { return bt_imageLatched[offset]; }
         
         void getState(BackTabRAMState *state);
         void setState(BackTabRAMState *state);
 
     private:
-        UINT16       image[BACKTAB_SIZE];
         UINT8        dirtyBytes[BACKTAB_SIZE];
         UINT8        dirtyRAM;
         UINT8        colorAdvanceBitsDirty;
-        UINT16  imageLatched[BACKTAB_SIZE];
-        UINT8   dirtyBytesLatched[BACKTAB_SIZE];
+        UINT8        dirtyBytesLatched[BACKTAB_SIZE];
 };
 
 #endif

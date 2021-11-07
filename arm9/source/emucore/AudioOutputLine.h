@@ -13,6 +13,7 @@
 #define AUDIOOUTPUTLINE_H
 
 #include "types.h"
+
 extern INT64 sampleBuffer[2];
 extern INT32 commonClockCounter[2];
 extern INT64 commonClocksPerSample[2];
@@ -23,7 +24,4 @@ extern void playSample0(INT16 sample);
 extern void playSample1(INT16 sample);
 extern void audio_output_line_reset();
 
-
 #endif
-
-

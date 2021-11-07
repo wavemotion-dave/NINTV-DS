@@ -216,7 +216,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
 
 void AY38914::getState(AY38914State *state)
 {
-    memcpy(state->registers, registers.memory, 0x0E * sizeof(UINT16));
+    memcpy(state->registers, psg_memory, 0x0E * sizeof(UINT16));
     memcpy(&state->channel0, &channel0, sizeof(struct Channel_t));
     memcpy(&state->channel1, &channel1, sizeof(struct Channel_t));
     memcpy(&state->channel2, &channel2, sizeof(struct Channel_t));
@@ -243,7 +243,7 @@ void AY38914::getState(AY38914State *state)
 
 void AY38914::setState(AY38914State *state)
 {
-    memcpy(registers.memory, state->registers, 0x0E * sizeof(UINT16));
+    memcpy(psg_memory, state->registers, 0x0E * sizeof(UINT16));
     memcpy(&channel0, &state->channel0, sizeof(struct Channel_t));
     memcpy(&channel1, &state->channel1, sizeof(struct Channel_t));
     memcpy(&channel2, &state->channel2, sizeof(struct Channel_t));

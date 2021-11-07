@@ -30,6 +30,10 @@ void audio_output_line_reset(void)
     }
 }
 
+// --------------------------------------------------------------------------------------
+// These two functions used to be a single function - but it's called often enough that
+// it's worth having a play sample 0/1 as we use 0 for the normal PSG and 1 for SP0256.
+// --------------------------------------------------------------------------------------
 ITCM_CODE void playSample0(INT16 sample)
 {
     sampleBuffer[0] += currentSample[0] * commonClocksPerSample[0];

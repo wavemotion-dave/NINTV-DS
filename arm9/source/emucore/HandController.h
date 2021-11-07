@@ -17,7 +17,6 @@
 
 class HandController : public AY38914_InputOutput, public InputConsumer
 {
-
     public:
         HandController(INT32 id, const CHAR* n);
         virtual ~HandController();
@@ -34,7 +33,7 @@ class HandController : public AY38914_InputOutput, public InputConsumer
         void evaluateInputs();
 
         void setOutputValue(UINT16 value);
-        UINT16 getInputValue();
+        inline UINT16 getInputValue() { return inputValue; }
 
     private:
         const CHAR* name;

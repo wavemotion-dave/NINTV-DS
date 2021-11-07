@@ -38,12 +38,18 @@ class MemoryBus
         inline UINT16 peek(UINT16 location) {if (readableMemoryCounts[location] == 1) return readableMemorySpace[location][0]->peek(location); else return peek_slow(location);}
         UINT16 peek_slow(UINT16 location);
         
-        // Since PC fetched memory should be static and 16-bits... we pre-load into fast_memory[] for blazingly (relatively!) fast access...
-        //inline UINT16 peek_pc(void) {return fast_memory[r[7]];}        
+        // ------------------------------------------------------------------------------------------------
+        // Since PC fetched memory should be mostly static and 16-bits... we pre-load into fast_memory[] 
+        // for blazingly (relatively!) fast access... we are utilizing VRAM which is a bit faster than 
+        // main ram - especially when we don't hit the cache just right.
+        // ------------------------------------------------------------------------------------------------
         inline UINT16 peek_pc(void) {return *((UINT16 *)0x06880000 + r[7]);}        
         
         void poke(UINT16 location, UINT16 value);
 
+        // ------------------------------------------------------
+        // We use this to pre-fill the fast_memory[] buffer... 
+        // ------------------------------------------------------
         UINT16 peek_slow_and_safe(UINT16 location) 
         {
            if (readableMemorySpace[location])
@@ -53,15 +59,6 @@ class MemoryBus
                else
                   return 0xFFFF;
            } else return 0xFFFF;
-        }
-        
-        void poke_slow_and_safe(UINT16 location, UINT16 value) 
-        {
-           if (writeableMemorySpace[location])
-           {
-               if (writeableMemorySpace[location][0])
-                  writeableMemorySpace[location][0]->poke(location,value);
-           }           
         }
 
         void addMemory(Memory* m);

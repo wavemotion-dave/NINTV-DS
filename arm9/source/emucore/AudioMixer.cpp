@@ -17,6 +17,13 @@
 #include "../ds_tools.h"
 #include "../config.h"
 
+// ----------------------------------------------------------------------------------------------
+// The audio mixer takes the output from the various sound producers for the Intellivision
+// and combines them into a single 16-bit buffer. This buffer is what we pull from in the
+// VSoundHandler() to provide the ARM7 with the sound samples to play. This takes a significant
+// amount of NDS CPU so we try to make this as efficient as possible. Lots of ITCM and DTCM
+// memory usage here to squeeze out the best performance...
+// ----------------------------------------------------------------------------------------------
 UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
 UINT16 currentSampleIdx16 __attribute__((section(".dtcm"))) = 0;
 UINT8  currentSampleIdx8 __attribute__((section(".dtcm"))) = 0;
@@ -101,9 +108,14 @@ INT32 AudioMixer::getClockSpeed()
     return clockSpeed;
 }
 
-extern  INT32 clockDivisor;
+// ----------------------------------------------------------------------------------------------------------------
+// This is CPU heavy... we've optimized this as much as possible. We only support two audio producers - the normal
+// PSG sound chip for the Intellivision and the SP0256 chip for the speech on Intellivoice. For non-intellivoice
+// games (or when the intellivoice is idle), we can just deal with a single sound producer which helps...
+// ----------------------------------------------------------------------------------------------------------------
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
+    extern  INT32 clockDivisor;
     INT32 totalSample = 0;
     extern UINT8 sp_idle;
     if (clockDivisor == SOUND_DIV_DISABLE) return minimum;
@@ -169,6 +181,12 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
         }
     }
     
+    // ------------------------------------------------------------------------------------------------
+    // If we are DSi mode, we will have exactly 256 samples per frame. It's worth checking for that
+    // and then we can use a UINT8 variable which doesn't need to be masked/checked as it will auto
+    // roll-over 0-255 for best speed possible.  The DS-LITE/PHAT will have less samples as it has 
+    // a slower sample rate.
+    // ------------------------------------------------------------------------------------------------
     if (b_dsi_mode)
     {
         audio_mixer_buffer[currentSampleIdx8++] = totalSample;

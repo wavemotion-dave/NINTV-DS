@@ -15,6 +15,11 @@
 #include "AY38914_Registers.h"
 #include "../ds_tools.h"
 
+// ---------------------------------------------------------------------------
+// The 15 registers of the sound chip are worth putting in fast memory...
+// ---------------------------------------------------------------------------
+UINT16   psg_memory[0x0E] __attribute__((section(".dtcm")));
+
 AY38914_Registers::AY38914_Registers(UINT16 address)
 : RAM(0x10, address, 0xFFFF, 0xFFFF)
 {}
@@ -26,7 +31,7 @@ void AY38914_Registers::init(AY38914* ay38914)
 
 void AY38914_Registers::reset()
 {
-    memset(memory, 0, sizeof(memory));
+    memset(psg_memory, 0, sizeof(psg_memory));
 }
 
 ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
@@ -39,7 +44,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     value;
             channel0.periodValue = (channel0.period
                     ? channel0.period : 0x1000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x01:
@@ -48,7 +53,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     value;
             channel1.periodValue = (channel1.period
                     ? channel1.period : 0x1000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x02:
@@ -57,7 +62,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     value;
             channel2.periodValue = (channel2.period
                     ? channel2.period : 0x1000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x03:
@@ -66,7 +71,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     value;
             envelopePeriodValue = (envelopePeriod
                     ? (envelopePeriod << 1) : 0x20000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x04:
@@ -75,7 +80,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     (value<<8);
             channel0.periodValue = (channel0.period
                     ? channel0.period : 0x1000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x05:
@@ -84,7 +89,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     (value<<8);
             channel1.periodValue = (channel1.period
                     ? channel1.period : 0x1000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x06:
@@ -93,7 +98,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     (value<<8);
             channel2.periodValue = (channel2.period
                     ? channel2.period : 0x1000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x07:
@@ -102,7 +107,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     (value<<8);
             envelopePeriodValue = (envelopePeriod
                     ? (envelopePeriod << 1) : 0x20000);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x08:
@@ -119,7 +124,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             noiseIdle = channel0.noiseDisabled &
                     channel1.noiseDisabled &
                     channel2.noiseDisabled;
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x09:
@@ -127,7 +132,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             noisePeriod = value;
             noisePeriodValue = (noisePeriod
                     ? (noisePeriod << 1) : 0x0040);
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x0A:
@@ -139,7 +144,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             envelopeVolume = (envelopeAtak ? 0 : 15);
             envelopeCounter = envelopePeriodValue;
             envelopeIdle = FALSE;
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x0B:
@@ -147,7 +152,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             channel0.envelope = !!(value & 0x0010);
             channel0.volume = (value & 0x000F);
             channel0.isDirty = TRUE;
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x0C:
@@ -155,7 +160,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             channel1.envelope = !!(value & 0x0010);
             channel1.volume = (value & 0x000F);
             channel1.isDirty = TRUE;
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x0D:
@@ -163,7 +168,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             channel2.envelope = !!(value & 0x0010);
             channel2.volume = (value & 0x000F);
             channel2.isDirty = TRUE;
-            memory[location] = value;
+            psg_memory[location] = value;
             break;
 
         case 0x0E:
@@ -185,7 +190,7 @@ ITCM_CODE UINT16 AY38914_Registers::peek(UINT16 location)
         case 0x0F:
             return ay38914->psgIO0->getInputValue();
         default:
-            return memory[location];
+            return psg_memory[location];
     }
 }
 

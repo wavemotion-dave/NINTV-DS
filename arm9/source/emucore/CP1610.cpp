@@ -14,7 +14,10 @@
 #include "types.h"
 #include "../debugger.h"
 
-#define MAX(v1, v2) (v1 > v2 ? v1 : v2)
+// ------------------------------------------------------------------------------
+// We store the "fast buffer" out in video RAM which is faster than main RAM if 
+// there is a cache "miss". Experimentally, this buys us about 10% speed up.
+// ------------------------------------------------------------------------------
 #define PEEK_FAST(x) *((UINT16 *)0x06880000 + (x))
 
 //the eight registers available in the CP1610
@@ -49,6 +52,7 @@ CP1610::CP1610(MemoryBus* m, UINT16 resetAddress,
 {
 }
 
+// The clock speed is hard-coded to the NTSC frequency...
 INT32 CP1610::getClockSpeed() {
     return 3579545;
 }

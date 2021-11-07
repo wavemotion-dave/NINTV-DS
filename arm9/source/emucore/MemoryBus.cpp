@@ -34,6 +34,17 @@ public:
 } MyUnusedMemory;
 
 
+// -------------------------------------------------------------------------------
+// This is a serious resource hog... it's multiple 16-bit 64k arrays take
+// up a significant bit of our RAM... the max overlapped memories is what
+// soaks up quite a bit of main RAM. We limit this to only 3 overlapping
+// memories per address location which is sufficient provided we are only
+// loading normal ROMs into a stock intellivision with, at most, an intellivoice
+// or the JLP cart as the only peripherals... still, this is a strain on the
+// older DS-LITE/PHAT.  The original BLISS core allowed something like 16 
+// overlapping memory regions which barely fit into the DSi and wouldn't run
+// on the DS-LITE/PHAT so we've stripped that way down to the bare essentials.
+// -------------------------------------------------------------------------------
 MemoryBus::MemoryBus()
 {
     UINT32 size = 1 << (sizeof(UINT16) << 3);
@@ -49,7 +60,7 @@ MemoryBus::MemoryBus()
             writeableMemorySpace[i][j] = &MyUnusedMemory;
         }
     }
-    readableMemoryCounts = (UINT16 *) 0x06820000; // Use video memory ... slightly faster
+    readableMemoryCounts = (UINT16 *) 0x06820000; // Use video memory ... slightly faster and saves main RAM
     memset(readableMemoryCounts, 0, sizeof(UINT16) * size);
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
@@ -254,6 +265,10 @@ void MemoryBus::removeAll()
         removeMemory(mappedMemories[0]);
 }
 
+// ------------------------------------------------------------------------------------------------------
+// This only needs to be called if we are in a region that might have multiple things mapped to it... 
+// Most of the PC ROM access will go through the normal peek() handler which is significantly faster...
+// ------------------------------------------------------------------------------------------------------
 ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
 {
     UINT16 numMemories = readableMemoryCounts[location];
@@ -266,6 +281,9 @@ ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
     return value;
 }
 
+// ---------------------------------------------------------------------------------------
+// Poke is less common than peek... so we're less concerned about optimization here.
+// ---------------------------------------------------------------------------------------
 ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
 {
     UINT8 numMemories = writeableMemoryCounts[location];
@@ -275,7 +293,7 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
         writeableMemorySpace[location][i]->poke(location, value);
     }
     
-    // For the lower 4K... keep the "fast memory" updated
+    // For the lower 4K ... keep the "fast memory" updated
     if (location < 0x1000)
     {
         *((UINT16 *)0x06880000 + location) = value;

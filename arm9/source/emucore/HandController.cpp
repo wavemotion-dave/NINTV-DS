@@ -8,7 +8,7 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
-
+#include <nds.h>
 #include "HandController.h"
 #include "Intellivision.h"
 
@@ -63,7 +63,7 @@ HandController::~HandController()
 int ds_key_input[3][16] = {0};   // Set to '1' if pressed... 0 if released
 int ds_disc_input[3][16] = {0};  // Set to '1' if pressed... 0 if released.
 
-void HandController::evaluateInputs()
+ITCM_CODE void HandController::evaluateInputs()
 {
     inputValue = 0;
     bool keypad_active = false;
@@ -98,8 +98,4 @@ void HandController::resetInputConsumer()
 void HandController::setOutputValue(UINT16)
 {}
 
-UINT16 HandController::getInputValue()
-{
-    return inputValue;
-}
 

@@ -11,6 +11,14 @@
 #include <nds.h>
 #include "BackTabRAM.h"
 
+// ---------------------------------------------------------------------------
+// We access the backtab ram often enough that it's worth putting these into
+// the .DTCM fast memory... each array takes up 240 bytes.
+// ---------------------------------------------------------------------------
+UINT16  bt_image[BACKTAB_SIZE]             __attribute__((section(".dtcm")));
+UINT16  bt_imageLatched[BACKTAB_SIZE]      __attribute__((section(".dtcm")));
+
+extern UINT8 bLatched;
 
 BackTabRAM::BackTabRAM()
 : RAM(BACKTAB_SIZE, BACKTAB_LOCATION, 0xFFFF, 0xFFFF)
@@ -21,29 +29,34 @@ void BackTabRAM::reset()
     dirtyRAM = TRUE;
     colorAdvanceBitsDirty = TRUE;
     for (UINT16 i = 0; i < BACKTAB_SIZE; i++) {
-        image[i] = 0;
+        bt_image[i] = 0;
         dirtyBytes[i] = TRUE;
-        imageLatched[i] = 0;
+        bt_imageLatched[i] = 0;
         dirtyBytesLatched[i] = TRUE;
     }
 }
 
-
+// -------------------------------------------------------------------------------------
+// We check to see if the location already has the same value - if so we don't process
+// which would set the dirty byte and such... this check gets us some additional speed!
+// -------------------------------------------------------------------------------------
 ITCM_CODE void BackTabRAM::poke(UINT16 location, UINT16 value)
 {
     location -= BACKTAB_LOCATION;
 
-    if (image[location] == value)
+    if (bt_image[location] == value)
         return;
 
-    if ((image[location] & 0x2000) != (value & 0x2000))
+    if ((bt_image[location] & 0x2000) != (value & 0x2000))
         colorAdvanceBitsDirty = TRUE;
 
-    image[location] = value;
+    bt_image[location] = value;
     dirtyBytes[location] = TRUE;
 }
 
-ITCM_CODE void BackTabRAM::markClean() {
+
+ITCM_CODE void BackTabRAM::markClean() 
+{
     for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
         dirtyBytes[i] = FALSE;
     colorAdvanceBitsDirty = FALSE;
@@ -54,7 +67,7 @@ ITCM_CODE void BackTabRAM::LatchRow(UINT8 row)
 {
     for (int i=(row*20); i<((row+1)*20); i++) 
     {
-        imageLatched[i] = image[i];
+        bt_imageLatched[i] = bt_image[i];
         dirtyBytesLatched[i] = dirtyBytes[i];
     }
 }
@@ -66,10 +79,14 @@ ITCM_CODE void BackTabRAM::markCleanLatched()
     colorAdvanceBitsDirty = FALSE;
 }
 
-extern UINT8 bLatched;
+
+// -----------------------------------------------------------------------------------
+// For saving and restoring the state, we only save either the normal backtab RAM or
+// the latched backtab RAM since they are mutually exclusive depending on the game.
+// -----------------------------------------------------------------------------------
 void BackTabRAM::getState(BackTabRAMState *state)
 {
-    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = (bLatched ? imageLatched[i] : image[i]);
+    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = (bLatched ? bt_imageLatched[i] : bt_image[i]);
     for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = (bLatched ? dirtyBytes[i] : dirtyBytesLatched[i]);
     state->dirtyRAM = dirtyRAM;
     state->colorAdvanceBitsDirty = colorAdvanceBitsDirty;
@@ -79,12 +96,12 @@ void BackTabRAM::setState(BackTabRAMState *state)
 {
     if (bLatched)
     {
-        for (int i=0; i<BACKTAB_SIZE; i++)  imageLatched[i] = state->image[i];
+        for (int i=0; i<BACKTAB_SIZE; i++)  bt_imageLatched[i] = state->image[i];
         for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytesLatched[i] = state->dirtyBytes[i];
     }
     else
     {
-        for (int i=0; i<BACKTAB_SIZE; i++)  image[i] = state->image[i];
+        for (int i=0; i<BACKTAB_SIZE; i++)  bt_image[i] = state->image[i];
         for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = state->dirtyBytes[i];
     }
     dirtyRAM = state->dirtyRAM;

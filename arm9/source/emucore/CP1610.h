@@ -26,6 +26,7 @@ extern UINT8 bCP1610_PIN_IN_BUSRQ;
 extern UINT8 bCP1610_PIN_IN_INTRM; 
 extern UINT8 bCP1610_PIN_OUT_BUSAK;
 
+#define MAX(v1, v2) (v1 > v2 ? v1 : v2)
 
 TYPEDEF_STRUCT_PACK( _CP1610State
 {

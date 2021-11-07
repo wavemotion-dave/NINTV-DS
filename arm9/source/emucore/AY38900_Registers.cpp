@@ -13,6 +13,10 @@
 #include "AY38900.h"
 #include "AY38900_Registers.h"
 
+// ----------------------------------------------------------------------------------
+// The Video has 64 dedicated registers that can be used - we declare them in 
+// the .DTCM fast memory for better performance...
+// ----------------------------------------------------------------------------------
 UINT16   memory[0x40] __attribute__((section(".dtcm")));
 
 AY38900_Registers::AY38900_Registers()
@@ -29,7 +33,12 @@ void AY38900_Registers::reset()
     memset(memory, 0, sizeof(memory));
 }
 
-ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value) {
+// -----------------------------------------------------------------------------------------
+// The video chip registers can be accessed here... The STIC is only accessible to the CPU 
+// during the VBLANK periods so we have to check enabled before we allow any access here.
+// -----------------------------------------------------------------------------------------
+ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value) 
+{
     if (!enabled)
         return;
 
@@ -152,6 +161,7 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
 {
     if (!enabled)
         return location&0x3FFF;
+    
     location &= 0x3F;
 
     switch (location) {

@@ -28,6 +28,13 @@ Emulator::Emulator(const char* name)
     memset(usePeripheralIndicators, FALSE, sizeof(usePeripheralIndicators));
 }
 
+// -------------------------------------------------------------------------------------
+// We pre-load the 64k 16-bit memory into a fast buffer in VRAM where we have faster 
+// memory access (on average) than main RAM. Main RAM is faster if we have a cache
+// hit but a cache miss is very slow compared to VRAM. So we opt for the VRAM which
+// is very consistent in terms of reasonably fast access and it's 16-bit wide which
+// is perfect for the CP1610 emulation core.
+// -------------------------------------------------------------------------------------
 void Emulator::LoadFastMemory()
 {
     UINT16 *fast_memory;
@@ -225,18 +232,31 @@ void Emulator::RemovePeripheral(Peripheral* p)
         inputConsumerBus.removeInputConsumer(p->GetInputConsumer(i));
 }
 
+// --------------------------------------------------------------------------
+// This is the main entry point to allow the emulator to run 1 frame... 
+// Basically poll for inputs and then run 1 frame of CPU, PSG, STIC, etc.
+// --------------------------------------------------------------------------
 ITCM_CODE void Emulator::Run()
 {
     inputConsumerBus.evaluateInputs();
     processorBus.run();
 }
 
+// -----------------------------------------------------
+// Draw the screen - we call the NDS video render here.
+// -----------------------------------------------------
 ITCM_CODE void Emulator::Render()
 {
     videoBus->render();
 }
 
+// -------------------------------------------------------
+// Flush the audio - not much really to be done as 
+// the NDS audio handler is interrupt driven from TIMER2.
+// -------------------------------------------------------
 ITCM_CODE void Emulator::FlushAudio()
 {
     audioMixer->flushAudio();
 }
+
+// End of file

@@ -14,9 +14,10 @@
 
 #include "AudioOutputLine.h"
 
-/**
- * This interface is implemented by any piece of hardware that produces audio.
- */
+// --------------------------------------------------------------------------------
+// This interface is implemented by any piece of hardware that produces audio.
+// --------------------------------------------------------------------------------
+ 
 class AudioProducer
 {
     friend class AudioMixer;
