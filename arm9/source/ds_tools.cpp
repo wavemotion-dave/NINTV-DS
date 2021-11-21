@@ -906,6 +906,16 @@ ITCM_CODE void pollInputs(void)
         {
             ds_handle_meta(OVL_META_MENU);
         }
+        // SWITCH
+        else if (touch.px > myOverlay[OVL_META_SWITCH].x1  && touch.px < myOverlay[OVL_META_SWITCH].x2 && touch.py > myOverlay[OVL_META_SWITCH].y1 && touch.py < myOverlay[OVL_META_SWITCH].y2) 
+        {
+            ds_handle_meta(OVL_META_SWITCH);
+        }
+        // MANUAL
+        else if (touch.px > myOverlay[OVL_META_MANUAL].x1  && touch.px < myOverlay[OVL_META_MANUAL].x2 && touch.py > myOverlay[OVL_META_MANUAL].y1 && touch.py < myOverlay[OVL_META_MANUAL].y2) 
+        {
+            ds_handle_meta(OVL_META_MANUAL);
+        }
     }
     
 }
