@@ -98,36 +98,43 @@ char filename[128];
 // for custom overlays for details on the format this must be in. We could probably use a
 // bit more error checking here... but we expect customer overlay designers to know what's up.
 // -----------------------------------------------------------------------------------------------
-void load_custom_overlay(void)
+void load_custom_overlay(bool bCustomGeneric)
 {
     FILE *fp = NULL;
     // Read the associated .ovl file and parse it...
-    if (currentRip != NULL)
+    if (myGlobalConfig.ovl_dir == 1)        // In: /ROMS/OVL
     {
-        if (myGlobalConfig.ovl_dir == 1)        // In: /ROMS/OVL
-        {
-            strcpy(filename, "/roms/ovl/");
-        }
-        else if (myGlobalConfig.ovl_dir == 2)   // In: /ROMS/INTY/OVL
-        {
-            strcpy(filename, "/roms/intv/ovl/");
-        }
-        else if (myGlobalConfig.ovl_dir == 3)   // In: /DATA/OVL/
-        {
-            strcpy(filename, "/data/ovl/");
-        }
-        else
-        {
-            strcpy(filename, "./");              // In: Same DIR as ROM files
-        }
+        strcpy(filename, "/roms/ovl/");
+    }
+    else if (myGlobalConfig.ovl_dir == 2)   // In: /ROMS/INTY/OVL
+    {
+        strcpy(filename, "/roms/intv/ovl/");
+    }
+    else if (myGlobalConfig.ovl_dir == 3)   // In: /DATA/OVL/
+    {
+        strcpy(filename, "/data/ovl/");
+    }
+    else
+    {
+        strcpy(filename, "./");              // In: Same DIR as ROM files
+    }
+    
+    // If we have a game (RIP) loaded, try to find a matching overlay
+    if ((currentRip != NULL) && !bCustomGeneric)
+    {
         strcat(filename, currentRip->GetFileName());
         filename[strlen(filename)-4] = 0;
         strcat(filename, ".ovl");
-        fp = fopen(filename, "rb");
+    }
+    else
+    {
+        strcat(filename, "nintv-ds.ovl");   
     }
     
+    fp = fopen(filename, "rb");
+    
     // Default these to unused... 
-     bUseDiscOverlay = false;
+    bUseDiscOverlay = false;
     for (UINT8 i=0; i < DISC_MAX; i++)
     {
         myDisc[i].x1 = 255;
@@ -234,13 +241,14 @@ void load_custom_overlay(void)
       decompress(customMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) customPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else
+    else  // Just use the default overlay...
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
     }    
 }
+
 
 // ---------------------------------------------------------------------------
 // This puts the overlay on the main screen. It can be one of the built-in 
@@ -255,7 +263,7 @@ void show_overlay(void)
     
     if (myConfig.overlay_selected == 1) // Custom Overlay!
     {
-        load_custom_overlay();
+        load_custom_overlay(false);
     }
     else if (myConfig.overlay_selected == 2) // Treasure of Tarmin
     {
@@ -313,9 +321,7 @@ void show_overlay(void)
     }
     else    // Default Overlay...
     {
-      decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
+        load_custom_overlay(true);  // This will try to load nintv-ds.ovl or else default to the generic background
     }
     
     unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
