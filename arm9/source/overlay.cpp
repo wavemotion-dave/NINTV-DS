@@ -128,7 +128,7 @@ void load_custom_overlay(bool bCustomGeneric)
     }
     else
     {
-        strcat(filename, "nintv-ds.ovl");   
+        strcat(filename, "generic.ovl");   
     }
     
     fp = fopen(filename, "rb");
