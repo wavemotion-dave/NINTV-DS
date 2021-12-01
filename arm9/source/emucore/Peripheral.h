@@ -21,7 +21,7 @@
 
 #define MAX_PERIPHERALS     4
 #define MAX_COMPONENTS      4
-#define MAX_ROMS            12
+#define MAX_ROMS            16
 
 
 /**
