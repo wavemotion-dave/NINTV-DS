@@ -372,7 +372,7 @@ int display_options_list(bool bFullDisplay)
         }
     }
 
-    dsPrintValue(0,22, 0, (char *)"D-PAD TOGGLE. A=EXIT, START=SAVE");
+    dsPrintValue(0,22, 0, (char *)"D-PAD TOGGLE. B=EXIT, START=SAVE");
     if (options_shown == 0)
     {
         dsPrintValue(0,23, 0, (char *)"PRESS SELECT FOR GLOBAL OPTIONS ");
