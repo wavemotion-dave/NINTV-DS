@@ -49,6 +49,12 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.3 : 02-Dec-2021 by wavemotion-dave
+  * Added use of default.ovl which replaces the generic overlay if found.
+  * Cleanups for .bin file reading and other small tweaks under the hood.
+  * Code commented throughout for better maintainability.
+  * More than 50 manuals added thanks to ts-x!  See extras folder.
+  
 V3.2 : 04-Nov-2021 by wavemotion-dave
   * Fixed .cfg file reading (last line was skipped if there was no CR)
   * A few homebrew and missing games added to the internal database.
