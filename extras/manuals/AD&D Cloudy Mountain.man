@@ -9,26 +9,34 @@ ancient Crown of Kings, hidden
 deep within the caverns of the
 legendary Cloudy Mountain.
 
-WHEN YOU SEE THE GAME TITLE,
-SELECT A SKILL LEVEL.
-----------------------------
-[3]: GRAY - Easy
-[2]: BLUE - Medium
-[1]: RED - Medium Hard
-DISC: PURPLE - Hard
+CONTROLS:
+---------
+DISC - Walk (in caves)
+[1-4,6-9] - Move (strategy map),
+  Shoot arrows (in caves)
+SIDE ACTION BUTTONS - Run
+CLEAR - Pick up object
+[0] - Count arrows
+ENTER - Exit mountain
 
-OBSTACLES include:
+Select skill level on title scr:
+[3] - GRAY (Easy)
+[2] - BLUE (Medium)
+[1] - RED (Medium Hard)
+DISC - PURPLE (Hard)
+
+OBSTACLES INCLUDE:
 ------------------
-BROWN MOUNTAINS - Impassable
-BLACK MOUNTAINS - Contain caves
-that permit passage
-RIVERS - Can be crossed by BOAT
-FORESTS - Can be cleared by AXE
-WALLS - Contain gates that can
-be opened by KEY
+BROWN MOUNTAINS -- Impassable
+BLACK MOUNTAINS -- Contain caves
+  that permit passage
+RIVERS -- Can be crossed by BOAT
+FORESTS -- Can be cleared by AXE
+WALLS -- Contain gates that can
+  be opened by KEY
 
-TOOLS
------
+TOOLS:
+------
 A tool (boat, axe or key) is
 always guarded by a dangerous
 monster. A tool can be used
@@ -36,21 +44,21 @@ REPEATEDLY. Without the right
 tool, you are unable to pass an
 obstacle.
 
-BLACK MOUNTAINS contain:
+BLACK MOUNTAINS CONTAIN:
 ------------------------
-Monsters & other nasty creatures
-Tools needed to cross obstacles
-Arrows needed to slay monsters
-One exit
+-Monsters& other nasty creatures
+-Tools needed to cross obstacles
+-Arrows needed to slay monsters
+-One exit
 
 As you move next to a black mtn,
 it changes color to reflect the
 type of cave and its contents.
 
-GRAY - EASY. Quivers of arrows
-BLUE - MEDIUM. Boat and arrows
-RED - MED HARD. Axe and arrows
-PURPLE - HARD. Key and arrows
+GRAY (EASY) - Quivers of arrows
+BLUE (MEDIUM) - Boat and arrows
+RED (MED HARD) - Axe and arrows
+PURPLE (HARD) - Key and arrows
 
 WATCH OUT FOR MONSTERS!
 -----------------------
@@ -61,8 +69,8 @@ Blobs are indestructible (but
 slow). And a Winged Dragon takes
 three shots to kill.
 
-ATTACK ON A WARRIOR
--------------------
+ATTACK ON A WARRIOR:
+--------------------
 A warrior can be wounded or
 killed by monsters or by
 ricocheting arrows. The degree
@@ -72,14 +80,14 @@ means strong. Blue means wounded.
 Red means seriously hurt. If
 killed, a warrior disintegrates.
 
-EXIT
-----
+EXIT:
+-----
 A warrior cannot get out of a
 mountain the same way he got in.
 You must find the exit.
 
-RETURN TO STRATEGY MAP
-----------------------
+RETURN TO STRATEGY MAP:
+-----------------------
 After you have fought your way
 through a mountain, the Strategy
 Map appears. The entire
@@ -91,8 +99,8 @@ you pass through four more
 mountains. After that, monsters
 re-claim the first mountain.
 
-CLOUDY MOUNTAIN
----------------
+CLOUDY MOUNTAIN:
+----------------
 Find the TWO SEPARATE HALVES of
 the Crown of Kings and you win!
 Beware! Each half of the Crown
@@ -100,46 +108,46 @@ is guarded by one of the
 deadliest monsters of all -
 the Winged Dragons!
 
-STRATEGY TIPS
--------------
-1 - Start with an Easy game,
+STRATEGY TIPS:
+--------------
+1. Start with an Easy game,
 until you learn the character-
 istics of different monster
 types. Learn which sight and
 sound clues go with which
 monsters.
 
-2 - Approach all the accessible
+2. Approach all the accessible
 black mountains, before entering
 any of them, to find out which
 tools are in which mountains.
 
-3 - After entering your first
+3. After entering your first
 cave system, look for arrows
 before taking on any of the
 really nasty monsters. 3 arrows
 do not last long against dragons
 and snakes.
 
-4 - Move slowly in the caves and
+4. Move slowly in the caves and
 LISTEN. Many beasts can be heard
 as you approach.
 
-5 - When you find a monster
+5. When you find a monster
 guarding a tool or exit, be
 prepared to RUN in retreat,
 until you reach a place where
 you can get off a clear shot or
 two.
 
-6 - Practice bouncing arrows off
+6. Practice bouncing arrows off
 cave walls, to learn how they
 ricochet. The ability to shoot
 around corners gives you a
 distinct advantage over the
 monsters.
 
-7 - Learn to find and shoot
+7. Learn to find and shoot
 monsters in the dark. Remember
 that arrows follow corridors and
 bounce off walls in the dark.
