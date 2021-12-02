@@ -19,6 +19,13 @@ bees of them all -- the Buzz
 Bomber KILLER BEES. Spray them
 all and watch the points pile up. 
 
+CONTROLS:
+---------
+DISC - Move spray can right/left
+SIDE BUTTONS - Spray
+
+Press any key or DISC to start.
+
 OBJECT OF THE GAME:
 -------------------
 Spray bees as quickly as you can
@@ -41,13 +48,6 @@ Be thankful because you're going
 to need that can at the higher
 levels. The game gets tougher
 as you play.
-
-CONTROLS:
----------
-DISC - move spray can right/left
-SIDE BUTTONS - spray
-
-Press any key or DISC to start.
 
 THE SPRAY CAN:
 --------------
@@ -190,18 +190,18 @@ SCORING CHART:
 --------------
 Hitting a Worker Bee     100 pts
 Hummingbird Eats YELLOW Honeycmb:
-Top two screen tiers    1000 pts
-3rd, 4th and 5th tiers   800 pts
-All remaining tiers      500 pts
+ Top two screen tiers   1000 pts
+ 3rd, 4th and 5th tiers  800 pts
+ All remaining tiers     500 pts
 Hitting a Killer Bee    1000 pts
 Hummingbird Eats RED Honeycomb
-Top two screen tiers    2000 pts
-3rd, 4th and 5th tiers  1800 pts
-All remaining tiers     1500 pts
+ Top two screen tiers   2000 pts
+ 3rd, 4th and 5th tiers 1800 pts
+ All remaining tiers    1500 pts
 Beehives(after completing level)
-Hive on top two tiers   2000 pts
-3rd, 4th and 5th tiers  1600 pts
-All remaining tiers     1000 pts
+ Hive on top two tiers  2000 pts
+ 3rd, 4th and 5th tiers 1600 pts
+ All remaining tiers    1000 pts
 
 BONUS CAN RECEIVED AT 20,000 pts
                       40,000 pts

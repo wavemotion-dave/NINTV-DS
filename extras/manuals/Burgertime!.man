@@ -7,6 +7,16 @@ Your chef, Peter Pepper, is
 surrounded! Pickles and hot dogs
 are everywhere!
 
+CONTROLS:
+---------
+DISC - Move chef in 4 directions
+ANY SIDE BUTTON - Throw pepper
+
+Playing Speed: DISC=Fastest,
+1=Fast, 2=Medium, 3=Slow
+
+Press ENTER to start game.
+
 OBJECT OF THE GAME:
 -------------------
 Score points while building
@@ -18,16 +28,6 @@ nasties. Maximum point value is
 received for giving those foes
 a ride on a falling bun, patty,
 tomato, or lettuce leaf.
-
-CONTROLS:
----------
-DISC - Move chef in 4 directions
-SIDE BUTTONS - Throw pepper
-
-Playing Speed: DISC=Fastest,
-1=Fast, 2=Medium, 3=Slow
-
-Press ENTER to start game.
 
 THE CHEF:
 ---------
@@ -147,11 +147,11 @@ score of 255,999,950. GOOD LUCK!
 
 SCORING CHART:
 --------------
-Dropping hamburger part   50 pts
-Squashing a nasty        100 pts
-Giving 1 nasty a ride    500 pts
-Giving 2 nasties a ride 1000 pts
-Giving 3 nasties a ride 2000 pts
-Giving 4 nasties a ride 4000 pts
-Giving 5 nasties a ride 8000 pts
-Gobbling a pepper prize  500 pts
+Drop hamburger part       50 pts
+Squash a nasty           100 pts
+Give 1 nasty a ride      500 pts
+Give 2 nasties a ride  1,000 pts
+Give 3 nasties a ride  2,000 pts
+Give 4 nasties a ride  4,000 pts
+Give 5 nasties a ride  8,000 pts
+Gobble a pepper prize    500 pts

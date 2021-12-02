@@ -31,6 +31,25 @@ must fight for our survival. How
 long Atlantis survives is up to
 you. To your stations!"
 
+CONTROLS:
+---------
+DISC - Move Sight/Saucer
+TOP SIDE BUTTONS - Fire Left
+LOWER SIDE BUTTONS - Fire Right
+[0] - Launch Saucer
+[1] - Start
+[3] - Reset
+Difficulty:
+[4] - Easy
+[5] - Medium
+[6] - Hard
+Players:
+[7] - One player
+[9] - Two players
+Pause- Press 1+9 or 3+7 together
+
+Press DISC to begin game.
+
 OBJECTIVES:
 -----------
 # Blast Gorgon vessels before
@@ -46,24 +65,12 @@ destroy Gorgon vessels.
 # Battle through day, dusk, and
 night.
 
-CONTROLS:
----------
-Move Sight/Saucer - DISC
-Start - Press 1
-Reset - Press 3
-Difficulty - Press 4 for easy,
-5 for medium, 6 for hard
-Fire Left - TOP SIDE BUTTON
-Fire Right - LOWER SIDE BUTTON
-Launch Saucer - Press 0
-Pause- Press 1+9 or 3+7 together
-
 ATLANTIS ARSENAL:
 -----------------
-2 types of weapons make up the
+Two types of weapons make up the
 arsenal which defends Atlantis.
 
-Anti-aircraft Guns
+Anti-Aircraft Guns
 ------------------
 One anti-aircraft gun is
 positioned at each sentry post
@@ -132,28 +139,28 @@ General Tarrick's agents cracked
 tight Gorgon security and
 discovered the following:
 
-# There are 9 types of Gorgon
+# There are nine types of Gorgon
 vessels with variable flight
 patterns.
 
 # The Gorgon Fleet follows a
-rigid plan of attack. 4
+rigid plan of attack. Four
 identical ships form a squadron.
-3 different squadrons form a
+three different squadrons form a
 wave. Exception - by Day 10,
 heavy casualties cause the
 Gorgon Fleet to mix ship types
 in each squadron.
 
-# Duration of attack: 1 wave at
-dawn; 1 wave at dusk; 1 wave at
-night - for as many days as
-Atlantis can survive. Enemies
+# Duration of attack: One wave
+at dawn; one wave at dusk; one
+wave at night - for as many days
+as Atlantis can survive. Enemies
 fly faster every day.
 
 # A squadron begins its approach
 high above Atlantis. Each enemy
-ship tries to make 4 passes,
+ship tries to make four passes,
 from the left or right. Each
 pass brings the ship one level
 closer to Atlantis. In its
@@ -179,18 +186,17 @@ anticipate flight patterns.
 
 SCORING:
 --------
-# Day One
-~ 10 points for every hit scored
-by an anti-aircraft gun.
-~ 40 points for every enemy
-casualty caused by a saucer.
+Day One:
+ Anti-Aircraft Gun Hit    10 pts
+ Saucer Hit               40 pts
+Day Two and After:
+ Anti-Air Gun Hit  Day# x 10 pts
+ Saucer Hit        Day# x 40 pts
 
-# Day Two and After
-~ Each day Atlantis survives,
-your point award increases by 10
-points for each anti-aircraft
-gun hit and 40 points for each
-Sentinel Saucer strike.
+Example: On day three, earn 30
+points (3x10pts) for each anti-
+aircraft gun hit and 120 points
+(3x40pts) for each saucer hit.
 
 TACTICAL TIPS:
 --------------

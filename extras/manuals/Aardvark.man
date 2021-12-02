@@ -14,10 +14,9 @@ tongue.
 
 CONTROLS:
 ---------
-Extend Tongue - LEFT, RIGHT, UP
-or DOWN on the Disc
-Retract Tongue - Any side button
-Pause - Press 1 and 9 together
+DISC - Extend tongue
+ANY SIDE BUTTON - Retract Tongue
+Press 1+9 together - Pause
 
 SCORING:
 ---------------------------

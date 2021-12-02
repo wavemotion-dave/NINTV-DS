@@ -19,7 +19,6 @@ Select game type by using the
 "5" button. Toggle music On or
 Off at any time by pressing "2".
 
-
 HOW TO PLAY:
 ------------
 Press up, down, left, and right

@@ -5,13 +5,13 @@ BY ARTRAG, MUSIC BY NYUUNDERE,
 INSTRUCTIONS BY MTHOMPSON
 
 Seek the Grail Of The Gods
-through 10 randomly generated
-levels. Battle 14 monsters, from
-the lowly rat to the mighty
-dragon. Discover 25 different
-weapons and armors.
+through ten randomly generated
+levels. Battle fourteen monsters,
+from the lowly rat to the mighty
+dragon. Discover twenty-five
+different weapons and armors.
 
-Note: JLP support required.
+(Note: JLP support required)
 
 CONTROLS:
 ---------
@@ -36,11 +36,11 @@ GAME SCREEN:
 DP = Dungeon Depth
 LV = Experience Level
 XP = Experience Points on the
-current level, listed as N/M
-where N is how many points you
-currently have and M is the
-required number of points to
-gain one level in experience
+  current level, listed as N/M
+  where N is how many points you
+  currently have and M is the
+  required number of points to
+  gain one level in experience
 GD = Gold
 AT = Attack Level
 AR = Armor Level
@@ -72,5 +72,5 @@ currently are at. If you already
 have maximum hit points for your
 experience level, you won't see
 a difference. When you're below
--0- hit points, you are dead,
+zero hit points, you are dead,
 and the game is over.

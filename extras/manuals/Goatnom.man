@@ -14,8 +14,8 @@ enhanced!
 
 CONTROLS:
 ---------
-Any SIDE ACTION BUTTON to kick
-DISC to move
+DISC - Move
+SIDE ACTION BUTTONS - Kick
 
 HOW TO PLAY:
 ------------
@@ -26,17 +26,17 @@ kicking them when possible. Move
 using the DISC, and kick using
 the controller's ACTION BUTTONS.
 
-Spring - Eat fish, cans and
+Spring -- Eat fish, cans and
 shirts. Kick or avoid rocks.
 
-Summer - Eat popsicles, hot
+Summer -- Eat popsicles, hot
 dogs and bananas. Kick or avoid
 old tires.
 
-Fall - Eat pumpkins, apples and
+Fall -- Eat pumpkins, apples and
 skulls. Kick or avoid hammers.
 
-Winter - Eat stockings, candy
+Winter -- Eat stockings, candy
 canes and yellow snowballs. Kick
 or avoid deadly grenades.
 

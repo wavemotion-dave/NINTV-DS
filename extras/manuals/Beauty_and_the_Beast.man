@@ -14,6 +14,12 @@ birds and bats and leaps clean
 over rats - all to get his
 little love back!
 
+CONTROLS:
+---------
+DISC - Move Buford
+ANY SIDE BUTTON - Jump
+Press any button to start game.
+
 GAME OBJECTIVES:
 ----------------
 Earn the highest number of
@@ -28,14 +34,13 @@ glows. Complete as many
 buildings as possible. Game ends
 when Buford runs out of lives.
 
-CONTROLS:
----------
-Press any controller button to
-start game. Press any SIDE
-BUTTON to make Buford jump. Move
-Buford with the DISC. Walk left
-and right on ledges. Climb up or
-down at open windows.
+GAME PLAY:
+----------
+Press any SIDE BUTTON to make
+Buford jump. Move Buford with
+the DISC. Walk left and right on
+ledges. Climb up or down at open
+windows.
 
 Buford must be directly in front
 of an open window to climb up. 

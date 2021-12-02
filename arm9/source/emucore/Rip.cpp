@@ -219,16 +219,16 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                     else
                     {
                         char *ptr = nextLine;
-                        while (*ptr == ' ') ptr++;
+                        while ((*ptr == ' ') || (*ptr == '\t')) ptr++;
                         if (cfg_mode == 1)  // [mapping] Mode
                         {
                             if (*ptr == '$')
                             {
                                 ptr++;
                                 UINT16 start_addr = strtoul(ptr, &ptr, 16);
-                                while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
+                                while (*ptr == ' ' || *ptr == '\t' || *ptr == '-' || *ptr == '$') ptr++;
                                 UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
-                                while (*ptr == ' ' || *ptr == '=' || *ptr == '$') ptr++;
+                                while (*ptr == ' ' || *ptr == '\t' || *ptr == '=' || *ptr == '$') ptr++;
                                 UINT16 map_addr = strtoul(ptr, &ptr, 16);
                                 rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr));
                             }
@@ -239,7 +239,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                             {
                                 ptr++;
                                 UINT16 start_addr = strtoul(ptr, &ptr, 16);
-                                while (*ptr == ' ' || *ptr == '-' || *ptr == '$') ptr++;
+                                while (*ptr == ' ' || *ptr == '\t' || *ptr == '-' || *ptr == '$') ptr++;
                                 UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
                                 if (strstr(ptr, "RAM 8") != NULL)
                                 {

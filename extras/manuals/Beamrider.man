@@ -15,10 +15,11 @@ dodge from beam to beam.
 
 CONTROLS:
 ---------
-Move left or right - DISC
-Fire Lasers - TOP SIDE BUTTONS
-Torpedoes - LOWER SIDE BUTTONS
-Pause- Press 1+9 or 3+7 together
+DISC - Move left or right
+TOP SIDE BUTTONS - Fire Lasers
+LOWER SIDE BUTTONS - Torpedoes
+[1] - One player
+Press 1+9 or 3+7 together- Pause
 
 GETTING STARTED:
 ----------------

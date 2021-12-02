@@ -5,9 +5,9 @@ AND BRUNO FAIDUTTI
 
 CONTROLS:
 ---------
-Press 1 to stay in mine
-Press 2 to leave the mine
-Press ENTER to lock in choice
+[1] - Stay in mine
+[2] - Leave the mine
+ENTER - Lock in choice
 
 INSTRUCTIONS:
 -------------
