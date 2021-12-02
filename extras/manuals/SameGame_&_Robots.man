@@ -1,0 +1,216 @@
+SAMEGAME & ROBOTS
+(c)2012 INTELLIGENTVISION
+
+Strategy and planning is the
+name of the game regardless of
+which title you choose to test
+your wits against. Learn to
+analyze and predict how the game
+will unfold, to score the most
+points while successfully
+completing each game. Welcome to
+the peaceful world of SameGame
+and the tense world of Robots.
+Either choice is an addicting
+path.
+
+CONTROLS:
+---------
+DISC - Move cursor
+SIDE BUTTONS - Select piece
+[1-4]/[6-9] - Move robot
+[5] - Pass
+[0] - Bomb
+CLEAR - Hyperspace
+ENTER - Exit
+
+MENU OPTIONS:
+-------------
+There are three different games
+to choose from. Before starting
+any of the games, you have the
+option to have music play in the
+background. (See SameGame Rules
+for difference between Option 1
+and 2). Press number 4 to select
+the first song. Press again to
+continue going through the list
+of songs. When music is playing
+during a game, some sound
+effects are disabled. If the
+Intellivoice is connected,
+phrases will be spoken regard-
+less of whether music is playing
+or not (See Using Voice). Press
+1, 2, or 3 to begin game play.
+
+SAMEGAME:
+=========
+There are three different shapes
+on the board. Connect as many of
+one type of shape to score
+higher points and clear the
+board. There are two variations
+of the game.
+
+GAME PLAY
+---------
+The cursor will pulse in the
+center of the screen indicating
+that play is ready. There are
+three different shapes (Red
+Circle, Blue Triangle, and Green
+"X"). Use the DISC to move the
+cursor in one of four direc-
+tions: up, down, left and right.
+
+To remove shapes from the board,
+the cursor must be over a shape
+with similar joining shapes
+above, below, left and/or right.
+Press any SIDE ACTION BUTTON and
+all similar shapes touching will
+be removed from the screen.
+Remaining shapes will fall into
+the empty slots.
+
+When a column is cleared, the
+columns will shift from right to
+left. The points earned will
+float from the cursor to the
+right of the screen. The Turn
+Score will become the earned
+value and decrease as it is
+added to the Current Score.
+
+SCORING
+-------
+Points earned are calculated as
+the number of shapes cleared,
+times the number of shapes
+cleared minus one, divided by
+two. Example: 5 shapes cleared
+would score [ 5 x (5-1) / 2 ],
+or 10 points.
+
+SAMEGAME RULES
+--------------
+The following rules apply to
+SameGame Pro (Option 1):
+
+1. A minimum of two pieces of
+   the same shape must be in
+   contact to remove from the
+   board and collect points.
+2. The game ends when there are
+   no two adjacent shapes of the
+   same type on the board.
+3. 500 point bonus is awarded if
+   board is cleared of pieces.
+
+The following rules apply to
+SameGame (Option 2):
+
+1. One piece may be removed from
+   the board when the score is
+   over 100 points. 100 points
+   are deducted for this move.
+2. When two or more pieces of
+   the same shape are in contact
+   and removed from the board,
+   points are collected.
+3. The game ends when all pieces
+   are removed from the board or
+   there are no two pieces of
+   the same shape in contact and
+   score is less than 100 points.
+
+GAME OVER
+---------
+To exit the game early, press
+ENTER. When game play ends,
+press any button on the keypad
+to play a new round or press the
+DISC to return to the Main Menu.
+
+ROBOTS:
+=======
+Move your robot to destroy all
+the robots on the screen by
+making them collide into each
+other, hit their leftover scrap,
+or by using a bomb.
+
+GAME PLAY
+---------
+Your white robot will be in the
+center of the screen indicating
+that play is ready. Use the
+KEYPAD to move the cursor one
+block in any direction. For
+every move you make, the robots
+get one move. Robots will
+collide with each other when
+they move and two robots end up
+occupying one space at the same
+time. Robot collisions will
+leave behind a piece of scrap.
+
+Pressing CLEAR ("HYPERSPAPE") on
+the KEYPAD will move the cursor
+to a random location. Pressing
+"0" ("BOMB") on the KEYPAD will
+kill all robots one block away
+from the cursor. Landing on the
+Super Bomb will kill all the
+robots two blocks away after the
+robots move.
+
+Pressing ENTER ("EXIT") will let
+the robots move until they all
+crash or land on your robot; you
+will not be able to move. Use
+this when you are sure that all
+the robots will crash or when
+you want to exit the game early.
+
+SCORING
+-------
+Points are awarded at the end of
+each completed level:
+Use Bomb or Super Bomb     5 pts
+Robot Hits Scrap Piece    10 pts
+Robots Collide            15 pts
+Level Bonus Based on
+ Completion Time          20 pts
+         (increases 5 pts/level)
+
+GAME OVER
+---------
+You have one life. The game ends
+when a robot reaches your white
+robot. When the high scores are
+shown, press any button on the
+keypad to play a new round or
+press the DISC to return to the
+Main Menu.
+
+USING VOICE:
+------------
+Add an additional dimension to
+the game by using Intellivoice.
+
+In SameGame, you will hear:
+1. How many pieces of each shape
+   are on the board
+2. A rating for your score
+   ("Great", "Super", "Expert")
+3. Final Score
+4. Quitting early
+
+In Robots, you will hear:
+1. Count of Robots in the level
+2. Level completed
+3. Final Score
+
+...and more!

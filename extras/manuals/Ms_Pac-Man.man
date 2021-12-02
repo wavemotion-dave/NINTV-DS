@@ -1,0 +1,226 @@
+MS. PAC-MAN
+(c)2015 CARL MUELLER, JR.,
+INTELLIGENTVISION
+
+Pac-Man introduced the world to
+eating dots and ghosts. Ms. Pac-
+Man took the game play to the
+next level, making her the most
+popular game girl! Ms. Pac-Man
+for the Intellivision takes the
+game to an even higher level!
+Prepare yourself as you
+experience all the excitement of
+the arcade game plus more!
+
+CONTROLS:
+---------
+DISC - Move
+SIDE BUTTONS - Increase speed
+TOP SIDE BUTTONS - Store energy
+  pill (when playing as Pac-Man)
+[8] - Pause game
+
+STARTING GAME:
+--------------
+On the title screen, you may
+start the game or change how the
+game plays. Use the DISC to
+highlight your selection. Then
+press the ENTER key or any SIDE
+BUTTON to start the game, or go
+to the options screen.
+
+SELECTING OPTIONS:
+------------------
+Change how the game plays on the
+options screen. Choices are the
+character you play with, diffi-
+culty of game, amount of lives
+you have, score you get a bonus
+life at, if you can speed up,
+how ghosts think, game rules,
+and mazes played. Use the DISC
+to navigate up and down and
+change the option by going left
+and right. Press the SIDE KEY to
+return to the title screen.
+
+1P and 2P -- Change which char-
+acter you play with. Choose
+Ms. Pac-Man, Pac-Man or Junior.
+
+Mode -- This determines diffi-
+cultly. Select NORMAL or HARD.
+
+Lives -- Number of lives you
+have in the game. Select 1, 2,
+3 or 5 lives.
+
+Bonus -- The amount of points
+you need to reach to earn an
+extra life. Select 10,000, 
+15,000, 20,000 or no bonus.
+
+Speed -- Your character can move
+quickly or at a normal speed.
+OFF disables this ability, ON
+makes you move fast all the time,
+and BUTTON allows you to use the
+top side button to move fast.
+
+Ghosts -- Select how the ghosts
+move. Choose between red, pink,
+cyan, orange (they move as the
+arcade) and purple, tan, gray,
+light blue (they move slower
+than the arcade).
+
+Rules -- Play the game using Ms.
+Pac-Man game rules or Pac-Man
+game rules.
+
+Mazes -- ARCADE plays the
+original 4 arcade mazes, EXTRA
+continues the arcade feel, WIDE
+mazes use more of the screen so
+you may not see the border walls,
+STRANGE mazes may not have sym-
+metry or have other interesting
+designs, and RANDOM will select
+the next maze from all the mazes
+in the game.
+
+GAME PLAY:
+----------
+Your goal is to score as many
+points as you can while you eat
+dots, bonus objects bouncing
+around the maze, energy pills
+and ghosts. Score 15,000 points
+to earn an extra life.
+
+The game starts with you having
+three lives, which are indicated
+by Pac-Man symbols at the right
+side of the screen. When the
+game play begins, your character
+is located close to the center
+of the screen, just below the
+ghosts' reincarnation chamber in
+the center of the maze. Use your
+controller's DISC to move
+through the maze. When you pass
+over dots, you gobble them up,
+and score points. If you eat all
+the dots on the screen, the maze
+flashes momentarily, and you
+move on to the next level.
+
+Ms. Pac-Man encounters bouncing
+objects traveling around the
+maze. Gobble up these munchies
+and you score bonus points.
+
+But watch out! Fearful ghosts
+scurry about trying to gobble
+you up. Your only recourse is to
+eat an energy pill and then go
+after the ghosts. The pills are
+generally located in the corners
+of the maze, are much larger
+than the other dots, and blink.
+As soon as you gulp down an
+energy pill, the ghosts turn
+blue with fright. This is your
+chance to eat them!
+
+You earn 200 points for the 1st
+ghost, 400 points for the 2nd
+ghost, 800 for the 3rd ghost and
+a whopping 1,600 points for the
+4th ghost, all on the same
+energy pill.
+
+Unfortunately, the effect of
+eating an energy pill is short-
+lived, so you'll have to move
+fast. After the ghosts are
+gobbled up, their eyes head back
+to the chamber in the center of
+the screen for reincarnation. If
+you don't quickly gobble up the
+ghosts, they start to blink just
+before they turn back to their
+original colors and come after
+you again.
+
+HIGH SCORE:
+-----------
+The high score is shown on the
+title screen. It is set to 3,200
+points the first time you play
+the game. You will hear a "ding-
+ding" sound when you pass the
+high score.
+
+TIPS:
+-----
+1. Practice clearing the maze of
+dots before trying to gobble up
+the ghosts.
+
+2. Hang out near an energy pill
+before eating it and tease the
+ghosts into moving toward you.
+When the ghosts get close, eat
+the energy pill and gobble up
+all the ghosts.
+
+3. The openings in the maze are
+escape tunnels. Go through the
+tunnels to move quickly to the
+other side of the maze.
+
+4. Don't forget, different mazes
+have different tunnels and not
+all mazes have tunnels! Some are
+stranger than others!
+
+5. Each selectable character has
+special abilities:
+
+Ms. Pac-Man
+-----------
+Receives a slight speed boost
+when she eats an energy pill.
+
+Pac-Man
+-------
+Can store an energy pill to be
+used later. Store the pill by
+holding the TOP SIDE BUTTON. The
+energy pill is activated once
+you let go of the button.
+
+Jr. Pac-Man
+-----------
+Can hide out in the ghost box.
+He also gets a speed boost when
+traveling through a tunnel.
+
+SCORING:
+--------
+Dots                      10 pts
+Energizer Dot             50 pts
+1st Ghost                200 pts
+2nd Ghost                400 pts
+3rd Ghost                800 pts
+4th Ghost              1,600 pts
+Cherry,Bunch,Donut,Key   100 pts
+Strwberry,Hambrger,Shoe  200 pts
+Orange, Corn, Egg, Bell  500 pts
+Pretzel, Peach, Clover   700 pts
+Apple, Pie, Galaxian   1,000 pts
+Pear,Melon,Cup,Present 2,000 pts
+Banana,Mushroom,Star   5,000 pts

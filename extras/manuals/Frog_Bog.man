@@ -1,0 +1,178 @@
+FROG BOG
+(c)1982, 1998 INTELLIVISION
+PRODUCTIONS, INC.
+
+OBJECT OF THE GAME:
+-------------------
+Go for the high score by making
+a frog jump off a lily pad and
+catch insects with his flashing
+tongue!  Flying critters float
+across, high or low, anywhere on
+the screen. They even reverse
+direction! Jump your frog too
+late and you'll miss. Jump him
+too far and he lands in the pond.
+You'll have to wait for him to
+swim back to the pad before try-
+ing again. Day or night action.
+May the best "croaker" win!
+
+CONTROLS:
+---------
+DISC - Jump
+SIDE ACTION BUTTONS - Tongue
+Skill Level:
+CLEAR - Fixed arc (easy)
+  [0] - Direction (medium)
+ENTER - Direction+tongue (hard)
+Note: Difficulty can be changed
+      after game begins.
+Game Select:
+  [1] - Day
+  [3] - Night
+
+SELECT SKILL LEVEL:
+-------------------
+EASY- Frog will jump the same
+way (in a fixed arc) every time.
+
+MEDIUM- You control direction
+(arc) frog will take.
+
+HARD- You control both direction
+(arc) and when frog's tongue
+will flick out to catch bug.
+
+(Use SIDE ACTION BUTTONS to
+control flick of frog's tongue.)
+
+SELECT GAME:
+------------
+DAY -- Two frogs, side-by-side
+on lily pads. Game automatically
+starts at the EASY skill level.
+Game continues until sundown. As
+the sun sets, you're running out
+of scoring time. Game's over
+when sky goes black and all bugs
+have gone away. Stars come out.
+Frogs sleep. Croaking sound.
+  
+NIGHT -- Same two frogs and lily
+pads. Game automatically starts
+at the MEDIUM skill level. Bugs
+twinkle like fireflies. Scoring
+time continues so long as the
+moon shines. Game's over when
+stars come out and frogs sleep.
+
+(Games last 3 min, Day or Night)
+
+LET'S PLAY!
+-----------
+GAME STARTS at once. Stay alert!
+Insects will begin to fly across
+your screen. They'll come high
+or low, anywhere at random.
+
+PRESS DISC to make frog jump,
+flick out his toungue and catch
+bugs! When you get your frog
+close enough to catch a bug,
+tongue will either flash out
+automatically (EASY and MEDIUM)
+or flash out when you press any
+SIDE ACTION BUTTON (HARD). Frog
+will swallow bug, earning points.
+
+Press edges of DISC for right or
+left movement. Frog will always
+jump from one lily-pad to the
+other each time you press the
+DISC on EASY (Same arc).
+
+For MEDIUM and HARD, you CONTROL
+the frog's direction and arc as
+he jumps. How far your frog
+jumps depends on how long you
+hold down the DISC. Tap the DISC
+and your frog will jump only a
+short distance. Hold the DISC
+down and frog will jump for a
+longer distance. With practice,
+you should be able to jump your
+frog across the screen to catch
+a far-ranging bug, or just make
+him turn around where he is and
+catch a low-flying bug (he can't
+catch flies with the back of his
+head!).
+
+When frog jumps too far, he
+lands in the water. You MUST
+WAIT for him to swim back to his
+pad, before trying another jump
+(No jumps from the water).
+
+SCORING:
+--------
+There are 4 different kinds of
+bugs. Each has a different point
+value: 5, 10, 15 and 35 points.
+Harder to catch bugs are worth
+extra points. They fly faster
+and change direction more often.
+They're the small bugs.
+
+WINNING TIPS:
+-------------
+1. DON'T GO IN THE WATER. Your
+frog will be out of action
+(can't score) if he falls in the
+pond. Before you can try again,
+you MUST WAIT until he swims
+back to the pad.
+
+2. AUTOMATIC TONGUE works best
+when frog ISN'T on the way up or
+down. In other words, time your
+jump to get close to the bug at
+highest or lowest part of jump.
+
+3. MAKE UP YOUR MIND. High-
+scoring bug or low-scoring bug?
+Watch your running score totals.
+If you need some sure points to
+get back in the game, low-
+scoring bugs are EASIER to catch.
+
+4. WATCH YOUR TIME. Day or night,
+game time (scoring) time is 3
+minutes. Watch for the changing
+sky -- from daylight to sunset
+and darkness -- from full moon
+at night to fading moonlight.
+Changes in the sky mean you're
+running out of time.
+
+MAYBE YOU'RE NOT ALONE!
+-----------------------
+In the ONE PLAYER game, the
+computer CAN BEAT you by working
+the frog you're not using auto-
+matically. A second set of score
+totals will appear. Wherever a
+frog is NOT jumped for 10
+seconds at the start of a game
+or 20 seconds during a game, the
+computer will take over and jump
+the frog automatically!
+
+FINAL REMINDER:
+---------------
+When a game is OVER (after 3
+minutes) you must press the
+RESET button to bring back the
+title frame. Select DAY or NIGHT
+next and a new game begins.

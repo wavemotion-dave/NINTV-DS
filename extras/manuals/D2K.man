@@ -1,0 +1,427 @@
+DIIK ARCADE
+(c)2012 CARL MUELLER, JR.,
+ELECTRONITE
+
+One smart ape has escaped from
+his cage. Mario, the zookeeper,
+is in a real fix! The gorilla
+Donkey Kong has captured a very
+special lady and made his way
+onto a construction site and up
+bewildering, unfinished
+structures - a veritable King
+Kong! Leap for your life over
+bouncing barrels, ride fast-
+moving platforms to dizzying
+heights, scurry under runaway
+springs, and avoid roaming
+flames and dangerous balls of
+gas as you make your way up. It
+will take not only Mario but one
+of his brothers - Toni and Bruno
+- to outsmart the big ape and
+return the girl to safety.
+
+CONTROLS:
+---------
+DISC - Move Mario/Toni/Bruno
+TOP SIDE BUTTONS - Jump
+[8] - Pause game
+
+NOTE: Make the player jump
+straight up by pressing either
+TOP SIDE BUTTON. Make the player
+jump left or right by pressing
+the DISC in the desired direc-
+tion and either TOP SIDE BUTTON
+simultaneously. YOUR ACCURACY
+MUST BE PERFECT, AS YOU CANNOT
+CHANGE YOUR DIRECTION AFTER YOUR
+JUMP BEGINS.
+
+STARTING GAME:
+--------------
+When game title appears, it is
+time to select the character you
+wish to play as and the game to
+play. You may press the corre-
+sponding key on the numeric pad
+(described below), or you may
+also press the DISC left or
+right to cycle through available
+options. Press ENTER to use the
+value already displayed.
+
+CHOOSE YOUR CHARACTER:
+----------------------
+Press [1] to play as Mario.
+Press [2] to play as Toni.
+Press [3] to play as Bruno.
+
+MARIO -- Donkey Kong's zookeeper.
+  A solid jumper with adequate
+  speed. He pounds a mean hammer,
+  but is unable to jump or climb
+  once he's nabbed one.
+
+TONI -- Mario's younger brother.
+  Faster and able to leap
+  further than his brothers, his
+  nimbleness extends to jumping
+  while smashing with the hammer.
+
+BRUNO -- Mario's older brother.
+  While not as fast on his feet,
+  he can take a fall like no one
+  else. This tough guy is even
+  able to hold onto his hammer
+  while climbing.
+
+When you have finished selecting
+your character, press ENTER.
+
+SELECTING THE GAME:
+-------------------
+Press [1] to play Game 1.
+Press [2] to play Game 2.
+
+GAME 1 -- Classic mode.
+  Play from 4 different classic
+  boards from the game DK ARCADE.
+
+GAME 2 -- Sequel mode.
+  Play from 7 different boards - 
+  5 all new and 2 classic - from
+  the sequel D2K ARCADE.
+
+Press ENTER to start game.
+
+THE PLAYER:
+-----------
+You control "the player" (Mario,
+Toni, or Bruno). Move him up
+ladders or across girders using
+the direction DISC. Hold DISC
+left or right and press either
+upper action button to span gaps
+between girders or to board and
+exit elevators.
+
+In Game #1, you start with three
+lives. In Game #2, you start
+with six. Only one can be used
+at a time. If you break 10,000
+points, you get an extra life.
+
+ENEMIES:
+--------
+Barrels, flames, springs, balls
+of gas, and even cement pies are
+all deadly to the player. They
+either appear to chase or
+obstruct the player in some way
+as he makes his way up. Touch
+one of them and you lose a life.
+They get smarter and faster or
+appear more quickly as the game
+progresses.
+
+Jump over an enemy or let it
+pass under you by jumping
+straight up. A well-timed jump
+over a single nasty gets you 100
+points - jump two, 300 points -
+three or more, and it's 500
+points! Listen for the jingle
+and you know you've got it! A
+successful jump will not always
+display points, but will always
+be accompanied by a melody and
+an increase in score.
+
+Jump under a hammer to nab it
+and start smashing...but beware,
+you're not invincible! Allow a
+nasty to slip under your hammer
+and it's over. A well-timed hit
+gets you 300 pts.For a fireball,
+pie, or blue barrel up to 800!
+
+PLAYING SCREENS:
+----------------
+There are nine different boards
+in all, shared between two
+adventures. Some are more diffi-
+cult than others. When you've
+successfully rescued the lady on
+one board, you move on to the
+next. When you clear a "round"
+of boards, you start again at
+the first - only at a more
+difficult level!
+
+GAME #1
+-------
+BARRELS -- DK's tantrum has
+  crushed and warped five levels
+  of girders, turning them into
+  a nightmare of ramps and
+  rolling barrels! Jump for your
+  life or grab a hammer and
+  start smashing!
+
+PIE FACTORY -- Treacherous con-
+  veyors, leaping flames, and
+  "pies" that look almost good
+  enough to eat...but don't be
+  fooled! These trays of cement
+  are massively dangerous!
+
+ELEVATORS -- Two fast-moving
+  columns of elevators and some
+  nasty fireballs await you.
+  Take the easy way out but be
+  wary of the springs.
+
+RIVETS -- Your only chance to
+  reunite yourself with your
+  loved one! Dismantle the
+  structure by pulling out the
+  support rivets and give the
+  big ape a concussion he won't
+  soon forget!
+
+GAME #2
+-------
+TWISTED GIRDERS -- DK has
+  "twisted" five more levels of
+  girders! Barrels bounce high
+  and come at you from both
+  directions while flames rain
+  down on you from above!
+
+THE MIXER -- A mixer tops off
+  empty "pie" plates while full
+  ones twirl down from the sky!
+  Master the timing of the
+  stopping conveyor or risk an
+  embarrassing tumble into a
+  tray full of cement!
+
+THE REFINERY -- Oil, gas, and
+  an array of safety valves...
+  this level has "danger"
+  written all over it! Outwit DK
+  by putting out fires at the
+  top of both towers...before
+  the timer runs out!
+
+TRIPLE ELEVATORS -- Three
+  elevator columns separate you
+  from narrow structures guarded
+  by merciless fireballs. Span
+  treacherous gaps while dodging
+  a barrage of bouncing springs.
+
+THE ELIMINATOR -- Only appearing
+  on level 3, this is DK's final
+  attempt to "eliminate" you.
+  Don't be afraid of the blue
+  fire...it won't hurt you,
+  unlike everything else!
+
+SCREEN CONTENTS:
+----------------
+EDGES -- Sometimes, in order to
+snag a hammer (or escape from a
+tight spot), you may have to
+take a leap of faith...toward
+the edge of the screen! Time it
+right and the player will bounce
+back up from the edge with
+hammer in hand (or back to
+safety). Be too ambitious and
+your jump may soon turn into a
+fall you can't pull out of!
+
+TRINKETS -- Objects scattered
+throughout the structure - your
+girlfriend's personal affects -
+provide you with a virtual trail
+of breadcrumbs...and an oppor-
+tunity to score points! At level
+1, 100 pts...at level 2, 300 pts
+and 800 pts for levels 3 and up!
+The more risk, the more reward!
+
+HAMMERS -- Stand precisely under
+a hammer and jump straight up to
+nab it - or better yet, jump to
+the left or right and snag it as
+you hit the peak of your jump!
+(Also, see "EDGES", above.)
+
+LADDERS -- Push up or down to
+board a ladder in that direction
+but be careful! Broken ladders
+can only be climbed halfway up
+(handy for escaping a barrage of
+barrels), but not down! Retract-
+able ladders can only be climbed
+all the way when they're
+connected with the girder above.
+Time it wrong and the ladder re-
+tracts, taking you down with it!
+
+CONVEYOR BELTS -- Conveyor belts
+are what make "pies" move.
+They're always moving left or
+right, and sometimes switch
+direction or even stop! Learn
+their timing and avoid headlong
+falls into trays of cement!
+
+ELEVATORS -- To board or exit an
+elevator, simply jump on or off
+a moving platform...but pay
+attention to where it's taking
+you! Dangerous and unforgiving
+columns, patrolled by fireballs,
+may await you! Linger too long
+and you may find yourself with-
+out an exit - crushed at a
+terminal - above or below you!
+
+RIVETS/SAFETY VALVES -- Some
+boards may have rivets or safety
+valves that need pulling or
+turning. Walk or jump over them
+to score some points, and bring
+yourself one step closer to
+completing the board! Outwit DK
+by dismantling his structure or
+his ingenious traps of fire!
+
+SPRINGS -- Springs require pre-
+cise hand-eye coordination and
+impeccable timing! Study their
+patterns to discover areas of
+"safety" where the springs
+never touch - and make a run for
+the girl's platform!
+
+CODES:
+------
+Use the following codes to
+unlock special features within
+D2K ARCADE. Wait for the intro
+screen, when DK first appears,
+then punch in the code. You may
+wish to pause the game first by
+pressing "8". If you enter the
+code correctly, you'll hear the
+girl say "right!".
+
+[1981] Girl now says "help!"
+  during intro and after each
+  screen.
+
+[1889] Girl says "help!" during
+  intro and after each screen.
+  DK uses “correct” growl
+  (omitted by mistake).
+
+[3030] Objects flicker at 30 FPS
+  Corrects "disappearing object"
+  problem on some HD displays.
+
+SCORE DISPLAY:
+--------------
+There are three "nooks" or
+groupings of numbers on the
+right edge of the screen. The
+running score is tallied, verti-
+cally, in the top nook. The num-
+ber of lives remaining appears
+in the center nook. The bottom
+nook serves a dual purpose. When
+the game challenges you with
+"How High Can You Get?" and the
+board's height is displayed, the
+level is shown here in red.
+
+During gameplay, a bonus timer
+is displayed. This timer counts
+down. When you successfully
+complete a board, you are
+awarded 100 points for every
+timer unit left...but be fore-
+warned! If the timer reaches
+zero before you rescue the girl,
+you're gone!
+
+SCORING:
+--------
+Jumping an Object:
+ 1 Object                100 pts
+ 2 Objects               300 pts
+ 3 or More Objects       500 pts
+Smashing with the Hammer:
+ Brown Barrel            300 pts
+ Blue Barrel, Fireball,
+ or Pie     (random) 300-800 pts
+Picking up Trinket, Pulling a
+Rivet or Turning Safety Valve:
+ Level 1                 100 pts
+ Level 2                 300 pts
+ Levels 3 and Up         800 pts
+
+You also earn 100 points for
+every unit left in the timer
+upon successful completion of
+each screen. Complete the screen
+with 26 units left and that's
+2,600 points!
+
+When you hear the bell - "ding,
+ding, ding" - you've broken the
+current high score! Play another
+game to see if you can beat your
+new high, or challenge a friend,
+the bell sounding each time
+you've broken the other's new
+record!
+
+You earn an extra life at 10,000
+points - but you only get one,
+so use it wisely!
+
+TIPS:
+-----
+1. Master your jumping skills.
+You need to take the player to
+the very edge of the platform to
+make some jumps. For others, you
+may have to backup first to
+avoid over jumping your target!
+
+2. On the TWISTED GIRDERS screen,
+stay away from areas where
+barrels fall - they bounce high!
+Instead, wait for an opening
+then make your way up. When you
+come to the oil drum in the
+center, take the left ladder and
+avoid the area completely...OR
+bounce off the left side of the
+screen and nab the hammer!
+
+3. Never wait for a barrel to
+pass overhead while climbing or
+standing under a ladder...more
+likely than not, it will come
+down on your head! Play it safe,
+or learn to control barrels by
+pushing in the opposite
+direction, forcing them down
+ladders and away from you!

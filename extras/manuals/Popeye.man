@@ -1,0 +1,305 @@
+POPEYE
+(c)1983 PARKER BROTHERS
+
+OBJECT OF THE GAME:
+-------------------
+In this game you're POPEYE! And
+your goal is to catch all of
+Olive's hearts, notes, and cries
+for H-E-L-P before they hit the
+water and sink - or before
+Brutus, the Sea Hag, or some
+vulture knocks you overboard.
+
+CONTROLS:
+---------
+DISC - Move Popeye
+TOP ACTION BUTTONS - Punch
+Press ENTER to start.
+
+GAME SELECTION:
+---------------
+Game 1 - Easy, 5 Popeyes
+Game 2 - Difficult, 5 Popeyes
+Game 3 - Difficult, 4 Popeyes
+Game 4 - Difficult, 3 Popeyes
+
+PLAYING THE GAME:
+-----------------
+Use the directional DISC to
+guide Popeye up and down stairs,
+and across different platforms.
+Press either one of the TOP
+ACTION BUTTONS whenever you want
+Popeye to punch Brutus' or the
+Sea Hag's bottles, knock out
+vultures, hit the punching bag,
+or grab his spinach. With each
+press of the button, Popeye will
+swing his fist once.
+
+You will begin each round with a
+specific number of Popeyes (see
+GAME SELECTION). The number of
+Popeyes remaining is indicated
+at the top, left-hand side of
+the screen. The first Popeye
+will appear on the left, top-
+most ledge as soon as you press
+the ENTER button.
+
+In each round, Popeye must win
+Olive's affection by catching
+all of her hearts, notes, or
+cries for H-E-L-P, depending
+upon which round you're playing.
+But Brutus, the Sea Hag, and the
+vultures all do their best to
+knock Popeye overboard - Brutus
+with his fists and bottles, the
+Sea Hag with her fast-flying
+bottles, and the vultures with
+their good aim! When any of them
+hit Popeye - or if any of
+Olive's tokens fall into the
+water and are not pulled out in
+time - you lose Popeye. If you
+have a remaining Popeye, he will
+appear on the top ledge, ready
+to try again!
+
+SPINACH:
+--------
+Throughout the rounds, Popeye's
+spinach will randomly appear in
+specific places on the screen
+(see SPINACH section under each
+round). Whenever you see it,
+press one of the TOP ACTION 
+BUTTONS. If you reach it in time,
+you'll hear the "Popeye Theme".
+This is your chance to catch up
+with Brutus and knock him over-
+board. When you do, you gain
+3,000 points! In addition, if
+you catch any of Olive's tokens
+while the tune is playing, you
+receive DOUBLE THE SCORE FOR
+EACH. Once Popeye uses his
+spinach, it will not appear in
+that same round again.
+
+THE SEA HAG:
+------------
+You never know when this nasty
+ol' biddy is going to jump out
+from the side lines and pelt
+Popeye with a bottle. But she'll
+only let one fly (sometimes
+two!) when she's on the same
+platform as Popeye. If Popeye's
+not fast enough with his fists
+to punch the bottle, and it hits
+him, you lost that Popeye. If
+you have a remaining Popeye, he
+will appear on the top ledge.
+
+SWEET HEARTS - ROUND #1:
+------------------------
+In this round, you must catch
+all 20 hearts before they fall
+into the water and sink - and
+without being knocked over by
+Brutus or the Sea Hag. Each time
+you catch a heart, a red brick
+will appear on the side of
+Popeye's house, located at the
+top of the screen. Once there
+are 20 bricks, you'll auto-
+matically begin the next round.
+
+"Thru" Ledges
+-------------
+As the round begins, Popeye
+appears on the left, topmost
+ledge. You may move Popeye off
+this ledge and land him safely
+onto the platform below. Or you
+may move him in the opposite
+direction and he'll travel
+around to the other ledge. You
+may move Popeye back and forth
+between the ledges, or off
+either side and onto the
+platform below at any time.
+Brutus cannot walk on these
+ledges, BUT HE CAN JUMP UP AND
+KNOCK POPEYE OVERBOARD!
+
+Stairs
+------
+On each platform, there are sets
+of stairs which Popeye and
+Brutus must use to move from
+platform to platform. Use your
+joystick to guide Popeye up and
+down these sets of stairs.
+
+Spinach
+-------
+Popeye's spinach will randomly
+appear on the stairs to the left,
+either on platform #2 or #3.
+
+"Down" Ladder
+-------------
+In the center of the screen,
+there is a ladder which connects
+platform #2 and platform #3.
+Popeye is the only one who can
+use this ladder, and only to
+move downward. However, Brutus
+can reach up or down this ladder
+to knock Popeye over.
+
+Punching Bag and Bucket
+-----------------------
+You'll notice a punching bag
+located near the center, topmost
+part of the screen. When Popeye
+is on the right "Thru" ledge, he
+may punch the bag, causing the
+bucket to fall. If Brutus is
+directly below the bucket, it
+will stop him in his tracks and
+you gain extra points depending
+upon what level Brutus is on.
+NOTE: Each of your Popeyes can
+only hit the punching bag once.
+Brutus cannot knock Popeye over
+while bucket is on top of him.
+
+LOVE NOTES - ROUND #2:
+----------------------
+Similar to Round #1, you must
+catch all 16 love notes before
+they sink into the water, and
+without being knocked overboard.
+Once you've caught all 16 notes,
+you'll begin the next round.
+
+"Thru" Ledges
+-------------
+In this round, the "Thru" ledges
+are located on platform #2.
+Popeye can move off these ledges
+and land safely onto the plat-
+form below, or he can move to
+the opposite ledge. Brutus can
+also move about on the ledges,
+however, he cannot travel around
+to the opposite ledge.
+
+See-Saw
+-------
+At the bottom, left-had side of
+the screen there is a see-saw.
+Whenever Popeye is on the 3rd
+platform, he can jump off the
+ledge, land on the see-saw, and
+bounce upwards. Popeye will
+either land on the 2nd or 3rd
+platform. Brutus will land on
+platform #2 whenever he bounces
+on the see-saw.
+
+Spinach
+-------
+Popeye's spinach will randomly
+appear on the stairs to the
+right of the 3rd or 4th platform.
+
+HELP! - ROUND #3:
+-----------------
+This time, Olive Oyl is crying
+H-E-L-P and Popeye must catch
+all 16 letters. Each time you
+catch a letter, another rung is
+added to the ladder located in
+the center of the screen. When
+you've caught all 16 letters,
+you'll return to Round #1, but
+at a greater difficulty level.
+
+Sliding Platform
+----------------
+In the center of platform #1,
+there is a sliding platform.
+When Popeye steps onto it, he'll
+be whisked across to the other
+side. If Popeye misses the
+sliding platform, he falls to
+the next platform.
+
+Vultures
+--------
+In this round, vultures may
+appear and swoop down at Popeye.
+If you're quick enough, Popeye
+can punch these vultures, and
+you gain 1,000 points for each
+one he knocks out. But if you
+miss, the vultures can knock
+Popeye overboard and you lose
+that Popeye. If you have a
+remaining Popeye, he will appear
+on the top, left-hand side of
+the screen.
+
+Spinach
+-------
+In this round, Popeye's spinach
+will randomly appear at the
+right, on platform #2 or #3.
+
+END OF ROUND AND GAME:
+----------------------
+The round ends once you've
+collected all of Olive's tokens.
+As long as you have a remaining
+Popeye, you'll automatically
+advance to the next round.
+
+The game ends when you run out
+of Popeyes. To play again,
+press the RESET button, then
+press ENTER and select the game
+level at which you wish to play.
+
+SCORING:
+--------
+The number of points for each
+heart, note, or letter caught
+depends upon which platform
+Popeye is on when he catches it.
+
+Hearts, Notes & Letters
+  Platform #1            500 pts
+  Platform #2            300 pts
+  Platform #3            200 pts
+  Platform #4            100 pts
+Tokens in Water          100 pts
+Hitting Punching Bag     100 pts
+Punching Bottles         100 pts
+Punching Vultures      1,000 pts
+Hitting Brutus w/Bucket
+  Platform #2          1,000 pts
+  Platform #3          2,000 pts
+  Platform #4          4,000 pts
+Knock Brutus Overboard 3,000 pts
+Bonus Popeye    After 30,000 pts
+
+You'll receive double the point
+value of a token if Popeye
+catches it while the "Popeye
+Theme" is playing.

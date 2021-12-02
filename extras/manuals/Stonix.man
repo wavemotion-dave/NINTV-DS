@@ -1,0 +1,266 @@
+STONIX
+(c)2004 ARNAULD CHEVALLIER,
+INTELLIGENTVISION
+
+You have come head-to-head with
+the enemy, STONIX! His goal is
+to exhaust your life energy;
+yours is to destroy his power
+source! It will take time to
+reach it because he has laid
+many barriers that you need to
+penetrate. Lucky for you, your
+power balls mix with his shields
+to give you zapping deflectors,
+larger deflectors and even extra
+life power! Stay sharp, you have
+a long journey ahead of you!
+
+CONTROLS:
+---------
+DISC - Move deflector
+SIDE BUTTONS - Launch/fire
+Press 1+9 together - Pause
+
+BONUS CAPSULES:
+---------------
+[50] POINTS - (Tan)
+[B]ONUS LIFE - (White)
+SLOW [D]OWN - (Green)
+[E]NERGY - (Yellow)
+[L]ARGE DEFLECTOR - (Pink)
+[M]ULTI BALL - (Cyan)
+[S]UPER BALL - (Orange)
+[Z]APPING DEFLECTOR(Light Green)
+
+STAGES AND LEVELS:
+------------------
+Your advancement to STONIX is
+broken into STAGES and LEVELS.
+Each STAGE consists of 5 LEVELS.
+At the completion of 5 LEVELS,
+you are given a Bonus Life and a
+PASSWORD that allows you to
+start at the stage indicated.
+
+GET READY!
+----------
+When you select NEW GAME, the
+battle for the STONIX power
+source begins! You start the
+battle with the deflector in the
+center of the screen and your
+energy ball on the deflector.
+
+1. Press any side button to
+release the ball or wait several
+seconds and it will release on
+its own.
+
+2. Move the deflector by press-
+ing the left side (9 o'clock
+position) or right side (3
+o'clock position) of the DISC.
+To move the deflector slowly,
+press the lower side (7 o'clock
+and 5 o'clock position respec-
+tively) of the DISC. Move it
+faster by pressing the upper
+side (11 o'clock and 1 o'clock
+position respectively) of DISC.
+
+3. Line up the deflector to hit
+the ball as it comes back down.
+
+4. When the energy ball hits a
+shield element, it will be
+destroyed unless the shield is
+Resistant or Indestructible in
+nature. See "STONIX SHIELDS"
+section for details.
+
+5. At times, a BONUS will fall
+after the destruction of a piece
+of the shield. Learn the
+different types and decide if
+you should catch the bonus. See
+"BONUSES" section for details.
+
+6. If the energy ball escapes
+the playing field, the deflector
+will disintegrate and your total
+LIVES count will drop by one. A
+new deflector will appear in the
+middle of the screen with an
+energy ball as long as you have
+more LIVES.
+
+7. The battle ends when the
+LIVES count hits zero and you
+lose the last ball or you
+destroy the STONIX power source!
+
+STONIX SHIELDS:
+---------------
+Normal Shield Element
+  (Solid Colors) -- Destroyed as
+  soon as it is hit.
+
+Resistant Shield Element
+  (Gray) -- Must be hit twice to
+  be destroyed, except if the
+  "SUPER Ball" bonus is active.
+  See "BONUSES" section.
+
+Indestructible Shield Element
+  (Tan) -- Can never be 
+  destroyed and will remain on
+  the screen permanently.
+
+The level ends when all NORMAL
+and RESISTANT parts of the
+shields are destroyed.
+
+FLYING OBJECTS:
+---------------
+During the game, flying objects
+are released from the two trap
+doors located at the top of the
+screen. You collect extra points
+by destroying the objects but
+they will throw off the path of
+the ball making it difficult to
+return at times. Destroy one
+flying object and a new one will
+appear at a trap door. Should a
+flying object go low enough,
+slam it with your deflector to
+destroy it!
+
+BONUSES:
+--------
+Bonus capsules are released
+randomly after an element of a
+shield is destroyed. It will
+then slowly fall until it
+reaches the bottom of the
+screen. Move your deflector
+under a capsule to collect it
+and enable the bonus.
+
+There are 8 different bonuses:
+
+1. [50] Points (tan) -- Increase
+your score by 50 points.
+
+2. [B]onus Life (white) --
+Increase your LIVES by one.
+Maximum LIVES possible are 9.
+
+3. Slow [D]own (green) --
+Decrease the speed of the ball.
+
+4. [E]nergy (yellow) -- This
+makes the energy ball stick to
+the deflector for a few seconds
+(the same way it does when you
+start a new level or lose a
+life). Press any SIDE BUTTON to
+launch it. The ball will go in
+the direction it would have gone
+if it had immediately bounced
+off the deflector.
+
+5. [L]arge Deflector (pink) --
+Double the size of the deflector.
+
+6. [M]ulti Ball (cyan) -- Add a
+second ball to the playing field.
+This bonus does not disappear
+when another bonus is caught,
+and you do not lose a life when
+one ball escapes the play area.
+
+7. [S]uper Ball (orange) -- Goes
+through normal and resistant
+shields without bouncing but
+will still bounce off indestruc-
+tible shields. Also, its trajec-
+tory may still be altered when
+hitting a flying object. Your
+energy ball will change colors
+from white to orange.
+
+8. [Z]apping Deflector (light
+green) -- Shoot electrical
+charges from the deflector to
+destroy the shields and flying
+objects. It takes time for the
+deflector to recharge leaving
+you with the ability to only
+have one active charge on the
+screen at a time.
+
+NOTE: Getting a new bonus
+disables effects of the previous
+one. The exceptions are "MULTI
+BALL" and "SLOW DOWN" which are
+not disabled.
+
+SCORING:
+--------
+Hit NORMAL Shield Element  1 pt
+Destroy RESISTANT Element  1 pt
+Destroy Flying Object      5 pts
+Capture a BONUS            5 pts
+Capture a "50" BONUS      50 pts
+Extra Life         Every 500 pts
+
+When you reach the Stonix power
+source, you accumulate points
+for hitting it even when it is
+not destroyed.
+
+GAME OVER:
+----------
+When you run out of lives, GAME
+OVER will be displayed along
+with the highest score played
+since the console has been on.
+Press any key to display the
+Player Options screen. You now
+have the ability to resume play
+from the beginning of the last
+stage passed. Press "1" to
+continue or CLEAR to return to
+the Main Menu.
+
+HINTS:
+------
+1. Some BONUSES are better than
+others. Determine which bonus
+you play best with.
+
+2. Hit the 500 point levels for
+additional LIVES.
+
+3. Stay away from the FLYING
+OBJECTS when they are in the
+middle or lower part of the
+screen as you have no idea where
+the ball will bounce after
+destroying one.
+
+4. The ball goes faster and
+faster as time passes. Catch the
+"SLOW [D]OWN" bonus regularly to
+slow the ball down.
+
+5. Avoid hitting the ball on the
+lower part of the deflector's
+side. You will lose control of
+the deflector and the ball.
+
+6. Beware when you come head-to-
+head with Stonix. He will deploy
+his ultimate weapon - FIREBALLS!

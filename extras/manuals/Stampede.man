@@ -1,0 +1,211 @@
+STAMPEDE
+(c)1982 ACTIVISION
+
+The object of Stampede is to
+score as many points as possible
+by roping as many dogies as you
+can, before too many stray
+behind you.
+
+CONTROLS:
+---------
+DISC - Move the cowboy
+SIDE BUTTONS - Throw the lasso
+CLEAR - Begin play / new game
+
+GETTING STARTED:
+----------------
+Press DISC for game selection.
+Select game level by pressing
+appropriate number on keypad:
+[1] - Slow Cows
+[2] - Slow Random Cows
+[3] - Fast Cows
+[4] - Fast Random Cows 
+
+The game selected will then
+start automatically. To change
+the game level, press CLEAR.
+
+SCORING:
+--------
+You score points by roping
+cattle. Each dogie is worth
+points, depending on its color:
+ Black Angus             100 pts
+ Light Brown Guernseys    15 pts 
+ White Jersey             25 pts
+ Dark Red Herefords        3 pts
+ 
+The number on the upper right
+side of the screen indicates the
+player's score. The number on
+the upper left side of the
+screen indicates the number of
+dogies which you can allow to
+stray behind you before the game
+ends. This number starts at 3
+and decreases by one each time a
+dogie strays off the left side
+of your screen. When the last
+on strays behind your horse, the
+game is over. 
+
+GETTING THE FEEL OF STAMPEDE:
+-----------------------------
+Climb into the saddle and start
+ridin'! You'll want to practice
+placing your cowboy in the right
+position to rope and herd those
+dogies wighout letting any get
+by you and to dodge any sur-
+prises on the trail.
+
+To rope, position your horse
+directly behind the dogie you
+wish to lasso. The rope will
+always be thrown directly in
+front of your horse, and the
+loop must touch a dogie in order
+to rope him. If you attempt to
+rope a steer which is too far
+away or too close, you'll come
+up empty. When you get more at
+home on the range, you'll know
+the right time to throw your
+rope.
+
+It's impossible to score well if
+you can't keep the game going
+long enough to rope a passel of
+dogies. The only way to do that
+successfully is to keep the
+cattle in a herd in front of you.
+Herding is as important as
+roping in helping you run up
+your score.
+
+To herd dogies, bring your horse
+into contact with them without
+throwing your lasso. You'll
+notice they'll speed up and run
+farther out in front of your
+horse. Since all dogies do not
+run at the same speed, you will
+have your work cut out for you
+to keep them ahead of you.
+
+GAMES:
+------
+Each game of Stampede offers a
+different pattern, speed and
+movement of the dogies, pro-
+viding new challenges every time
+you play.
+
+Game 1 (Slow Cows) -- When the
+game begins, dogies lope along,
+gradually running faster as the
+game progresses. They will run
+only straight ahead, and they
+travel in a specific pattern.
+
+Game 2 (Slow Random Cows) --
+Same as Game 1, but there is no
+set pattern of appearance of
+dogies on the screen.
+
+Game 3 (Fast Cows) -- Dogies
+appear in same pattern as Game 1
+except all dogies start out at a
+faster pace.
+
+Game 4 (Fast Random Cows) --
+Same as Game2, except all dogies
+start out at a faster pace.
+
+SPECIAL FEATURES OF STAMPEDE:
+-----------------------------
+Dangers on the trail -- The
+cattle drives of the Old West
+had their share of hazards - and
+Stampede does, too. Occasionally,
+you'll come upon an old bleached
+skull on the trail, and your
+horse will rear if you attempt
+to ride over it. If that happens,
+some of the dogies you are
+herding and roping could stray
+by, so look out and be prepared
+to ride around the skulls.
+
+There's also a Black Angus who
+pops up every now and then
+(worth 100 pts if you rope him),
+and he can be a bum steer. Since
+he's sitting still and facing
+you - and can't be herded - he's
+tough to rope. Worse, if you
+bump into him, not only will he
+have strayed out of the herd but
+your horse will rear, slowing
+your pursuit of the other dogies.
+
+Lasso -- Once you've thrown your
+lasso, you cannot move your
+horse up or down until you've
+got your lasso back.
+
+No time limit -- You can keep on
+ridin' and ropin' as long as
+your "stray count" (number on
+the left side of the screen) is
+1 or more. The better you get at
+roping and herding dogies, the
+longer your roundup will last.
+
+Increasing your stray allowance-
+After each 1,000 pts, your stray
+count will increase by one,
+giving you more of a chance to
+rope and ride. The number will
+never get larger than 9.
+
+HOW TO BECOME A CATTLE BARON:
+-----------------------------
+Tips from Bob Whitehead,
+designer of Stampede.
+
+If you are really a savvy
+cowboy, you could probably play
+Stampede till the cows come home.
+Strategy, patience and smart
+herding and roping are what
+really count.
+
+1. First of all, keep in mind
+the particular sequences in
+which the dogies appear. My
+advice is to establish a
+priority for roping the
+stampeding herd.
+
+2. One strategy is to lasso the
+high-point dogies first, while
+keeping the darker (low-point)
+ones herded in front of you.
+
+3. Herding is the most important
+part of the game. But remember,
+a dogie that is repeatedly
+herded will get tired and
+become more difficult to herd,
+because they won't run as far
+ahead on the screen.
+
+4. You'll notice that the dogies
+appear in rows. When you rope
+the last one of a group of dark
+red Herefords, get set for some
+fast action, 'cause there's
+trouble ahead!

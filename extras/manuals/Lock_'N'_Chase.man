@@ -1,0 +1,196 @@
+LOCK 'N' CHASE*
+(c)1982, 1998 INTELLIVISION
+PRODUCTIONS, INC.
+*TRADEMARK OF DATA EAST USA, INC
+
+OBJECT OF THE GAME:
+-------------------
+Your thief's robbing a local
+bank. Police are in hot pursuit!
+Make tracks down the vault
+corridors. Swipe gold coins and
+other treasures as you go! Keep
+one step ahead of the law! Lock
+doors and throw cops off your
+trail! Collide with a cop and
+he's "caught"! Keep on the run!
+
+CONTROLS:
+---------
+DISC - Move Lupin
+ANY SIDE BUTTON - Lock a door
+
+Playing Speed:
+DISC = Fastest (White)
+ [3] = Fast (Red)
+ [2] = Medium (Green)
+ [1] = Slow (Blue)
+
+A dot in the upper right corner
+of the screen indicates which
+speed you choose. The color of
+the dot matches the speed button.
+
+Press ENTER to start game.
+
+HOW TO PLAY:
+------------
+After a moment's delay, Lupin
+automatically enters the vault.
+The escape doors lock shut! He
+can't go through either escape
+door until all the gold coins
+are picked up. The four police
+officers begin to chase him down! 
+
+Lupin can dodge police by
+running through the open side
+doors. When he exits through one
+side, he quickly enters on the
+other side. Be careful! Don't
+run smack into a policeman on
+the other side! 
+
+Note that there are four side
+doors, but only TWO are open at
+a time! Sometimes the top two
+are open, and sometimes the
+bottom two are open. This
+changes at random so watch out. 
+
+Your thief picks up gold coins
+as he runs. Once Lupin has
+gotten all the gold coins, run
+him through the top or bottom
+escape door! You foiled the
+cops! Play begins again with a
+whole new set of gold coins to
+pick up! Points are mounting! 
+
+Sometimes "treasures" appear in
+the center of the screen. You
+have to land on these fast, they
+only appear for a short time! 
+
+If Lupin collides with police,
+he'll be caught! Action stops
+and your next thief enters the
+vault. The game ends when all of
+your thieves are "caught".
+ 
+RULES OF THE CHASE:
+-------------------
+LOCK DOORS-- Automatic doors are
+constantly locking and unlocking
+in the vault. They are solid
+green when locked and disappear
+when unlocked. Police and Lupin
+can't get through these doors
+until they unlock and disappear.
+
+Give the cops the slip by lock-
+ing doors behind you! To do this,
+press any SIDE BUTTON, and the
+last door Lupin came through
+locks shut! These doors are red.
+You can only lock two doors at a
+time. After a few seconds, the
+doors automatically unlock.
+Doors lock horizontally or
+vertically at the "light" lines
+in the corridors. Try not to run
+into a locked door, as you might
+stick to it!
+
+THE THIEVES-- You start with 5
+thieves. Only one is in the
+vault at a time. Maneuver Lupin
+and try to give cops the slip!
+After one thief is caught,
+another enters the vault. The
+number of thieves you have left
+shows on the screen. When your
+last thief is caught, the jig is
+up, and the game ends!
+
+THE POLICE-- 4 police officers
+are constantly tailing Lupin!
+Sometimes you can run right
+through one. But you never know
+when this will happen!
+
+THE MONEY-- There are gold coins
+throughout the vault. Pick them
+up and your scores rises. When
+the cash bag or one of the ten
+treasures appears on the screen,
+run over it quickly! When Lupin
+grabs the loot, the screen shows
+how many points you got.
+
+TIPS:
+-----
+1. You can lock Lupin behind
+doors to keep the cops away.
+Hope they move on and you can
+escape when the door unlocks!
+
+2. The police can come through
+the open side doors too...so
+don't stay around these areas!
+
+3. You can set the speed for the
+next game and at the same time
+keep the high score from the
+last game. Do this at the end of
+game by pressing 1, 2 or 3 for
+the slow speeds or press any
+SIDE BUTTON for fastest speed.
+[NOTE: A bug in the program
+keeps this from working properly.
+Pressing a SIDE BUTTON will re-
+play the game at the SAME speed
+instead of FASTEST. There is no
+way to go from a slower speed to
+the fastest while keeping the
+high score.]
+
+4. When the police are tailing
+close in any of the four corners,
+try to trap them in the corner
+by locking a door behind and in
+front of him. Get extra points
+for this!
+
+SCORING:
+--------
+Each gold coin            20 pts
+Lupin can pick up 4 cash
+bags in each vault:
+  1st cash bag           500 pts
+  2nd cash bag         1,000 pts
+  3rd cash bag         2,000 pts
+  4th cash bag         4,000 pts
+Treasures:
+  1st Vault (Hat)        200 pts
+  2nd Vault (Crown)      300 pts
+  3rd Vault (Briefcase)  500 pts
+  4th Vault (Phone)      100 pts
+  5th-10th Vault (?)     ??? pts
+Extra Thief     Every 20,000 pts
+
+When you get 100,000 points, the
+game automatically sets up at
+the highest speed! Once you get
+300,000 points, the scoring
+begins at zero again. At the end
+of each game you will see a
+number under the center score.
+[NOTE: A bug in the program
+keeps this number from showing
+up in a 1-player game]. This
+tells you how many times you
+have reached 300,000. You can
+reach 300,000 a total of 200
+times...for a possible score of
+60 million! Good luck! 

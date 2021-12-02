@@ -1,0 +1,141 @@
+ULTIMATE PONG
+(c)2016 INTELLIVISIONREVOLUTION
+
+IT'S BACK! Pong, the arcade
+sensation of the '70s, is back
+and expanded to include fourteen
+variations of the classic game.
+
+CONTROLS:
+---------
+DISC- Move paddle
+TOP SIDE BUTTONS- Launch ball
+LOWER SIDE BUTTONS- Shoot
+[1-3]- Difficulty(1=easy,3=hard)
+CLEAR- Music on/off
+ENTER- Exit game
+Press 1+9 together to pause game
+
+14 GAMES TO CHOOSE FROM!
+========================
+
+PONG
+----
+It's the classic arcade ping
+pong game that you remember!
+Move your paddle to keep the
+ball from getting past you.
+
+BASKETBALL
+----------
+Shoot the ball into your oppo-
+nent's basket to score. Make a
+fast break! You have to play
+both offense and defense to win
+this game.
+
+BARRIER TENNIS
+--------------
+It's tennis with a twist! Each
+court has barriers that give
+players two stationary barriers
+on the court to block (or make)
+shots. Move your paddle horizon-
+tally or vertically. Think fast!
+
+BATTLE PONG
+-----------
+Get the ball past your oppo-
+nent's wall of bricks to score a
+point. Shoot your laser to
+eliminate their bricks and break
+through their defenses, but
+remember to keep the ball from
+hitting your wall!
+
+BRICK PONG
+----------
+Get the ball past your oppo-
+nent's wall of bricks to score a
+point. Each time ball strikes
+the wall, a brick disappears.
+Punch a hole in that wall!
+
+CATCH
+------
+In Catch, you still try to get
+the ball past your opponent, but
+your large paddle has a gaping
+hole in the middle, which works
+as both an advantage and dis-
+advantage. Deceptively tricky!
+
+GRIDBALL
+--------
+Slide your paddles up and down
+to create an opening and maneu-
+ver the ball through the gates
+and into your opponent's goal.
+Are you sharp enough to watch
+all three gates at once?
+
+HOCKEY
+------
+Try for a fast break down the
+ice to put the puck in the net.
+But don't forget to move your
+goalie into position when you're
+on defense!
+
+REBOUND
+-------
+Keep the ball from getting past
+you as it rebounds off the top
+and both sides of the court.
+You'll have to play all the
+angles to make a save and keep
+the ball in play to have a
+chance to win!
+
+SOCCER
+------
+Move your paddle anywhere up and
+down the field to get an advan-
+tage and put the ball in the
+goal. But don't leave your own
+goal open too long or your oppo-
+nent will move in for the score.
+
+SQUASH
+------
+Players alternate hitting the
+ball, trying to make their oppo-
+nent miss. The ball changes
+color to indicate whose turn it
+is to hit.
+
+TARGET
+------
+Move your crosshair to target
+the ball as it moves across the
+screen. Then use the BOTTOM SIDE
+BUTTONS to shoot and score. Is
+your eye-hand coordination up to
+the task?
+
+TENNIS
+------
+Besides moving up and down the
+baseline, in this game you can
+charge the net to speed things
+up and try to catch your oppo-
+nent off guard, just like in
+real tennis!
+
+VOLLEYBALL
+----------
+Use as many hits as you need to
+get the ball over the net and
+keep it in play. If the ball
+isn't returned, a point is
+scored.

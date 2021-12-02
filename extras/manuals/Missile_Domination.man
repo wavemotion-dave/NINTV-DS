@@ -1,0 +1,185 @@
+MISSILE DOMINATION
+(c)2015 INTELLIVISIONREVOLUTION
+
+You are the country's defense
+force commander, trying to hold
+off an attack that threatens to
+devastate your nation. Bombers
+fly overhead while enemy
+missiles rain destruction on
+your cities. And the computer's
+voice circuit has a virus! Using
+the arsenal at your disposal,
+you must intercept and destroy
+the incoming warheads. The
+future of civilization depends
+on your skill at holding off the
+endless waves of attacks!
+(Intellivoice enabled)
+
+CONTROLS:
+---------
+DISC - Move crosshair
+TOP SIDE BUTTONS - Fire center
+LOWER LEFT BUTTON - Fire left
+LOWER RIGHT BUTTON - Fire right
+[5] - Options Screen 
+Press 1+9 together to pause game
+
+OBJECT OF THE GAME:
+-------------------
+Score as many points as possible
+by defending your cities and
+bases, destroying enemy
+missiles, bombers, killer satel-
+lites, and smart bombs before
+they reduce everything to
+rubble.
+
+SELECT OPTIONS:
+---------------
+Press "5" for the game options.
+Toggle options by pressing DISC
+up and down, left and right.
+
+Difficulty -- Hard: fast speed,
+  Easy: slow speed
+Initial Cities -- 4, 5 or 6
+Crosshair -- "+", "x" or "o"
+Bonus City -- 8,000-20,000 pts
+Launch Mode -- Normal: player
+  selects launch locations using
+  the controller. Nearest:
+  computer selects launch
+  locations. Single: one launch
+  base at center of screen
+
+Select Done when you have
+finished choosing options.
+
+THE GAME BEGINS:
+----------------
+Before each wave of attack, the
+screen shows the number of
+cities that need to be defended.
+Unlike cities, all bases are
+intact at the start of each
+wave. Also displayed is the
+scoring multiplier for that
+wave. When you hear the sound of
+air raid sirens, prepare to
+defend the cities!
+
+PLAYING THE GAME:
+-----------------
+Your screen will show incoming
+missiles headed for your cities
+and bases. Move the crosshair
+using the DISC to aim for the
+end of a missile trail and then
+press an ACTION BUTTON on the
+controller to fire. Remember
+that it takes time for your
+missile to arrive at the spot
+you selected, so lead your
+targets. The missile will
+detonate wherever your cursor is
+when you launch from your base.
+
+Each base has a limited supply
+of defensive missiles, indicated
+by the number below the base.
+When a city is hit, it explodes
+in a nuclear mushroom cloud, and
+all that remains is a pile of
+debris. If a base suffers a hit,
+it is also reduced to rubble and
+cannot be used for the remainder
+of that attack wave.
+
+MULTIPLE TARGETS:
+-----------------
+Several types of targets will
+appear on your screen as the
+game progresses. Your skill at
+destroying these will determine
+your ultimate success in the
+game.
+
+MIRVs                     25 pts
+(Multiple Independently
+Targetable Reentry Vehicles)
+  Enter at the top of the screen,
+  split off, and continue diag-
+  onally towards their targets.
+
+BOMBERS                  100 pts
+  Appear at either side of the
+  screen and travel horizontally
+  at a fixed altitude.
+
+KILLER SATELLITES        100 pts
+  Also appear at either side of
+  the screen and travel hori-
+  zontally at a fixed altitude.
+
+SMART BOMBS              125 pts
+  Decend from the top of the
+  screen and take deadly aim at
+  either a city or a base.
+
+BONUS SCORING:
+--------------
+At the end of each wave, 5 pts
+are awarded for each missile
+remaining and 100 pts for each
+city saved. Scoring multipliers
+increase as the game progresses:
+  Waves 1-2  = x 1
+  Waves 3-4  = x 2
+  Waves 5-6  = x 3
+  Waves 7-8  = x 4
+  Waves 9-10 = x 5
+  Waves 11+  = x 6
+
+GAME OVER:
+----------
+The enemy is relentless. If all
+of the cities are destroyed at
+the end of a wave, the game is
+over. You will still receive
+your bonus points for missiles
+remaining. These will be added
+to your final score.
+
+STRATEGIC TIPS:
+---------------
+1. Once a city is destroyed,
+concentrate on defending your
+remaining cities and bases.
+Incoming missiles hitting
+destroyed cities are no threat.
+
+2. You can have up to three
+missiles in the air at any one
+time. There is no need to wait
+until the first missile explodes
+before firing a second or third.
+
+3. Toward the end of an attack
+wave, if you have plenty of
+missiles in reserve, increase
+your bonus score by targeting
+incoming missiles, even though
+they're headed for a destroyed
+city.
+
+PLAYING AGAIN:
+--------------
+If you set a new high score,
+enter your initials on the High
+Score screen and see where you
+rank. To play again, just wait a
+few seconds and the game will
+automatically return to the
+title screen.
