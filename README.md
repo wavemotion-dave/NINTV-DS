@@ -50,7 +50,8 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 History :
 --------------------------------------------------------------------------------
 V3.3 : 02-Dec-2021 by wavemotion-dave
-  * Added use of default.ovl which replaces the generic overlay if found.
+  * Added use of generic.ovl which replaces the generic overlay if found.
+  * Fix for custom overlay manual/instruction meta key.
   * Cleanups for .bin file reading and other small tweaks under the hood.
   * Code commented throughout for better maintainability.
   * More than 50 manuals added thanks to ts-x!  See extras folder.
