@@ -93,6 +93,26 @@ static void ReadManual(void)
                 {
                     if ((filebuf[0] == '/') && (filebuf[1] == '/')) asm("nop");  // Swallow comment lines
                     else
+                    if (filebuf[0] == '|')
+                    {
+                        if (bFound) 
+                        {
+                            if (buf_lines > 0) break;  // We're done... next CRC found
+                        }
+                        else 
+                        {
+                            // Check if this filename line is a match...
+                            char *ptr = &filebuf[1];
+                            u8 compSize=0;
+                            while (*ptr != '|' && *ptr != 0) {ptr++; compSize++;}
+                            ptr = &filebuf[1];
+                            if (strncasecmp(ptr,currentRip->GetFileName(), compSize) == 0)
+                            {
+                                bFound = true;
+                            }
+                        }
+                    }
+                    else
                     if (filebuf[0] == '$')
                     {
                         if (bFound) 
