@@ -41,6 +41,8 @@ extern int bg0, bg0b,bg1b;
 
 static void ReadManual(void)
 {
+    u8 bFound = false;
+    char filepath[32];
     char filebuf[128];
     FILE *fp = NULL;
     // Read the associated .ovl file and parse it...
@@ -48,34 +50,88 @@ static void ReadManual(void)
     {
         if (myGlobalConfig.man_dir == 1)        // In: /ROMS/MAN
         {
-            strcpy(filebuf, "/roms/man/");
+            strcpy(filepath, "/roms/man/");
         }
         else if (myGlobalConfig.man_dir == 2)   // In: /ROMS/INTY/MAN
         {
-            strcpy(filebuf, "/roms/intv/man/");
+            strcpy(filepath, "/roms/intv/man/");
         }
         else if (myGlobalConfig.man_dir == 3)   // In: /DATA/MAN/
         {
-            strcpy(filebuf, "/data/man/");
+            strcpy(filepath, "/data/man/");
         }
         else
         {
-            strcpy(filebuf, "./");              // In: Same DIR as ROM files
+            strcpy(filepath, "./");              // In: Same DIR as ROM files
         }
+        strcpy(filebuf, filepath);
         strcat(filebuf, currentRip->GetFileName());
         filebuf[strlen(filebuf)-4] = 0;
         strcat(filebuf, ".man");
         fp = fopen(filebuf, "rb");
     }
 
-    memset(man_buf, 0x00, sizeof(man_buf));
-    
     // --------------------------------------------------------------
     // Now read the entire file in... up to limits of our buffers...
     // --------------------------------------------------------------
+    memset(man_buf, 0x00, sizeof(man_buf));
     buf_lines = 0;
-    if (fp != NULL)
+    
+    if (fp == NULL) // Didn't find a .man file? Try the global nintv-ds.man
     {
+        strcpy(filebuf, filepath);
+        strcat(filebuf, "nintv-ds.man");
+        fp = fopen(filebuf, "rb");
+        if (fp != NULL)
+        {
+            // ------------------------------------------------------------
+            // Read through the entire .man file looking for our CRC match
+            // ------------------------------------------------------------
+            do
+            {
+                if (fgets(filebuf, 127, fp) != NULL)
+                {
+                    if ((filebuf[0] == '/') && (filebuf[1] == '/')) asm("nop");  // Swallow comment lines
+                    else
+                    if (filebuf[0] == '$')
+                    {
+                        if (bFound) 
+                        {
+                            if (buf_lines > 0) break;  // We're done... next CRC found
+                        }
+                        else 
+                        {
+                            // Check if this CRC line is a match...
+                            char *ptr = filebuf;
+                            ptr++;
+                            UINT32 crc = strtoul(ptr, &ptr, 16);
+                            if (crc == currentRip->GetCRC())
+                            {
+                                bFound = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // -----------------------------------------------------
+                        // If we've already found our matching CRC... copy the 
+                        // manual/instruction line into our manual buffer.
+                        // -----------------------------------------------------
+                        if (bFound)
+                        {
+                            filebuf[MAX_MAN_COLS] = NULL;
+                            strcpy((char*)man_buf[buf_lines++], filebuf);                        
+                        }
+                    }
+                }
+                if (buf_lines >= MAX_MAN_ROWS) break;
+            } while (!feof(fp));
+            fclose(fp);    
+        }
+    }
+    else
+    {
+        bFound = true;
         do
         {
             if (fgets(filebuf, 127, fp) != NULL)
@@ -87,10 +143,12 @@ static void ReadManual(void)
         } while (!feof(fp));
         fclose(fp);
     }
-    else
+    
+    if (!bFound)
     {
         strcpy((char*)man_buf[buf_lines++], (char*)"No .man Manual Found");
     }
+    
 }
 
 
