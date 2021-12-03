@@ -1,8 +1,15 @@
+// ----------------------------------------------------------
 // NINTV-DS Global Manual File v1.0
 // Last updated 3-Dec-2021
 // Place this file with your roms or in wherever
 // your config says your .man files should be.
-
+//
+// You can add to this file or you can override
+// anything here (or add new manuals) by creating
+// a [rom-filename].man file. Basically it must
+// have the same base name as your game rom and
+// have a .man extension. 
+// ----------------------------------------------------------
 
 //==============================
 // 2048
