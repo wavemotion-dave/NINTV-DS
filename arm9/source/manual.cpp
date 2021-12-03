@@ -167,6 +167,14 @@ static void ReadManual(void)
     if (!bFound)
     {
         strcpy((char*)man_buf[buf_lines++], (char*)"No .man Manual Found");
+        strcpy((char*)man_buf[buf_lines++], (char*)" ");
+        strcpy((char*)man_buf[buf_lines++], (char*)"Load nintv-ds.man from");
+        strcpy((char*)man_buf[buf_lines++], (char*)"the extras.zip file for");
+        strcpy((char*)man_buf[buf_lines++], (char*)"many of the common manuals.");
+        strcpy((char*)man_buf[buf_lines++], (char*)" ");
+        strcpy((char*)man_buf[buf_lines++], (char*)"You can also add specific");
+        strcpy((char*)man_buf[buf_lines++], (char*)"manuals if you have a text");
+        strcpy((char*)man_buf[buf_lines++], (char*)"file named: [romname].man");
     }
     
 }
