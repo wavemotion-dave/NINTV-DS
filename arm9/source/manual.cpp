@@ -175,6 +175,9 @@ static void ReadManual(void)
         strcpy((char*)man_buf[buf_lines++], (char*)"You can also add specific");
         strcpy((char*)man_buf[buf_lines++], (char*)"manuals if you have a text");
         strcpy((char*)man_buf[buf_lines++], (char*)"file named: [romname].man");
+        strcpy((char*)man_buf[buf_lines++], (char*)" ");
+        strcpy((char*)man_buf[buf_lines++], (char*)"Use Config Options to set");
+        strcpy((char*)man_buf[buf_lines++], (char*)"path where manuals are found.");
     }
     
 }
