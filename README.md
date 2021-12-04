@@ -49,6 +49,11 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.4 : 04-Dec-2021 by wavemotion-dave
+  * Added support for more ROM segments so games like DK Jr Homebrew will run.
+  * New global nintv-ds.man manual support - see extras folder.
+  * Other small cleanups as timer permitted.
+
 V3.3 : 02-Dec-2021 by wavemotion-dave
   * Added use of generic.ovl which replaces the generic overlay if found.
   * Fix for custom overlay manual/instruction meta key.
