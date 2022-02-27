@@ -17,7 +17,7 @@
 #include "Memory.h"
 #include "ROM.h"
 
-#define MAX_MAPPED_MEMORIES     22
+#define MAX_MAPPED_MEMORIES     24
 #define MAX_OVERLAPPED_MEMORIES 3
 
 /**
