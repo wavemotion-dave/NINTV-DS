@@ -21,35 +21,9 @@
 #include "types.h"
 
 class Intellivision;
-    
-//divisor for slowing down the clock speed for the AY38914
-extern  INT32 clockDivisor;
+
+extern INT32 clockDivisor;
 extern INT32 clocksPerSample;
-
-//cached total output sample
-extern  UINT8 cachedTotalOutputIsDirty;
-extern  INT16 cachedTotalOutput;
-
-//envelope data
-extern  UINT8 envelopeIdle;
-extern  INT32 envelopePeriod;
-extern  INT32 envelopePeriodValue;
-extern  INT32 envelopeVolume;
-extern  UINT8 envelopeHold;
-extern  UINT8 envelopeAltr;
-extern  UINT8 envelopeAtak;
-extern  UINT8 envelopeCont;
-extern  INT32 envelopeCounter;        
-
-//noise data
-extern  UINT8 noiseIdle;
-extern  INT32 noisePeriod;
-extern  INT32 noisePeriodValue;
-extern  INT32 noiseCounter;        
-
-//data for random number generator, used for white noise accuracy
-extern  INT32 my_random;
-extern  UINT8 noise;
 
 TYPEDEF_STRUCT_PACK( _AY38914State
 {
@@ -105,10 +79,41 @@ class AY38914 : public Processor, public AudioProducer
 
         //registers
         AY38914_Registers      registers;
+        
+struct Channel_t channel0;
+struct Channel_t channel1;
+struct Channel_t channel2;
+
+//cached total output sample
+UINT8 cachedTotalOutputIsDirty;
+INT16 cachedTotalOutput;
+
+//envelope data
+UINT8 envelopeIdle;
+INT32 envelopePeriod;
+INT32 envelopePeriodValue;
+INT32 envelopeVolume;
+UINT8 envelopeHold;
+UINT8 envelopeAltr;
+UINT8 envelopeAtak;
+UINT8 envelopeCont;
+INT32 envelopeCounter;         
+
+//noise data
+UINT8 noiseIdle;
+INT32 noisePeriod;
+INT32 noisePeriodValue;
+INT32 noiseCounter;        
+
+//data for random number generator, used for white noise accuracy
+INT32 my_random;
+UINT8 noise;
+
 
     private:
         AY38914_InputOutput*   psgIO0;
         AY38914_InputOutput*   psgIO1;
+        UINT16  location;
 };
 
 #endif

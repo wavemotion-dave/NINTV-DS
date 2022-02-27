@@ -15,6 +15,7 @@
 #include "Emulator.h"
 #include "HandController.h"
 #include "Intellivoice.h"
+#include "ECS.h"
 #include "Emulator.h"
 #include "MemoryBus.h"
 #include "RAM.h"
@@ -53,6 +54,9 @@ class Intellivision : public Emulator
         HandController    player1Controller;
         HandController    player2Controller;
 
+        //the ECS peripheral
+        ECS               ecs;
+        
         //the Intellivoice peripheral
         Intellivoice      intellivoice;
 };

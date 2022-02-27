@@ -15,11 +15,6 @@
 #include "AY38914_Registers.h"
 #include "../ds_tools.h"
 
-// ---------------------------------------------------------------------------
-// The 15 registers of the sound chip are worth putting in fast memory...
-// ---------------------------------------------------------------------------
-UINT16   psg_memory[0x0E] __attribute__((section(".dtcm")));
-
 AY38914_Registers::AY38914_Registers(UINT16 address)
 : RAM(0x10, address, 0xFFFF, 0xFFFF)
 {}
@@ -40,134 +35,133 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
     switch(location) {
         case 0x00:
             value = value & 0x00FF;
-            channel0.period = (channel0.period & 0x0F00) |
+            ay38914->channel0.period = (ay38914->channel0.period & 0x0F00) |
                     value;
-            channel0.periodValue = (channel0.period
-                    ? channel0.period : 0x1000);
+            ay38914->channel0.periodValue = (ay38914->channel0.period
+                    ? ay38914->channel0.period : 0x1000);
             psg_memory[location] = value;
             break;
 
         case 0x01:
             value = value & 0x00FF;
-            channel1.period = (channel1.period & 0x0F00) |
+            ay38914->channel1.period = (ay38914->channel1.period & 0x0F00) |
                     value;
-            channel1.periodValue = (channel1.period
-                    ? channel1.period : 0x1000);
+            ay38914->channel1.periodValue = (ay38914->channel1.period
+                    ? ay38914->channel1.period : 0x1000);
             psg_memory[location] = value;
             break;
 
         case 0x02:
             value = value & 0x00FF;
-            channel2.period = (channel2.period & 0x0F00) |
+            ay38914->channel2.period = (ay38914->channel2.period & 0x0F00) |
                     value;
-            channel2.periodValue = (channel2.period
-                    ? channel2.period : 0x1000);
+            ay38914->channel2.periodValue = (ay38914->channel2.period
+                    ? ay38914->channel2.period : 0x1000);
             psg_memory[location] = value;
             break;
 
         case 0x03:
             value = value & 0x00FF;
-            envelopePeriod = (envelopePeriod & 0xFF00) |
+            ay38914->envelopePeriod = (ay38914->envelopePeriod & 0xFF00) |
                     value;
-            envelopePeriodValue = (envelopePeriod
-                    ? (envelopePeriod << 1) : 0x20000);
+            ay38914->envelopePeriodValue = (ay38914->envelopePeriod
+                    ? (ay38914->envelopePeriod << 1) : 0x20000);
             psg_memory[location] = value;
             break;
 
         case 0x04:
             value = value & 0x000F;
-            channel0.period = (channel0.period & 0x00FF) |
+            ay38914->channel0.period = (ay38914->channel0.period & 0x00FF) |
                     (value<<8);
-            channel0.periodValue = (channel0.period
-                    ? channel0.period : 0x1000);
+            ay38914->channel0.periodValue = (ay38914->channel0.period
+                    ? ay38914->channel0.period : 0x1000);
             psg_memory[location] = value;
             break;
 
         case 0x05:
             value = value & 0x000F;
-            channel1.period = (channel1.period & 0x00FF) |
+            ay38914->channel1.period = (ay38914->channel1.period & 0x00FF) |
                     (value<<8);
-            channel1.periodValue = (channel1.period
-                    ? channel1.period : 0x1000);
+            ay38914->channel1.periodValue = (ay38914->channel1.period
+                    ? ay38914->channel1.period : 0x1000);
             psg_memory[location] = value;
             break;
 
         case 0x06:
             value = value & 0x000F;
-            channel2.period = (channel2.period & 0x00FF) |
+            ay38914->channel2.period = (ay38914->channel2.period & 0x00FF) |
                     (value<<8);
-            channel2.periodValue = (channel2.period
-                    ? channel2.period : 0x1000);
+            ay38914->channel2.periodValue = (ay38914->channel2.period
+                    ? ay38914->channel2.period : 0x1000);
             psg_memory[location] = value;
             break;
 
         case 0x07:
             value = value & 0x00FF;
-            envelopePeriod = (envelopePeriod & 0x00FF) |
+            ay38914->envelopePeriod = (ay38914->envelopePeriod & 0x00FF) |
                     (value<<8);
-            envelopePeriodValue = (envelopePeriod
-                    ? (envelopePeriod << 1) : 0x20000);
+            ay38914->envelopePeriodValue = (ay38914->envelopePeriod
+                    ? (ay38914->envelopePeriod << 1) : 0x20000);
             psg_memory[location] = value;
             break;
 
         case 0x08:
             value = value & 0x00FF;
-            channel0.toneDisabled = !!(value & 0x0001);
-            channel1.toneDisabled = !!(value & 0x0002);
-            channel2.toneDisabled = !!(value & 0x0004);
-            channel0.noiseDisabled = !!(value & 0x0008);
-            channel1.noiseDisabled = !!(value & 0x0010);
-            channel2.noiseDisabled = !!(value & 0x0020);
-            channel0.isDirty = TRUE;
-            channel1.isDirty = TRUE;
-            channel2.isDirty = TRUE;
-            noiseIdle = channel0.noiseDisabled &
-                    channel1.noiseDisabled &
-                    channel2.noiseDisabled;
+            ay38914->channel0.toneDisabled = !!(value & 0x0001);
+            ay38914->channel1.toneDisabled = !!(value & 0x0002);
+            ay38914->channel2.toneDisabled = !!(value & 0x0004);
+            ay38914->channel0.noiseDisabled = !!(value & 0x0008);
+            ay38914->channel1.noiseDisabled = !!(value & 0x0010);
+            ay38914->channel2.noiseDisabled = !!(value & 0x0020);
+            ay38914->channel0.isDirty = TRUE;
+            ay38914->channel1.isDirty = TRUE;
+            ay38914->channel2.isDirty = TRUE;
+            ay38914->noiseIdle = ay38914->channel0.noiseDisabled &
+                    ay38914->channel1.noiseDisabled &
+                    ay38914->channel2.noiseDisabled;
             psg_memory[location] = value;
             break;
 
         case 0x09:
             value = value & 0x001F;
-            noisePeriod = value;
-            noisePeriodValue = (noisePeriod
-                    ? (noisePeriod << 1) : 0x0040);
+            ay38914->noisePeriod = value;
+            ay38914->noisePeriodValue = (ay38914->noisePeriod ? (ay38914->noisePeriod << 1) : 0x0040);
             psg_memory[location] = value;
             break;
 
         case 0x0A:
             value = value & 0x000F;
-            envelopeHold = !!(value & 0x0001);
-            envelopeAltr = !!(value & 0x0002);
-            envelopeAtak = !!(value & 0x0004);
-            envelopeCont = !!(value & 0x0008);
-            envelopeVolume = (envelopeAtak ? 0 : 15);
-            envelopeCounter = envelopePeriodValue;
-            envelopeIdle = FALSE;
+            ay38914->envelopeHold = !!(value & 0x0001);
+            ay38914->envelopeAltr = !!(value & 0x0002);
+            ay38914->envelopeAtak = !!(value & 0x0004);
+            ay38914->envelopeCont = !!(value & 0x0008);
+            ay38914->envelopeVolume = (ay38914->envelopeAtak ? 0 : 15);
+            ay38914->envelopeCounter = ay38914->envelopePeriodValue;
+            ay38914->envelopeIdle = FALSE;
             psg_memory[location] = value;
             break;
 
         case 0x0B:
             value = value & 0x003F;
-            channel0.envelope = !!(value & 0x0010);
-            channel0.volume = (value & 0x000F);
-            channel0.isDirty = TRUE;
+            ay38914->channel0.envelope = !!(value & 0x0010);
+            ay38914->channel0.volume = (value & 0x000F);
+            ay38914->channel0.isDirty = TRUE;
             psg_memory[location] = value;
             break;
 
         case 0x0C:
             value = value & 0x003F;
-            channel1.envelope = !!(value & 0x0010);
-            channel1.volume = (value & 0x000F);
-            channel1.isDirty = TRUE;
+            ay38914->channel1.envelope = !!(value & 0x0010);
+            ay38914->channel1.volume = (value & 0x000F);
+            ay38914->channel1.isDirty = TRUE;
             psg_memory[location] = value;
             break;
 
         case 0x0D:
             value = value & 0x003F;
-            channel2.envelope = !!(value & 0x0010);
-            channel2.volume = (value & 0x000F);
-            channel2.isDirty = TRUE;
+            ay38914->channel2.envelope = !!(value & 0x0010);
+            ay38914->channel2.volume = (value & 0x000F);
+            ay38914->channel2.isDirty = TRUE;
             psg_memory[location] = value;
             break;
 

@@ -39,7 +39,7 @@ struct Database_t
     const char *name;                     // Game name (e.g. "Astrosmash (Matel 1981)")
     UINT8       bIntellivoice;            // TRUE if the game uses intellivoice
     UINT8       bJLP;                     // TRUE if the game uses JLP accelerator functions or extra RAM
-    UINT8       bECS;                     // TRUE if the game uses ECS (not yet supported by Nintellivision)
+    UINT8       bECS;                     // TRUE if the game uses ECS
     
     struct MemArea_t mem_areas[MAX_MEM_AREAS];
 };
@@ -50,7 +50,7 @@ struct SpecialRomDatabase_t
     const char *name;                     // Game name (e.g. "Astrosmash (Matel 1981)")
     UINT8       bIntellivoice;            // TRUE if the game uses intellivoice
     UINT8       bJLP;                     // TRUE if the game uses JLP accelerator functions or extra RAM
-    UINT8       bECS;                     // TRUE if the game uses ECS (not yet supported by Nintellivision)
+    UINT8       bECS;                     // TRUE if the game uses ECS
 };
 
 

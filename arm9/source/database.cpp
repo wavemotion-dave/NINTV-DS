@@ -24,7 +24,7 @@
 // where to load the various chunks of data in the .int or .bin file.  We have a smaller table below this for .ROM files... those don't need a memory map
 // as the .ROM contains that information... but .ROMs are really bad at setting things like iVoice or JLP flags so we force that if needed...
 //
-// Note: there is nothing magical about 5 mappe segments... we just limit to that so the table isn't huge. It can be expanded if needed in the future.
+// Note: there is nothing magical about 5 mapped segments... we just limit to that so the table isn't huge. It can be expanded if needed in the future.
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 const struct Database_t database[] =
@@ -120,7 +120,7 @@ const struct Database_t database[] =
     {0xE806AD91, "Microsurgeon (Imagic 1982)",                  0,  0,  0,  {{DB_ROM16, 0x4800, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x94096229, "Minehunter (Ryan Kinnen 2004)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x59898803, "Minehunter (Ryan Kinnen 2004)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0x9D57498F, "Mind Strike! (Matel 1982)",                   0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_RAM8,  0x4000, 0x0800},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0x9D57498F, "Mind Strike! (Matel 1982)",                   0,  0,  2,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_RAM8,  0x4000, 0x0800},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x6746607B, "Minotaur v1.1 (Matel 1981)",                  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x5A4CE519, "Minotaur v2 (Matel 1981)",                    0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xBD731E3C, "Minotaur (Matel 1981)",                       0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -160,6 +160,7 @@ const struct Database_t database[] =
     {0x6E0882E7, "SameGame and Robots (IntelligentVision 2005)",0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x12BA58D1, "SameGame and Robots (IntelligentVision 2005)",0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xE221808C, "Santa's Helper (Matel 1983)",                 0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xe9e3f60d, "Scooby Doo's Maze Chase:Mattel (Matel 1983)", 0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xBEF0B0C7, "Scooby Doo's Maze Chase:Mattel (Matel 1983)", 0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x99AE29A9, "Sea Battle (Matel 1980)",                     0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xE0F0D3DA, "Sewer Sam (Interphase 1983)",                 0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -221,10 +222,10 @@ const struct Database_t database[] =
     {0x24B667B9, "Worm Whomper (Activision 1983)",              0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x15C65DC5, "Zaxxon (Coleco 1982)",                        0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD89AEC27, "Zombie Marbles (John Doherty 2004)",          0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0xEF1BEC41, "DK Ar},ade{ (Carl Muller 2010)",              0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xEF1BEC41, "DK Arcade (Carl Muller 2010)",                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xFF7BB941, "D2K Arcade (Carl Muller 2011)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x3000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x3B636837, "Ms Pac-Man (Carl Muller 2012)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x8800, 0x3000},   {DB_ROM16, 0xD000, 0x3000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0xAB5FD8BC, "Space Patrol",                                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xAB5FD8BC, "Space Patrol",                                0,  0,  3,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x2B549528, "Smurf's Rescue in Gargamel's Castle",         0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x0700},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x4728C3BD, "Blowout",                                     0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD0F83698, "Astrosmash Competition (Matel 1981)",         0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -245,12 +246,13 @@ const struct Database_t database[] =
 // For .ROM files we can force the user of JLP or Intellivoice if needed... sometimes the .ROM files don't get this right.
 // ------------------------------------------------------------------------------------------------------------------------
 const struct SpecialRomDatabase_t rom_database[] =
-{
+{                                                           // IV  JLP  ECS
     {0xef662b2b, "Grail of the Gods (JLP)",                     0,  1,  0},    
     {0xec2e2320, "Missile Domination (JLP)",                    0,  1,  0},    
     {0x5d6ac5a9, "Super Pixel Bros (JLP)",                      0,  1,  0},    
     {0xd63c8ad0, "JLP Test (JLP)",                              0,  1,  0},        
     {0x69adbba6, "FW Diagnostics (IVoice)",                     1,  0,  0},
+    {0x8ddd534e, "FreeCont (ECS)",                              0,  0,  1},
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0}
 };
 

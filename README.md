@@ -10,6 +10,7 @@ You must supply the BIOS files in the same directory as your ROM files (can be c
 * exec.bin
 
 Optional is ivoice.bin for Intellivoice games.
+Optional is ecs.bin for ECS games.
 
 The GROM and EXEC binaries are property of Intellivision and you will have to find them yourself. 
 Don't ask. If you own Intellivision Lives, you likely have both files already somewhere in your house. 
@@ -27,16 +28,18 @@ Features :
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions, extra RAM and flash memory. When loading a game,
  use the X button to load and force JLP support ON if not auto-detected.
+ * ECS support for ECS games including sound-enchanced games like Space Patrol.
 
 Missing / Known Issues :
 -----------------------
-* No ECS support - ECS games will not load/play. No bankswitch support either.
+* ECS support is minimal. Missing full keyboard and no bankswitch support either. This means you can't 
+play World Series Baseball but you can play MindStrike (keys 6789 for 'START'), Jetsons and Scooby Doo Maze Chase.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 License :
 -----------------------
-Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+Copyright (c) 2021-2022 Dave Bernazzani (wavemotion-dave)
 
 Copying and distribution of this emulator, it's source code and associated 
 readme files, with or without modification, are permitted in any medium without 
@@ -49,6 +52,9 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.5 : 27-Feb-2022 by wavemotion-dave
+  * Added preliminary support for ECS and ECS-Sound-Enhanced games.
+  
 V3.4 : 04-Dec-2021 by wavemotion-dave
   * Added support for more ROM segments so games like DK Jr Homebrew will run.
   * New global nintv-ds.man manual support - see extras folder.
@@ -103,7 +109,6 @@ V2.5 : 15-Oct-2021 by wavemotion-dave
   * Ability to map DS key to bring up manuals.
   * Added combo key mapping (AX, XY, YB, BA) for diagonal shooting.
   * Updated example .man manuals (see 'extras' folder).
-  
   
 V2.4 : 12-Oct-2021 by wavemotion-dave
   * Fixed horizontal and vertical offset/scrolling. Christmas Carol should now work.

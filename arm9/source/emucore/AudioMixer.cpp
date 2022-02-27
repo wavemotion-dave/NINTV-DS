@@ -30,6 +30,7 @@ UINT8  currentSampleIdx8 __attribute__((section(".dtcm"))) = 0;
 UINT32 commonClocksPerTick __attribute__((section(".dtcm"))) = 0;
 extern UINT64 lcm(UINT64, UINT64);
 
+
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
     audioProducerCount(0)
@@ -120,7 +121,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     extern UINT8 sp_idle;
     if (clockDivisor == SOUND_DIV_DISABLE) return minimum;
 
-    if (sp_idle) // If the Intellivoice is idle, we only have one sound producer. 
+    if (sp_idle && (!bUseECS)) // If the Intellivoice is idle, we only have one sound producer. 
     {
         for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
         {

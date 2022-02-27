@@ -18,37 +18,11 @@ UINT16 amplitudes16Bit[16] __attribute__((section(".dtcm"))) =
     0x03C5, 0x0555, 0x078B, 0x0AAB, 0x0F16, 0x1555, 0x1E2B, 0x2AAA
 };
 
-struct Channel_t channel0 __attribute__((section(".dtcm")));
-struct Channel_t channel1 __attribute__((section(".dtcm")));
-struct Channel_t channel2 __attribute__((section(".dtcm")));
-
-INT32 clockDivisor __attribute__((section(".dtcm")));
-INT32 clocksPerSample __attribute__((section(".dtcm")));
-
-//cached total output sample
-UINT8 cachedTotalOutputIsDirty __attribute__((section(".dtcm")));
-INT16 cachedTotalOutput __attribute__((section(".dtcm")));
-
-//envelope data
-UINT8 envelopeIdle __attribute__((section(".dtcm")));
-INT32 envelopePeriod __attribute__((section(".dtcm")));
-INT32 envelopePeriodValue __attribute__((section(".dtcm")));
-INT32 envelopeVolume __attribute__((section(".dtcm")));
-UINT8 envelopeHold __attribute__((section(".dtcm")));
-UINT8 envelopeAltr __attribute__((section(".dtcm")));
-UINT8 envelopeAtak __attribute__((section(".dtcm")));
-UINT8 envelopeCont __attribute__((section(".dtcm")));
-INT32 envelopeCounter __attribute__((section(".dtcm")));         
-
-//noise data
-UINT8 noiseIdle __attribute__((section(".dtcm")));
-INT32 noisePeriod __attribute__((section(".dtcm")));
-INT32 noisePeriodValue __attribute__((section(".dtcm")));
-INT32 noiseCounter __attribute__((section(".dtcm")));        
-
-//data for random number generator, used for white noise accuracy
-INT32 my_random __attribute__((section(".dtcm")));
-UINT8 noise __attribute__((section(".dtcm")));
+// ----------------------------------------------------------------
+// These are common no matter whether we have 1 PSG or 2 (for ECS)
+// ----------------------------------------------------------------
+INT32 clockDivisor   __attribute__((section(".dtcm")));
+INT32 clocksPerSample  __attribute__((section(".dtcm")));
 
 
 /**
@@ -62,6 +36,7 @@ AY38914::AY38914(UINT16 location, AY38914_InputOutput* io0,
     : Processor("AY-3-8914"),
       registers(location)
 {
+    this->location = location;
     this->psgIO0 = io0;
     this->psgIO1 = io1;
     clockDivisor = 8; 
@@ -202,7 +177,10 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
         // Now place the sample onto the audio output line...
-        playSample0(cachedTotalOutput);
+        if (this->location == 0xF0)
+            playSample1(cachedTotalOutput);
+        else
+            playSample0(cachedTotalOutput);
 
         totalTicks += clocksPerSample;
 
@@ -216,7 +194,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
 
 void AY38914::getState(AY38914State *state)
 {
-    memcpy(state->registers, psg_memory, 0x0E * sizeof(UINT16));
+    memcpy(state->registers, registers.psg_memory, 0x0E * sizeof(UINT16));
     memcpy(&state->channel0, &channel0, sizeof(struct Channel_t));
     memcpy(&state->channel1, &channel1, sizeof(struct Channel_t));
     memcpy(&state->channel2, &channel2, sizeof(struct Channel_t));
@@ -243,7 +221,7 @@ void AY38914::getState(AY38914State *state)
 
 void AY38914::setState(AY38914State *state)
 {
-    memcpy(psg_memory, state->registers, 0x0E * sizeof(UINT16));
+    memcpy(registers.psg_memory, state->registers, 0x0E * sizeof(UINT16));
     memcpy(&channel0, &state->channel0, sizeof(struct Channel_t));
     memcpy(&channel1, &state->channel1, sizeof(struct Channel_t));
     memcpy(&channel2, &state->channel2, sizeof(struct Channel_t));

@@ -83,6 +83,9 @@ Intellivision::Intellivision()
     //add the PSG registers
     AddRAM(&psg.registers);
 
+    //add the ECS
+    AddPeripheral(&ecs);
+          
     //add the Intellivoice
     AddPeripheral(&intellivoice);
 }

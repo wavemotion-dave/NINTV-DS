@@ -37,15 +37,15 @@
 
 // --------------------------------------------------------
 // A set of boolean values so we know what to load and 
-// how to load it. These are not accessed often enough
-// to warrant putting them in .dtcm fast memory.
+// how to load it. Put them in fast memory for tiny boost.
 // --------------------------------------------------------
-UINT8 bStartSoundFifo   = false;
-UINT8 bUseJLP           = false;
-UINT8 bForceIvoice      = false;
-UINT8 bInitEmulator     = false;
-UINT8 bUseDiscOverlay   = false;
-UINT8 bGameLoaded       = false;
+UINT8 bStartSoundFifo   __attribute__((section(".dtcm"))) = false;
+UINT8 bUseJLP           __attribute__((section(".dtcm"))) = false;
+UINT8 bUseECS           __attribute__((section(".dtcm"))) = false;
+UINT8 bUseIVoice        __attribute__((section(".dtcm"))) = false;
+UINT8 bInitEmulator     __attribute__((section(".dtcm"))) = false;
+UINT8 bUseDiscOverlay   __attribute__((section(".dtcm"))) = false;
+UINT8 bGameLoaded       __attribute__((section(".dtcm"))) = false;
 
 // -------------------------------------------------------------
 // This one is accessed rather often so we'll put it in .dtcm
@@ -63,11 +63,11 @@ UINT32 target_frame_timing[]   __attribute__((section(".dtcm"))) = {546, 496, 45
 // ---------------------------------------------------------------------------------
 // Here are the main classes for the emulator, the RIP (game rom), video bus, etc.
 // ---------------------------------------------------------------------------------
-RunState             runState = Stopped;
-Emulator             *currentEmu = NULL;
-Rip                  *currentRip = NULL;
-VideoBus             *videoBus   = NULL;
-AudioMixer           *audioMixer = NULL;
+RunState             runState    __attribute__((section(".dtcm"))) = Stopped;
+Emulator             *currentEmu __attribute__((section(".dtcm"))) = NULL;
+Rip                  *currentRip __attribute__((section(".dtcm"))) = NULL;
+VideoBus             *videoBus   __attribute__((section(".dtcm"))) = NULL;
+AudioMixer           *audioMixer __attribute__((section(".dtcm"))) = NULL;
 
 // ---------------------------------------------------------------------------------
 // Some emulator frame calcualtions and once/second computations for frame rate...
@@ -75,7 +75,6 @@ AudioMixer           *audioMixer = NULL;
 UINT16 emu_frames=0;
 UINT16 frames_per_sec_calc=0;
 UINT8  oneSecTick=FALSE;
-
 
 // -------------------------------------------------------------
 // Background screen buffer indexes for the DS video engine...
@@ -176,7 +175,10 @@ BOOL InitializeEmulator(void)
         }
         else //usage == PERIPH_REQUIRED, but it didn't load
         {
-            dsPrintValue(0,1,0, (char*) "NO IVOICE.BIN");
+            if (bUseECS)
+                dsPrintValue(0,1,0, (char*) "NO ECS.BIN   ");
+            else
+                dsPrintValue(0,1,0, (char*) "NO IVOICE.BIN");
             return FALSE;
         }
     }

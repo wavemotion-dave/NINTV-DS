@@ -260,7 +260,7 @@ struct options_t
 
 const struct options_t Game_Option_Table[] =
 {
-    {"OVERLAY",     {"GENERIC", "CUSTOM", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTANS", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORDS & SERPT"},&myConfig.overlay_selected, 11},
+    {"OVERLAY",     {"GENERIC", "CUSTOM", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTANS", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "SWORDS & SERP"}, &myConfig.overlay_selected, 11},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
                      "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_A_map,        24},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 

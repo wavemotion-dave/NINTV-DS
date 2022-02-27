@@ -35,7 +35,8 @@ extern int bg0, bg0b, bg1b;
 
 extern UINT8 bStartSoundFifo;
 extern UINT8 bUseJLP;
-extern UINT8 bForceIvoice;
+extern UINT8 bUseECS;
+extern UINT8 bUseIVoice;
 extern UINT8 bInitEmulator;
 extern UINT8 bUseDiscOverlay;
 extern UINT8 bGameLoaded;

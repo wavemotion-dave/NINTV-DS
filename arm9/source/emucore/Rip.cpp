@@ -18,6 +18,7 @@
 #include "JLP.h"
 #include "CRC32.h"
 #include "../database.h"
+#include "../ds_tools.h"
 
 #define ROM_TAG_TITLE          0x01
 #define ROM_TAG_PUBLISHER      0x02
@@ -26,11 +27,6 @@
 
 UINT8 bin_image_buf[128 * 1024];                   // No .BIN or .ROM will be bigger than this...
 UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf;
-
-extern UINT8 bUseJLP;
-extern UINT8 bForceIvoice;
-extern UINT8 bUseJLP;
-
 
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
@@ -138,7 +134,8 @@ Rip* Rip::LoadBin(const CHAR* filename)
         rip->JLP16Bit = NULL;
     }
     
-    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+    if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+    if (bUseECS) rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
@@ -190,14 +187,15 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
         {
             rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
         }
+        if (db_entry->bECS)
+        {
+            bUseECS = db_entry->bECS;
+            rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
+        }
         if (db_entry->bJLP)
         {
             rip->JLP16Bit = new JLP();
             rip->AddRAM(rip->JLP16Bit);
-        }
-        if (db_entry->bECS)
-        {
-            // TODO - give warning that ECS is not supported...
         }
     }
     else    // Didn't find it... let's see if we can read a .cfg file
@@ -224,7 +222,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                         {
                             if (*ptr == '$')
                             {
-                                ptr++;
+                                ptr++;  
                                 UINT16 start_addr = strtoul(ptr, &ptr, 16);
                                 while (*ptr == ' ' || *ptr == '\t' || *ptr == '-' || *ptr == '$') ptr++;
                                 UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
@@ -262,8 +260,13 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                             {
                                 rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
                             }
+                            if (strstr(ptr, "ecs"))
+                            {
+                                bUseECS=1;
+                                rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+                            }
                         }
-                    }                
+                    }
                 }
             }
             fclose(cfgFile);
@@ -368,6 +371,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
                 BOOL requiresECS = ((read & 0xC0) != 0x80);
                 if (requiresECS)
                     rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+                
                 BOOL intellivoiceSupport = ((read & 0x0C) != 0x0C);
                 if (intellivoiceSupport)
                     rip->AddPeripheralUsage("Intellivoice", PERIPH_OPTIONAL);
@@ -403,7 +407,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
     if (db_entry != NULL)
     {
         if (db_entry->bJLP) bUseJLP=true;       
-        if (db_entry->bIntellivoice) bForceIvoice=true;       
+        if (db_entry->bIntellivoice) bUseIVoice=true;       
+        if (db_entry->bECS) bUseECS=true;
     }
 
     // Add the JLP RAM module if required...
@@ -418,7 +423,10 @@ Rip* Rip::LoadRom(const CHAR* filename)
     }
 
     // Force Intellivoice if asked for...
-    if (bForceIvoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+    if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+
+    // Use ECS if asked for...
+    if (bUseECS) rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
 
     return rip;
 }

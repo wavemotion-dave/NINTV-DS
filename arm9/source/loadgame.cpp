@@ -726,7 +726,8 @@ unsigned int dsWaitForRom(char *chosen_filename)
         bDone=true;
         WAITVBL;
         if (keysCurrent() & KEY_X) bUseJLP = true; else bUseJLP=false;
-        if (keysCurrent() & KEY_Y) bForceIvoice = true; else bForceIvoice=false;          
+        if (keysCurrent() & KEY_Y) bUseIVoice = true; else bUseIVoice=false;          
+        bUseECS = false; // Only if Database Says So
         strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
       }
       else
