@@ -135,7 +135,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
     }
     
     if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
-    if (bUseECS) rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
+    if (bUseECS & !bUseIVoice) rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
@@ -187,11 +187,12 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
         {
             rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
         }
-        if (db_entry->bECS)
+        else if (db_entry->bECS)    // We don't support Intellivoice + ECS
         {
             bUseECS = db_entry->bECS;
             rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
         }
+        
         if (db_entry->bJLP)
         {
             rip->JLP16Bit = new JLP();
@@ -424,9 +425,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
 
     // Force Intellivoice if asked for...
     if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
-
-    // Use ECS if asked for...
-    if (bUseECS) rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+    // Use ECS if asked for... (we don't support Intellivoice + ECS)
+    else if (bUseECS) rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
 
     return rip;
 }
