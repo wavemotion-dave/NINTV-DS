@@ -33,7 +33,9 @@ Features :
 Missing / Known Issues :
 -----------------------
 * ECS support is minimal. Missing full keyboard and no bankswitch support either. This means you can't 
-play World Series Baseball but you can play MindStrike (keys 6789 for 'START'), Jetsons and Scooby Doo Maze Chase.
+play World Series Baseball but you can play MindStrike (keys 6789 for 'START'), Jetsons and Scooby Doo Maze 
+Chase. Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information
+to start the game. 
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
