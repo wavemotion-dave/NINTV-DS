@@ -836,7 +836,7 @@ ITCM_CODE void pollInputs(void)
     
     last_pressed = keys_pressed;
     
-    ecs_key_pressed = (myConfig.overlay_selected == 10) ? 0:-1;
+    ecs_key_pressed = (myConfig.overlay_selected == 10) ? 0:255;
     
     // -----------------------------------------------------------------
     // Now handle the on-screen Intellivision overlay and meta keys...
