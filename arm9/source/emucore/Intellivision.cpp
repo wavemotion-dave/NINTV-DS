@@ -102,6 +102,8 @@ BOOL Intellivision::SaveState(struct _stateStruct *saveState)
     RAM16bit.getState(&saveState->RAM16bitState);
     gram.getState(&saveState->MyGRAMState);
     intellivoice.getState(&saveState->ivoiceState);
+    ecs.getState(&saveState->ecsState);
+    
 	return didSave;
 }
 
@@ -116,7 +118,8 @@ BOOL Intellivision::LoadState(struct _stateStruct *saveState)
     RAM16bit.setState(&saveState->RAM16bitState);
     gram.setState(&saveState->MyGRAMState);
     intellivoice.setState(&saveState->ivoiceState);
-
+    ecs.getState(&saveState->ecsState);
+    
 	return didLoadState;
 }
 

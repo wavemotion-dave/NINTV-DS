@@ -22,6 +22,7 @@
 #include "ROM.h"
 #include "GROM.h"
 #include "JLP.h"
+#include "ECS.h"
 #include "CP1610.h"
 #include "AY38900.h"
 #include "AY38914.h"
@@ -42,6 +43,7 @@ struct _stateStruct
     RAMState            RAM16bitState;
     GRAMState           MyGRAMState; 
     IntellivoiceState   ivoiceState;
+    ECSState            ecsState;
     UINT16              extraRAM[0x800];
 };
 

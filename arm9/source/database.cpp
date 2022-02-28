@@ -250,10 +250,17 @@ const struct Database_t database[] =
 const struct SpecialRomDatabase_t rom_database[] =
 {                                                           // IV  JLP  ECS
     {0xef662b2b, "Grail of the Gods (JLP)",                     0,  1,  0},    
-    {0xec2e2320, "Missile Domination (JLP)",                    0,  1,  0},    
+    {0xec2e2320, "Missile Domination (JLP)",                    1,  1,  0},    
     {0x5d6ac5a9, "Super Pixel Bros (JLP)",                      0,  1,  0},    
     {0xd63c8ad0, "JLP Test (JLP)",                              0,  1,  0},        
+    {0xf0c5f311, "DK Jr (JLP)",                                 0,  1,  0},    
+    {0x613e109b, "Jr Pac-Man (JLP)",                            0,  1,  0},    
+    {0xc412dcde, "Jumpking Junior (JLP)",                       0,  1,  0},    
+    
     {0x69adbba6, "FW Diagnostics (IVoice)",                     1,  0,  0},
+    {0x99e7b4fc, "Goatnom (IVoice)",                            1,  0,  0},
+    {0x53bc0939, "Killer Bees (IVoice)",                        1,  0,  0},
+    
     {0x8ddd534e, "FreeCont (ECS)",                              0,  0,  1},
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0}
 };

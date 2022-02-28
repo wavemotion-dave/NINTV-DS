@@ -21,3 +21,12 @@ ECS::ECS()
     AddInputConsumer(&keyboard);
 }
 
+void ECS::getState(ECSState *state)
+{
+    psg2.getState(&state->psg2State);
+}
+
+void ECS::setState(ECSState *state)
+{
+    psg2.setState(&state->psg2State);
+}

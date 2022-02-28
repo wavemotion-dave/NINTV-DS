@@ -13,6 +13,11 @@
 #define ECS_RAM_SIZE        0x0800
 #define ECS_RAM_LOCATION    0x4000
 
+TYPEDEF_STRUCT_PACK( _ECSState
+{
+    AY38914State psg2State;
+} ECSState; )
+
 class Intellivision;
 
 class ECS : public Peripheral
@@ -21,6 +26,9 @@ class ECS : public Peripheral
 
     public:
         ECS();
+        
+        void getState(ECSState *state);
+        void setState(ECSState *state);
 
     private:
         ECSKeyboard         keyboard;
