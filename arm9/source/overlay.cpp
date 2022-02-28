@@ -30,7 +30,7 @@
 #include "bgBottom-atlantis.h"
 #include "bgBottom-bombsquad.h"
 #include "bgBottom-utopia.h"
-#include "bgBottom-swords.h"
+#include "bgBottom-ECS.h"
 #include "bgTop.h"
 #include "Emulator.h"
 #include "Rip.h"
@@ -79,6 +79,45 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_STRETCH
     {255,   255,    255,   255},    // META_GCONFIG        
 };
+
+// ----------------------------------------------------------------------------------------
+// This is the ECS overlay with reduced menu options...
+// ----------------------------------------------------------------------------------------
+struct Overlay_t ecsOverlay[OVL_MAX] =
+{
+    {120,   155,    30,     60},    // KEY_1
+    {158,   192,    30,     60},    // KEY_2
+    {195,   230,    30,     60},    // KEY_3
+    
+    {120,   155,    65,     95},    // KEY_4
+    {158,   192,    65,     95},    // KEY_5
+    {195,   230,    65,     95},    // KEY_6
+
+    {120,   155,    101,   135},    // KEY_7
+    {158,   192,    101,   135},    // KEY_8
+    {195,   230,    101,   135},    // KEY_9
+
+    {120,   155,    140,   175},    // KEY_CLEAR
+    {158,   192,    140,   175},    // KEY_0
+    {195,   230,    140,   175},    // KEY_ENTER
+
+    {255,   255,    255,   255},    // KEY_FIRE
+    {255,   255,    255,   255},    // KEY_L_ACT
+    {255,   255,    255,   255},    // KEY_R_ACT
+    
+    {255,   255,    255,   255},    // META_RESET
+    {255,   255,    255,   255},    // META_LOAD
+    {255,   255,    255,   255},    // META_CONFIG
+    {255,   255,    255,   255},    // META_SCORE
+    {255,   255,    255,   255},    // META_QUIT
+    {255,   255,    255,   255},    // META_STATE
+    { 55,   101,      2,    20},    // META_MENU
+    {255,   255,    255,   255},    // META_SWAP
+    {255,   255,    255,   255},    // META_MANUAL
+    {255,   255,    255,   255},    // META_STRETCH
+    {255,   255,    255,   255},    // META_GCONFIG        
+};
+
 
 struct Overlay_t myOverlay[OVL_MAX];
 struct Overlay_t myDisc[DISC_MAX];
@@ -313,11 +352,13 @@ void show_overlay(void)
       decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else if (myConfig.overlay_selected == 10) // Swords & Serpents
+    else if (myConfig.overlay_selected == 10) // ECS
     {
-      decompress(bgBottom_swordsTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_swordsMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_swordsPal,(u16*) BG_PALETTE_SUB,256*2);
+      decompress(bgBottom_ECSTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_ECSMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_ECSPal,(u16*) BG_PALETTE_SUB,256*2);
+      // ECS Overlay...  
+      memcpy(&myOverlay, &ecsOverlay, sizeof(myOverlay));
     }
     else    // Default Overlay...
     {

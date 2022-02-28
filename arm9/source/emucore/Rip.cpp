@@ -264,7 +264,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                             if (strstr(ptr, "ecs"))
                             {
                                 bUseECS=1;
-                                rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+                                rip->AddPeripheralUsage("ECS", PERIPH_OPTIONAL);
                             }
                         }
                     }

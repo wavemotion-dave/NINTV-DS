@@ -81,6 +81,10 @@ UINT8  oneSecTick=FALSE;
 // -------------------------------------------------------------
 int bg0, bg0b, bg1b;
 
+// -------------------------------------------------------------
+// For the ECS Keybaord (if present)
+// -------------------------------------------------------------
+extern UINT8 ecs_key_pressed;
 
 // ---------------------------------------------------------------
 // When we hit our target frames per second (default NTSC 60 FPS)
@@ -832,6 +836,8 @@ ITCM_CODE void pollInputs(void)
     
     last_pressed = keys_pressed;
     
+    ecs_key_pressed = (myConfig.overlay_selected == 10) ? 0:-1;
+    
     // -----------------------------------------------------------------
     // Now handle the on-screen Intellivision overlay and meta keys...
     // -----------------------------------------------------------------
@@ -918,6 +924,86 @@ ITCM_CODE void pollInputs(void)
         else if (touch.px > myOverlay[OVL_META_MANUAL].x1  && touch.px < myOverlay[OVL_META_MANUAL].x2 && touch.py > myOverlay[OVL_META_MANUAL].y1 && touch.py < myOverlay[OVL_META_MANUAL].y2) 
         {
             ds_handle_meta(OVL_META_MANUAL);
+        }
+        
+        // ---------------------------------------------------------------------------------------------------------
+        // And, finally, if the ECS mini-keypad is being shown, we can directly check for any ECS keyboard keys...
+        // ---------------------------------------------------------------------------------------------------------
+        if (myConfig.overlay_selected == 10)
+        {
+            if ((touch.px > 5) && (touch.px < 98))
+            {
+                if      (touch.py >= 25 && touch.py < 43)   // Row:  1 2 3 4 5
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 1;
+                    else if (touch.px <= 41) ecs_key_pressed = 2;
+                    else if (touch.px <= 60) ecs_key_pressed = 3;
+                    else if (touch.px <= 78) ecs_key_pressed = 4;
+                    else if (touch.px <= 97) ecs_key_pressed = 5;
+                    
+                }
+                else if (touch.py >= 43 && touch.py < 60)   // Row:  6 7 8 9 0
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 6;
+                    else if (touch.px <= 41) ecs_key_pressed = 7;
+                    else if (touch.px <= 60) ecs_key_pressed = 8;
+                    else if (touch.px <= 78) ecs_key_pressed = 9;
+                    else if (touch.px <= 97) ecs_key_pressed = 10;
+                }
+                else if (touch.py >= 60 && touch.py < 78)   // Row:  A B C D E
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 11;
+                    else if (touch.px <= 41) ecs_key_pressed = 12;
+                    else if (touch.px <= 60) ecs_key_pressed = 13;
+                    else if (touch.px <= 78) ecs_key_pressed = 14;
+                    else if (touch.px <= 97) ecs_key_pressed = 15;
+                }
+                else if (touch.py >= 78 && touch.py < 95)   // Row:  F G H I J
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 16;
+                    else if (touch.px <= 41) ecs_key_pressed = 17;
+                    else if (touch.px <= 60) ecs_key_pressed = 18;
+                    else if (touch.px <= 78) ecs_key_pressed = 19;
+                    else if (touch.px <= 97) ecs_key_pressed = 20;
+                }
+                else if (touch.py >= 95 && touch.py < 112)  // Row:  K L M N O
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 21;
+                    else if (touch.px <= 41) ecs_key_pressed = 22;
+                    else if (touch.px <= 60) ecs_key_pressed = 23;
+                    else if (touch.px <= 78) ecs_key_pressed = 24;
+                    else if (touch.px <= 97) ecs_key_pressed = 25;
+                }
+                else if (touch.py >= 112 && touch.py < 130) // Row:  P Q R S T
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 26;
+                    else if (touch.px <= 41) ecs_key_pressed = 27;
+                    else if (touch.px <= 60) ecs_key_pressed = 28;
+                    else if (touch.px <= 78) ecs_key_pressed = 29;
+                    else if (touch.px <= 97) ecs_key_pressed = 30;
+                }
+                else if (touch.py >= 130 && touch.py < 148) // Row:  U V W X Y
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 31;
+                    else if (touch.px <= 41) ecs_key_pressed = 32;
+                    else if (touch.px <= 60) ecs_key_pressed = 33;
+                    else if (touch.px <= 78) ecs_key_pressed = 34;
+                    else if (touch.px <= 97) ecs_key_pressed = 35;
+                }
+                else if (touch.py >= 148 && touch.py < 166) // Row:  Z [arrows]
+                {
+                    if      (touch.px <= 23) ecs_key_pressed = 36;
+                    else if (touch.px <= 41) ecs_key_pressed = 37;
+                    else if (touch.px <= 60) ecs_key_pressed = 38;
+                    else if (touch.px <= 78) ecs_key_pressed = 39;
+                    else if (touch.px <= 97) ecs_key_pressed = 40;
+                }
+                else if (touch.py >= 166 && touch.py < 190) // Row:  SPC  RET
+                {
+                    if      (touch.px <= 50) ecs_key_pressed = 41;
+                    else if (touch.px <= 97) ecs_key_pressed = 42;
+                }
+            }
         }
     }
     
