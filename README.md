@@ -57,6 +57,7 @@ History :
 V3.5 : 01-Mar-2022 by wavemotion-dave
   * Added support for ECS and ECS-Sound-Enhanced games.
   * Improved internal database so more games are recognized correctly.
+  * Save states changed with ECS support. Finish your 3.4 games before upgrading or lose your progress.
   
 V3.4 : 04-Dec-2021 by wavemotion-dave
   * Added support for more ROM segments so games like DK Jr Homebrew will run.
