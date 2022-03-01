@@ -28,14 +28,14 @@ Features :
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions, extra RAM and flash memory. When loading a game,
  use the X button to load and force JLP support ON if not auto-detected.
- * ECS support for ECS games including sound-enchanced games like Space Patrol.
+ * ECS support for ECS games including sound-enchanced games like Space Patrol (use ECS mini-Keyboard Overlay)
 
 Missing / Known Issues :
 -----------------------
-* ECS support is minimal. Missing full keyboard and no bankswitch support either. This means you can't 
+* ECS support is minimal. No UART / Cassette and no bankswitch support either. This means you can't 
 play World Series Baseball but you can play MindStrike (keys 6789 for 'START'), Jetsons and Scooby Doo Maze 
 Chase. Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information
-to start the game. 
+to start the game or you can pick the ECS mini-keyboard overlay.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
@@ -54,8 +54,9 @@ The NINTV-DS emulator is offered as-is, without any warranty.
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V3.5 : 27-Feb-2022 by wavemotion-dave
-  * Added preliminary support for ECS and ECS-Sound-Enhanced games.
+V3.5 : 01-Mar-2022 by wavemotion-dave
+  * Added support for ECS and ECS-Sound-Enhanced games.
+  * Improved internal database so more games are recognized correctly.
   
 V3.4 : 04-Dec-2021 by wavemotion-dave
   * Added support for more ROM segments so games like DK Jr Homebrew will run.
