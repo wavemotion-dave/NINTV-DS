@@ -1,0 +1,605 @@
+; ================================================================
+; Nintellivision Cheat Database
+;
+; Most of these cheats are provided by the excellent work 
+; found at: http://www.midnightblueinternational.com/romhacks.php
+; Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
+; ================================================================
+
+; -----------------------
+; Treasure of Tarmin 
+; -----------------------
+$16C3B62F
+$6746607B
+$5A4CE519
+$BD731E3C
+$2F9C93FC
+
+[Display Debug Info]
+p 500d 0    ; Disable the top border extension to see display debug info.
+
+[Higher War/Spiritual/HP/Food]
+p 50d6 87   ; Start with more War & Spiritual Strength (HP), arrows, and food!
+
+[Start Gold/Platinum Shield]
+p 50e3 60   ; These next 7 lines of code start you off with a Gold or Platinum Large Shield.
+p 50e4 240  ; | (Platinum for the two easier difficulties, Gold for the two harder difficulties)
+p 50e5 174  ; | (This dovetails with the code above for more HP, arrows, and food, so keep that value at $87.)
+p 50e6 2b8  ; | (As a side effect, you start off facing North instead of East.)
+p 50e7 4    ; |
+p 50e8 240  ; |
+p 50e9 103  ; |
+
+[Start with Purple Book]
+p 50eb 8d   ; Start with a different item equipped ($8d is the best Spiritual weapon, the Purple Book.)
+
+[Start with Platinum Crossbow]
+p 50eb 33   ; Start with a different item equipped ($33 is the best War weapon, the Platinum Crossbow.)
+
+[Weapons Never Break]
+p 6598 34   ; All weapons are now reusable and never break.
+p 6599 34   ; |
+
+
+; -----------------------
+; AD&D - Cloudy Mountain
+; -----------------------
+$F8B1F2B7
+$11C3BCFA
+
+[Activate Instant Win]
+p 503b 204  ; Activate "instant win" easter egg
+
+[Offset to Lower Difficulty]
+p 5095 2  ; Offset the difficulty so pressing 3 at title screen enables a sort of Practice Mode (monsters are motionless and reappear in random places when they go off screen)
+
+[Start Beside Cloudy Mountain]
+p 50ab 8b  ; Start next to Cloudy Mountain
+
+[Infinite Arrows]
+p 5297 34  ; Infinite arrows
+
+[Infinite Lives]
+p 5e7d 34   ; Infinite lives
+p 5e80 204  ; |
+
+[Invincibility]
+p 6476 34  ; Invincibility
+p 6477 34  ; |
+
+
+; -----------------------
+; Astrosmash
+; -----------------------
+$00BE8BBA
+$FAB2992C
+$E15BE3BB
+
+[Expand Title Screen]
+p 5028 20   ; Expanded title screen text
+p 503c 0    ; |
+
+[Enable Game Select]
+p 5069 34   ; Enable Game Selection menu
+p 506a 34   ; |
+p 50aa 6    ; Display "Game " in some color other than black (yellow)
+p 50b6 280  ; Display selection number in some color other than black
+p 50b7 15d  ; |
+p 50b8 4c   ; |
+p 50b9 48   ; |
+p 50ba 2f8  ; |
+p 50bb 8e   ; | (yellow)
+
+[Invincibility (Meteor)]
+p 513e 10   ; Invincibility (Meteor)
+
+[Invincibility (Meteor)]
+p 518c 10   ; Invincibility (Astrosmash)
+p 58d9 10   ; |
+
+[Sky Always Black]
+p 5a9f 2b8  ; Sky is always ...
+p 5aa0 0    ; black
+
+
+; -----------------------
+; Beauty and the Beast
+; -----------------------
+$C047D487
+
+[Infinite Lives]
+p 5a62 34  ; Infinite lives
+
+
+; -----------------------
+; BEAMRIDER
+; -----------------------
+$EAF650CC
+
+[Activate Easter Egg]
+p 504a 204  ; Activate easter egg by default (additional text after "players" prompt at title)
+
+[Infinite Torpedoes]
+p 5d54 34  ; Infinite Torpedoes
+
+[Infinite Light Ships]
+p 68aa 2b8  ; Infinite Light Ships
+p 68ab 12   ; | (Reserve Ships max out on the Space Station display when you die)
+
+[Change Number Enemies]
+p 6b34 14  ; Change number of Enemy Saucers per Sector (feel free to play with this value)
+
+[Starting Sector 99]
+p 6b3b 2b8  ; Start at Sector 99
+p 6b3c 62   ; | (You can change this value if you want, but you remain in this Sector.  Nothing happens after Sector 99 anyhow.)
+
+
+; -----------------------
+; DREADNAUGHT FACTOR
+; -----------------------
+$3B99B889
+$99F5783D
+
+[Invincibility]
+p 55b9 203  ; Invincible on all difficulty levels
+
+
+; -----------------------
+; TRON Deadly Discs
+; -----------------------
+$CA447BBD
+
+[Corrected Colors]
+p 50f9 55 ; Tron is light blue instead of red
+p 5109 81 ; Your disc is now blue instead of yellow
+p 5c2a 54 ; Warriors are pink instead of light blue (Leaders are black, and Bulldogs are light green)
+p 5db4 80 ; Enemy discs are black instead of blue (Double Discs are orange, and Homing Discs are yellow)
+
+[Guards Appear Immediately]
+p 5b47 244 ; Start with 1.6M points (score display is 0, but Guards appear immediately)
+p 5b48 317 ; |
+p 5b49 1e4 ; |
+p 5b4a 244 ; |
+p 5b4b 12d ; |
+p 583c 3e8 ; First point value tier set to 10,000
+;p 5f32 204 ; Jump to the highest point value tier
+;p 5f3e 317 ; Cross the high/low point values
+;p 5f40 318 ; | (Score goes into the 9-figure range in a hurry)
+
+[Recognizer No Shield]
+p 531d 0 ; Recognizer eye has no shield (graphics hack)
+p 531e 0 ; |
+p 531f 0 ; |
+p 5320 0 ; |
+p 5321 0 ; |
+p 5322 0 ; |
+p 5323 0 ; |
+p 5324 0 ; |
+p 5325 0 ; |
+p 5326 0 ; |
+p 5327 0 ; |
+p 5328 0 ; |
+p 5329 0 ; |
+p 532a 0 ; |
+p 532b 0 ; |
+p 532c 0 ; |
+
+[Recognizer Easy Hit]
+p 532d 7e ; Recognizer eye is easier to hit (graphics hack)
+p 532e ff ; |
+p 5330 ff ; |
+p 5331 ff ; |
+p 5332 ff ; |
+p 5335 7e ; |
+p 5336 ff ; |
+p 5338 ff ; |
+p 5339 ff ; |
+p 533a ff ; |
+p 533d 7e ; |
+p 533e ff ; |
+p 5340 ff ; |
+p 5341 ff ; |
+p 5342 ff ; |
+p 5345 7e ; |
+p 5346 ff ; |
+p 5348 ff ; |
+p 5349 ff ; |
+p 534a ff ; |
+
+[DEREZZED HACK]
+p 5877 44 ; D
+p 5878 45 ; E
+p 5879 52 ; R
+p 587a 45 ; E
+p 587b 5a ; Z
+p 587c 5a ; Z
+p 587d 45 ; E
+p 587e 44 ; D
+p 587f 21 ; !
+
+
+; -----------------------
+; Night Stalker
+; -----------------------
+$7334CD44
+
+[Never Run Out of Bullets]
+p 5b6d 34  ; Never run out of bullets
+
+[Disable Robot Bullets]
+p 5073 7  ; Disable robot bullets
+p 5077 104  ; |
+
+
+; -----------------------
+; Buzz Bombers
+; -----------------------
+$FA492BBD
+$2A1E0C1C
+
+[Intermissions Each Stage]
+p 5fd7 1 ; First intermission after stage 1
+p 5fdb 2 ; Second intermission after stage 2
+p 5fdf 3 ; Third intermission after stage 3
+p 5fe3 4 ; Fourth intermission after stage 4
+
+[BEES DONT POLLINATE FLOWERS]
+p 6c12 34 ; Bees do not pollinate flowers!
+
+[NO LIFE LOST FULL FLOWERBED]
+p 6469 34 ; Do not lose a life if the whole flower bed is pollinated
+
+[NO LIFE LOST DUE BUG SPRAY]
+p 69b4 34 ; Do not lose a life for running out of bug spray
+
+
+; -----------------------
+; HE-MAN Masters of the Universe 
+; -----------------------
+$573B9B6D
+
+[START WITH 9 LILVES]
+p 50e5 9 ; Start with 9 lives
+
+[No Loss Fireball Hit]
+p 5500 34 ; No loss of life when hit by fireball
+p 5503 200 ; |
+
+[No Loss Out of Fuel]
+p 6aeb 34 ; No loss of life when running out of fuel
+
+[No Loss Out of Time]
+p dc4b 34 ; No loss of life when running out of time
+
+[Infinite Time]
+p dcf9 34 ; Infinite time
+
+[Infinite Fuel]
+p 5b06 34 ; Infinite fuel
+
+
+; -----------------------
+; Defender (Atarisoft)
+; -----------------------
+$D8F99AA2
+
+[Infinite Lives And Bombs]
+p 71ff 204  ; Activate cheat code
+
+
+; -----------------------
+; Shark! Shark!
+; -----------------------
+$2A4C761D
+$d7b8208b
+
+[Infinite Lives]
+p 6202 34  ; Both players have infinite lives
+
+[No Difficulty Increase]
+p 51f6 34  ; Difficulty does not increase at 5,000 points
+p 51fb 34  ; | ... 15,000 points
+p 5200 34  ; | ... 25,000 points
+p 5205 34  ; | ... 50,000 points
+p 520a 34  ; | ... 90,000 points
+p 5210 0   ; | ... 100,000 points
+p 5216 0   ; | ... 250,000 points
+
+[GAME OVER to EPIC FAIL]
+p 627c 45  ; G  E
+p 627d 50  ; A  P
+p 627e 49  ; M  I
+p 627f 43  ; E  C
+p 6280 20  ;  ->
+p 6281 46  ; O  F
+p 6282 41  ; V  A
+p 6283 49  ; E  I
+p 6284 4c  ; R  L
+
+
+; -----------------------
+; Auto Racing
+; -----------------------
+$B35C1101
+[Disable Crashing]
+p 5461 34  ; Disable crashing!
+p 5462 34  ; |
+
+
+; -----------------------
+; Pac-Man
+; -----------------------
+$A21C31C3
+$6E4E8EB4
+
+[Start With 9 Lives]
+p 7069 9  ; Start with 9 lives (both players)
+
+[Infinite Lives]
+p 7b3f 34   ; Infinite lives (player 1)
+p 7b42 20c  ; |
+
+[Correct Prize Scoring]
+p 78d5 5   ; Halve the point values of all the prizes to offset the "double points" bug.
+p 78d6 f   ; |
+p 78d7 19  ; |
+p 78d8 23  ; |
+p 78d9 32  ; |
+p 78da 96  ; |
+p 78db 96  ; |
+p 78dc fa  ; |
+p 78dd fa  ; |
+
+
+; -----------------------
+; Vectron
+; -----------------------
+$A4A20354
+
+[Disable All Nasties]
+p 6a1f f7  ; First Hungree neutralized
+p 6a29 f7  ; Second Hungree neutralized
+p 6a65 f7  ; G-Sphere neutralized?
+p 6bc9 10  ; Splitters neutralized
+p 6ad2 f7  ; Diamondbacks, Blue Meanies, and Sweeps all neutralized
+p 6b7b 10  ; Prizum neutralized (requires 10 pokes)
+p 6b83 30  ; |
+p 6b89 10  ; |
+p 6c01 10  ; |
+p 6c51 10  ; |
+p 6c7b 30  ; |
+p 6c9f 31  ; |
+p 6ca5 31  ; |
+p 6cab 31  ; |
+p 6cb1 31  ; |
+
+[Easter Egg Every Level]
+p 6808 ff
+p 6809 204
+p 680c 204
+p 6811 204
+p 6817 204
+p 681d 20e
+
+[After Level 1 Goes to Lv 99]
+p 664d 2b9 ; After Level 1 ...
+p 664e 62  ; Go straight to "Level 99" (Level 2 base shape with Level 99 speed and difficulty) (Game still ends after this level)
+
+
+; -----------------------
+; Mouse Trap
+; -----------------------
+$598662F2
+
+[Neutralize Cats]
+p 5d93 f5 ; Neutralize cats
+
+[Neutralize Hawk]
+p 5e08 f1 ; Neutralize hawk
+
+
+; -----------------------
+; Bump n Jump
+; -----------------------
+$999CCEED
+
+[50K ALWAYS AT LEVEL END]
+p 6356 34 ; Always get 50,000 points at level end?
+
+[TWEAK END LEVEL TUNE]
+p d204 13b ; Tweak the end-of-level tune
+p d205 10c ; |
+p d206 11c ; |
+
+[TWEAK IN-GAME TUNE]
+p d261 178 ; Tweak the in-game tune
+p d264 158 ; |
+p d269 48 ; |
+p d26a 58 ; |
+p d26b 78 ; |
+p d26c 98 ; |
+p d26d b8 ; |
+p d26e c8 ; |
+p d26f e8 ; |
+p d270 108 ; |
+p d274 58 ; |
+p d275 78 ; |
+p d276 98 ; |
+p d277 b8 ; |
+p d278 c8 ; |
+p d279 e8 ; |
+p d27a 108 ; |
+p d27b 118 ; |
+p d283 10c ; |
+p d284 cc ; |
+p d285 ec ; |
+p d2a2 e8 ; |
+p d2a3 108 ; |
+p d2a4 118 ; |
+p d2a5 138 ; |
+
+; -----------------------
+; Burgertime
+; -----------------------
+$43806375
+$C92BAAE8
+
+[Infinite Peppers]
+p 633a 34 ; Infinite peppers (both players)
+
+[Infinite Lives]
+p 51f9 34 ; Infinite lives (both players)
+
+
+; -----------------------
+; Diner
+; -----------------------
+$13EE56F1
+
+[Infinite Peppers]
+p 5656 34 ; Infinite peppers
+
+[Infinite Lives]
+p 59dc 34 ; Infinite lives
+
+
+; -----------------------
+; Space Armada
+; -----------------------
+$E8B8EBA5
+
+[Enable Easter Egg]
+p 5044 ff ; Enable easter eggs if no keys are depressed on left controller at startup
+p 504e ff ; Easter egg 2 - SPACE BEASTIES (if no keys depressed on right controller)
+
+
+[Start Level 252]
+p 50ae fd ; Start at level 252 in Practice Mode with easter egg enabled
+
+
+[TWO ADDITIONAL LIVES]
+p 517c 6 ; Start with 2 additional lives
+p 517f 11 ; |
+
+[INFINITE LIVES]
+p 5649 34 ; Infinite lives
+
+[SLOW ENEMIES]
+p 5218 2b8 ; Enemies move very slow when level starts
+p 5219 2 ; |
+p 574e 34 ; Enemies do not speed up throughout the level
+p 574f 34 ; |
+
+[GROUND IS ICE]
+p 597f 34 ; Ground turns to ice
+
+
+
+; -----------------------
+; Stampede
+; -----------------------
+$2DEACD15
+
+[Infinite Lives]
+p 5bf3 2b9 ; Infinite lives
+p 5bf4 ce ; |
+
+; -----------------------
+; Lock n Chase 8k
+; -----------------------
+$5C7E9848
+
+[Invincible]
+p 5bf9 34 ; Invincible!
+p 5bfa 34 ; |
+
+[Infinite Lives]
+p 5c26 34 ; Infinite lives
+
+; -----------------------
+; Lock n Chase 6k
+; -----------------------
+$E00D1399
+[Invincible]
+p 59a4 34 ; Invincible!
+p 59a5 34 ; |
+[Infinite Lives]
+p 59cb 34 ; Infinite lives
+
+
+; -----------------------
+; Pinball
+; -----------------------
+$D7C5849C
+
+[Infinite Balls]
+p 6732 34 ; Infinite balls (both players)
+
+[Never Fall Back A Level]
+p 6752 34 ; Never fall back a level
+
+[Hidden Credits Blue Table]
+; See hidden credits and start on the blue table (these hacks dovetail together)
+p 50be 6   ; Echo the number of players in yellow instead of white (editable, range 1-6)
+p 50a9 3   ; Make the text on the "number of players" screen tan instead of white (editable, range 1-6)
+p 50ab 214 ; Replace "Select number of players" text with hidden credits (start on second row)
+p 50ac 1   ; |
+p 50ad 2b9 ; |
+p 50ae e5  ; | ($6ee5 is the actual ROM address where the credits begin)
+p 50af 6e  ; |
+p 50b0 4   ; |
+p 50b1 118 ; | ($1867 is the EXEC routine to fetch a string of text pointed to by a register and display it on the screen)
+p 50b2 67  ; |
+p 50b3 34  ; | (We have a little time to kill here.  While we are waiting ...)
+p 50b4 2b8 ; | Start on ... table
+p 50b5 2   ; | | (0=green, 1=red, 2=blue)
+p 50b6 240 ; | | (If you change the starting table, ...
+p 50b7 1b4 ; | |  be sure to also change the ball starting position below.)
+p 50d2 56  ; | | Ball starting horizontal position is in the middle.
+p 50d7 a   ; | | Ball starting vertical position is at the top.
+p 6fa5 0   ; | Null delimiter for credits text (game will crash otherwise)
+
+
+; -----------------------
+; Scooby Doo Maze Chase
+; -----------------------
+$e9e3f60d
+$BEF0B0C7
+
+[Infinite Lives]
+p 5807 34  ; Infinite lives
+
+[Extra Life at 50 Points]
+p 595e 5  ; Extra life at 50 points
+p 595f 0  ; |
+p 5964 5  ; |
+p 5965 0  ; |
+
+[Start with 4 Lives]
+;p 5a69 34  ; Start with 4 lives
+
+[Infinite Lives]
+p 5bca 34  ; Infinite lives
+
+[Easter Egg]
+p 6e7c 20c  ; Easter egg?
+
+; -----------------------
+; Dig Dug
+; -----------------------
+$159AF7F7
+
+[Infinite Lives]
+p 5b92 34   ; Never lose lives
+p 5b93 204  ; | (No lives at start, but game does not end)
+
+[Start on Level 18]
+p 5daf 12   ; Start on level 18 (last level in the loop)
+p 5db1 173  ; | (No game intro) (Starting at a higher level would disable vegetables)
+
+[One Enemy Per Pen]
+p 5e13 ff  ; Always have only 1 enemy in each monster pen for levels 7 and up in the loop
+
+[Title Screen Easter Egg]
+p 6db7 204  ; Activate easter egg text on title screen
+
