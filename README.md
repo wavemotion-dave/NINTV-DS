@@ -61,7 +61,7 @@ Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V3.5 : 24-May-2022 by wavemotion-dave
+V3.6 : 24-May-2022 by wavemotion-dave
   * Added cheat support. Place NINTV-DS.cht into /data directory. See 'extras' folder.
 
 V3.5 : 01-Mar-2022 by wavemotion-dave
