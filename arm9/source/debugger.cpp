@@ -3290,6 +3290,8 @@ void display_debug(void)
         sprintf(dbg, " C: %02X", C);    dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, " I: %02X", I);    dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, " D: %02X", D);    dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "EB: %04X", PEEK_FAST(0x50eb));    dsPrintValue(0, idx++, 0, dbg);
+        
         idx++;
         sprintf(dbg, "OP: %03X [%-15s]", op, dbg_opcode(op)); dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Total Frames: %-9u ", global_frames);   dsPrintValue(0, idx++, 0, dbg);
@@ -3354,6 +3356,7 @@ void display_debug(void)
         switch (debug_show_psg)
         {
             case 0:
+#if 0                
                 sprintf(dbg, "          CHAN1  CHAN2  CHAN3");
                 dsPrintValue(0, idx++, 0, dbg);
                 sprintf(dbg, "Period:   %-5d   %-5d   %-5d", channel0.period, channel1.period, channel2.period);
@@ -3389,6 +3392,7 @@ void display_debug(void)
                 dsPrintValue(0, idx++, 0, dbg);
                 sprintf(dbg, "noisePeriodValue: %-9d", noisePeriodValue);
                 dsPrintValue(0, idx++, 0, dbg);
+#endif                
                 break;
                 
             case 1:

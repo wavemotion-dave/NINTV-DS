@@ -30,7 +30,7 @@ class Memory
         virtual UINT16 getWriteAddress() = 0;
         virtual UINT16 getWriteAddressMask() = 0;
         virtual void poke(UINT16 location, UINT16 value) = 0;
-
+        virtual void poke_cheat(UINT16 location, UINT16 value) = 0;
 };
 
 #endif

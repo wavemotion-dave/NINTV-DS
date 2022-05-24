@@ -25,6 +25,7 @@ Features :
  * Manual/Instruction Support. See the 'extras' folder for an example.
  * Save Sate support (3 save slots per game).
  * High Scores for up to 10 scores pre game with various sorting options.
+ * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions, extra RAM and flash memory. When loading a game,
  use the X button to load and force JLP support ON if not auto-detected.
@@ -50,10 +51,19 @@ and Kyle Davis (BLISS) are thanked profusely.
 
 The NINTV-DS emulator is offered as-is, without any warranty.
 
+Credits :
+---------
+BLISS - Intellivision Emulator. Originally developed by Kyle Davis. Contributions by Jesse Litton, Mike Dunston, Joseph Zbiciak.
+Most of the cheats are provided by the excellent work found at: http://www.midnightblueinternational.com/romhacks.php
+Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
+
 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.5 : 24-May-2022 by wavemotion-dave
+  * Added cheat support. Place NINTV-DS.cht into /data directory. See 'extras' folder.
+
 V3.5 : 01-Mar-2022 by wavemotion-dave
   * Added support for ECS and ECS-Sound-Enhanced games.
   * Improved internal database so more games are recognized correctly.
@@ -227,6 +237,3 @@ V0.5 : 02-Sep-2021 by wavemotion-dave
   * First pass release. 
 
 
-Special Thanks :
----------
-BLISS - Intellivision Emulator. Originally developed by Kyle Davis. Contributions by Jesse Litton, Mike Dunston, Joseph Zbiciak.

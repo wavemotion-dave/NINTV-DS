@@ -46,6 +46,7 @@ class RAM : public Memory
         UINT16 getWriteAddress();
         UINT16 getWriteAddressMask();
         virtual void poke(UINT16 location, UINT16 value);
+        virtual void poke_cheat(UINT16 location, UINT16 value);
 
         void getState(RAMState *state);
         void setState(RAMState *state);

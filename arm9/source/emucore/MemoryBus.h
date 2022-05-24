@@ -46,6 +46,7 @@ class MemoryBus
         inline UINT16 peek_pc(void) {return *((UINT16 *)0x06880000 + r[7]);}        
         
         void poke(UINT16 location, UINT16 value);
+        void poke_cheat(UINT16 location, UINT16 value);
 
         // ------------------------------------------------------
         // We use this to pre-fill the fast_memory[] buffer... 
@@ -55,7 +56,9 @@ class MemoryBus
            if (readableMemorySpace[location])
            {
                if (readableMemorySpace[location][0])
+               {
                   return readableMemorySpace[location][0]->peek(location);
+               }
                else
                   return 0xFFFF;
            } else return 0xFFFF;

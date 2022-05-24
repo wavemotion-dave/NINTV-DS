@@ -54,6 +54,11 @@ ITCM_CODE void BackTabRAM::poke(UINT16 location, UINT16 value)
     dirtyBytes[location] = TRUE;
 }
 
+void BackTabRAM::poke_cheat(UINT16 location, UINT16 value)
+{
+    return;
+}
+
 
 ITCM_CODE void BackTabRAM::markClean() 
 {

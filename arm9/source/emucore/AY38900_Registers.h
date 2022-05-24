@@ -26,6 +26,7 @@ class AY38900_Registers : public RAM
 
         void poke(UINT16 location, UINT16 value);
         UINT16 peek(UINT16 location);
+        void poke_cheat(UINT16 location, UINT16 value);
 
     private:
         AY38900_Registers();

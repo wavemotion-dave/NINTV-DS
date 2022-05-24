@@ -36,6 +36,7 @@ class BackTabRAM : public RAM
 
         inline UINT16 peek(UINT16 location) {return bt_image[location-BACKTAB_LOCATION];}
         void poke(UINT16 location, UINT16 value);
+        void poke_cheat(UINT16 location, UINT16 value);
         inline UINT16 peek_direct(UINT16 offset) { return bt_image[offset]; }
 
         inline BOOL areColorAdvanceBitsDirty() {return colorAdvanceBitsDirty;}

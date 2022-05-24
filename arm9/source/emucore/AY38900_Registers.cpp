@@ -216,3 +216,9 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
             return memory[location];
     }
 }
+
+
+void AY38900_Registers::poke_cheat(UINT16 location, UINT16 value)
+{
+    return;   
+}

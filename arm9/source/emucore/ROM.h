@@ -61,6 +61,10 @@ public:
     UINT16 getWriteAddress();
     UINT16 getWriteAddressMask();
     virtual void poke(UINT16 location, UINT16 value);
+    virtual void poke_cheat(UINT16 location, UINT16 value)
+    {
+        ((UINT16*)image)[(location) - this->location] = value;
+    }
 
 private:
     void Initialize(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UINT16 size, UINT16 location, UINT16 readMask);

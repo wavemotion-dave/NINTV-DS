@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2022 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, it's source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -22,6 +22,7 @@
 #include "videoaud.h"
 #include "savestate.h"
 #include "config.h"
+#include "cheat.h"
 #include "manual.h"
 #include "bgBottom.h"
 #include "bgTop.h"
@@ -200,6 +201,12 @@ BOOL InitializeEmulator(void)
     //put the RIP in the currentEmulator
     currentEmu->SetRip(currentRip);
     
+    // Read out any Cheats from disk...
+    LoadCheats();
+    
+    // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
+    currentEmu->ApplyCheats();
+
     // Load up the fast ROM memory for quick fetches
     currentEmu->LoadFastMemory();
     
@@ -296,7 +303,7 @@ void HandleScreenStretch(void)
 // so we now just store all the extra goodies in this menu... By default the SELECT
 // button will bring this up.
 // -------------------------------------------------------------------------------------
-#define MAIN_MENU_ITEMS 10
+#define MAIN_MENU_ITEMS 11
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
     "RESET EMULATOR",  
@@ -307,6 +314,7 @@ const char *main_menu[MAIN_MENU_ITEMS] =
     "GAME MANUAL",  
     "SCREEN STRETCH",
     "GLOBAL CONFIG",  
+    "SELECT CHEATS",  
     "QUIT EMULATOR",  
     "EXIT THIS MENU",  
 };
@@ -381,9 +389,12 @@ int menu_entry(void)
                         return OVL_META_GCONFIG;
                         break;
                     case 8:
-                        return OVL_META_QUIT;
+                        return OVL_META_CHEATS;
                         break;
                     case 9:
+                        return OVL_META_QUIT;
+                        break;
+                    case 10:
                         bDone=1;
                         break;
                 }
@@ -420,6 +431,24 @@ void ds_handle_meta(int meta_key)
         case OVL_META_RESET:
             if (bGameLoaded)
             {
+                extern u8 bCheatChanged;
+                // -------------------------------------------------------------------------------------------
+                // If any CHEAT has been changed, we must load back the original RIP and re-apply any cheats.
+                // -------------------------------------------------------------------------------------------
+                if (bCheatChanged)   
+                {
+                    bCheatChanged = false;
+                    
+                    //put the RIP in the currentEmulator
+                    currentEmu->SetRip(currentRip);
+
+                    // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
+                    currentEmu->ApplyCheats();
+
+                    // Load up the fast ROM memory for quick fetches
+                    currentEmu->LoadFastMemory();
+                }
+                
                 currentEmu->Reset();
                 // And put the Sound Fifo back at the start...
                 bStartSoundFifo = true;
@@ -460,6 +489,15 @@ void ds_handle_meta(int meta_key)
         case OVL_META_GCONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsChooseOptions(1);
+            reset_emu_frames();
+            dsInitPalette();
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            bStartSoundFifo = true;
+            break;
+
+        case OVL_META_CHEATS:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            CheatMenu();
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;

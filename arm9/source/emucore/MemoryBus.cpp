@@ -31,6 +31,7 @@ public:
     UINT16 getWriteAddress() {return 0;}
     UINT16 getWriteAddressMask() {return 0xFFFF;}
     virtual void poke(UINT16 location, UINT16 value) {}
+    virtual void poke_cheat(UINT16 location, UINT16 value) {return;}
 } MyUnusedMemory;
 
 
@@ -300,3 +301,26 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
     }
 }
 
+
+// ---------------------------------------------------------------------------------------
+// Poke Cheat Codes does not need any optimization - only happens once after ROM load.
+// We allow poke to both readable and writable memory spaces - most of the time we are
+// modifying a ROM location to provide some special cheat effect.  We don't need to 
+// update the "fast memory" as the cheats are applied post ROM load but pre "fast buffer".
+// ---------------------------------------------------------------------------------------
+void MemoryBus::poke_cheat(UINT16 location, UINT16 value)
+{
+    UINT8 numMemories = readableMemoryCounts[location];
+
+    for (UINT16 i = 0; i < numMemories; i++)
+    {
+        readableMemorySpace[location][i]->poke_cheat(location, value);
+    }
+
+    numMemories = writeableMemoryCounts[location];
+
+    for (UINT16 i = 0; i < numMemories; i++)
+    {
+        writeableMemorySpace[location][i]->poke_cheat(location, value);
+    }
+}

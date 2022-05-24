@@ -45,7 +45,7 @@ static void ReadManual(void)
     char filepath[32];
     char filebuf[128];
     FILE *fp = NULL;
-    // Read the associated .ovl file and parse it...
+    // Read the associated .man file and parse it...
     if (currentRip != NULL)
     {
         if (myGlobalConfig.man_dir == 1)        // In: /ROMS/MAN
