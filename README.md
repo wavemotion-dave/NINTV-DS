@@ -31,9 +31,16 @@ Features :
  use the X button to load and force JLP support ON if not auto-detected.
  * ECS support for ECS games including sound-enchanced games like Space Patrol (use ECS mini-Keyboard Overlay)
 
+Controller Types :
+-----------------------
+You can select Player1 controller or Player 2 controller. 
+More importantly you can select 'Dual Action A' or 'Dual Action B'
+Dual Action A uses the disc/buttons from Controller 1 and the Keypad for Controller 2 (perfect for AD&D Cloudy Mountain or Tron Deadly Discs)
+Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Controller 2 (perfect for Astrosmash, Buzz Bombers and any game you move and shoot)
+
 Missing / Known Issues :
 -----------------------
-* ECS support is minimal. No UART / Cassette and no bankswitch support either. This means you can't 
+ECS support is partial. No UART / Cassette and no bankswitch support either. This means you can't 
 play World Series Baseball but you can play MindStrike (keys 6789 for 'START'), Jetsons and Scooby Doo Maze 
 Chase. Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information
 to start the game or you can pick the ECS mini-keyboard overlay.

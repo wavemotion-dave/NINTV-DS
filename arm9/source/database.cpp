@@ -256,6 +256,7 @@ const struct SpecialRomDatabase_t rom_database[] =
     {0xf0c5f311, "DK Jr (JLP)",                                 0,  1,  0},    
     {0x613e109b, "Jr Pac-Man (JLP)",                            0,  1,  0},    
     {0xc412dcde, "Jumpking Junior (JLP)",                       0,  1,  0},    
+    {0xd3f14a9d, "Fantasy Puzzle (JLP)",                        0,  1,  0},    
     
     {0x69adbba6, "FW Diagnostics (IVoice)",                     1,  0,  0},
     {0x99e7b4fc, "Goatnom (IVoice)",                            1,  0,  0},

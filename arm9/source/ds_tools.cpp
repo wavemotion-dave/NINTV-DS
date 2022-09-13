@@ -579,16 +579,13 @@ void ds_handle_meta(int meta_key)
 ITCM_CODE void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
-    extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
-    extern int ds_disc_input[3][16];  // Set to '1' if pressed... 0 if released.
+    extern UINT8 ds_key_input[2][16];   // Set to '1' if pressed... 0 if released
+    extern UINT8 ds_disc_input[2][16];  // Set to '1' if pressed... 0 if released.
     unsigned short keys_pressed = keysCurrent();
     static short last_pressed = -1;
 
-    for (int j=0; j<3; j++)
-    {
-        for (int i=0; i<15; i++) ds_key_input[j][i] = 0;
-        for (int i=0; i<16; i++) ds_disc_input[j][i] = 0;
-    }
+    for (int i=0; i<15; i++) {ds_key_input[0][i] = 0; ds_key_input[1][i] = 0;}
+    for (int i=0; i<16; i++) {ds_disc_input[0][i] = 0; ds_disc_input[1][i] = 0;}
     
     // Check for Dual Action
     if (myConfig.controller_type == 2)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)

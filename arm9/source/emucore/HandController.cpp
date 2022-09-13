@@ -11,6 +11,7 @@
 #include <nds.h>
 #include "HandController.h"
 #include "Intellivision.h"
+#include "../overlay.h"
 
 const UINT16 HandController::BUTTON_OUTPUT_VALUES[15] = {
     0x81, //OUTPUT_KEYPAD_ONE
@@ -49,6 +50,10 @@ const UINT16 HandController::DIRECTION_OUTPUT_VALUES[16] = {
     0x0C  //OUTPUT_DISC_NORTH_NORTH_WEST
 };
 
+UINT8 ds_key_input[2][16]  __attribute__((section(".dtcm"))) = {0};   // Set to '1' if pressed... 0 if released
+UINT8 ds_disc_input[2][16] __attribute__((section(".dtcm"))) = {0};  // Set to '1' if pressed... 0 if released.
+
+
 HandController::HandController(INT32 id, const CHAR* n)
 : InputConsumer(id),
   name(n)
@@ -60,9 +65,6 @@ HandController::~HandController()
 {
 }
 
-int ds_key_input[3][16] = {0};   // Set to '1' if pressed... 0 if released
-int ds_disc_input[3][16] = {0};  // Set to '1' if pressed... 0 if released.
-
 ITCM_CODE void HandController::evaluateInputs()
 {
     inputValue = 0;
@@ -73,7 +75,7 @@ ITCM_CODE void HandController::evaluateInputs()
     {
         if (ds_key_input[controllerID][i]) 
         {
-            if (i <= 11) keypad_active=true;
+            if (i < OVL_BTN_FIRE) keypad_active=true;
             inputValue |= BUTTON_OUTPUT_VALUES[i];
         }
     }
