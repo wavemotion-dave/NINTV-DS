@@ -12,15 +12,15 @@
 #include "AudioOutputLine.h"
 #include "AudioMixer.h"
 
-INT64 sampleBuffer[2]              __attribute__((section(".dtcm")));
-INT32 commonClockCounter[2]        __attribute__((section(".dtcm")));
-INT64 commonClocksPerSample[2]     __attribute__((section(".dtcm")));
-INT16 previousSample[2]            __attribute__((section(".dtcm")));
-INT16 currentSample[2]             __attribute__((section(".dtcm")));
+INT64 sampleBuffer[3]              __attribute__((section(".dtcm")));
+INT32 commonClockCounter[3]        __attribute__((section(".dtcm")));
+INT64 commonClocksPerSample[3]     __attribute__((section(".dtcm")));
+INT16 previousSample[3]            __attribute__((section(".dtcm")));
+INT16 currentSample[3]             __attribute__((section(".dtcm")));
 
 void audio_output_line_reset(void)
 {
-    for (int i=0; i<2; i++)
+    for (int i=0; i<3; i++)
     {
         sampleBuffer[i] = 0;
         previousSample[i] = 0;
@@ -34,7 +34,7 @@ void audio_output_line_reset(void)
 // These two functions used to be a single function - but it's called often enough that
 // it's worth having a play sample 0/1 as we use 0 for the normal PSG and 1 for SP0256.
 // --------------------------------------------------------------------------------------
-ITCM_CODE void playSample0(INT16 sample)
+ITCM_CODE void playSample0(INT16 sample) // Normal PSG
 {
     sampleBuffer[0] += currentSample[0] * commonClocksPerSample[0];
     commonClockCounter[0] += commonClocksPerSample[0];
@@ -42,7 +42,7 @@ ITCM_CODE void playSample0(INT16 sample)
     currentSample[0] = sample;
 }
 
-ITCM_CODE void playSample1(INT16 sample)
+ITCM_CODE void playSample1(INT16 sample) // Intellivoice SP0256
 {
     sampleBuffer[1] += currentSample[1] * commonClocksPerSample[1];
     commonClockCounter[1] += commonClocksPerSample[1];
@@ -50,5 +50,13 @@ ITCM_CODE void playSample1(INT16 sample)
 	currentSample[1] = sample;
 }
 
+
+ITCM_CODE void playSample2(INT16 sample) // ECS PSG
+{
+    sampleBuffer[2] += currentSample[2] * commonClocksPerSample[2];
+    commonClockCounter[2] += commonClocksPerSample[2];
+	previousSample[2] = currentSample[2];
+	currentSample[2] = sample;
+}
 
 

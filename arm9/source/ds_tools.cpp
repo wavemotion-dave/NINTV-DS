@@ -141,12 +141,6 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
   }
 }
 
-
-void PatchFastMemory(UINT16 address)
-{
-    currentEmu->LoadFastMemory(address&0xF000, (address&0xF000)+0xFFF);
-}
-
 // ------------------------------------------------------------------
 // Setup the emulator and basic perhipheral chips (BIOS, etc). 
 // ------------------------------------------------------------------
@@ -219,11 +213,11 @@ BOOL InitializeEmulator(void)
     // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
     currentEmu->ApplyCheats();
 
-    // Load up the fast ROM memory for quick fetches
-    currentEmu->LoadFastMemory();
-    
     //Reset everything
     currentEmu->Reset();
+
+    // Load up the fast ROM memory for quick fetches
+    currentEmu->LoadFastMemory();
     
     // Make sure we're starting fresh...
     reset_emu_frames();
@@ -456,12 +450,14 @@ void ds_handle_meta(int meta_key)
 
                     // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
                     currentEmu->ApplyCheats();
-
-                    // Load up the fast ROM memory for quick fetches
-                    currentEmu->LoadFastMemory();
                 }
-                
+
+                // Perform the actual reset on everything
                 currentEmu->Reset();
+                
+                // Load up the fast ROM memory for quick fetches
+                currentEmu->LoadFastMemory();
+                
                 // And put the Sound Fifo back at the start...
                 bStartSoundFifo = true;
 
@@ -1315,7 +1311,7 @@ ITCM_CODE void Run(char *initial_file)
 #endif        
 #if 0
         char dbg[33];
-        sprintf(dbg,"%d %04X %04X %d %d %d", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
+        sprintf(dbg,"%d %d %d %d %d %d", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
         dsPrintValue(6,0,0,dbg);
 #endif        
     }

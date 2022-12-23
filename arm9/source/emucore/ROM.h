@@ -57,6 +57,12 @@ public:
         return ((UINT16*)image)[(location) - this->location];
     }
 
+    // This is now optimized for 16-bit access... GROM and iVOICE ROM should always call the peek8() version above...
+    inline UINT16 peek_fast(UINT16 location) 
+    {   
+        return ((UINT16*)image)[location];
+    }
+    
     UINT16 getWriteSize();
     UINT16 getWriteAddress();
     UINT16 getWriteAddressMask();

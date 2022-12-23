@@ -30,6 +30,7 @@ private:
     UINT16   trigger;
     UINT16   matchMask;
     UINT16   match;
+    UINT16   pokeCount;
 };
 
 extern UINT16 gLastBankers[16];

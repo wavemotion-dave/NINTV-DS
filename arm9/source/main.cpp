@@ -15,11 +15,17 @@
 #include <unistd.h>
 #include "ds_tools.h"
 #include "highscore.h"
+#include "Memory.h"
 
 // ------------------------------------------------------------------------
 // If we are being passed a file on the command line - we store it here.
 // ------------------------------------------------------------------------
 char file[64];
+
+UINT32 MAX_ROM_FILE_SIZE = 0;
+
+UINT8 *bin_image_buf = NULL;
+UINT16 *bin_image_buf16 = NULL;
 
 // --------------------------------------------------------
 // DSi default is 15KHz but we reduce this for DS mode...
@@ -41,9 +47,23 @@ int main(int argc, char **argv)
   }
     
   srand(time(0));
+  
+  // -------------------------------------------------------------------------------------
+  // We swap in a larger memory model for the DSi to handle really complex page flipping
+  // -------------------------------------------------------------------------------------
+  if (isDSiMode()) 
+  {
+      mySoundFrequency              = 15360;
+      MAX_ROM_FILE_SIZE             = (512 * 1024);
+  }
+  else   
+  {
+      mySoundFrequency              = 12000;  // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
+      MAX_ROM_FILE_SIZE             = (128 * 1024);
+  }
     
-  // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
-  if (!isDSiMode()) mySoundFrequency = 12000;
+  bin_image_buf = new UINT8[MAX_ROM_FILE_SIZE];
+  bin_image_buf16 = (UINT16*)bin_image_buf;
     
   // Init Timer
   dsInitTimer();

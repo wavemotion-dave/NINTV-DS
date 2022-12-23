@@ -8,14 +8,17 @@
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
- 
+#include <nds.h> 
+
 #include <stdio.h>
 #include <string.h>
 #include "ROMBanker.h"
+#include "Emulator.h"
 
-extern void PatchFastMemory(UINT16 address);
+extern Emulator *currentEmu;
 
 UINT16 gLastBankers[16];
+extern INT32 debug[];
 
 ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UINT16 m)
 : RAM(1, address, 0, 0xFFFF),
@@ -25,16 +28,17 @@ ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UIN
   matchMask(mm),
   match(m)
 {
+      pokeCount = 0;
 }
 
 void ROMBanker::reset()
 {
     rom->SetEnabled(match == 0);
-    PatchFastMemory(trigger);
     memset(gLastBankers, 0x00, sizeof(gLastBankers));
+    pokeCount = 0;    
 }
 
-void ROMBanker::poke(UINT16 address, UINT16 value)
+ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
 {
     if ((value & triggerMask) == trigger)
     {
@@ -42,7 +46,34 @@ void ROMBanker::poke(UINT16 address, UINT16 value)
         if (bEnabled != rom->IsEnabled())
         {
             rom->SetEnabled(bEnabled);
-            PatchFastMemory(address);
+            
+            // -------------------------------------------------------------
+            // We allow for the first few pokes to set things up. Most games
+            // don't need this but Onion does and it's still unclear why...
+            // -------------------------------------------------------------
+            if (pokeCount >= 3)
+            {
+                if (bEnabled)
+                {
+                    UINT16 *fast_memory = (UINT16 *)0x06880000;
+                    for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
+                    {
+                        fast_memory[i] = rom->peek_fast(i&0xFFF);
+                    }
+                }
+            }
+            else
+            {
+                pokeCount++;
+                // ------------------------------------------------------------------
+                // We must now patch up the fast memory ROM with the new swap in/out
+                // ------------------------------------------------------------------
+                UINT16 *fast_memory = (UINT16 *)0x06880000;
+                for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
+                {
+                    fast_memory[i] = (bEnabled ? rom->peek_fast(i&0xFFF) : currentEmu->memoryBus.peek_slow(i));
+                }
+            }
         }
         gLastBankers[(address&0xF000)>>12] = value;
     }

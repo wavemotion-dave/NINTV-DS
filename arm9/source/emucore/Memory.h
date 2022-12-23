@@ -14,9 +14,16 @@
 
 #include "types.h"
 
+#define MAX_MAPPED_MEMORIES  128
+#define MAX_PERIPHERALS      4
+#define MAX_COMPONENTS       4
+#define MAX_ROMS             128
+
+extern UINT16 MAX_OVERLAPPED_MEMORIES;
+extern UINT32 MAX_ROM_FILE_SIZE;
+
 class Memory
 {
-
     public:
         virtual ~Memory() {}
 

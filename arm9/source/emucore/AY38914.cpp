@@ -177,10 +177,10 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
         // Now place the sample onto the audio output line...
-        if (this->location == 0xF0)
-            playSample1(cachedTotalOutput);
+        if (this->location == 0xF0) 
+            playSample2(cachedTotalOutput);     // This is the ECS PSG
         else
-            playSample0(cachedTotalOutput);
+            playSample0(cachedTotalOutput);     // This is the normal Intellivision console PSG
 
         totalTicks += clocksPerSample;
 

@@ -38,21 +38,11 @@ Emulator::Emulator(const char* name)
 // -------------------------------------------------------------------------------------
 void Emulator::LoadFastMemory()
 {
-    UINT16 *fast_memory = (UINT16 *)0x06880000;     // LCD RAM area... possibly faster 16-bit access...
+    UINT16 *fast_memory = (UINT16 *)0x06880000;     // LCD RAM area... slightly faster 16-bit access...
     
     for (int i=0x0000; i<=0xFFFF; i++)
     {
         fast_memory[i] = memoryBus.peek_slow_and_safe(i);
-    }
-}
-
-void Emulator::LoadFastMemory(UINT16 from, UINT16 to)
-{
-    UINT16 *fast_memory = (UINT16 *)0x06880000;     // LCD RAM area... possibly faster 16-bit access...
-    
-    for (int i=from; i<=to; i++)
-    {
-        fast_memory[i] = memoryBus.peek_slow(i);
     }
 }
 

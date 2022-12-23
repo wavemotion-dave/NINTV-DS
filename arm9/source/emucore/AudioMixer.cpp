@@ -149,7 +149,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             commonClockCounter[0] = -missingClocks;
         }
     }
-    else
+    else // Up to 3 possible sound producers!!!
     {
         for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
         {
@@ -178,7 +178,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
                 commonClockCounter[i] = -missingClocks;
             }
 
-            if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice there are 2 audio producers... so we need to cap
+            if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice or ECS extra sound channels, there are 2 or 3 audio producers... so we need to clip/cap the sound
         }
     }
     

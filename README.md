@@ -37,8 +37,9 @@ Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Control
 
 Missing / Known Issues :
 -----------------------
-ECS support is partial. No UART / Cassette and minimal page flipping handling (only 3 pages deep). You will be able to play all the commercial ECS games including
-World Series Baseball, MindStrike, Jetsons and Scooby Doo Maze Chase. Each ECS game will allow you to use the Intellivision Keypad to enter 
+ECS support is partial. No UART / Cassette. On the older DS-LITE/PHAT, a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
+World Series Baseball (without voice), MindStrike, Jetsons and Scooby Doo Maze Chase. On the DSi or above running with extra memory, a full page-flipping scheme
+is employed and it should play anything you throw at it (and World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter 
 just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.  Larger page flipping/bankswitched homewbrew games will not run.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
@@ -64,8 +65,8 @@ Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V3.7 : 23-Dec-2022 by wavemotion-dave
-  * First pass at ECS style page flipping (aka bankswap). It only handles 3 pages deep so it's enough to play Major League World Series Baseball but not the more complex ECS-style homebrews.
+V3.7a : 23-Dec-2022 by wavemotion-dave
+  * First pass at ECS style page flipping (aka bankswap). DS-Lite will support World Series of Baseball without voice. DSi and above will support any binary up to 512K including WSoMLB with voice.
   * Improved error handling with better messages on-screen to help diagnose problems with missing roms, roms that are too big/complex, etc.
   * Cleanup across the board - reorganized memory to free up more resources for the future.
   

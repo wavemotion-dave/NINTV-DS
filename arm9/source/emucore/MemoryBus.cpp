@@ -13,6 +13,8 @@
 #include "MemoryBus.h"
 #include "../ds_tools.h"
 
+UINT16 MAX_OVERLAPPED_MEMORIES = 3;
+
 // ----------------------------------------------------------------------------------------------
 // We use this class and single object to fill all unused memory locations in the memory map. 
 // Returns 0xFFFF on all access as a real intellivision would with unused memory regions.
@@ -49,6 +51,18 @@ public:
 // -------------------------------------------------------------------------------
 MemoryBus::MemoryBus()
 {
+  // -------------------------------------------------------------------------------------
+  // We swap in a larger memory model for the DSi to handle really complex page flipping
+  // -------------------------------------------------------------------------------------
+  if (isDSiMode()) 
+  {
+      MAX_OVERLAPPED_MEMORIES       = 16;
+  }
+  else
+  {
+      MAX_OVERLAPPED_MEMORIES       = 3;
+  }
+
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT32 i;
     writeableMemoryCounts = new UINT8[size];

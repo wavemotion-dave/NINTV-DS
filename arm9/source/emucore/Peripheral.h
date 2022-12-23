@@ -19,10 +19,6 @@
 #include "VideoProducer.h"
 #include "InputConsumer.h"
 
-#define MAX_PERIPHERALS     4
-#define MAX_COMPONENTS      4
-#define MAX_ROMS            16
-
 
 /**
  * A peripheral represents a device that contains emulated hardware components, including

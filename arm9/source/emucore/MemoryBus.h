@@ -17,8 +17,6 @@
 #include "Memory.h"
 #include "ROM.h"
 
-#define MAX_MAPPED_MEMORIES     32
-#define MAX_OVERLAPPED_MEMORIES 3
 
 /**
  * Emulates a 64K memory bus which may be composed of 8-bit or 16-bit memory units.

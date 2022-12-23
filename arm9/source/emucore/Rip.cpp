@@ -17,6 +17,7 @@
 #include "ROM.h"
 #include "ROMBanker.h"
 #include "JLP.h"
+#include "Memory.h"
 #include "CRC32.h"
 #include "../database.h"
 #include "../ds_tools.h"
@@ -27,10 +28,8 @@
 #define ROM_TAG_COMPATIBILITY  0x06
 
 
-#define MAX_ROM_FILE_SIZE (128 * 1024)
-
-UINT8 bin_image_buf[MAX_ROM_FILE_SIZE];                   // No .BIN or .ROM will be bigger than this...
-UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf;
+extern UINT8 *bin_image_buf;
+extern UINT16 *bin_image_buf16;
 
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
@@ -217,7 +216,14 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
         // Now add the required peripherals...
         if (db_entry->bIntellivoice)
         {
-            rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+            if ((db_entry->game_crc == 0xC2063C08) && !isDSiMode())
+            {
+                // Skip Intellivoice for World Series of Baseball on the DS-LITE
+            }
+            else
+            {
+                rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+            }
         }
         if (db_entry->bECS)
         {
@@ -265,11 +271,12 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                                 if (strstr(ptr, "PAGE") != NULL)
                                 {
                                     ptr+=5;
-                                    UINT16 page = strtoul(ptr, &ptr, 16);
-                                    if (page != 0) newROM->SetEnabled(false);
+                                    UINT16 page = (UINT16)strtoul(ptr, &ptr, 16) & 0xf;
+                                    if (page == 0) newROM->SetEnabled(true); else newROM->SetEnabled(false);
+                                    rip->AddROM(newROM);
                                     rip->AddRAM(new ROMBanker(newROM, (map_addr&0xF000)+0xFFF, 0xFFF0, (map_addr&0xF000)+0xA50, 0x000F, page));
-                                }                                
-                                rip->AddROM(newROM);                                
+                                }
+                                else rip->AddROM(newROM);
                             }
                         }
                         if (cfg_mode == 2)  // [memattr] Mode
