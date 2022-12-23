@@ -24,6 +24,7 @@
 #include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
+#include "ROMBanker.h"
 #include "CRC32.h"
 #include "loadgame.h"
 #include "debugger.h"
@@ -55,6 +56,8 @@ BOOL LoadCart(const CHAR* filename)
     
     bIsFatalError = false;
     bGameLoaded = FALSE;
+    
+    memset(gLastBankers, 0x00, sizeof(gLastBankers));
 
     const CHAR* extStart = filename + strlen(filename) - 4;
     

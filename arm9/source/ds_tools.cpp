@@ -1313,6 +1313,11 @@ ITCM_CODE void Run(char *initial_file)
 #ifdef DEBUG_ENABLE
         debugger();
 #endif        
+#if 0
+        char dbg[33];
+        sprintf(dbg,"%d %04X %04X %d %d %d", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
+        dsPrintValue(6,0,0,dbg);
+#endif        
     }
 }
 

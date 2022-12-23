@@ -15,7 +15,7 @@
 
 extern void PatchFastMemory(UINT16 address);
 
-extern INT32 debug[];
+UINT16 gLastBankers[16];
 
 ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UINT16 m)
 : RAM(1, address, 0, 0xFFFF),
@@ -31,6 +31,7 @@ void ROMBanker::reset()
 {
     rom->SetEnabled(match == 0);
     PatchFastMemory(trigger);
+    memset(gLastBankers, 0x00, sizeof(gLastBankers));
 }
 
 void ROMBanker::poke(UINT16 address, UINT16 value)
@@ -40,9 +41,9 @@ void ROMBanker::poke(UINT16 address, UINT16 value)
         bool bEnabled = ((value & matchMask) == match);
         if (bEnabled != rom->IsEnabled())
         {
-            debug[2]++;
             rom->SetEnabled(bEnabled);
             PatchFastMemory(address);
         }
+        gLastBankers[(address&0xF000)>>12] = value;
     }
 }

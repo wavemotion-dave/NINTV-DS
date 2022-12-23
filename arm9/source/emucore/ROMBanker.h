@@ -32,4 +32,6 @@ private:
     UINT16   match;
 };
 
+extern UINT16 gLastBankers[16];
+
 #endif

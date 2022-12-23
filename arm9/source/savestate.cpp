@@ -23,7 +23,7 @@ extern Emulator *currentEmu;
 extern Rip      *currentRip;
 extern UINT16 global_frames;
 
-#define CURRENT_SAVE_FILE_VER   0x0007
+#define CURRENT_SAVE_FILE_VER   0x0008
 
 // ------------------------------------------------------
 // We allow up to 3 saves per game. More than enough.
@@ -42,6 +42,8 @@ extern UINT16 jlp_ram[];
 
 // This is for the few games that have on-board RAM like Chess and Land Battle plus ECS games
 extern UINT16 extra_ram[];
+
+extern UINT16 gLastBankers[];
 
 char savefilename[128];
 
@@ -62,6 +64,12 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
     currentEmu->SaveState(&saveState.slot[slot]);
     saveState.slot[slot].global_frames = global_frames;
     saveState.slot[slot].emu_frames = emu_frames;
+    
+    // Save the 16 possible ROM Bankers so we can put the system back to the right state
+    for (UINT8 i=0; i<16; i++)
+    {
+        saveState.slot[slot].lastBankers[i] = gLastBankers[i];
+    }
 
     // Only a few games utilize extra RAM that isn't specifically JLP RAM - Chess and Land Battle and ECS games
     for (int i=0; i<0x800; i++) saveState.slot[slot].extraRAM[i] = extra_ram[i];
@@ -111,6 +119,16 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
             if (currentRip->JLP16Bit) currentRip->JLP16Bit->setState(&jlpState[slot]);
             global_frames = saveState.slot[slot].global_frames;
             emu_frames = saveState.slot[slot].emu_frames;
+            
+            // We need to run through all the last known banking writes and poke those back into the system
+            for (UINT8 i=0; i<16; i++)
+            {
+                gLastBankers[i] = saveState.slot[slot].lastBankers[i];
+                if (gLastBankers[i] != 0x0000)
+                {
+                    currentEmu->memoryBus.poke((i<<12)|0xFFF, gLastBankers[i]);
+                }
+            }
 
             if (myGlobalConfig.erase_saves)
             {

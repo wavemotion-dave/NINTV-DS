@@ -44,6 +44,7 @@ struct _stateStruct
     GRAMState           MyGRAMState; 
     IntellivoiceState   ivoiceState;
     ECSState            ecsState;
+    UINT16              lastBankers[16];
     UINT16              extraRAM[0x800];
 };
 
