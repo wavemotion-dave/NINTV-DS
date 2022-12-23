@@ -76,6 +76,7 @@ AudioMixer           *audioMixer __attribute__((section(".dtcm"))) = NULL;
 UINT16 emu_frames=0;
 UINT16 frames_per_sec_calc=0;
 UINT8  oneSecTick=FALSE;
+bool bIsFatalError = false;
 
 // -------------------------------------------------------------
 // Background screen buffer indexes for the DS video engine...
@@ -99,6 +100,12 @@ void reset_emu_frames(void)
     emu_frames=0;
 }
 
+
+void FatalError(const char *msg)
+{
+    dsPrintValue(0,1,0,(char*)msg);
+    bIsFatalError = true;
+}
 
 // ---------------------------------------------------------------------------------
 // A handy function to output a simple pre-built font that is stored just below
@@ -135,6 +142,11 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 }
 
 
+void PatchFastMemory(UINT16 address)
+{
+    currentEmu->LoadFastMemory(address&0xF000, (address&0xF000)+0xFFF);
+}
+
 // ------------------------------------------------------------------
 // Setup the emulator and basic perhipheral chips (BIOS, etc). 
 // ------------------------------------------------------------------
@@ -152,7 +164,7 @@ BOOL InitializeEmulator(void)
     //load the BIOS files required for this currentEmulator
     if (!LoadPeripheralRoms(currentEmu))
     {
-        dsPrintValue(0,1,0, (char*) "NO BIOS FILES");
+        FatalError("BIOS (EXEC, GROM) MISSING");
         return FALSE;
     }
 
@@ -181,9 +193,9 @@ BOOL InitializeEmulator(void)
         else //usage == PERIPH_REQUIRED, but it didn't load
         {
             if (bUseECS)
-                dsPrintValue(0,1,0, (char*) "NO ECS.BIN   ");
+                FatalError("NO ECS.BIN   ");
             else
-                dsPrintValue(0,1,0, (char*) "NO IVOICE.BIN");
+                FatalError("NO IVOICE.BIN");
             return FALSE;
         }
     }
@@ -466,10 +478,7 @@ void ds_handle_meta(int meta_key)
                 {
                     dsInitPalette();
                 }
-                else
-                {
-                    dsPrintValue(0,1,0, (char*) "UNKNOWN GAME ");
-                }
+                else return; // We've already set FatalError() from LoadCart()
             }
             bStartSoundFifo = true;
             break;
@@ -529,7 +538,10 @@ void ds_handle_meta(int meta_key)
         case OVL_META_MENU:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             ds_handle_meta(menu_entry());
-            dsShowScreenMain(false);
+            if (currentRip != NULL)
+            {
+                dsShowScreenMain(false);
+            }
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
             break;
@@ -1098,11 +1110,11 @@ void dsInitScreenMain(void)
 }
 
 
-// ---------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
 // Generic show-menu which is just the lower screen that is mostly blank with the NINTELLIVISION 
 // banner at the top. The menu has 2 font choices... a high-contrast white on black and a more 
 // retro feel green on black (default). The user can change this option in global configuration.
-// ---------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
 void dsShowMenu(void)
 {
     if (myGlobalConfig.menu_color == 0)
@@ -1270,7 +1282,7 @@ ITCM_CODE void Run(char *initial_file)
             continue;
         }        
 
-        if (bGameLoaded)
+        if (bGameLoaded && !bIsFatalError)
         {
             //run the emulation
             currentEmu->Run();

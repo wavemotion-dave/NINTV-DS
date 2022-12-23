@@ -33,7 +33,7 @@ public:
     BOOL isInternal() { return internal; }
 
     //enabled attributes
-    void SetEnabled(BOOL b);
+    void SetEnabled(BOOL b) {enabled = b;}
     BOOL IsEnabled() { return enabled; }
 
     //functions to implement the Memory interface
@@ -46,14 +46,14 @@ public:
     
     inline UINT8 peek8(UINT16 location) 
     {   
-        if (!enabled) return (location & 0xFF);
+        if (unlikely(!enabled)) return 0xFF;
         return ((UINT8*)image)[(location) - this->location];
     }
     
     // This is now optimized for 16-bit access... GROM and iVOICE ROM should always call the peek8() version above...
     inline virtual UINT16 peek(UINT16 location) 
     {   
-        if (!enabled) return (location & 0x3FFF);
+        if (unlikely(!enabled)) return 0xFFFF;
         return ((UINT16*)image)[(location) - this->location];
     }
 

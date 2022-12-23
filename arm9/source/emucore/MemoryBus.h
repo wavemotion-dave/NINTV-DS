@@ -17,7 +17,7 @@
 #include "Memory.h"
 #include "ROM.h"
 
-#define MAX_MAPPED_MEMORIES     24
+#define MAX_MAPPED_MEMORIES     32
 #define MAX_OVERLAPPED_MEMORIES 3
 
 /**
@@ -57,10 +57,12 @@ class MemoryBus
            {
                if (readableMemorySpace[location][0])
                {
-                  return readableMemorySpace[location][0]->peek(location);
+                  return peek_slow(location);
                }
                else
+               {
                   return 0xFFFF;
+               }
            } else return 0xFFFF;
         }
 

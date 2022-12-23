@@ -178,7 +178,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
                 commonClockCounter[i] = -missingClocks;
             }
 
-            totalSample = totalSample >> 1; // With Intellivoice there are 2 audio producers... so divide by 2
+            if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice there are 2 audio producers... so we need to cap
         }
     }
     

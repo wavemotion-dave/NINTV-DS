@@ -45,8 +45,11 @@ extern UINT16 global_frames;
 
 extern UINT16 target_frames[];
 
+extern bool bIsFatalError;
+
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
+extern void FatalError(const char *msg);
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);
 extern void dsMainLoop(char *initial_file);
 extern void dsInitScreenMain(void);

@@ -15,6 +15,7 @@
 #include "Rip.h"
 #include "RAM.h"
 #include "ROM.h"
+#include "ROMBanker.h"
 #include "JLP.h"
 #include "CRC32.h"
 #include "../database.h"
@@ -25,7 +26,10 @@
 #define ROM_TAG_RELEASE_DATE   0x05
 #define ROM_TAG_COMPATIBILITY  0x06
 
-UINT8 bin_image_buf[128 * 1024];                   // No .BIN or .ROM will be bigger than this...
+
+#define MAX_ROM_FILE_SIZE (128 * 1024)
+
+UINT8 bin_image_buf[MAX_ROM_FILE_SIZE];                   // No .BIN or .ROM will be bigger than this...
 UINT16 *bin_image_buf16 = (UINT16 *)bin_image_buf;
 
 Rip::Rip(UINT32 systemID)
@@ -85,11 +89,16 @@ Rip* Rip::LoadBin(const CHAR* filename)
     // ----------------------------------------------------------------
     Rip* rip = LoadBinCfg(cfgFilename, crc);
     if (rip == NULL)
+    {
+        FatalError("UNABLE TO CREATE RIP");
         return NULL;
+    }
 
     //load the data into the rip
     FILE* file = fopen(filename, "rb");
-    if (file == NULL) {
+    if (file == NULL) 
+    {
+        FatalError("BIN FILE DOES NOT EXIST");
         delete rip;
         return NULL;
     }
@@ -98,10 +107,16 @@ Rip* Rip::LoadBin(const CHAR* filename)
     fseek(file, 0, SEEK_END);
     size_t size = ftell(file);
     rewind(file);
+    if (size >= MAX_ROM_FILE_SIZE)
+    {
+        fclose(file);
+        delete rip;
+        FatalError("BIN FILE TOO LARGE");
+        return NULL;
+    }
 
-    UINT32 count = 0;
-    while (count < size)
-        bin_image_buf[count++] = (UINT8)fgetc(file);
+    // Read the file into our memory buffer
+    fread(bin_image_buf, size, 1, file);
     fclose(file);
 
     //parse the file bin_image_buf[] into the rip
@@ -116,6 +131,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
             // here indicates a likely incorrect memory map in the database or the .cfg file
             // -------------------------------------------------------------------------------
             delete rip;
+            FatalError("BAD MEMORY MAP");
             return NULL;
         }
         ROM* nextRom = rip->GetROM(i);
@@ -167,6 +183,22 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                     rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr));
                     break;
                 }
+                case DB_R16B0:
+                {
+                    ROM *bankedROM = new ROM("Cartridge ROM", "", 0, sizeof(UINT16), db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr);
+                    bankedROM->SetEnabled(true);
+                    rip->AddROM(bankedROM);
+                    rip->AddRAM(new ROMBanker(bankedROM, db_entry->mem_areas[i].mem_addr+0xFFF, 0xFFF0, db_entry->mem_areas[i].mem_addr+0xA50, 0x000F, 0));
+                    break;
+                }
+                case DB_R16B1:
+                {
+                    ROM *bankedROM = new ROM("Cartridge ROM", "", 0, sizeof(UINT16), db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr);
+                    bankedROM->SetEnabled(false);
+                    rip->AddROM(bankedROM);
+                    rip->AddRAM(new ROMBanker(bankedROM, db_entry->mem_areas[i].mem_addr+0xFFF, 0xFFF0, db_entry->mem_areas[i].mem_addr+0xA50, 0x000F, 1));
+                    break;
+                }
                 case DB_RAM8:
                 {
                     rip->AddRAM(new RAM(db_entry->mem_areas[i].mem_size, db_entry->mem_areas[i].mem_addr, 0xFFFF, 0xFFFF, 8));
@@ -187,12 +219,11 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
         {
             rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
         }
-        else if (db_entry->bECS)    // We don't support Intellivoice + ECS
+        if (db_entry->bECS)
         {
             bUseECS = db_entry->bECS;
             rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
-        }
-        
+        }        
         if (db_entry->bJLP)
         {
             rip->JLP16Bit = new JLP();
@@ -229,7 +260,16 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                                 UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
                                 while (*ptr == ' ' || *ptr == '\t' || *ptr == '=' || *ptr == '$') ptr++;
                                 UINT16 map_addr = strtoul(ptr, &ptr, 16);
-                                rip->AddROM(new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr));
+                                ROM *newROM = new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr);
+                                while (*ptr == ' ' || *ptr == '\t' || *ptr == '=' || *ptr == '$') ptr++;
+                                if (strstr(ptr, "PAGE") != NULL)
+                                {
+                                    ptr+=5;
+                                    UINT16 page = strtoul(ptr, &ptr, 16);
+                                    if (page != 0) newROM->SetEnabled(false);
+                                    rip->AddRAM(new ROMBanker(newROM, (map_addr&0xF000)+0xFFF, 0xFFF0, (map_addr&0xF000)+0xA50, 0x000F, page));
+                                }                                
+                                rip->AddROM(newROM);                                
                             }
                         }
                         if (cfg_mode == 2)  // [memattr] Mode
@@ -267,6 +307,12 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                                 rip->AddPeripheralUsage("ECS", PERIPH_OPTIONAL);
                             }
                         }
+                        
+                        // ------------------------------------------------------------------------
+                        // Make sure we haven't exceeded the maximum number of mapped ROM segments
+                        // ------------------------------------------------------------------------
+                        if (rip->GetRAMCount() >= MAX_ROMS) break;
+                        if (rip->GetROMCount() >= MAX_ROMS) break;
                     }
                 }
             }
@@ -281,7 +327,20 @@ Rip* Rip::LoadRom(const CHAR* filename)
 {
     char tmp_buf[64];
     FILE* infile = fopen(filename, "rb");
-    if (infile == NULL) {
+    if (infile == NULL) 
+    {
+        FatalError("ROM FILE NOT FOUND");
+        return NULL;
+    }
+    
+    //obtain the file size
+    fseek(infile, 0, SEEK_END);
+    size_t size = ftell(infile);
+    rewind(infile);
+    if (size >= MAX_ROM_FILE_SIZE)
+    {
+        fclose(infile);
+        FatalError("ROM FILE TOO LARGE");
         return NULL;
     }
 
@@ -290,6 +349,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
     if ((read != 0xA8) && (read != 0x41))
     {
         fclose(infile);
+        FatalError("ROM MAGIC BYTE MISSING");
         return NULL;
     }
 
@@ -425,8 +485,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
 
     // Force Intellivoice if asked for...
     if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
-    // Use ECS if asked for... (we don't support Intellivoice + ECS)
-    else if (bUseECS) rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+    // Use ECS if asked for...
+    if (bUseECS) rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
 
     return rip;
 }

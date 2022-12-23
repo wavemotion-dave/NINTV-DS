@@ -95,11 +95,6 @@ BOOL ROM::load(void* buffer)
     return TRUE;
 }
 
-void ROM::SetEnabled(BOOL b)
-{
-    enabled = b;
-}
-
 const CHAR* ROM::getName()
 {
     return name;
@@ -148,7 +143,8 @@ UINT8 ROM::getByteWidth()
     return byteWidth;
 }
 
-void ROM::poke(UINT16, UINT16)
+
+void ROM::poke(UINT16 address, UINT16 data)
 {
     //can't change ROM
 }

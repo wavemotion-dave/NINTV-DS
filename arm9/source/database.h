@@ -24,6 +24,8 @@
 #define DB_ROM16    1
 #define DB_RAM8     2
 #define DB_RAM16    3
+#define DB_R16B0    4
+#define DB_R16B1    5
 #define DB_NONE     9
 
 struct MemArea_t

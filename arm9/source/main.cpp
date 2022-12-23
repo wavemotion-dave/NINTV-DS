@@ -45,14 +45,14 @@ int main(int argc, char **argv)
   // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
   if (!isDSiMode()) mySoundFrequency = 12000;
     
-  // Init the high-score tables...
-  highscore_init();
-
   // Init Timer
   dsInitTimer();
     
   // Setup the main screen handling
   dsInitScreenMain();
+
+  // Init the high-score tables...
+  highscore_init();
     
   // Handle command line argument... mostly for TWL++
   if (argc > 1) 

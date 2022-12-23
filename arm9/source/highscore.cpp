@@ -20,11 +20,11 @@
 #include "bgBottom.h"
 
 // ------------------------------------------------------------------------------
-// With only 125 released games plus 25-50 prototypes and 50-ish homebrews,
-// this 300 game limit should be more than enough to handle the entire library.
+// With only 125 released games plus 25-50 prototypes and 100-ish homebrews,
+// this ~300 game limit should be more than enough to handle the entire library.
 // ------------------------------------------------------------------------------
-#define MAX_HS_GAMES    300
-#define HS_VERSION      0x0002      // Changing this will wipe high scores on the next install
+#define MAX_HS_GAMES    285         // Just enough to fill 64K (2 sectors on the SD)
+#define HS_VERSION      0x0003      // Changing this will wipe high scores on the next install
 
 // --------------------------------------------------------------------------
 // We allow sorting on various criteria. By default sorting is high-to-low.
@@ -122,8 +122,15 @@ void highscore_init(void)
         // If the high score version is wrong or if 
         // the checksum is wrong, reset to defaults
         // --------------------------------------------
-        if (highscores.version != HS_VERSION) create_defaults = 1;
-        if (highscore_checksum() != highscores.checksum) create_defaults = 1;
+        if (highscores.version == 0x0002)
+        {
+            highscore_save();   // Just convert to V3
+        }
+        else
+        {
+            if (highscores.version != HS_VERSION) create_defaults = 1;
+            if (highscore_checksum() != highscores.checksum) create_defaults = 1;
+        }
     }
     else
     {

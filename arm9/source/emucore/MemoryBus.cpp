@@ -11,6 +11,7 @@
 #include <nds.h>
 #include <stdio.h>
 #include "MemoryBus.h"
+#include "../ds_tools.h"
 
 // ----------------------------------------------------------------------------------------------
 // We use this class and single object to fill all unused memory locations in the memory map. 
@@ -42,9 +43,9 @@ public:
 // memories per address location which is sufficient provided we are only
 // loading normal ROMs into a stock intellivision with, at most, an intellivoice
 // or the JLP cart as the only peripherals... still, this is a strain on the
-// older DS-LITE/PHAT.  The original BLISS core allowed something like 16 
-// overlapping memory regions which barely fit into the DSi and wouldn't run
-// on the DS-LITE/PHAT so we've stripped that way down to the bare essentials.
+// older DS-LITE/PHAT.  The original BLISS core allowed 16 overlapping memory 
+// regions (to handle page flipping) which barely fit into the DSi and wouldn't
+// run on the DS-LITE/PHAT so we've stripped that way down to the bare essentials.
 // -------------------------------------------------------------------------------
 MemoryBus::MemoryBus()
 {
@@ -109,6 +110,12 @@ void MemoryBus::addMemory(Memory* m)
     UINT16 writeAddress = m->getWriteAddress();
     UINT16 writeAddressMask = m->getWriteAddressMask();
 
+    if (mappedMemoryCount >= MAX_MAPPED_MEMORIES)
+    {
+        FatalError("GAME TOO COMPLEX - MAX MEMORIES");
+        return;
+    }
+    
     //add all of the readable locations, if any
     if (readAddressMask != 0) {
         UINT8 zeroCount = 0;

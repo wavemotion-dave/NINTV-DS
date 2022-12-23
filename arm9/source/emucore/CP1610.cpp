@@ -77,7 +77,7 @@ void CP1610::resetProcessor()
  */
 ITCM_CODE INT32 CP1610::tick(INT32 minimum)
 {
-    INT32 usedCycles = 0;
+    UINT32 usedCycles = 0;
     
     // ---------------------------------------------------------------------
     // Small speedup so we don't have to shift usedCycles on every loop..
@@ -86,24 +86,30 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
     if ((min_shifted<<2) != minimum) min_shifted++;
     
     do {
-        if (interruptible) 
+        // This chunk of code doesn't happen very often (less than 10%) so we use the unlikely() gcc switch to help optmize
+        if (unlikely(!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM)))
         {
-            if (!bCP1610_PIN_IN_BUSRQ) 
+            if ((!bCP1610_PIN_IN_BUSRQ))
             {
-                bCP1610_PIN_OUT_BUSAK = bCP1610_PIN_IN_BUSRQ;
-                return MAX((usedCycles<<2), minimum);
+                if (interruptible) 
+                {
+                    bCP1610_PIN_OUT_BUSAK = bCP1610_PIN_IN_BUSRQ;
+                    return MAX((usedCycles<<2), minimum);
+                }
             }
-
-            if (I && !bCP1610_PIN_IN_INTRM) 
+            else // if ((I && !bCP1610_PIN_IN_INTRM))
             {
-                bCP1610_PIN_IN_INTRM = TRUE;
-                interruptible = false;
-                memoryBus->poke(r[6], r[7]);
-                r[6]++;
-                r[7] = interruptAddress;
-                usedCycles += 7;
-                if ((usedCycles << 2) >= minimum)
-                    return (usedCycles<<2);
+                if (interruptible) 
+                {
+                    bCP1610_PIN_IN_INTRM = TRUE;
+                    interruptible = false;
+                    memoryBus->poke(r[6], r[7]);
+                    r[6]++;
+                    r[7] = interruptAddress;
+                    usedCycles += 7;
+                    if ((usedCycles << 2) >= minimum)
+                        return (usedCycles<<2);
+                }
             }
         }
 

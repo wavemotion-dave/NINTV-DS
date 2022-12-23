@@ -80,36 +80,35 @@ class AY38914 : public Processor, public AudioProducer
         //registers
         AY38914_Registers      registers;
         
-struct Channel_t channel0;
-struct Channel_t channel1;
-struct Channel_t channel2;
+        struct Channel_t channel0;
+        struct Channel_t channel1;
+        struct Channel_t channel2;
 
-//cached total output sample
-UINT8 cachedTotalOutputIsDirty;
-INT16 cachedTotalOutput;
+        //cached total output sample
+        UINT8 cachedTotalOutputIsDirty;
+        INT16 cachedTotalOutput;
 
-//envelope data
-UINT8 envelopeIdle;
-INT32 envelopePeriod;
-INT32 envelopePeriodValue;
-INT32 envelopeVolume;
-UINT8 envelopeHold;
-UINT8 envelopeAltr;
-UINT8 envelopeAtak;
-UINT8 envelopeCont;
-INT32 envelopeCounter;         
+        //envelope data
+        UINT8 envelopeIdle;
+        INT32 envelopePeriod;
+        INT32 envelopePeriodValue;
+        INT32 envelopeVolume;
+        UINT8 envelopeHold;
+        UINT8 envelopeAltr;
+        UINT8 envelopeAtak;
+        UINT8 envelopeCont;
+        INT32 envelopeCounter;         
 
-//noise data
-UINT8 noiseIdle;
-INT32 noisePeriod;
-INT32 noisePeriodValue;
-INT32 noiseCounter;        
+        //noise data
+        UINT8 noiseIdle;
+        INT32 noisePeriod;
+        INT32 noisePeriodValue;
+        INT32 noiseCounter;        
 
-//data for random number generator, used for white noise accuracy
-INT32 my_random;
-UINT8 noise;
-
-
+        //data for random number generator, used for white noise accuracy
+        INT32 my_random;
+        UINT8 noise;
+        
     private:
         AY38914_InputOutput*   psgIO0;
         AY38914_InputOutput*   psgIO1;

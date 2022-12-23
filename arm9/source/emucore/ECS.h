@@ -7,6 +7,7 @@
 #include "AudioOutputLine.h"
 #include "RAM.h"
 #include "ROM.h"
+#include "ROMBanker.h"
 #include "types.h"
 #include "AY38914.h"
 
@@ -29,6 +30,9 @@ class ECS : public Peripheral
         
         void getState(ECSState *state);
         void setState(ECSState *state);
+        bool isBank0Enabled() {return bank0.IsEnabled();}
+        bool isBank1Enabled() {return bank1.IsEnabled();}
+        bool isBank2Enabled() {return bank2.IsEnabled();}
 
     private:
         ECSKeyboard         keyboard;
@@ -39,6 +43,9 @@ class ECS : public Peripheral
         ROM       bank2;
         RAM       ramBank;
         AY38914   psg2;
+        ROMBanker banker0;
+        ROMBanker banker1;
+        ROMBanker banker2;
 };
 
 #endif

@@ -53,6 +53,7 @@ class Emulator : public Peripheral
 		void InitAudio(AudioMixer* audio, UINT32 sampleRate);
 		void ReleaseAudio();
         void LoadFastMemory();
+        void LoadFastMemory(UINT16 from, UINT16 to);
         void ApplyCheats();
 
         void Reset();

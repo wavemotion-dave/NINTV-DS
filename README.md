@@ -18,17 +18,14 @@ Don't ask. If you own Intellivision Lives, you likely have both files already so
 Features :
 ----------
  * All known games run at full speed on a DSi or above.
- * Many games run very close to full speed on the older DS-LITE and
- DS-PHAT hardware but you can play with config settings to get the 
- most out of these games.
+ * Many games run very close to full speed on the older DS-LITE and DS-PHAT hardware but you can play with config settings to get the most out of these games.
  * Custom Overlay Support. See the 'extras' folder for details.
  * Manual/Instruction Support. See the 'extras' folder for an example.
  * Save Sate support (3 save slots per game).
  * High Scores for up to 10 scores pre game with various sorting options.
  * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
- * JLP support for accelerated functions, extra RAM and flash memory. When loading a game,
- use the X button to load and force JLP support ON if not auto-detected.
+ * JLP support for accelerated functions, extra RAM and flash memory. When loading a game, use the X button to load and force JLP support ON if not auto-detected.
  * ECS support for ECS games including sound-enchanced games like Space Patrol (use ECS mini-Keyboard Overlay)
 
 Controller Types :
@@ -40,10 +37,9 @@ Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Control
 
 Missing / Known Issues :
 -----------------------
-ECS support is partial. No UART / Cassette and no bankswitch support either. This means you can't 
-play World Series Baseball but you can play MindStrike (keys 6789 for 'START'), Jetsons and Scooby Doo Maze 
-Chase. Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information
-to start the game or you can pick the ECS mini-keyboard overlay.
+ECS support is partial. No UART / Cassette and minimal page flipping handling (only 3 pages deep). You will be able to play all the commercial ECS games including
+World Series Baseball, MindStrike, Jetsons and Scooby Doo Maze Chase. Each ECS game will allow you to use the Intellivision Keypad to enter 
+just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.  Larger page flipping/bankswitched homewbrew games will not run.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
@@ -51,7 +47,7 @@ License :
 -----------------------
 Copyright (c) 2021-2022 Dave Bernazzani (wavemotion-dave)
 
-Copying and distribution of this emulator, it's source code and associated 
+Copying and distribution of this emulator, its source code and associated 
 readme files, with or without modification, are permitted in any medium without 
 royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 and Kyle Davis (BLISS) are thanked profusely. 
@@ -68,6 +64,11 @@ Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.7 : 23-Dec-2022 by wavemotion-dave
+  * First pass at ECS style page flipping (aka bankswap). It only handles 3 pages deep so it's enough to play Major League World Series Baseball but not the more complex ECS-style homebrews.
+  * Improved error handling with better messages on-screen to help diagnose problems with missing roms, roms that are too big/complex, etc.
+  * Cleanup across the board - reorganized memory to free up more resources for the future.
+  
 V3.6 : 24-May-2022 by wavemotion-dave
   * Added cheat support. Place NINTV-DS.cht into /data directory. See 'extras' folder.
 

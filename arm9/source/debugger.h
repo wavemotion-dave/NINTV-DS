@@ -21,6 +21,8 @@ extern UINT32 debug_frames;
 extern UINT32 debug_opcodes;
 extern AY38900 *debug_stic;
 
+extern INT32 debug[];
+
 extern void show_debug_overlay(void);
 extern void debugger(void);
 extern UINT8 debugger_input(int tx, int ty);
