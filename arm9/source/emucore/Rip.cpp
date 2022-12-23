@@ -222,6 +222,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
             }
             else
             {
+                bUseIVoice = db_entry->bIntellivoice;
                 rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
             }
         }

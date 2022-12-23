@@ -24,6 +24,8 @@ UINT16 amplitudes16Bit[16] __attribute__((section(".dtcm"))) =
 INT32 clockDivisor   __attribute__((section(".dtcm")));
 INT32 clocksPerSample  __attribute__((section(".dtcm")));
 
+extern UINT8 bUseIVoice;
+
 
 /**
  * The AY-3-8914 chip in the Intellivision, also know as the Programmable
@@ -177,8 +179,11 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
         // Now place the sample onto the audio output line...
-        if (this->location == 0xF0) 
-            playSample2(cachedTotalOutput);     // This is the ECS PSG
+        if (this->location == 0xF0)
+        {
+            if (bUseIVoice) playSample2(cachedTotalOutput);     // This is the ECS PSG on channel 2 (Intellivoice on Channel 1)
+            else playSample1(cachedTotalOutput);                // This is the ECS PSG on channel 1 (no Intellivoice)
+        }
         else
             playSample0(cachedTotalOutput);     // This is the normal Intellivision console PSG
 
