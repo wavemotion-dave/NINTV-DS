@@ -33,12 +33,13 @@
 
 INT32 debug[6] = {0};
 
-#ifdef DEBUG_ENABLE
-
-int getMemUsed() {    // returns the amount of used memory in bytes
-        struct mallinfo mi = mallinfo();
-        return mi.uordblks;
+int getMemUsed(void)      // returns the amount of used memory in bytes
+{
+    struct mallinfo mi = mallinfo();
+    return mi.uordblks;
 }
+
+#ifdef DEBUG_ENABLE
 
 UINT32 debug_opcodes=0;
 

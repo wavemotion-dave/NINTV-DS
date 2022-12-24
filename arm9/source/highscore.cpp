@@ -612,7 +612,7 @@ void highscore_display(UINT32 crc)
     short firstBlank = -1;
     char bDone = 0;
 
-    dsShowMenu();
+    dsShowBannerScreen();
     swiWaitForVBlank();
 
     // ---------------------------------------------------------------------------------

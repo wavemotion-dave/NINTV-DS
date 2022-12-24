@@ -17,8 +17,7 @@
 
 extern Emulator *currentEmu;
 
-UINT16 gLastBankers[16];
-extern INT32 debug[];
+UINT16 gLastBankers[16] = {0};
 
 ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UINT16 m)
 : RAM(1, address, 0, 0xFFFF),
@@ -28,7 +27,7 @@ ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UIN
   matchMask(mm),
   match(m)
 {
-      pokeCount = 0;
+    pokeCount = 0;
 }
 
 void ROMBanker::reset()
@@ -67,6 +66,7 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
                 pokeCount++;
                 // ------------------------------------------------------------------
                 // We must now patch up the fast memory ROM with the new swap in/out
+                // This is the 'slow' way to ensure we get the bus peeks right...
                 // ------------------------------------------------------------------
                 UINT16 *fast_memory = (UINT16 *)0x06880000;
                 for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)

@@ -38,6 +38,7 @@ char szName[256];
 char szName2[256];
 
 extern Rip *currentRip;
+extern UINT16 slow_ram_idx;
 
 u8 bFavsOnlyMode = false;
 
@@ -58,6 +59,8 @@ BOOL LoadCart(const CHAR* filename)
     bGameLoaded = FALSE;
     
     memset(gLastBankers, 0x00, sizeof(gLastBankers));
+
+    slow_ram_idx = 0;
 
     const CHAR* extStart = filename + strlen(filename) - 4;
     
@@ -523,14 +526,14 @@ ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 // --------------------------------------------------------------------------
 unsigned int dsWaitForRom(char *chosen_filename)
 {
-  bool bDone=false, bRet=false;
-  u32 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage;
-  u32 uLenFic=0, ucFlip=0, ucFlop=0;
+  u8 bDone=false, bRet=false;
+  u16 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage;
+  u16 uLenFic=0, ucFlip=0, ucFlop=0;
 
   strcpy(chosen_filename, "tmpz");
   intvFindFiles();   // Initial get of files...
     
-  dsShowMenu();
+  dsShowBannerScreen();
 
   nbRomPerPage = (countintv>=17 ? 17 : countintv);
   uNbRSPage = (countintv>=5 ? 5 : countintv);

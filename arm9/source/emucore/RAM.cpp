@@ -9,14 +9,17 @@
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
 #include <nds.h>
+#include "../ds_tools.h"
 #include "RAM.h"
 #include "GRAM.h"
 #include "JLP.h"
 
-UINT16 fast_ram[1024] __attribute__((section(".dtcm")));
+UINT16 fast_ram[2048] __attribute__((section(".dtcm")));
 UINT16 fast_ram_idx = 0;
 UINT16 jlp_ram[8192] = {0};
 UINT16 extra_ram[0x800] = {0};
+UINT16 slow_ram[16*1024];
+UINT16 slow_ram_idx = 0;
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth)
 : enabled(TRUE)
@@ -37,18 +40,23 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     }
     else if ((size >= 0x400) && (size <= 0x800))
     {
-        image = (UINT16*)extra_ram;       // Use extra for the few carts that have large extra RAM (USFC Chess, Land Battle and ECS games)
+        image = (UINT16*)extra_ram;     // Use extra for the few carts that have large extra RAM (USFC Chess, Land Battle and ECS games)
+    }
+    else if (size >= 0x800)
+    {
+        image = (UINT16*)&slow_ram[slow_ram_idx];   // Slow RAM for one-off carts that declare a lot of extra RAM
+        slow_ram_idx += size;
     }
     else
     {
         image = &fast_ram[fast_ram_idx]; // Otherwise "allocate" it from the internal fast buffer... should never run out since this will just be internal Intellivision RAM
         fast_ram_idx += size;
+        if (fast_ram_idx > 2048) FatalError("OUT OF MEMORY");
     }
 }
 
 RAM::~RAM()
 {
-    
 }
 
 void RAM::reset()

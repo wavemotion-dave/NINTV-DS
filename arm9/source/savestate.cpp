@@ -313,7 +313,7 @@ void savestate_entry(void)
 
     just_read_save_file();
 
-    dsShowMenu();
+    dsShowBannerScreen();
     swiWaitForVBlank();
     dsPrintValue(8,3,0, (char*)"SAVE/RESTORE STATE");
     dsPrintValue(4,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");

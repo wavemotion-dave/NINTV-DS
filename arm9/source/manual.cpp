@@ -211,7 +211,7 @@ void dsShowManual(void)
     int keys_pressed;
     static int last_keys = -1;
     
-    dsShowMenu();
+    dsShowBannerScreen();
     swiWaitForVBlank();    
     
     if (last_crc != currentRip->GetCRC())

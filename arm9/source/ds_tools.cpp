@@ -238,7 +238,7 @@ void HandleScreenStretch(void)
 {
     char tmpStr[33];
     
-    dsShowMenu();
+    dsShowBannerScreen();
     swiWaitForVBlank();
     
     dsPrintValue(2, 5, 0,  (char*)"PRESS UP/DN TO STRETCH SCREEN");
@@ -303,13 +303,48 @@ void HandleScreenStretch(void)
     }
 }
 
+// -------------------------------------------------------------------------
+// Show some information about the game/emulator on the bottom LCD screen.
+// -------------------------------------------------------------------------
+void dsShowEmuInfo(void)
+{
+    extern UINT16 fast_ram_idx;
+    extern UINT16 slow_ram_idx;
+    char dbg[33];
+    UINT8 bDone = false;
+    UINT8 idx = 3;
+    
+    dsShowBannerScreen();
+    swiWaitForVBlank();    
+
+    sprintf(dbg, "CPU Mode:     %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Binary Size:  %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Intellivoice: %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "JLP Enabled:  %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "ECS Enabled:  %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Total Frames: %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Memory Used:  %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
+    sprintf(dbg, "RAM INDEXES:  %d / %d ",  fast_ram_idx, slow_ram_idx);         dsPrintValue(0, idx++, 0, dbg);        
+
+    while (!bDone)
+    {
+        if (keysCurrent() & (KEY_A | KEY_B | KEY_Y | KEY_X))
+        {
+            bDone = true;
+        }
+        WAITVBL;
+    }
+}
+
+
+
 // -------------------------------------------------------------------------------------
 // The main menu provides a full set of options the user can pick. We started to run
 // out of room on the main screen to show all the possible things the user can pick
 // so we now just store all the extra goodies in this menu... By default the SELECT
 // button will bring this up.
 // -------------------------------------------------------------------------------------
-#define MAIN_MENU_ITEMS 11
+#define MAIN_MENU_ITEMS 12
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
     "RESET EMULATOR",  
@@ -321,6 +356,7 @@ const char *main_menu[MAIN_MENU_ITEMS] =
     "SCREEN STRETCH",
     "GLOBAL CONFIG",  
     "SELECT CHEATS",  
+    "GAME/EMULATOR INFO",
     "QUIT EMULATOR",  
     "EXIT THIS MENU",  
 };
@@ -332,7 +368,7 @@ int menu_entry(void)
     extern int bg0, bg0b, bg1b;
     char bDone = 0;
 
-    dsShowMenu();
+    dsShowBannerScreen();
     swiWaitForVBlank();
     dsPrintValue(8,3,0, (char*)"MAIN MENU");
     dsPrintValue(4,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");
@@ -398,9 +434,12 @@ int menu_entry(void)
                         return OVL_META_CHEATS;
                         break;
                     case 9:
-                        return OVL_META_QUIT;
+                        return OVL_META_EMUINFO;
                         break;
                     case 10:
+                        return OVL_META_QUIT;
+                        break;
+                    case 11:
                         bDone=1;
                         break;
                 }
@@ -554,6 +593,17 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 dsShowManual();
+                dsShowScreenMain(false);
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            }
+            bStartSoundFifo = true;
+            break;
+
+        case OVL_META_EMUINFO:
+            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            if (currentRip != NULL) 
+            {
+                dsShowEmuInfo();
                 dsShowScreenMain(false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
@@ -1111,7 +1161,7 @@ void dsInitScreenMain(void)
 // banner at the top. The menu has 2 font choices... a high-contrast white on black and a more 
 // retro feel green on black (default). The user can change this option in global configuration.
 // ----------------------------------------------------------------------------------------------
-void dsShowMenu(void)
+void dsShowBannerScreen(void)
 {
     if (myGlobalConfig.menu_color == 0)
     {
@@ -1183,7 +1233,7 @@ bool dsWaitOnQuit(void)
   unsigned int posdeb=0;
   char szName[32];
 
-  dsShowMenu();
+  dsShowBannerScreen();
     
   strcpy(szName,"Quit NINTV-DS?");
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
@@ -1289,13 +1339,13 @@ ITCM_CODE void Run(char *initial_file)
         
         if (TIMER1_DATA >= 32728)   // 1000MS (1 sec)
         {
+            char tmp[33];
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             oneSecTick=TRUE;
             if ((frames_per_sec_calc > 0) && (myGlobalConfig.show_fps > 0))
             {
-                char tmp[15];
                 if (frames_per_sec_calc==(target_frames[myConfig.target_fps]+1)) frames_per_sec_calc--;
                 tmp[0] = '0' + (frames_per_sec_calc/100);
                 tmp[1] = '0' + ((frames_per_sec_calc % 100) /10);
@@ -1304,15 +1354,17 @@ ITCM_CODE void Run(char *initial_file)
                 dsPrintValue(0,0,0,tmp);
             }
             frames_per_sec_calc=0;
+            
+            // If we've been asked to put out the debug info at the top of the screen... mostly for developer use
+            if (myGlobalConfig.show_fps == 2)
+            {
+                sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
+                dsPrintValue(6,0,0,tmp);
+            }
         }
 
 #ifdef DEBUG_ENABLE
         debugger();
-#endif        
-#if 0
-        char dbg[33];
-        sprintf(dbg,"%d %d %d %d %d %d", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
-        dsPrintValue(6,0,0,dbg);
 #endif        
     }
 }

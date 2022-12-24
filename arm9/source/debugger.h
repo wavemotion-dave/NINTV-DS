@@ -26,5 +26,6 @@ extern INT32 debug[];
 extern void show_debug_overlay(void);
 extern void debugger(void);
 extern UINT8 debugger_input(int tx, int ty);
+extern int getMemUsed(void);
 
 #endif

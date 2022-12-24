@@ -31,6 +31,8 @@
 extern UINT8 *bin_image_buf;
 extern UINT16 *bin_image_buf16;
 
+UINT32 Rip::mySize = 0;
+
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
   peripheralCount(0),
@@ -113,6 +115,8 @@ Rip* Rip::LoadBin(const CHAR* filename)
         FatalError("BIN FILE TOO LARGE");
         return NULL;
     }
+    
+    mySize = size;
 
     // Read the file into our memory buffer
     fread(bin_image_buf, size, 1, file);
@@ -351,6 +355,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
         FatalError("ROM FILE TOO LARGE");
         return NULL;
     }
+    
+    mySize = size;
 
     //read the magic byte (should always be $A8 or $41)
     int read = fgetc(infile);

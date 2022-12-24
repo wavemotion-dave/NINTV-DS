@@ -78,7 +78,7 @@ void CheatMenu(void)
     u8 bDone = false;
 
     // Show the Options background...
-    dsShowMenu();
+    dsShowBannerScreen();
 
     while (keysCurrent()) 
         ;

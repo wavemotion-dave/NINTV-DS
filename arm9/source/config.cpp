@@ -301,7 +301,7 @@ const struct options_t Game_Option_Table[] =
 
 const struct options_t Global_Option_Table[] =
 {
-    {"FPS",         {"OFF", "ON"},                                                                                                                                      &myGlobalConfig.show_fps,    2},
+    {"FPS",         {"OFF", "ON", "ON WITH DEBUG"},                                                                                                                     &myGlobalConfig.show_fps,    3},
     {"SAVE STATE",  {"KEEP ON LOAD", "ERASE ON LOAD"},                                                                                                                  &myGlobalConfig.erase_saves, 2},
     {"BIOS DIR",    {"SAME AS ROMS", "/ROMS/BIOS", "/ROMS/INTV/BIOS", "/DATA/BIOS"},                                                                                    &myGlobalConfig.bios_dir,    4},
     {"SAVE DIR",    {"SAME AS ROMS", "/ROMS/SAV",  "/ROMS/INTV/SAV",  "/DATA/SAV"},                                                                                     &myGlobalConfig.save_dir,    4},
@@ -401,7 +401,7 @@ void dsChooseOptions(int global)
     options_shown = global; // Always start with GAME options unless told otherwise
     
     // Show the Options background...
-    dsShowMenu();
+    dsShowBannerScreen();
 
     idx=display_options_list(true);
     optionHighlighted = 0;

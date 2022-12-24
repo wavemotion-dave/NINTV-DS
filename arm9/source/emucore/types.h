@@ -45,6 +45,9 @@ typedef signed char				BOOL;
 typedef int						BOOL;
 #endif
 #endif
+    
+// Used universally...
+extern INT32 debug[];
 
 #if !defined(TRUE)
 #define TRUE	(1)

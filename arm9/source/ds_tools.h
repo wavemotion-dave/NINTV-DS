@@ -27,8 +27,6 @@ extern UINT16 emu_frames;
 extern UINT16 frames_per_sec_calc;
 extern UINT8  oneSecTick;
 
-extern INT32 debug[];
-
 extern UINT8 b_dsi_mode;
 
 extern int bg0, bg0b, bg1b;
@@ -60,7 +58,7 @@ extern bool dsWaitOnQuit(void);
 extern void dsChooseOptions(int global);
 extern void dsShowScreenMain(bool bFull);
 extern void ApplyOptions(void);
-extern void dsShowMenu(void);
+extern void dsShowBannerScreen(void);
 extern void reset_emu_frames(void);
 
 #endif
