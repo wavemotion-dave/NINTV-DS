@@ -311,7 +311,7 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 void dsDisplayLoadInstructions(void)
 {
   dsPrintValue(1,22,0,(char*)"SEL=MARK, STA=SAVEFAV, L/R=FAVS");
-  dsPrintValue(1,23,0,(char*)"A=LOAD, X=JLP, Y=IVOICE, B=BACK");
+  dsPrintValue(1,23,0,(char*)"A=LOAD, X=LOAD OPTIONS, B=BACK ");
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -519,6 +519,64 @@ ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   }
 }
 
+
+#define LOAD_OPTION_MENU_ITEMS 8
+const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] = 
+{
+    "LOAD GAME AS-IS",  
+    "LOAD GAME WITH JLP",  
+    "LOAD GAME WITH IVOICE",  
+    "LOAD GAME WITH ECS",  
+    "LOAD GAME WITH JLP+IVOICE",  
+    "LOAD GAME WITH ECS+IVOICE",
+    "LOAD GAME WITH JLP+ECS+IV",
+    "EXIT THIS MENU",  
+};
+
+
+UINT8 LoadWithOptions(void)
+{
+    UINT8 current_entry = 0;
+
+    dsShowBannerScreen();
+    swiWaitForVBlank();
+    dsPrintValue(3,3,0, (char*) "  LOAD GAME OPTIONS       ");
+    dsPrintValue(3,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");
+
+    for (int i=0; i<LOAD_OPTION_MENU_ITEMS; i++)
+    {
+           dsPrintValue(5,5+i, (i==0 ? 1:0), (char*)load_options_menu[i]);
+    }
+    
+    int last_keys_pressed = -1;
+    while (1)
+    {
+        int keys_pressed = keysCurrent();
+        
+        if (keys_pressed != last_keys_pressed)
+        {
+            last_keys_pressed = keys_pressed;
+            if (keys_pressed & KEY_DOWN)
+            {
+                dsPrintValue(5,5+current_entry, 0, (char*)load_options_menu[current_entry]);
+                if (current_entry < (LOAD_OPTION_MENU_ITEMS-1)) current_entry++; else current_entry=0;
+                dsPrintValue(5,5+current_entry, 1, (char*)load_options_menu[current_entry]);
+            }
+            if (keys_pressed & KEY_UP)
+            {
+                dsPrintValue(5,5+current_entry, 0, (char*)load_options_menu[current_entry]);
+                if (current_entry > 0) current_entry--; else current_entry=(LOAD_OPTION_MENU_ITEMS-1);
+                dsPrintValue(5,5+current_entry, 1, (char*)load_options_menu[current_entry]);
+            }
+            if (keys_pressed & KEY_A)
+            {
+                return current_entry;
+            }            
+            swiWaitForVBlank();
+        }
+    }    
+    return (LOAD_OPTION_MENU_ITEMS-1);
+}
 
 
 // --------------------------------------------------------------------------
@@ -730,17 +788,41 @@ unsigned int dsWaitForRom(char *chosen_filename)
     // -------------------------------------------------------------------
     // Any of these keys will pick the current ROM and try to load it...
     // -------------------------------------------------------------------
-    if (keysCurrent() & KEY_A || keysCurrent() & KEY_Y || keysCurrent() & KEY_X)
+    if (keysCurrent() & KEY_A || keysCurrent() & KEY_X)
     {
       if (!intvromlist[ucFicAct].directory)
       {
-        bRet=true;
-        bDone=true;
-        WAITVBL;
-        if (keysCurrent() & KEY_X) bUseJLP = true; else bUseJLP=false;
-        if (keysCurrent() & KEY_Y) bUseIVoice = true; else bUseIVoice=false;          
-        bUseECS = false; // Only if Database Says So
-        strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
+          UINT8 opt = 0;
+          bUseJLP=false;
+          bUseIVoice=false;
+          bUseECS=false;
+          if (keysCurrent() & KEY_X)
+          {
+              opt = LoadWithOptions();
+              if (opt == 0) {asm("nop");}
+              if (opt == 1) {bUseJLP = true;}
+              if (opt == 2) {bUseIVoice = true;}
+              if (opt == 3) {bUseECS = true;}
+              if (opt == 4) {bUseJLP = true; bUseIVoice = true;}
+              if (opt == 5) {bUseECS = true; bUseIVoice = true;}
+              if (opt == 6) {bUseJLP = true; bUseECS = true; bUseIVoice = true;}
+              while (keysCurrent() & KEY_A);
+              WAITVBL;
+          }
+          if (opt != (LOAD_OPTION_MENU_ITEMS-1))
+          {
+              bRet=true;
+              bDone=true;
+              strcpy(chosen_filename,  intvromlist[ucFicAct].filename);
+          }
+          else
+          {
+              bRet = false;
+              bDone = false;
+              dsShowBannerScreen();
+              dsDisplayFiles(firstRomDisplay,romSelected);
+          }
+          WAITVBL;
       }
       else
       {

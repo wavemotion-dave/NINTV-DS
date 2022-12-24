@@ -43,6 +43,10 @@ extern UINT16 jlp_ram[];
 // This is for the few games that have on-board RAM like Chess and Land Battle plus ECS games
 extern UINT16 extra_ram[];
 
+SlowRAMState slowRAMState[3];
+extern UINT16 slow_ram[];
+extern UINT16 slow_ram_idx;
+
 extern UINT16 gLastBankers[];
 
 char savefilename[128];
@@ -76,6 +80,9 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
     
     // Only a few games utilize JLP RAM...
     if (currentRip->JLP16Bit) currentRip->JLP16Bit->getState(&jlpState[slot]);
+    
+    // And even fewer games utilize the SLOW RAM
+    if (slow_ram_idx != 0) memcpy(slowRAMState[slot].image, slow_ram, (16*1024)*sizeof(UINT16));
 
     // Write the entire save states as a single file... overwrite if it exists.
 	FILE* file = fopen(filename, "wb+");
@@ -83,7 +90,8 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
 	if (file != NULL) 
     {
         fwrite(&saveState, 1, sizeof(saveState), file);
-        if (currentRip->JLP16Bit) fwrite(&jlpState, 1, sizeof(jlpState), file);
+        if (currentRip->JLP16Bit) fwrite(&jlpState, 1, sizeof(jlpState), file);         // A few gaems utilize the JLP RAM
+        if (slow_ram_idx != 0) fwrite(slowRAMState, 1, sizeof(slowRAMState), file);     // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
         didSave = TRUE;
         fclose(file);
 	} 
@@ -112,11 +120,15 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
         }
         else
         {
-            if (currentRip->JLP16Bit) fread(&jlpState, 1, sizeof(jlpState), file);            
+            if (currentRip->JLP16Bit) fread(&jlpState, 1, sizeof(jlpState), file);         // A few games utilize the JLP RAM
+            if (slow_ram_idx != 0) fread(slowRAMState, 1, sizeof(slowRAMState), file);     // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
+            
             // Ask the emulator to restore it's state...
             currentEmu->LoadState(&saveState.slot[slot]);
             for (int i=0; i<0x800; i++) extra_ram[i] = saveState.slot[slot].extraRAM[i];
             if (currentRip->JLP16Bit) currentRip->JLP16Bit->setState(&jlpState[slot]);
+            if (slow_ram_idx != 0) memcpy(slow_ram, slowRAMState[slot].image, (16*1024)*sizeof(UINT16));
+            
             global_frames = saveState.slot[slot].global_frames;
             emu_frames = saveState.slot[slot].emu_frames;
             

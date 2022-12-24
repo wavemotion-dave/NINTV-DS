@@ -18,7 +18,7 @@ UINT16 fast_ram[2048] __attribute__((section(".dtcm")));
 UINT16 fast_ram_idx = 0;
 UINT16 jlp_ram[8192] = {0};
 UINT16 extra_ram[0x800] = {0};
-UINT16 slow_ram[16*1024];
+UINT16 slow_ram[16*1024] = {0};
 UINT16 slow_ram_idx = 0;
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth)
@@ -42,10 +42,11 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     {
         image = (UINT16*)extra_ram;     // Use extra for the few carts that have large extra RAM (USFC Chess, Land Battle and ECS games)
     }
-    else if (size >= 0x800)
+    else if (size > 0x800)              // And for REALLY large extra RAM....
     {
-        image = (UINT16*)&slow_ram[slow_ram_idx];   // Slow RAM for one-off carts that declare a lot of extra RAM
+        image = (UINT16*)&slow_ram[slow_ram_idx];   // Slow RAM for one-off carts that declare a lot of extra RAM (mostly demos)
         slow_ram_idx += size;
+        if (slow_ram_idx > (16*1024)) FatalError("OUT OF MEMORY");
     }
     else
     {

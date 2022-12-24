@@ -28,6 +28,11 @@ TYPEDEF_STRUCT_PACK( _RAMState
 } RAMState; )
     
     
+TYPEDEF_STRUCT_PACK( _SlowRAMState
+{
+    UINT16     image[16*1024];
+} SlowRAMState; )
+    
 class RAM : public Memory
 {
     public:
