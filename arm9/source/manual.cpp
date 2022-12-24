@@ -24,6 +24,7 @@
 #include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
+#include "printf.h"
 
 // -------------------------------------------------------------------
 // We have a buffer to snarf in the entire text of the .man file. 

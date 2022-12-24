@@ -67,6 +67,7 @@ class MemoryBus
         void addMemory(Memory* m);
         void removeMemory(Memory* m);
         void removeAll();
+        UINT16 getMemCount() {return mappedMemoryCount;}
 
     private:
         Memory*     mappedMemories[MAX_MAPPED_MEMORIES];

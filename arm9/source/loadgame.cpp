@@ -28,6 +28,7 @@
 #include "CRC32.h"
 #include "loadgame.h"
 #include "debugger.h"
+#include "printf.h"
 
 // -------------------------------------------------------------
 // We support up to 512 files per directory. More than enough.

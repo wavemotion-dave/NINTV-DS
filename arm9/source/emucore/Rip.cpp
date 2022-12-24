@@ -31,8 +31,6 @@
 extern UINT8 *bin_image_buf;
 extern UINT16 *bin_image_buf16;
 
-UINT32 Rip::mySize = 0;
-
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
   peripheralCount(0),
@@ -81,8 +79,31 @@ Rip* Rip::LoadBin(const CHAR* filename)
     cfgFilename[strlen(cfgFilename)-4] = 0;
     strcat(cfgFilename, ".cfg");
 
+    // Open the binary file - we will read it all in...
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) 
+    {
+        FatalError("BIN FILE DOES NOT EXIST");
+        return NULL;
+    }
+    
+    //obtain the file size
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    rewind(file);
+    if (size >= MAX_ROM_FILE_SIZE)
+    {
+        fclose(file);
+        FatalError("BIN FILE TOO LARGE");
+        return NULL;
+    }
+    
+    // Read the file into our memory buffer - we can process it from there...
+    fread(bin_image_buf, size, 1, file);
+    fclose(file);
+    
     //determine the crc of the designated file
-    UINT32 crc = CRC32::getCrc(filename);
+    UINT32 crc = CRC32::getCrc(bin_image_buf, size);
     
     // ----------------------------------------------------------------
     // Now go and try and load all the memory regions based on either 
@@ -94,33 +115,6 @@ Rip* Rip::LoadBin(const CHAR* filename)
         FatalError("UNABLE TO CREATE RIP");
         return NULL;
     }
-
-    //load the data into the rip
-    FILE* file = fopen(filename, "rb");
-    if (file == NULL) 
-    {
-        FatalError("BIN FILE DOES NOT EXIST");
-        delete rip;
-        return NULL;
-    }
-
-    //obtain the file size
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    rewind(file);
-    if (size >= MAX_ROM_FILE_SIZE)
-    {
-        fclose(file);
-        delete rip;
-        FatalError("BIN FILE TOO LARGE");
-        return NULL;
-    }
-    
-    mySize = size;
-
-    // Read the file into our memory buffer
-    fread(bin_image_buf, size, 1, file);
-    fclose(file);
 
     //parse the file bin_image_buf[] into the rip
     UINT32 offset = 0;
@@ -158,6 +152,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
+    rip->mySize = size;
 
     return rip;
 }
@@ -356,8 +351,6 @@ Rip* Rip::LoadRom(const CHAR* filename)
         return NULL;
     }
     
-    mySize = size;
-
     //read the magic byte (should always be $A8 or $41)
     int read = fgetc(infile);
     if ((read != 0xA8) && (read != 0x41))
@@ -476,6 +469,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
     
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
+    rip->mySize = size;
 
     // See if we have any special overrides...
     const struct SpecialRomDatabase_t *db_entry = FindRomDatabaseEntry(rip->crc); // Try to find the CRC in our internal database...    

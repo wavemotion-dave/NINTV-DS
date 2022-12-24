@@ -35,6 +35,7 @@
 #include "loadgame.h"
 #include "debugger.h"
 #include "AudioMixer.h"
+#include "printf.h"
 
 // --------------------------------------------------------
 // A set of boolean values so we know what to load and 
@@ -317,14 +318,18 @@ void dsShowEmuInfo(void)
     dsShowBannerScreen();
     swiWaitForVBlank();    
 
-    sprintf(dbg, "CPU Mode:     %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Binary Size:  %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Intellivoice: %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "JLP Enabled:  %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "ECS Enabled:  %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Total Frames: %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Memory Used:  %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
-    sprintf(dbg, "RAM INDEXES:  %d / %d ",  fast_ram_idx, slow_ram_idx);         dsPrintValue(0, idx++, 0, dbg);        
+    sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "JLP Enabled:   %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
+    sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
+    sprintf(dbg, "RAM Indexes:   %d / %d ",  fast_ram_idx, slow_ram_idx);         dsPrintValue(0, idx++, 0, dbg);        
+    sprintf(dbg, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, dbg);    
+    sprintf(dbg, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, dbg);        
+    sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);        
 
     while (!bDone)
     {
@@ -1387,5 +1392,7 @@ void dsMainLoop(char *initial_file)
     
     Run(initial_file);      // This will only return if the user opts to QUIT
 }
+
+void _putchar(char character) {};   // Not used but needed to link printf()
 
 // End of Line

@@ -30,6 +30,7 @@
 #include "AY38914.h"
 #include "AudioOutputLine.h"
 #include "AudioMixer.h"
+#include "printf.h"
 
 INT32 debug[6] = {0};
 

@@ -80,9 +80,8 @@ private:
     CHAR peripheralNames[MAX_PERIPHERALS][32];
     PeripheralCompatibility peripheralUsages[MAX_PERIPHERALS];
     UINT32 peripheralCount;
-    static UINT32 mySize;
-
 	CHAR filename[MAX_PATH];
+    UINT32 mySize;
 	UINT32 crc;
 };
 

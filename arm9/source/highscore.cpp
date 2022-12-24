@@ -18,6 +18,7 @@
 #include "bgMenu-Green.h"
 #include "bgMenu-White.h"
 #include "bgBottom.h"
+#include "printf.h"
 
 // ------------------------------------------------------------------------------
 // With only 125 released games plus 25-50 prototypes and 100-ish homebrews,

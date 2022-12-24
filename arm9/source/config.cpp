@@ -24,6 +24,7 @@
 #include "bgMenu-White.h"
 #include "Emulator.h"
 #include "Rip.h"
+#include "printf.h"
 
 // -------------------------------------------------------------------------
 // Configuration structures - we keep configuration at two levels:

@@ -18,6 +18,7 @@
 #include "bgMenu-Green.h"
 #include "bgMenu-White.h"
 #include "config.h"
+#include "printf.h"
 
 extern Emulator *currentEmu;
 extern Rip      *currentRip;

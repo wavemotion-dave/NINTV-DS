@@ -25,6 +25,7 @@
 #include "Emulator.h"
 #include "Rip.h"
 #include "cheat.h"
+#include "printf.h"
 
 struct Cheat_t myCheats[MAX_CHEATS_PER_GAME];
 

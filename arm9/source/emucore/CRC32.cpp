@@ -59,15 +59,16 @@ CRC32::CRC32() {
     reset();
 }
 
+UINT8 crcBuffer[256];
 UINT32 CRC32::getCrc(const CHAR* filename)
 {
     CRC32 crc;
 
     FILE* file = fopen(filename, "rb");
-    int read = fgetc(file);
-    while (read != EOF) {
-        crc.update((UINT8)read);
-        read = fgetc(file);
+    while (!feof(file))
+    {
+        int read = fread(crcBuffer, sizeof(UINT8), 256, file);  // Read up to 256 bytes into a buffer
+        crc.update(crcBuffer, (UINT32)read);                    // And compute the CRC of any bytes read
     }
     fclose(file);
 
@@ -93,7 +94,6 @@ void CRC32::update(UINT8 data) {
 
 void CRC32::update(UINT8* data, UINT32 length) {
     for (UINT32 i = 0; i < length; i++)
-        //crc = (crc << 8) ^ crc32_table[(crc >> 24) ^ data[i]];
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ data[i]]; 
 }
 

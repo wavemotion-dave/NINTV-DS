@@ -14,7 +14,7 @@
 
 #include "types.h"
 
-#define MAX_MAPPED_MEMORIES  128
+#define MAX_MAPPED_MEMORIES  144
 #define MAX_PERIPHERALS      4
 #define MAX_COMPONENTS       4
 #define MAX_ROMS             128
