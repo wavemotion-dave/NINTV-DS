@@ -521,7 +521,7 @@ ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 }
 
 
-#define LOAD_OPTION_MENU_ITEMS 8
+#define LOAD_OPTION_MENU_ITEMS 9
 const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] = 
 {
     "LOAD GAME AS-IS",  
@@ -529,6 +529,7 @@ const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] =
     "LOAD GAME WITH IVOICE",  
     "LOAD GAME WITH ECS",  
     "LOAD GAME WITH JLP+IVOICE",  
+    "LOAD GAME WITH JLP+ECS",  
     "LOAD GAME WITH ECS+IVOICE",
     "LOAD GAME WITH JLP+ECS+IV",
     "EXIT THIS MENU",  
@@ -805,8 +806,9 @@ unsigned int dsWaitForRom(char *chosen_filename)
               if (opt == 2) {bUseIVoice = true;}
               if (opt == 3) {bUseECS = true;}
               if (opt == 4) {bUseJLP = true; bUseIVoice = true;}
-              if (opt == 5) {bUseECS = true; bUseIVoice = true;}
-              if (opt == 6) {bUseJLP = true; bUseECS = true; bUseIVoice = true;}
+              if (opt == 5) {bUseJLP = true; bUseECS = true;}
+              if (opt == 6) {bUseECS = true; bUseIVoice = true;}
+              if (opt == 7) {bUseJLP = true; bUseECS = true; bUseIVoice = true;}
               while (keysCurrent() & KEY_A);
               WAITVBL;
           }

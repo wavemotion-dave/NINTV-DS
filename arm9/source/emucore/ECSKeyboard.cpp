@@ -35,7 +35,7 @@ void ECSKeyboard::resetInputConsumer()
 void ECSKeyboard::evaluateInputs()
 {
     extern UINT8 bUseECS;
-    extern int ds_key_input[3][16];   // Set to '1' if pressed... 0 if released
+    extern UINT8 ds_key_input[2][16];   // Set to '1' if pressed... 0 if released
     
     if (ecs_key_pressed == 255)  // No mini-keyboard so just use dual-purpose the main keypad
     {

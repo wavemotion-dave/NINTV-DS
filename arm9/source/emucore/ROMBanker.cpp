@@ -48,7 +48,12 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             
             // -------------------------------------------------------------
             // We allow for the first few pokes to set things up. Most games
-            // don't need this but Onion does and it's still unclear why...
+            // don't need this but Onion does. I think it's because some 
+            // rom segments are not paged and and disabling one of the ECS
+            // banks doesn't mean that the underlying bank will have a 
+            // hotspot to page it in... so we need to be tolerant of the 
+            // first few page swaps... after that if the program is swapping
+            // pages, we only need to handle the 'page in' for fast_memory[]
             // -------------------------------------------------------------
             if (pokeCount >= 3)
             {
