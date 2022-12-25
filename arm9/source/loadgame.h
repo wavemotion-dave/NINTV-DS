@@ -24,5 +24,12 @@ typedef struct FICtoLoad
 extern BOOL LoadCart(const CHAR* filename);
 extern BOOL LoadPeripheralRoms(Peripheral* peripheral);
 extern unsigned int dsWaitForRom(char *chosen_filename);
+extern UINT8 load_options;
+
+#define LOAD_WITH_STOCK_INTY    0x80        // Do not load any periperhals - just the stock Intellivision as God created
+#define LOAD_WITH_JLP           0x81        // Load with stock Inty + JLP
+#define LOAD_WITH_ECS           0x82        // Load with stock Inty + ECS
+#define LOAD_WITH_IVOICE        0x84        // Load with stock Inty + IVOICE
+// The above bits can be ORed so you can load with combinations (e.g. JLP+ECS or ECS+IVOICE)
 
 #endif

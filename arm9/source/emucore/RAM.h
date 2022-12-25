@@ -15,6 +15,13 @@
 #include <string.h>
 #include "Memory.h"
 
+extern UINT16 fast_ram16[];
+extern UINT16 slow_ram16[];
+extern UINT16 ecs_ram8[];
+extern UINT16 jlp_ram[];
+extern UINT16 fast_ram16_idx;
+extern UINT16 slow_ram16_idx;
+
 TYPEDEF_STRUCT_PACK( _RAMState
 {
     INT8    enabled;
@@ -30,7 +37,7 @@ TYPEDEF_STRUCT_PACK( _RAMState
     
 TYPEDEF_STRUCT_PACK( _SlowRAMState
 {
-    UINT16     image[16*1024];
+    UINT16     image[0x4000];
 } SlowRAMState; )
     
 class RAM : public Memory

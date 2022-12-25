@@ -520,7 +520,7 @@ ITCM_CODE void AY38900::renderFrame()
     copyMOBsToStagingArea();
     
     for (int i = 0; i < 8; i++)
-        memory[0x18+i] |= mobs[i].collisionRegister;
+        stic_memory[0x18+i] |= mobs[i].collisionRegister;
 }
 
 ITCM_CODE void AY38900::render()
@@ -750,7 +750,7 @@ ITCM_CODE void AY38900::renderColorStackMode()
         {
             if (renderAll || backtab.isDirtyDirect(h)) 
             {
-                UINT8 csColor = (UINT8)memory[0x28 + csPtr];
+                UINT8 csColor = (UINT8)stic_memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
                 UINT8 color2 = (UINT8)((nextCard & 0x01C0) >> 6);
@@ -776,7 +776,7 @@ ITCM_CODE void AY38900::renderColorStackMode()
             if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
                 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
-                bgcolor = (UINT8)memory[0x28 + csPtr];
+                bgcolor = (UINT8)stic_memory[0x28 + csPtr];
                 if (isGrom)
                 {
                     Memory* memory = (Memory*)grom;
@@ -820,7 +820,7 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
         {
             if (renderAll || backtab.isDirtyDirect(h)) 
             {
-                UINT8 csColor = (UINT8)memory[0x28 + csPtr];
+                UINT8 csColor = (UINT8)stic_memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
                 UINT8 color2 = (UINT8)((nextCard & 0x01C0) >> 6);
@@ -847,7 +847,7 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
             if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
             {
                 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
-                bgcolor = (UINT8)memory[0x28 + csPtr];
+                bgcolor = (UINT8)stic_memory[0x28 + csPtr];
                 
                 if (isGrom)
                 {
@@ -1166,8 +1166,8 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 
 void AY38900::getState(AY38900State *state)
 {
-    extern UINT16 memory[0x40];
-    memcpy(state->registers, memory, 0x40*sizeof(UINT16));
+    extern UINT16 stic_memory[0x40];
+    memcpy(state->registers, stic_memory, 0x40*sizeof(UINT16));
     this->backtab.getState(&state->backtab);
 
     state->inVBlank = this->inVBlank;
@@ -1190,8 +1190,8 @@ void AY38900::getState(AY38900State *state)
 
 void AY38900::setState(AY38900State *state)
 {
-    extern UINT16 memory[0x40];
-    memcpy(memory, state->registers, 0x40*sizeof(UINT16));
+    extern UINT16 stic_memory[0x40];
+    memcpy(stic_memory, state->registers, 0x40*sizeof(UINT16));
     this->backtab.setState(&state->backtab);
 
     this->inVBlank = state->inVBlank;

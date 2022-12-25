@@ -16,7 +16,8 @@
 
 class AY38900;
 
-extern UINT16   memory[0x40];
+extern UINT16   stic_memory[0x40];
+
 class AY38900_Registers : public RAM
 {
     friend class AY38900;

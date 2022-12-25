@@ -1,9 +1,11 @@
 #include "ECS.h"
 
+extern UINT8 ecs_ram[];
+
 ECS::ECS()
 : Peripheral("Electronic Computer System", "ECS"),
   keyboard(2),
-  ramBank(ECS_RAM_SIZE, 0x4000, 0xFFFF, 0xFFFF, 8),
+  ecsRAM(ECS_RAM_SIZE, ECS_RAM_LOCATION, 0xFFFF, 0xFFFF, 8),
   psg2(0x00F0, &keyboard, &keyboard),
   bank0("ECS ROM #1", "ecs.bin", 0,     2, 0x1000, 0x2000),
   banker0(&bank0, 0x2FFF, 0xFFF0, 0x2A50, 0x000F, 1),
@@ -24,7 +26,7 @@ ECS::ECS()
     AddROM(&bank2);
     AddRAM(&banker2);
       
-    AddRAM(&ramBank);      
+    AddRAM(&ecsRAM);      
 
     AddProcessor(&psg2);
     AddAudioProducer(&psg2);
@@ -41,4 +43,4 @@ void ECS::getState(ECSState *state)
 void ECS::setState(ECSState *state)
 {
     psg2.setState(&state->psg2State);
-}
+ }

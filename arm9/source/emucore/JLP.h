@@ -14,14 +14,15 @@
 #include <string.h>
 #include "RAM.h"
 
-#define RAM_JLP_SIZE    (0x2000)
+#define JLP_RAM_SIZE    (0x2000)
+#define JLP_RAM_ADDRESS (0x8000)
 #define JLP_FLASH_SIZE  (32*1024)
 #define JLP_CRC_POLY    (0xAD52)
 #define NUM_JLP_ROWS    (168)
 
 TYPEDEF_STRUCT_PACK( _JLPState
 {
-    UINT16     jlp_ram[RAM_JLP_SIZE];
+    UINT16     jlp_ram[JLP_RAM_SIZE];
 } JLPState; )
 
 class JLP : public RAM

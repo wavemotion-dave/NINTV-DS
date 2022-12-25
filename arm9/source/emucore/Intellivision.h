@@ -27,8 +27,10 @@
 #include "AY38914.h"
 #include "../savestate.h"
 
-#define RAM8BIT_SIZE    0x00F0
-#define RAM16BIT_SIZE   0x0160
+#define RAM8BIT_SIZE        0x00F0
+#define RAM16BIT_SIZE       0x0160
+#define RAM8BIT_LOCATION    0x0100
+#define RAM16BIT_LOCATION   0x0200
 
 class Intellivision : public Emulator
 {

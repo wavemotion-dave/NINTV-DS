@@ -35,7 +35,7 @@ CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -Wno-conversion-null
 #ASFLAGS	:=	-g $(ARCH) -march=armv5te -mtune=arm946e-s
 ASFLAGS	:=	$(ARCH) -march=armv5te -mtune=arm946e-s
 
-LDFLAGS	=	-specs=../my_ds_arm9.specs $(ARCH) -Wl,-Map,$(notdir $*.map)
+LDFLAGS	=	-specs=ds_arm9.specs $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project

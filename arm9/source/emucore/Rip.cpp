@@ -21,6 +21,7 @@
 #include "CRC32.h"
 #include "../database.h"
 #include "../ds_tools.h"
+#include "../loadgame.h"
 
 #define ROM_TAG_TITLE          0x01
 #define ROM_TAG_PUBLISHER      0x02
@@ -30,6 +31,55 @@
 
 extern UINT8 *bin_image_buf;
 extern UINT16 *bin_image_buf16;
+
+/* ======================================================================== */
+/*  CRC16_TBL    -- Lookup table used for the CRC-16 code.                  */
+/* ======================================================================== */
+const uint16_t crc16_tbl[256] =
+{
+    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
+    0x8108, 0x9129, 0xA14A, 0xB16B, 0xC18C, 0xD1AD, 0xE1CE, 0xF1EF,
+    0x1231, 0x0210, 0x3273, 0x2252, 0x52B5, 0x4294, 0x72F7, 0x62D6,
+    0x9339, 0x8318, 0xB37B, 0xA35A, 0xD3BD, 0xC39C, 0xF3FF, 0xE3DE,
+    0x2462, 0x3443, 0x0420, 0x1401, 0x64E6, 0x74C7, 0x44A4, 0x5485,
+    0xA56A, 0xB54B, 0x8528, 0x9509, 0xE5EE, 0xF5CF, 0xC5AC, 0xD58D,
+    0x3653, 0x2672, 0x1611, 0x0630, 0x76D7, 0x66F6, 0x5695, 0x46B4,
+    0xB75B, 0xA77A, 0x9719, 0x8738, 0xF7DF, 0xE7FE, 0xD79D, 0xC7BC,
+    0x48C4, 0x58E5, 0x6886, 0x78A7, 0x0840, 0x1861, 0x2802, 0x3823,
+    0xC9CC, 0xD9ED, 0xE98E, 0xF9AF, 0x8948, 0x9969, 0xA90A, 0xB92B,
+    0x5AF5, 0x4AD4, 0x7AB7, 0x6A96, 0x1A71, 0x0A50, 0x3A33, 0x2A12,
+    0xDBFD, 0xCBDC, 0xFBBF, 0xEB9E, 0x9B79, 0x8B58, 0xBB3B, 0xAB1A,
+    0x6CA6, 0x7C87, 0x4CE4, 0x5CC5, 0x2C22, 0x3C03, 0x0C60, 0x1C41,
+    0xEDAE, 0xFD8F, 0xCDEC, 0xDDCD, 0xAD2A, 0xBD0B, 0x8D68, 0x9D49,
+    0x7E97, 0x6EB6, 0x5ED5, 0x4EF4, 0x3E13, 0x2E32, 0x1E51, 0x0E70,
+    0xFF9F, 0xEFBE, 0xDFDD, 0xCFFC, 0xBF1B, 0xAF3A, 0x9F59, 0x8F78,
+    0x9188, 0x81A9, 0xB1CA, 0xA1EB, 0xD10C, 0xC12D, 0xF14E, 0xE16F,
+    0x1080, 0x00A1, 0x30C2, 0x20E3, 0x5004, 0x4025, 0x7046, 0x6067,
+    0x83B9, 0x9398, 0xA3FB, 0xB3DA, 0xC33D, 0xD31C, 0xE37F, 0xF35E,
+    0x02B1, 0x1290, 0x22F3, 0x32D2, 0x4235, 0x5214, 0x6277, 0x7256,
+    0xB5EA, 0xA5CB, 0x95A8, 0x8589, 0xF56E, 0xE54F, 0xD52C, 0xC50D,
+    0x34E2, 0x24C3, 0x14A0, 0x0481, 0x7466, 0x6447, 0x5424, 0x4405,
+    0xA7DB, 0xB7FA, 0x8799, 0x97B8, 0xE75F, 0xF77E, 0xC71D, 0xD73C,
+    0x26D3, 0x36F2, 0x0691, 0x16B0, 0x6657, 0x7676, 0x4615, 0x5634,
+    0xD94C, 0xC96D, 0xF90E, 0xE92F, 0x99C8, 0x89E9, 0xB98A, 0xA9AB,
+    0x5844, 0x4865, 0x7806, 0x6827, 0x18C0, 0x08E1, 0x3882, 0x28A3,
+    0xCB7D, 0xDB5C, 0xEB3F, 0xFB1E, 0x8BF9, 0x9BD8, 0xABBB, 0xBB9A,
+    0x4A75, 0x5A54, 0x6A37, 0x7A16, 0x0AF1, 0x1AD0, 0x2AB3, 0x3A92,
+    0xFD2E, 0xED0F, 0xDD6C, 0xCD4D, 0xBDAA, 0xAD8B, 0x9DE8, 0x8DC9,
+    0x7C26, 0x6C07, 0x5C64, 0x4C45, 0x3CA2, 0x2C83, 0x1CE0, 0x0CC1,
+    0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8,
+    0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
+};
+
+/* ======================================================================== */
+/*  CRC16_UPDATE -- Updates a 16-bit CRC using the lookup table above.      */
+/*                  Note:  The 16-bit CRC is set up as a left-shifting      */
+/*                  CRC with no inversions.                                 */
+/* ======================================================================== */
+uint16_t crc16_update(uint16_t crc, uint8_t data)
+{
+    return (crc << 8) ^ crc16_tbl[(crc >> 8) ^ data];
+}
 
 Rip::Rip(UINT32 systemID)
 : Peripheral("", ""),
@@ -136,6 +186,20 @@ Rip* Rip::LoadBin(const CHAR* filename)
         offset += nextRom->getByteWidth() * nextRom->getReadSize();
     }
 
+    // --------------------------------------------------------------
+    // If the user asked for a specific combination of hardware...
+    // --------------------------------------------------------------
+    if (load_options)
+    {
+        bUseECS = 0;
+        bUseJLP = 0;
+        bUseIVoice = 0;
+        
+        if ((load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)  bUseJLP = 1;
+        if ((load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)  bUseECS = 1;
+        if ((load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
+    }
+    
     // Add the JLP RAM module if required...
     if (bUseJLP)
     {
@@ -146,9 +210,12 @@ Rip* Rip::LoadBin(const CHAR* filename)
     {
         rip->JLP16Bit = NULL;
     }
+
+    // Add the Intellivoice if required...
+    if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", (bUseIVoice == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
     
-    if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
-    if (bUseECS & !bUseIVoice) rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
+    // Add the ECS module if required...
+    if (bUseECS)    rip->AddPeripheralUsage("ECS", (bUseECS == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
 
     rip->SetFileName(filename);
     rip->crc = CRC32::getCrc(filename);
@@ -222,18 +289,15 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
             else
             {
                 bUseIVoice = db_entry->bIntellivoice;
-                rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
             }
         }
         if (db_entry->bECS)
         {
             bUseECS = db_entry->bECS;
-            rip->AddPeripheralUsage("ECS", (bUseECS != 3) ? PERIPH_REQUIRED:PERIPH_OPTIONAL);
         }        
         if (db_entry->bJLP)
         {
-            rip->JLP16Bit = new JLP();
-            rip->AddRAM(rip->JLP16Bit);
+            bUseJLP = db_entry->bJLP;
         }
     }
     else    // Didn't find it... let's see if we can read a .cfg file
@@ -301,17 +365,15 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                         {
                             if (strstr(ptr, "jlp"))
                             {
-                                rip->JLP16Bit = new JLP();
-                                rip->AddRAM(rip->JLP16Bit);
+                                bUseJLP = 1;
                             }
                             if (strstr(ptr, "voice"))
                             {
-                                rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
+                                bUseIVoice = 1;
                             }
                             if (strstr(ptr, "ecs"))
                             {
-                                bUseECS=1;
-                                rip->AddPeripheralUsage("ECS", PERIPH_OPTIONAL);
+                                bUseECS = 1;
                             }
                         }
                         
@@ -332,7 +394,9 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
 
 Rip* Rip::LoadRom(const CHAR* filename)
 {
-    char tmp_buf[64];
+    static char tmp_buf[64];
+    u16 crc16;
+
     FILE* infile = fopen(filename, "rb");
     if (infile == NULL) 
     {
@@ -363,55 +427,82 @@ Rip* Rip::LoadRom(const CHAR* filename)
     //read the number of ROM segments
     int romSegmentCount = fgetc(infile);
     read = fgetc(infile);
-    if ((read ^ 0xFF) != romSegmentCount) {
+    if ((read ^ 0xFF) != romSegmentCount) 
+    {
+        FatalError("ROM SEGMENT COUNT INVALID");
         fclose(infile);
         return NULL;
     }
 
     Rip* rip = new Rip(ID_SYSTEM_INTELLIVISION);
+
+    debug[0]=debug[1]=debug[2]=debug[3]=debug[4]=debug[5]=0;
     
+    // ----------------------------------------------------------------
+    // Read through the .ROM and parse out all of the rom segments...
+    // ----------------------------------------------------------------
     int i;
-    for (i = 0; i < romSegmentCount; i++) {
-        UINT16 start = (UINT16)(fgetc(infile) << 8);
-        UINT16 end = (UINT16)((fgetc(infile) << 8) | 0xFF);
+    for (i = 0; i < romSegmentCount; i++) 
+    {
+        read = fgetc(infile);
+        u16 calcCrc16 = crc16_update(0xFFFF, read);
+        UINT16 start = (UINT16)(read << 8);
+        read = fgetc(infile);
+        calcCrc16 = crc16_update(calcCrc16, read);
+        UINT16 end = (UINT16)((read << 8) | 0xFF);
         UINT16 size = (UINT16)((end-start)+1);
 
-        //finally, transfer the ROM image
+        //finally, transfer the ROM image to our binary buffer
         UINT16* romImage = (UINT16*)bin_image_buf16;
         int j;
-        for (j = 0; j < size; j++) {
-            int nextbyte = fgetc(infile) << 8;
-            nextbyte |= fgetc(infile);
+        for (j = 0; j < size; j++)
+        {
+            int hi = fgetc(infile);
+            int lo = fgetc(infile);
+            calcCrc16 = crc16_update(calcCrc16, hi);
+            calcCrc16 = crc16_update(calcCrc16, lo);
+            int nextbyte = (hi << 8) | lo;
             romImage[j] = (UINT16)nextbyte;
         }
-        rip->AddROM(new ROM("Cartridge ROM", romImage, 2, size, start, 0xFFFF));
-
+        
         //read the CRC
-        fgetc(infile); fgetc(infile);
-        //TODO: validate the CRC16 instead of just skipping it
-        //int crc16 = (fgetc(infile) << 8) | fgetc(infile);
-        //...
+        crc16 = (fgetc(infile) << 8) | fgetc(infile);
+        
+        // Validate the CRC to make sure this ROM segment has integrity...
+        if (calcCrc16 == crc16)
+        {
+            // And finally, add this rom segment to our RIP...
+            rip->AddROM(new ROM("Cartridge ROM", romImage, 2, size, start, 0xFFFF));
+        }
+        else 
+        {
+            FatalError("ROM SEGMENT INTEGRITY FAIL");
+            fclose(infile);
+            return NULL;
+        }
     }
 
-    //no support currently for the access tables, so skip them
-    for (i = 0; i < 16; i++)
+    // Now skip over the enable tables.  These have a well-defined and fixed size and we don't use them.s
+    for (i = 0; i < 50; i++)
+    {
         fgetc(infile);
-
-    //no support currently for the fine address restriction
-    //tables, so skip them, too
-    for (i = 0; i < 32; i++)
-        fgetc(infile);
-
+    }
+    
     // Read through the rest of the .ROM and look for tags...
     while ((read = fgetc(infile)) != -1) 
     {
-        int length = (read & 0x3F);
+        u16 calcCrc16 = crc16_update(0xFFFF, read);
+        u16 length = (read & 0x3F);
         read = (read & 0xC) >> 6;
         for (i = 0; i < read; i++)
-            length = (length | (fgetc(infile) << ((8*i)+6)));
+        {
+            u8 read2 = fgetc(infile);
+            calcCrc16 = crc16_update(calcCrc16, read2);
+            length = (length | (read2 << ((8*i)+6)));
+        }
 
-        int type = fgetc(infile);
-        int crc16;
+        u8 type = fgetc(infile);
+        calcCrc16 = crc16_update(calcCrc16, type);
         switch (type) 
         {
             case ROM_TAG_TITLE:
@@ -433,25 +524,50 @@ Rip* Rip::LoadRom(const CHAR* filename)
                 crc16 = (fgetc(infile) << 8) | fgetc(infile);
             }
             break;
+                
+            //    7   6   5   4   3   2   1   0
+            //  +---+---+---+---+---+---+---+---+
+            //  |  ECS  | rsvd  | VOICE | KEYBD |    byte 0
+            //  +---+---+---+---+---+---+---+---+
+            //  00 -- Don't Care.  The cartridge works with or without the peripheral.  The peripheral is ignored.
+            //  01 -- Supports.  The cartridge works with the peripheral and may provide extra functionality when used it.
+            //  10 -- Requires.  The cartridge will not work without this particular peripheral.
+            //  11 -- Incompatible.  The peripheral must not be used with this cartridge, because the two are not compatible.                
             case ROM_TAG_COMPATIBILITY:
             {
                 read = fgetc(infile);
-                BOOL requiresECS = ((read & 0xC0) != 0x80);
-                if (requiresECS)
-                    rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+                calcCrc16 = crc16_update(calcCrc16, read);
                 
-                BOOL intellivoiceSupport = ((read & 0x0C) != 0x0C);
-                if (intellivoiceSupport)
-                    rip->AddPeripheralUsage("Intellivoice", PERIPH_OPTIONAL);
-                for (i = 0; i < length-1; i++) 
+                // Check for ECS Supported or Required...
+                if ((read & 0xC0) == 0x80) bUseECS = 1; // Required
+                if ((read & 0xC0) == 0x40) bUseECS = 3; // Supports
+                
+                // Check for Intellivoice Supported or Required...
+                if ((read & 0x0C) == 0x08) bUseIVoice = 1; // Required
+                if ((read & 0x0C) == 0x04) bUseIVoice = 3; // Supports
+                
+                for (i = 0; i < length-1; i++) // -1 because we already processed the first byte above...
                 {
-                    fgetc(infile);
-                    fgetc(infile);
+                    read = fgetc(infile);
+                    calcCrc16 = crc16_update(calcCrc16, read);
+                    // ------------------------------------------------------------------------
+                    // Optional Byte 4 is of interest to us as that  one has JLP stuff in it 
+                    // +-----+-----+------+-----+-----+-----+-----+-----+
+                    // | JLP Accel | LTOM |    reserved     | JLPF[9:8] |    byte 3
+                    // +-----+-----+------+-----+-----+-----+-----+-----+
+                    // 00  JLP accel disabled; flash disabled (i.e. no JLP features)
+                    // 01  JLP accel enabled, default to "on";  flash disabled
+                    // 10  JLP accel enabled, default to "off"; flash enabled
+                    // 11  JLP accel enabled, default to "on";  flash enabled                        
+                    // ------------------------------------------------------------------------
+                    if (i == 2) // 4th byte (first byte further above... 0,1,2 = fourth byte)
+                    {   
+                        if ((read & 0xC0) != 0x00) bUseJLP = 1; else bUseJLP = 0;
+                    }                    
                 }
-                fgetc(infile);
-                fgetc(infile);
             }
             break;
+                
             case ROM_TAG_RELEASE_DATE:
             default:
             {
@@ -471,16 +587,30 @@ Rip* Rip::LoadRom(const CHAR* filename)
     rip->crc = CRC32::getCrc(filename);
     rip->mySize = size;
 
-    // See if we have any special overrides...
+    // See if we have any special overrides for .ROM files
     const struct SpecialRomDatabase_t *db_entry = FindRomDatabaseEntry(rip->crc); // Try to find the CRC in our internal database...    
     if (db_entry != NULL)
     {
-        if (db_entry->bJLP) bUseJLP=true;       
-        if (db_entry->bIntellivoice) bUseIVoice=true;
-        if (db_entry->bECS) bUseECS=true;
+        if (db_entry->bJLP)             bUseJLP     = db_entry->bJLP;
+        if (db_entry->bIntellivoice)    bUseIVoice  = db_entry->bIntellivoice;
+        if (db_entry->bECS)             bUseECS     = db_entry->bECS;
+    }
+    
+    // --------------------------------------------------------------
+    // If the user asked for a specific combination of hardware...
+    // --------------------------------------------------------------
+    if (load_options)
+    {
+        bUseECS = 0;
+        bUseJLP = 0;
+        bUseIVoice = 0;
+        
+        if ((load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)        bUseJLP = 1;
+        if ((load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)        bUseECS = 1;
+        if ((load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
     }
 
-    // Add the JLP RAM module if required...
+    // Load the JLP RAM module if required...
     if (bUseJLP)
     {
         rip->JLP16Bit = new JLP();
@@ -491,10 +621,11 @@ Rip* Rip::LoadRom(const CHAR* filename)
         rip->JLP16Bit = NULL;
     }
 
-    // Force Intellivoice if asked for...
-    if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", PERIPH_REQUIRED);
-    // Use ECS if asked for...
-    if (bUseECS) rip->AddPeripheralUsage("ECS", PERIPH_REQUIRED);
+    // Load the Intellivoice if asked for...
+    if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", (bUseIVoice == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
+    
+    // Load the ECS if asked for...
+    if (bUseECS)    rip->AddPeripheralUsage("ECS", (bUseECS == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
 
     return rip;
 }

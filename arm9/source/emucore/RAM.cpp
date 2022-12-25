@@ -10,16 +10,20 @@
 // =====================================================================================
 #include <nds.h>
 #include "../ds_tools.h"
+#include "Intellivision.h"
 #include "RAM.h"
 #include "GRAM.h"
 #include "JLP.h"
 
-UINT16 fast_ram[2048] __attribute__((section(".dtcm")));
-UINT16 fast_ram_idx = 0;
-UINT16 jlp_ram[8192] = {0};
-UINT16 extra_ram[0x800] = {0};
-UINT16 slow_ram[16*1024] = {0};
-UINT16 slow_ram_idx = 0;
+// 16-bit bus so even 8-bit RAM chunks are declared as 16-bit arrays
+UINT16 inty_16bit_ram[RAM16BIT_SIZE]     __attribute__((section(".dtcm"))) = {0};
+UINT16 inty_8bit_ram[RAM8BIT_SIZE]       __attribute__((section(".dtcm"))) = {0};
+UINT16 fast_ram16[0x400]                 __attribute__((section(".dtcm"))) = {0};
+UINT16 fast_ram16_idx = 0;
+UINT16 jlp_ram[JLP_RAM_SIZE] = {0};
+UINT16 ecs_ram8[ECS_RAM_SIZE] = {0};
+UINT16 slow_ram16[0x4000] = {0};    // A hearty 16K Words of slower RAM for the one-off carts that need it... mostly demos and such...
+UINT16 slow_ram16_idx = 0;
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth)
 : enabled(TRUE)
@@ -30,29 +34,37 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     this->writeAddressMask = writeAddressMask;
     this->bitWidth = bitWidth;
     this->trimmer = (UINT16)((1 << bitWidth) - 1);
-    if (size == RAM_JLP_SIZE)
+    if ((location == JLP_RAM_ADDRESS) && (size == JLP_RAM_SIZE))
     {
         image = (UINT16*)jlp_ram;       // Special 8K words of 16-bit RAM
     }
-    else if (location == GRAM_ADDRESS)
+    else if ((location == GRAM_ADDRESS) && (size == GRAM_SIZE))
     {
         image = (UINT16*)gram_image;    // Special fixed fast 8-bit RAM
     }
-    else if ((size >= 0x400) && (size <= 0x800))
+    else if ((bitWidth == 8) && ((size == 0x400) || (size == ECS_RAM_SIZE)))
     {
-        image = (UINT16*)extra_ram;     // Use extra for the few carts that have large extra RAM (USFC Chess, Land Battle and ECS games)
+        image = (UINT16*)ecs_ram8;      // Use this for 8-bit RAM on the ECS, USFC Chess and Land Battle (or others if they have 1K or 2K of 8-bit RAM on board the cart)
     }
-    else if (size > 0x800)              // And for REALLY large extra RAM....
+    else if ((location == RAM16BIT_LOCATION) && (size == RAM16BIT_SIZE))
     {
-        image = (UINT16*)&slow_ram[slow_ram_idx];   // Slow RAM for one-off carts that declare a lot of extra RAM (mostly demos)
-        slow_ram_idx += size;
-        if (slow_ram_idx > (16*1024)) FatalError("OUT OF MEMORY");
+        image = (UINT16*)inty_16bit_ram; // Internal 16-bit Intellivision RAM
+    }
+    else if ((location == RAM8BIT_LOCATION) && (size == RAM8BIT_SIZE))
+    {
+        image = (UINT16*)inty_8bit_ram;  // Internal 8-bit Intellivision RAM
+    }
+    else if (size >= 0x100)              // And for any game needing 256 bytes/words or more of extra RAM we use the slow ram buffer
+    {
+        image = (UINT16*)&slow_ram16[slow_ram16_idx];   // Slow RAM for one-off carts that declare a lot of extra RAM (mostly demos)
+        slow_ram16_idx += size;
+        if (slow_ram16_idx > sizeof(slow_ram16)) FatalError("OUT OF SLOW MEMORY");
     }
     else
     {
-        image = &fast_ram[fast_ram_idx]; // Otherwise "allocate" it from the internal fast buffer... should never run out since this will just be internal Intellivision RAM
-        fast_ram_idx += size;
-        if (fast_ram_idx > 2048) FatalError("OUT OF MEMORY");
+        image = &fast_ram16[fast_ram16_idx]; // Otherwise it's a small pool being requested... "allocate" it from the internal fast buffer... should never run out since this will just be internal Intellivision RAM
+        fast_ram16_idx += size;
+        if (fast_ram16_idx > sizeof(fast_ram16)) FatalError("OUT OF FAST MEMORY");
     }
 }
 

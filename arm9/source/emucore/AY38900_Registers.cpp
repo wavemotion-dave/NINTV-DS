@@ -17,7 +17,7 @@
 // The Video has 64 dedicated registers that can be used - we declare them in 
 // the .DTCM fast memory for better performance...
 // ----------------------------------------------------------------------------------
-UINT16   memory[0x40] __attribute__((section(".dtcm")));
+UINT16   stic_memory[0x40] __attribute__((section(".dtcm")));
 
 AY38900_Registers::AY38900_Registers()
 : RAM(0x40, 0x0000, 0xFFFF, 0x3FFF)
@@ -30,7 +30,7 @@ void AY38900_Registers::init(AY38900* ay38900)
 
 void AY38900_Registers::reset()
 {
-    memset(memory, 0, sizeof(memory));
+    memset(stic_memory, 0, sizeof(stic_memory));
 }
 
 // -----------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
             value = 0;
             break;
     }
-    memory[location] = value;
+    stic_memory[location] = value;
 }
 
 ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
@@ -173,7 +173,7 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
         case 0x05:
         case 0x06:
         case 0x07:
-            return 0x3800 | memory[location];
+            return 0x3800 | stic_memory[location];
         case 0x08:
         case 0x09:
         case 0x0A:
@@ -182,7 +182,7 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
         case 0x0D:
         case 0x0E:
         case 0x0F:
-            return 0x3000 | memory[location];
+            return 0x3000 | stic_memory[location];
         case 0x18:
         case 0x19:
         case 0x1A:
@@ -192,7 +192,7 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
         case 0x1E:
         case 0x1F:
             //collision register bits $3C00 are always on
-            return 0x3C00 | memory[location];
+            return 0x3C00 | stic_memory[location];
         case 0x20:
             return 0;
         case 0x21:
@@ -200,20 +200,20 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
                 ay38900->colorStackMode = TRUE;
                 ay38900->colorModeChanged = TRUE;
             }
-            return memory[location];
+            return stic_memory[location];
         case 0x28:
         case 0x29:
         case 0x2A:
         case 0x2B:
         case 0x2C:
-            return 0x3FF0 | memory[location];
+            return 0x3FF0 | stic_memory[location];
         case 0x30:
         case 0x31:
-            return 0x3FF8 | memory[location];
+            return 0x3FF8 | stic_memory[location];
         case 0x32:
-            return 0x3FFC | memory[location];
+            return 0x3FFC | stic_memory[location];
         default:
-            return memory[location];
+            return stic_memory[location];
     }
 }
 

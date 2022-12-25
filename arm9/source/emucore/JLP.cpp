@@ -22,15 +22,15 @@ extern Rip      *currentRip;
 
 
 JLP::JLP()
-: RAM(RAM_JLP_SIZE, 0x8000, 0xFFFF, 0xFFFF)
+: RAM(JLP_RAM_SIZE, JLP_RAM_ADDRESS, 0xFFFF, 0xFFFF)
 {}
 
 void JLP::reset()
 {
     enabled = TRUE;
-    for (UINT16 i = 0; i < RAM_JLP_SIZE; i++)
+    for (UINT16 i = 0; i < JLP_RAM_SIZE; i++)
         jlp_ram[i] = 0xFFFF;
-    jlp_ram[RAM_JLP_SIZE-1] = 0;
+    jlp_ram[JLP_RAM_SIZE-1] = 0;
     
     jlp_ram[0x23] = 0;                              /* First valid flash row number */
     jlp_ram[0x24] = NUM_JLP_ROWS;                   /* Last  valid flash row number */
@@ -293,11 +293,11 @@ void JLP::poke(UINT16 location, UINT16 value)
 
 void JLP::getState(JLPState *state)
 {
-    for (int i=0; i<RAM_JLP_SIZE; i++)   state->jlp_ram[i] = jlp_ram[i];
+    for (int i=0; i<JLP_RAM_SIZE; i++)   state->jlp_ram[i] = jlp_ram[i];
 }
 
 void JLP::setState(JLPState *state)
 {
-    for (int i=0; i<RAM_JLP_SIZE; i++)   jlp_ram[i] = state->jlp_ram[i];
+    for (int i=0; i<JLP_RAM_SIZE; i++)   jlp_ram[i] = state->jlp_ram[i];
     flash_read = 1;     // Force flash to read...
 }

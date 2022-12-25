@@ -25,6 +25,7 @@
 #include "Emulator.h"
 #include "Rip.h"
 #include "ROMBanker.h"
+#include "RAM.h"
 #include "CRC32.h"
 #include "loadgame.h"
 #include "debugger.h"
@@ -38,8 +39,9 @@ u16 countintv=0, ucFicAct=0;
 char szName[256];
 char szName2[256];
 
+UINT8 load_options = 0x00;
+
 extern Rip *currentRip;
-extern UINT16 slow_ram_idx;
 
 u8 bFavsOnlyMode = false;
 
@@ -59,9 +61,17 @@ BOOL LoadCart(const CHAR* filename)
     bIsFatalError = false;
     bGameLoaded = FALSE;
     
+    // ----------------------------------------------------------------------
+    // Set the RAM Bankers for page-flipping all back to zero on a new load
+    // ----------------------------------------------------------------------
     memset(gLastBankers, 0x00, sizeof(gLastBankers));
 
-    slow_ram_idx = 0;
+    // -------------------------------------------------------------------------
+    // When we load a new game, we can safely put back these indexes for
+    // re-allocation of memory so we don't "leak" from our fixed memory pools
+    // -------------------------------------------------------------------------
+    slow_ram16_idx = 0;     // Nothing uses this internally so we can reset to 0
+    fast_ram16_idx = 0x200; // 512 bytes is more than enough for internal Inty RAM so this is safely above the threshold
 
     const CHAR* extStart = filename + strlen(filename) - 4;
     
@@ -483,7 +493,7 @@ ITCM_CODE void intvFindFiles(void)
 // --------------------------------------------------------------------------
 ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 {
-  unsigned int ucBcl,ucGame;
+  unsigned short ucBcl,ucGame;
 
   // Display all games if possible
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
@@ -521,20 +531,20 @@ ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 }
 
 
-#define LOAD_OPTION_MENU_ITEMS 9
+#define LOAD_OPTION_MENU_ITEMS 10
 const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] = 
 {
-    "LOAD GAME AS-IS",  
-    "LOAD GAME WITH JLP",  
-    "LOAD GAME WITH IVOICE",  
-    "LOAD GAME WITH ECS",  
+    "LOAD GAME NORMALLY",  
+    "LOAD GAME WITH STOCK INTY",  
+    "LOAD GAME WITH ONLY JLP",  
+    "LOAD GAME WITH ONLY IVOICE",  
+    "LOAD GAME WITH ONLY ECS",  
     "LOAD GAME WITH JLP+IVOICE",  
     "LOAD GAME WITH JLP+ECS",  
     "LOAD GAME WITH ECS+IVOICE",
     "LOAD GAME WITH JLP+ECS+IV",
     "EXIT THIS MENU",  
 };
-
 
 UINT8 LoadWithOptions(void)
 {
@@ -798,17 +808,19 @@ unsigned int dsWaitForRom(char *chosen_filename)
           bUseJLP=false;
           bUseIVoice=false;
           bUseECS=false;
+          load_options = 0x00;  // If the user selects a specific load configuration, the high bit of this will be set plus some combo of the LOAD_WITH_xxxx bits
           if (keysCurrent() & KEY_X)
           {
               opt = LoadWithOptions();
-              if (opt == 0) {asm("nop");}
-              if (opt == 1) {bUseJLP = true;}
-              if (opt == 2) {bUseIVoice = true;}
-              if (opt == 3) {bUseECS = true;}
-              if (opt == 4) {bUseJLP = true; bUseIVoice = true;}
-              if (opt == 5) {bUseJLP = true; bUseECS = true;}
-              if (opt == 6) {bUseECS = true; bUseIVoice = true;}
-              if (opt == 7) {bUseJLP = true; bUseECS = true; bUseIVoice = true;}
+              if (opt == 0) {asm("nop");}       // Load Normally
+              if (opt == 1) {load_options = LOAD_WITH_STOCK_INTY;}
+              if (opt == 2) {load_options = LOAD_WITH_JLP;}
+              if (opt == 3) {load_options = LOAD_WITH_IVOICE;}
+              if (opt == 4) {load_options = LOAD_WITH_ECS;}
+              if (opt == 5) {load_options = LOAD_WITH_JLP | LOAD_WITH_IVOICE;}
+              if (opt == 6) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS;}
+              if (opt == 7) {load_options = LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
+              if (opt == 8) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               while (keysCurrent() & KEY_A);
               WAITVBL;
           }
