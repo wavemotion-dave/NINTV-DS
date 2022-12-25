@@ -1,5 +1,6 @@
 
 #include "ECSKeyboard.h"
+#include "HandController.h"
 
 UINT8 ecs_key_pressed = 0;
 
@@ -35,7 +36,6 @@ void ECSKeyboard::resetInputConsumer()
 void ECSKeyboard::evaluateInputs()
 {
     extern UINT8 bUseECS;
-    extern UINT8 ds_key_input[2][16];   // Set to '1' if pressed... 0 if released
     
     if (ecs_key_pressed == 255)  // No mini-keyboard so just use dual-purpose the main keypad
     {

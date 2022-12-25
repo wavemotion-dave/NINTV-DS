@@ -15,6 +15,9 @@
 #include "AY38914_InputOutput.h"
 #include "InputConsumer.h"
 
+extern UINT8 ds_key_input[2][16];   // Set to '1' if pressed... 0 if released
+extern UINT8 ds_disc_input[2][16];  // Set to '1' if pressed... 0 if released.
+
 class HandController : public AY38914_InputOutput, public InputConsumer
 {
     public:

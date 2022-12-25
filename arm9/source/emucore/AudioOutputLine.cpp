@@ -42,7 +42,7 @@ ITCM_CODE void playSample0(INT16 sample) // Normal PSG
     currentSample[0] = sample;
 }
 
-ITCM_CODE void playSample1(INT16 sample) // Intellivoice SP0256
+ITCM_CODE void playSample1(INT16 sample) // ECS PSG or Intellivoice SP0256
 {
     sampleBuffer[1] += currentSample[1] * commonClocksPerSample[1];
     commonClockCounter[1] += commonClocksPerSample[1];
@@ -51,7 +51,7 @@ ITCM_CODE void playSample1(INT16 sample) // Intellivoice SP0256
 }
 
 
-ITCM_CODE void playSample2(INT16 sample) // ECS PSG
+ITCM_CODE void playSample2(INT16 sample) // ECS PSG or Intellivoice SP0256
 {
     sampleBuffer[2] += currentSample[2] * commonClocksPerSample[2];
     commonClockCounter[2] += commonClocksPerSample[2];

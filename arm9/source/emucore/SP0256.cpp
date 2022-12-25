@@ -120,6 +120,7 @@ void SP0256::resetProcessor()
     }
 }
 
+extern UINT8 bUseECS;
 UINT8 cleared = false;
 ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
@@ -129,7 +130,9 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
         {
             cleared = true;
             for (int i = 0; i < minimum; i++)
-                playSample1(0);
+            {
+                if (bUseECS) playSample2(0); else playSample1(0);
+            }
         }
         else // Effective delay 1 tick...
         {
@@ -201,7 +204,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
         if (sample > 2047) sample = 2047;
         else if (sample < -2048) sample = -2048;
 
-        playSample1((INT16)(sample << 4));
+        if (bUseECS) playSample2((INT16)(sample << 4)); else playSample1((INT16)(sample << 4));
 
         totalTicks++;
 

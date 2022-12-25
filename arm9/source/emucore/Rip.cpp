@@ -476,7 +476,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
     if (db_entry != NULL)
     {
         if (db_entry->bJLP) bUseJLP=true;       
-        if (db_entry->bIntellivoice) bUseIVoice=true;       
+        if (db_entry->bIntellivoice) bUseIVoice=true;
         if (db_entry->bECS) bUseECS=true;
     }
 

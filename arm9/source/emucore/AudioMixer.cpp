@@ -120,66 +120,38 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     INT32 totalSample = 0;
     extern UINT8 sp_idle;
     if (clockDivisor == SOUND_DIV_DISABLE) return minimum;
+    
+    UINT16 soundChannelsToProcess = audioProducerCount;
+    if (bUseIVoice && sp_idle) soundChannelsToProcess--;    // If ECS is idle we can skip processing it...
 
-    if (sp_idle && (!bUseECS)) // If the Intellivoice is idle, we only have one sound producer. 
+    for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
     {
-        for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
+        //mix and flush the sample buffers
+        for (UINT32 i = 0; i < soundChannelsToProcess; i++) 
         {
-            //mix and flush the sample buffers
-
-            INT32 missingClocks = (commonClocksPerTick - commonClockCounter[0]);
-            INT32 sampleToUse = (missingClocks < 0 ? previousSample[0] : currentSample[0]);
+            INT32 missingClocks = (commonClocksPerTick - commonClockCounter[i]);
+            INT32 sampleToUse = (missingClocks < 0 ? previousSample[i] : currentSample[i]);
 
             //account for when audio producers idle by adding enough samples to each producer's buffer
             //to fill the time since last sample calculation
-            INT32 missingSampleCount = (missingClocks / commonClocksPerSample[0]);
+            INT32 missingSampleCount = (missingClocks / commonClocksPerSample[i]);
             if (missingSampleCount != 0) 
             {
-                sampleBuffer[0] += (INT64)missingSampleCount * sampleToUse * commonClocksPerSample[0];
-                commonClockCounter[0] += missingSampleCount * commonClocksPerSample[0];
-                missingClocks -= missingSampleCount * commonClocksPerSample[0];
+                sampleBuffer[i] += (INT64)missingSampleCount * sampleToUse * commonClocksPerSample[i];
+                commonClockCounter[i] += missingSampleCount * commonClocksPerSample[i];
+                missingClocks -= missingSampleCount * commonClocksPerSample[i];
             }
             INT64 partialSample = (INT64)sampleToUse * (INT64)missingClocks;
 
             //calculate the sample for this line
-            totalSample += (INT16)((sampleBuffer[0] + partialSample) / commonClocksPerTick);
+            totalSample += (INT16)((sampleBuffer[i] + partialSample) / commonClocksPerTick);
 
             //clear the sample buffer for this line
-            sampleBuffer[0] = -partialSample;
-            commonClockCounter[0] = -missingClocks;
+            sampleBuffer[i] = -partialSample;
+            commonClockCounter[i] = -missingClocks;
         }
-    }
-    else // Up to 3 possible sound producers!!!
-    {
-        for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
-        {
-            //mix and flush the sample buffers
-            for (UINT32 i = 0; i < audioProducerCount; i++) 
-            {
-                INT32 missingClocks = (commonClocksPerTick - commonClockCounter[i]);
-                INT32 sampleToUse = (missingClocks < 0 ? previousSample[i] : currentSample[i]);
 
-                //account for when audio producers idle by adding enough samples to each producer's buffer
-                //to fill the time since last sample calculation
-                INT32 missingSampleCount = (missingClocks / commonClocksPerSample[i]);
-                if (missingSampleCount != 0) 
-                {
-                    sampleBuffer[i] += (INT64)missingSampleCount * sampleToUse * commonClocksPerSample[i];
-                    commonClockCounter[i] += missingSampleCount * commonClocksPerSample[i];
-                    missingClocks -= missingSampleCount * commonClocksPerSample[i];
-                }
-                INT64 partialSample = (INT64)sampleToUse * (INT64)missingClocks;
-
-                //calculate the sample for this line
-                totalSample += (INT16)((sampleBuffer[i] + partialSample) / commonClocksPerTick);
-
-                //clear the sample buffer for this line
-                sampleBuffer[i] = -partialSample;
-                commonClockCounter[i] = -missingClocks;
-            }
-
-            if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice or ECS extra sound channels, there are 2 or 3 audio producers... so we need to clip/cap the sound
-        }
+        if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice or ECS extra sound channels, there are 2 or 3 audio producers... so we need to clip/cap the sound
     }
     
     // ------------------------------------------------------------------------------------------------

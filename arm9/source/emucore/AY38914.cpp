@@ -181,8 +181,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         // Now place the sample onto the audio output line...
         if (this->location == 0xF0)
         {
-            if (bUseIVoice) playSample2(cachedTotalOutput);     // This is the ECS PSG on channel 2 (Intellivoice on Channel 1)
-            else playSample1(cachedTotalOutput);                // This is the ECS PSG on channel 1 (no Intellivoice)
+            playSample1(cachedTotalOutput);     // This is the ECS PSG on channel 1 
         }
         else
             playSample0(cachedTotalOutput);     // This is the normal Intellivision console PSG

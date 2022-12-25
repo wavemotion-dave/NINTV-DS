@@ -35,6 +35,7 @@
 #include "loadgame.h"
 #include "debugger.h"
 #include "AudioMixer.h"
+#include "HandController.h"
 #include "printf.h"
 
 // --------------------------------------------------------
@@ -642,8 +643,6 @@ void ds_handle_meta(int meta_key)
 ITCM_CODE void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
-    extern UINT8 ds_key_input[2][16];   // Set to '1' if pressed... 0 if released
-    extern UINT8 ds_disc_input[2][16];  // Set to '1' if pressed... 0 if released.
     unsigned short keys_pressed = keysCurrent();
     static short last_pressed = -1;
 
