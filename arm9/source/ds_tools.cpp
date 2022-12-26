@@ -315,20 +315,29 @@ void dsShowEmuInfo(void)
     UINT8 idx = 3;
     
     dsShowBannerScreen();
-    swiWaitForVBlank();    
-
-    sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "JLP Enabled:   %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
-    sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
-    sprintf(dbg, "RAM Indexes:   %d / %d ",  fast_ram16_idx, slow_ram16_idx);     dsPrintValue(0, idx++, 0, dbg);        
-    sprintf(dbg, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, dbg);    
-    sprintf(dbg, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, dbg);        
-    sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);        
+    swiWaitForVBlank();
+    
+    if (currentRip != NULL)
+    {
+        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "JLP Enabled:   %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(dbg, "RAM Indexes:   %d / %d ",  fast_ram16_idx, slow_ram16_idx);     dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(dbg, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, dbg);    
+        sprintf(dbg, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);        
+    }
+    else
+    {
+        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(dbg, "NO GAME IS LOADED!");                                           dsPrintValue(0, idx++, 0, dbg);        
+    }
 
     while (!bDone)
     {
@@ -605,12 +614,9 @@ void ds_handle_meta(int meta_key)
 
         case OVL_META_EMUINFO:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            if (currentRip != NULL) 
-            {
-                dsShowEmuInfo();
-                dsShowScreenMain(false);
-                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-            }
+            dsShowEmuInfo();
+            dsShowScreenMain(false);
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
             break;
             
@@ -1100,10 +1106,8 @@ ITCM_CODE void pollInputs(void)
                 }
             }
         }
-    }
-    
+    }    
 }
-
 
 
 // ------------------------------------------------------------------------------
@@ -1147,12 +1151,12 @@ void dsShowScreenMain(bool bFull)
 void dsInitScreenMain(void)
 {
     vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - Used for Memory Bus Read Counter
-    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Custom Tile Overlay Buffer
-    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart "Fast Buffer" 64k x 16 = 128k (so also spills into F,G,H below)
-    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
-    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
-    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
-    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Used for Custom Tile Map Buffer
+    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart "Fast Buffer" 64k x 16 = 128k
+    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Custom Tile Overlay Buffer (60K for tile[] buffer, 4K for map[] buffer)
+    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - ECS RAM Buffer (2K Words - some unused memory here could be stolen)
+    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 - JLP RAM Buffer (8K Words or 16K Bytes)
+    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Slow RAM buffer (16K Words or 32K Bytes)
+    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Unused
     
     WAITVBL;
 }
@@ -1305,9 +1309,12 @@ ITCM_CODE void Run(char *initial_file)
         // If we have been told to start up the sound FIFO... do so here...
         if (bStartSoundFifo)
         {
-            dsInstallSoundEmuFIFO();
-            bStartSoundFifo = false;
-            reset_emu_frames();
+            if (currentRip != NULL)
+            {
+                dsInstallSoundEmuFIFO();
+                bStartSoundFifo = false;
+                reset_emu_frames();
+            }
         }
     
         // Time 1 frame...
@@ -1360,8 +1367,8 @@ ITCM_CODE void Run(char *initial_file)
             // If we've been asked to put out the debug info at the top of the screen... mostly for developer use
             if (myGlobalConfig.show_fps == 2)
             {
-                //sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
-                sprintf(tmp,"%04X %04X %04X %04X %04X %04X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
+                sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
+                //sprintf(tmp,"%04X %04X %04X %04X %04X %04X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
                 dsPrintValue(6,0,0,tmp);
             }
         }

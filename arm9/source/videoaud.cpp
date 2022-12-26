@@ -27,10 +27,10 @@ UINT32 audio_arm7_xfer_buffer __attribute__ ((aligned (4))) = 0;
 UINT32* aptr                  __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
 UINT16 myCurrentSampleIdx16   __attribute__((section(".dtcm"))) = 0;
 UINT8  myCurrentSampleIdx8    __attribute__((section(".dtcm"))) = 0;    
-UINT16 sample[2]              __attribute__((section(".dtcm"))) __attribute__ ((aligned (4)));    
 
 ITCM_CODE void VsoundHandlerDSi(void)
 {
+  UINT16 sample[2];
   // If there is a fresh sample...
   if (myCurrentSampleIdx8 != currentSampleIdx8)
   {
@@ -42,6 +42,7 @@ ITCM_CODE void VsoundHandlerDSi(void)
 
 ITCM_CODE void VsoundHandler(void)
 {
+  UINT16 sample[2];
   // If there is a fresh sample...
   if (myCurrentSampleIdx16 != currentSampleIdx16)
   {
@@ -355,8 +356,8 @@ void VideoBusDS::release()
 // -----------------------------------------------------------------------------
 // Here we take the fully rendered Intellivision 'pixelBuffer' which is 160x192
 // and copy it over to the NDS video memory. We use DMA copy as it's found to 
-// be slightly more efficient. We are utilizing all four DMA channels because
-// there isn't anything else using it...
+// be slightly more efficient. We are utilizing two DMA channels because there
+// isn't anything else using it and we gain a bit of speed...
 // -----------------------------------------------------------------------------
 ITCM_CODE void VideoBusDS::render()
 {
@@ -379,7 +380,7 @@ ITCM_CODE void VideoBusDS::render()
             dmaCopyWordsAsynch (chan, source_video, ds_video, 160);
             source_video += 40;
             ds_video += 64;
-            chan = (chan + 1) & 3;  // Use all 4 DMA channels...
+            chan++; chan = 2+(chan&1);  // Use channels 2 and 3 for the copy...
         }    
     }
 }

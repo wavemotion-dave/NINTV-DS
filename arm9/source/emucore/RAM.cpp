@@ -20,10 +20,11 @@ UINT16 inty_16bit_ram[RAM16BIT_SIZE]     __attribute__((section(".dtcm"))) = {0}
 UINT16 inty_8bit_ram[RAM8BIT_SIZE]       __attribute__((section(".dtcm"))) = {0};
 UINT16 fast_ram16[0x400]                 __attribute__((section(".dtcm"))) = {0};
 UINT16 fast_ram16_idx = 0;
-UINT16 jlp_ram[JLP_RAM_SIZE] = {0};
-UINT16 ecs_ram8[ECS_RAM_SIZE] = {0};
-UINT16 slow_ram16[0x4000] = {0};    // A hearty 16K Words of slower RAM for the one-off carts that need it... mostly demos and such...
 UINT16 slow_ram16_idx = 0;
+
+UINT16 *ecs_ram8   = (UINT16*)0x06890000;   // Put the ECS and related 8-bit RAM into the semi-fast VRAM buffer
+UINT16 *jlp_ram    = (UINT16*)0x06894000;   // Put the 8K Words (16K Bytes) of JLP ram into the semi-fast VRAM buffer
+UINT16 *slow_ram16 = (UINT16*)0x06898000;   // A hearty 16K Words (32K Bytes) of slower RAM for the one-off carts that need it... mostly demos and such...
 
 RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddressMask, UINT8 bitWidth)
 : enabled(TRUE)
@@ -58,7 +59,7 @@ RAM::RAM(UINT16 size, UINT16 location, UINT16 readAddressMask, UINT16 writeAddre
     {
         image = (UINT16*)&slow_ram16[slow_ram16_idx];   // Slow RAM for one-off carts that declare a lot of extra RAM (mostly demos)
         slow_ram16_idx += size;
-        if (slow_ram16_idx > sizeof(slow_ram16)) FatalError("OUT OF SLOW MEMORY");
+        if (slow_ram16_idx > 0x4000) FatalError("OUT OF SLOW MEMORY");
     }
     else
     {

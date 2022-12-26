@@ -65,8 +65,18 @@ Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.8 : 26-Dec-2022 by wavemotion-dave
+  * Improved memory handling so we don't run out of memory on the DS-Lite/Phat and no more crashes!
+  * ECS and extra cart RAM now in faster VRAM to improve performance.
+  * Fixed sound channels so that PSG + ECS + Intelivoice can all play nice together (mostly for World Series of Baseball)
+  * Improved .ROM parsing support - now checking the CRC integrity and properly parsing the compatibility tags so more games run with the right settings (Intellivoice or JLP or ECS, etc).
+  * New Game/Emulator Information screen to let you know if you are running in DS compatibility mode (less RAM, slower CPU) or DSi compatibilty mode (more RAM and faster CPU).
+  * For the DSi or above we now support a much wider range of binary files (up to 512K) with page flipping.
+  * New menu to allow you to launch a game with specific hardware configurations. Use X to load the game instead of A (launch instructions are on-screen).
+  * Lots of small improvements and cleanup as time permitted.
+
 V3.7a : 23-Dec-2022 by wavemotion-dave
-  * First pass at ECS style page flipping (aka bankswap). DS-Lite will support World Series of Baseball without voice. DSi and above will support any binary up to 512K including WSoMLB with voice.
+  * First pass at ECS style page flipping (aka bankswap). DS-Lite will support World Series of Baseball without voice.
   * Improved error handling with better messages on-screen to help diagnose problems with missing roms, roms that are too big/complex, etc.
   * Cleanup across the board - reorganized memory to free up more resources for the future.
   

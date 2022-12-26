@@ -41,7 +41,7 @@ class MemoryBus
         // for blazingly (relatively!) fast access... we are utilizing VRAM which is a bit faster than 
         // main ram - especially when we don't hit the cache just right.
         // ------------------------------------------------------------------------------------------------
-        inline UINT16 peek_pc(void) {return *((UINT16 *)0x06880000 + r[7]);}        
+        inline UINT16 peek_pc(void) {return *((UINT16 *)0x06860000 + r[7]);}        
         
         void poke(UINT16 location, UINT16 value);
         void poke_cheat(UINT16 location, UINT16 value);

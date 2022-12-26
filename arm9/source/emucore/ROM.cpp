@@ -38,7 +38,6 @@ void ROM::Initialize(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UI
     strcpy(filename, f);
     fileoffset = o;
 	this->byteWidth = byteWidth;
-    this->multiByte = (byteWidth > 1) ? 1:0;
     this->size = size;
     this->location = location;
     this->readAddressMask = readMask;

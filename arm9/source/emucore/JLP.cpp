@@ -14,12 +14,11 @@
 #include <dirent.h>
 #include <unistd.h>
 #include "JLP.h"
-#include "../config.h"
+#include "RAM.h"
 #include "Rip.h"
+#include "../config.h"
 
-extern UINT16 jlp_ram[];
 extern Rip      *currentRip;
-
 
 JLP::JLP()
 : RAM(JLP_RAM_SIZE, JLP_RAM_ADDRESS, 0xFFFF, 0xFFFF)

@@ -120,10 +120,9 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
+char cfgFilename[128];
 Rip* Rip::LoadBin(const CHAR* filename)
 {
-    char cfgFilename[128];
-
     // Create the path to the .cfg file (which may or may not exist...)
     strcpy(cfgFilename, filename);
     cfgFilename[strlen(cfgFilename)-4] = 0;

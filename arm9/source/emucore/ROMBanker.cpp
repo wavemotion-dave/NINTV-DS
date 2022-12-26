@@ -59,7 +59,7 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             {
                 if (bEnabled)
                 {
-                    UINT16 *fast_memory = (UINT16 *)0x06880000;
+                    UINT16 *fast_memory = (UINT16 *)0x06860000;
                     for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
                     {
                         fast_memory[i] = rom->peek_fast(i&0xFFF);
@@ -73,7 +73,7 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
                 // We must now patch up the fast memory ROM with the new swap in/out
                 // This is the 'slow' way to ensure we get the bus peeks right...
                 // ------------------------------------------------------------------
-                UINT16 *fast_memory = (UINT16 *)0x06880000;
+                UINT16 *fast_memory = (UINT16 *)0x06860000;
                 for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
                 {
                     fast_memory[i] = (bEnabled ? rom->peek_fast(i&0xFFF) : currentEmu->memoryBus.peek_slow(i));

@@ -16,9 +16,9 @@
 #include "Memory.h"
 
 extern UINT16 fast_ram16[];
-extern UINT16 slow_ram16[];
-extern UINT16 ecs_ram8[];
-extern UINT16 jlp_ram[];
+extern UINT16 *slow_ram16;
+extern UINT16 *ecs_ram8;
+extern UINT16 *jlp_ram;
 extern UINT16 fast_ram16_idx;
 extern UINT16 slow_ram16_idx;
 
@@ -68,7 +68,7 @@ class RAM : public Memory
         BOOL IsEnabled() { return enabled; }
 
     protected:
-        BOOL    enabled;
+        UINT8   enabled;
         UINT16  size;
         UINT16  location;
         UINT16  readAddressMask;

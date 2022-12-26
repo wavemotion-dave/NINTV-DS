@@ -53,17 +53,17 @@ UINT32 *overlappedMemoryPool = NULL;
 
 MemoryBus::MemoryBus()
 {
-  // -------------------------------------------------------------------------------------
-  // We swap in a larger memory model for the DSi to handle really complex page flipping
-  // -------------------------------------------------------------------------------------
-  if (isDSiMode()) 
-  {
-      MAX_OVERLAPPED_MEMORIES       = 16;       // This will handle massive page-flip (banked) games
-  }
-  else
-  {
-      MAX_OVERLAPPED_MEMORIES       = 3;        // Good enough for almost all games
-  }
+    // -------------------------------------------------------------------------------------
+    // We swap in a larger memory model for the DSi to handle really complex page flipping
+    // -------------------------------------------------------------------------------------
+    if (isDSiMode()) 
+    {
+        MAX_OVERLAPPED_MEMORIES       = 16;       // This will handle massive page-flip (banked) games
+    }
+    else
+    {
+        MAX_OVERLAPPED_MEMORIES       = 3;        // Good enough for almost all games
+    }
 
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT32 i;
@@ -318,7 +318,7 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
     // For the lower 4K ... keep the "fast memory" updated
     if (location < 0x1000)
     {
-        *((UINT16 *)0x06880000 + location) = value;
+        *((UINT16 *)0x06860000 + location) = value;
     }
 }
 

@@ -37,6 +37,8 @@ void ECSKeyboard::evaluateInputs()
 {
     extern UINT8 bUseECS;
     
+    for (UINT16 i = 0; i < 8; i++)  rowInputValues[i] = 0;
+    
     if (ecs_key_pressed == 255)  // No mini-keyboard so just use dual-purpose the main keypad
     {
         if (ds_key_input[0][0])  rowInputValues[5] |= 0x10; else rowInputValues[5] &= ~0x10;    // '1'

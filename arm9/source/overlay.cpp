@@ -126,8 +126,8 @@ struct Overlay_t myDisc[DISC_MAX];
 // -------------------------------------------------------------
 // Rather than take up precious RAM, we use some video memory.
 // -------------------------------------------------------------
-unsigned int *customTiles = (unsigned int *) 0x06860000;          //128K of video memory
-unsigned short *customMap = (unsigned short *)0x068A0000;         //16K of video memory
+unsigned int *customTiles = (unsigned int *) 0x06880000;          //60K of video memory for the tiles (largest I've seen so far is ~48K)
+unsigned short *customMap = (unsigned short *)0x0688F000;         // 4K of video memory for the map (generally about 2.5K)
 unsigned short customPal[512];
 
 char filename[128];
@@ -191,9 +191,7 @@ void load_custom_overlay(bool bCustomGeneric)
       UINT16 pal_idx=0;
       char *token;
 
-      memset(customTiles, 0x00, 24*1024*sizeof(UINT32));
-      memset(customMap, 0x00, 16*1024*sizeof(UINT16));
-      memset(customPal, 0x00, 512*sizeof(UINT16));
+      memset(customTiles, 0x00, 0x10000);   // Clear the 64K of video memory to prep for custom tiles...
 
       do
       {

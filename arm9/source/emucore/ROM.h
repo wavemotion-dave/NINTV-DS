@@ -79,16 +79,14 @@ private:
     CHAR*    filename;
     UINT32   fileoffset;
 
-    UINT8*    image;
+    UINT8*   image;
     UINT8    byteWidth;
-    UINT8    multiByte;
-    BOOL     enabled;
+    UINT8    enabled;
     UINT16   size;
     UINT16   location;
     UINT16   readAddressMask;
-	BOOL	 loaded;
-	BOOL	 internal;
-
+    UINT8    loaded;
+    UINT8    internal;
 };
 
 #endif

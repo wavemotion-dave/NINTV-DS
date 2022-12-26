@@ -16,9 +16,9 @@
 
 typedef struct FICtoLoad 
 {
-    char   filename[128];
-    bool   directory;
-    bool   favorite;
+    char   filename[126];
+    UINT8  directory;
+    UINT8  favorite;
 } FICA_INTV;
 
 extern BOOL LoadCart(const CHAR* filename);

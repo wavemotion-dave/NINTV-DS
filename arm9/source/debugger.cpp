@@ -51,7 +51,7 @@ AY38900 *debug_stic = NULL;
 
 void display_debug(void);
 
-#define PEEK_FAST(x) *((UINT16 *)0x06880000 + (x))
+#define PEEK_FAST(x) *((UINT16 *)0x06860000 + (x))
 
 #define PEEK_SLOW(x) currentEmu->memoryBus.peek(x)
 

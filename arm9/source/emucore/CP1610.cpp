@@ -18,7 +18,7 @@
 // We store the "fast buffer" out in video RAM which is faster than main RAM if 
 // there is a cache "miss". Experimentally, this buys us about 10% speed up.
 // ------------------------------------------------------------------------------
-#define PEEK_FAST(x) *((UINT16 *)0x06880000 + (x))
+#define PEEK_FAST(x) *((UINT16 *)0x06860000 + (x))
 
 //the eight registers available in the CP1610
 UINT16 r[8] __attribute__((section(".dtcm")));
@@ -114,7 +114,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
         }
 
         //do the next instruction
-        op = *((UINT16 *)0x06880000 + r[7]);
+        op = *((UINT16 *)0x06860000 + r[7]);
 #ifdef DEBUG_ENABLE        
         debug_opcodes++;
         debugger();
