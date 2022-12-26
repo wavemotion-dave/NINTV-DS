@@ -436,8 +436,6 @@ Rip* Rip::LoadRom(const CHAR* filename)
 
     Rip* rip = new Rip(ID_SYSTEM_INTELLIVISION);
 
-    debug[0]=debug[1]=debug[2]=debug[3]=debug[4]=debug[5]=0;
-    
     // ----------------------------------------------------------------
     // Read through the .ROM and parse out all of the rom segments...
     // ----------------------------------------------------------------

@@ -49,6 +49,8 @@ public:
 // regions (to handle page flipping) which barely fit into the DSi and wouldn't
 // run on the DS-LITE/PHAT so we've stripped that way down to the bare essentials.
 // -------------------------------------------------------------------------------
+UINT32 *overlappedMemoryPool = NULL;
+
 MemoryBus::MemoryBus()
 {
   // -------------------------------------------------------------------------------------
@@ -56,11 +58,11 @@ MemoryBus::MemoryBus()
   // -------------------------------------------------------------------------------------
   if (isDSiMode()) 
   {
-      MAX_OVERLAPPED_MEMORIES       = 16;
+      MAX_OVERLAPPED_MEMORIES       = 16;       // This will handle massive page-flip (banked) games
   }
   else
   {
-      MAX_OVERLAPPED_MEMORIES       = 3;
+      MAX_OVERLAPPED_MEMORIES       = 3;        // Good enough for almost all games
   }
 
     UINT32 size = 1 << (sizeof(UINT16) << 3);
@@ -68,11 +70,16 @@ MemoryBus::MemoryBus()
     writeableMemoryCounts = new UINT8[size];
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
+    
+    // We do this rather than allocate peicemeal so we avoid malloc overhead and extra bytes padded (saves almost 500K on DS)
+    overlappedMemoryPool = new UINT32[size*MAX_OVERLAPPED_MEMORIES*2];
+    
     for (i = 0; i < size; i++)
     {
-        writeableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
+        writeableMemorySpace[i] = (Memory **)overlappedMemoryPool;//new Memory*[MAX_OVERLAPPED_MEMORIES];
         for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
         {
+            overlappedMemoryPool++;
             writeableMemorySpace[i][j] = &MyUnusedMemory;
         }
     }
@@ -81,9 +88,10 @@ MemoryBus::MemoryBus()
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
-        readableMemorySpace[i] = new Memory*[MAX_OVERLAPPED_MEMORIES];
+        readableMemorySpace[i] = (Memory **)overlappedMemoryPool;//new Memory*[MAX_OVERLAPPED_MEMORIES];
         for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
         {
+            overlappedMemoryPool++;
             readableMemorySpace[i][j] = &MyUnusedMemory;
         }        
     }
@@ -92,16 +100,8 @@ MemoryBus::MemoryBus()
 
 MemoryBus::~MemoryBus()
 {
-    UINT32 size = 1 << (sizeof(UINT16) << 3);
-    UINT32 i;
     delete[] writeableMemoryCounts;
-    for (i = 0; i < size; i++)
-        delete[] writeableMemorySpace[i];
-    delete[] writeableMemorySpace;
-    //delete[] readableMemoryCounts;
-    for (i = 0; i < size; i++)
-        delete[] readableMemorySpace[i];
-    delete[] readableMemorySpace;
+    delete[] overlappedMemoryPool;
 }
 
 void MemoryBus::reset()
