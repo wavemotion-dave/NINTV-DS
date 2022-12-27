@@ -32,8 +32,8 @@ Technical Specs :
 ----------
  * Up to 1024KB (512K words) of ROM memory emulated.
  * JLP 16-bit RAM emulated (8K Words)
- * ECS 8-bit RAM emulated (2K bytes)
- * Up to 2K of 8-bit RAM emulated for games like Chess or Land Battle.
+ * JLP Flash support of 168 rows (21 sectors) for a total of 32K bytes (actual 32256 bytes). Each game gets their own 32K of file-backed flash.
+ * Up to 2K of 8-bit RAM emulated for the ECS module or for games like Chess or Land Battle.
  * Up to 32K of 16-bit RAM emulated beyond JLP/ECS RAM.
  * Paging on all segments of memory provided binary is 1024KB (bytes) or less.
 
