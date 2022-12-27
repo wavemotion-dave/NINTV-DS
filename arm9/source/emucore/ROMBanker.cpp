@@ -17,7 +17,8 @@
 
 extern Emulator *currentEmu;
 
-UINT16 gLastBankers[16] = {0};
+UINT16 gLastBankers[16] = {0};                  // We use this to know what the last enabled bank write value was for each 4K page. Needed when we restore a saved state.
+UINT8  gBankerIsMappedHere[16][16] = {0};       // We use this matrix to know if a 4K page has banking logic. This lets us speed up page in/out processing and handle games where there is a non-paged bank overlapping with paged banks (which is OK so long as the paged banks are all flipped out)
 
 ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UINT16 m)
 : RAM(1, address, 0, 0xFFFF),
@@ -27,6 +28,8 @@ ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UIN
   matchMask(mm),
   match(m)
 {
+    // Keep track of ROM bankers
+    gBankerIsMappedHere[address>>12][m] = 1;      
     pokeCount = 0;
 }
 
@@ -37,6 +40,16 @@ void ROMBanker::reset()
     pokeCount = 0;    
 }
 
+// ----------------------------------------------------------------------------------------------
+// From intvnut on AtariAge:
+// Each 4K segment in memory can have up to 16 different 4K ROM pages mapped to it. 
+// After "reset", all switched segments much switch to page 0. To switch pages within 
+// a given 4K segment, write the value $xA5y to location $xFFF, where 'x' is the upper
+// 4 bits of the range you want to switch, and 'y' is the page number to switch to. 
+// This will switch the ROM in segment $x000 - $xFFF to page 'y'. 
+// If there's no ROM mapped to that page within that segment, then to the Intellivision, 
+// it will look like there's no ROM there.
+// ----------------------------------------------------------------------------------------------
 ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
 {
     if ((value & triggerMask) == trigger)
@@ -45,41 +58,24 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
         if (bEnabled != rom->IsEnabled())
         {
             rom->SetEnabled(bEnabled);
-            
-            // -------------------------------------------------------------
-            // We allow for the first few pokes to set things up. Most games
-            // don't need this but Onion does. I think it's because some 
-            // rom segments are not paged and and disabling one of the ECS
-            // banks doesn't mean that the underlying bank will have a 
-            // hotspot to page it in... so we need to be tolerant of the 
-            // first few page swaps... after that if the program is swapping
-            // pages, we only need to handle the 'page in' for fast_memory[]
-            // -------------------------------------------------------------
-            if (pokeCount >= 3)
+            if (bEnabled)                                               // If we are enabling this bank, we can quickly refresh the fast_memory[]
             {
-                if (bEnabled)
-                {
-                    UINT16 *fast_memory = (UINT16 *)0x06860000;
-                    for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
-                    {
-                        fast_memory[i] = rom->peek_fast(i&0xFFF);
-                    }
-                }
-            }
-            else
-            {
-                pokeCount++;
-                // ------------------------------------------------------------------
-                // We must now patch up the fast memory ROM with the new swap in/out
-                // This is the 'slow' way to ensure we get the bus peeks right...
-                // ------------------------------------------------------------------
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
                 for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
                 {
-                    fast_memory[i] = (bEnabled ? rom->peek_fast(i&0xFFF) : currentEmu->memoryBus.peek_slow(i));
+                    fast_memory[i] = rom->peek_fast(i&0xFFF);
+                }
+            }
+            else if (gBankerIsMappedHere[address>>12][value&0xF] == 0)   // Nothing is here... nothing will be swapped in... We need to check the main memory as there may be an unswapped bank in there...
+            {
+                UINT16 *fast_memory = (UINT16 *)0x06860000;
+                for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
+                {
+                    fast_memory[i] = currentEmu->memoryBus.peek_slow(i);
                 }
             }
         }
+        
         gLastBankers[(address&0xF000)>>12] = value;
     }
 }

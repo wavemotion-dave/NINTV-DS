@@ -28,9 +28,11 @@ class ECSKeyboard : public AY38914_InputOutput, public InputConsumer
         
         UINT16 getInputValue();
         void setOutputValue(UINT16 value);
+        void setDirectionIO(UINT16 value);
 
     private:
-        UINT16        rowsToScan;
+        UINT16        directionIO;
+        UINT16        rowsOrColumnsToScan;
         UINT16        rowInputValues[8];
 };
 

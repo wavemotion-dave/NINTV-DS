@@ -65,6 +65,9 @@ BOOL LoadCart(const CHAR* filename)
     // Set the RAM Bankers for page-flipping all back to zero on a new load
     // ----------------------------------------------------------------------
     memset(gLastBankers, 0x00, sizeof(gLastBankers));
+    
+    extern UINT8 gBankerIsMappedHere[16][16];
+    memset(gBankerIsMappedHere,0x00, sizeof(gBankerIsMappedHere));
 
     // -------------------------------------------------------------------------
     // When we load a new game, we can safely put back these indexes for

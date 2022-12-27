@@ -32,7 +32,7 @@
 #include "AudioMixer.h"
 #include "printf.h"
 
-INT32 debug[6] = {0};
+INT32 debug[6] __attribute__((section(".dtcm")))  = {0};
 
 int getMemUsed(void)      // returns the amount of used memory in bytes
 {
@@ -3401,8 +3401,6 @@ void display_debug(void)
                 sprintf(dbg, "AUDIO MIXER BUFFER");
                 dsPrintValue(0, idx++, 0, dbg); idx++;
                 sprintf(dbg, "curSampIdx8   %-4d", currentSampleIdx8);
-                dsPrintValue(0, idx++, 0, dbg);
-                sprintf(dbg, "curSampIdx16  %-4d", currentSampleIdx16);
                 dsPrintValue(0, idx++, 0, dbg);
                 sprintf(dbg, "comClksPerTik %-9d", commonClocksPerTick);
                 dsPrintValue(0, idx++, 0, dbg);

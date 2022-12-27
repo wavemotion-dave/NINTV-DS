@@ -100,4 +100,6 @@ void HandController::resetInputConsumer()
 void HandController::setOutputValue(UINT16)
 {}
 
+void HandController::setDirectionIO(UINT16 value)
+{}
 

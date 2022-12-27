@@ -53,13 +53,13 @@ int main(int argc, char **argv)
   // -------------------------------------------------------------------------------------
   if (isDSiMode()) 
   {
-      mySoundFrequency              = 15360;
-      MAX_ROM_FILE_SIZE             = (512 * 1024);
+      mySoundFrequency              = 15360;            // Normal quality for the DSi
+      MAX_ROM_FILE_SIZE             = (1024 * 1024);    // Simply massive... Covers everything known to mankind.
   }
   else   
   {
-      mySoundFrequency              = 12000;  // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
-      MAX_ROM_FILE_SIZE             = (128 * 1024);
+      mySoundFrequency              = 12000;            // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
+      MAX_ROM_FILE_SIZE             = (128 * 1024);     // Bit enough for all original 125 commercial games and 98% of homebrews
   }
     
   bin_image_buf = new UINT8[MAX_ROM_FILE_SIZE];

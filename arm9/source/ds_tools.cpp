@@ -1367,8 +1367,8 @@ ITCM_CODE void Run(char *initial_file)
             // If we've been asked to put out the debug info at the top of the screen... mostly for developer use
             if (myGlobalConfig.show_fps == 2)
             {
-                sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
-                //sprintf(tmp,"%04X %04X %04X %04X %04X %04X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
+                //sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
+                sprintf(tmp,"%04X %04X %04X %04X %02X %02X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
                 dsPrintValue(6,0,0,tmp);
             }
         }

@@ -120,6 +120,8 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
                     ay38914->channel1.noiseDisabled &
                     ay38914->channel2.noiseDisabled;
             psg_memory[location] = value;
+            ay38914->psgIO0->setDirectionIO(value);
+            ay38914->psgIO1->setDirectionIO(value);
             break;
 
         case 0x09:

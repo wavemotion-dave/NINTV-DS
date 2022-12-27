@@ -28,6 +28,15 @@ Features :
  * JLP support for accelerated functions, extra RAM and flash memory. When loading a game, use the X button to load and force JLP support ON if not auto-detected.
  * ECS support for ECS games including sound-enchanced games like Space Patrol (use ECS mini-Keyboard Overlay)
 
+Technical Specs :
+----------
+ * Up to 1024KB (512K words) of ROM memory emulated.
+ * JLP 16-bit RAM emulated (8K Words)
+ * ECS 8-bit RAM emulated (2K bytes)
+ * Up to 2K of 8-bit RAM emulated for games like Chess or Land Battle.
+ * Up to 32K of 16-bit RAM emulated beyond JLP/ECS RAM.
+ * Paging on all segments of memory provided binary is 1024KB (bytes) or less.
+
 Controller Types :
 -----------------------
 You can select Player1 controller or Player 2 controller. 
@@ -65,6 +74,11 @@ Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.8a ... Not yet officially released
+  * Improved ECS keyboard handling so we can handle 'transposed' scanning of columns/rows (allows demos like Adventure to run). 
+  * Improved banking / page-flipping for faster page switches and more robust. There should be no more small audio 'gaps' when page-flipping music. 
+  * For the DSi we now support 1024KB (512K Words) of binary ROM which is almost unfathomably large in the world of Intellivision games (130% larger than anything I'm aware of).
+
 V3.8 : 26-Dec-2022 by wavemotion-dave
   * Improved memory handling so we don't run out of memory on the DS-Lite/Phat and no more crashes!
   * ECS and extra cart RAM now in faster VRAM to improve performance.
