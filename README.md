@@ -25,8 +25,8 @@ Features :
  * High Scores for up to 10 scores pre game with various sorting options.
  * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
- * JLP support for accelerated functions, extra RAM and flash memory. When loading a game, use the X button to load and force JLP support ON if not auto-detected.
- * ECS support for ECS games including sound-enchanced games like Space Patrol (use ECS mini-Keyboard Overlay)
+ * JLP support for accelerated functions, extra RAM and flash memory. When loading a game, use the X button to load with options and force JLP support ON if not auto-detected.
+ * ECS support for ECS games including sound-enchanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
 
 Technical Specs :
 ----------
@@ -46,16 +46,17 @@ Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Control
 
 Missing / Known Issues :
 -----------------------
-ECS support is partial. No UART / Cassette. On the older DS-LITE/PHAT, a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
+ECS support is partial. No UART / Cassette. 
+The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
 World Series Baseball (without voice), MindStrike, Jetsons and Scooby Doo Maze Chase. On the DSi or above running with extra memory, a full page-flipping scheme
 is employed and it should play anything you throw at it (and World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter 
-just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.  Larger page flipping/bankswitched homewbrew games will not run.
+just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
 
 Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 License :
 -----------------------
-Copyright (c) 2021-2022 Dave Bernazzani (wavemotion-dave)
+Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 
 Copying and distribution of this emulator, its source code and associated 
 readme files, with or without modification, are permitted in any medium without 

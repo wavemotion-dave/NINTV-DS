@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -133,7 +133,7 @@ const char *dbg_opcode(UINT16 op)
         case 0x0003:
             return "DIS()";
         case 0x0004:
-		    return "JJEJD()";
+            return "JJEJD()";
         case 0x0005:
             return "TCI()";
         case 0x0006:

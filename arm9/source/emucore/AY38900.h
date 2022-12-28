@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -51,22 +51,22 @@ class AY38900 : public Processor, public VideoProducer
     friend class AY38900_Registers;
 
 public:
-	AY38900(MemoryBus* mb, GROM* go, GRAM* ga);
+    AY38900(MemoryBus* mb, GROM* go, GRAM* ga);
 
     /**
      * Implemented from the Processor interface.
      * Returns the clock speed of the AY-3-8900, currently hardcoded to the NTSC clock
      * rate of 3.579545 Mhz.
      */
-	INT32 getClockSpeed() { return 3579545; }
+    INT32 getClockSpeed() { return 3579545; }
 
     /**
      * Implemented from the Processor interface.
      */
-	void resetProcessor();
+    void resetProcessor();
     
-  	void getState(AY38900State *state);
-	void setState(AY38900State *state);
+    void getState(AY38900State *state);
+    void setState(AY38900State *state);
 
     /**
      * Implemented from the Processor interface.
@@ -76,7 +76,7 @@ public:
     /**
      * Implemented from the VideoProducer interface.
      */
-	void setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize);
+    void setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize);
 
     /**
      * Implemented from the VideoProducer interface.
@@ -88,23 +88,23 @@ public:
     BackTabRAM         backtab;
 
 private:
-	void setGraphicsBusVisible(BOOL visible);
-	void renderFrame();
-	BOOL somethingChanged();
-	void markClean();
-	void renderBorders();
-	void renderMOBs();
-	void renderBackground();
-	void renderForegroundBackgroundMode();
+    void setGraphicsBusVisible(BOOL visible);
+    void renderFrame();
+    BOOL somethingChanged();
+    void markClean();
+    void renderBorders();
+    void renderMOBs();
+    void renderBackground();
+    void renderForegroundBackgroundMode();
     void renderForegroundBackgroundModeLatched();
-	void renderColorStackMode();
+    void renderColorStackMode();
     void renderColorStackModeLatched();
-	void copyBackgroundBufferToStagingArea();
-	void copyMOBsToStagingArea();
-	void renderLine(UINT8 nextByte, INT32 x, INT32 y);
-	void renderColoredSquares(INT32 x, INT32 y, UINT8 color0, UINT8 color1, UINT8 color2, UINT8 color3);
-	void determineMOBCollisions();
-	BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);
+    void copyBackgroundBufferToStagingArea();
+    void copyMOBsToStagingArea();
+    void renderLine(UINT8 nextByte, INT32 x, INT32 y);
+    void renderColoredSquares(INT32 x, INT32 y, UINT8 color0, UINT8 color1, UINT8 color2, UINT8 color3);
+    void determineMOBCollisions();
+    BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);
     BOOL mobCollidesWithBorder(int mobNum);
     BOOL mobCollidesWithForeground(int mobNum);
 

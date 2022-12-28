@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -106,7 +106,7 @@ class Peripheral
          *
          * @return the number of ROM units
          */
-		UINT16 GetROMCount();
+        UINT16 GetROMCount();
 
         /**
          * Gets a pointer to the ROM unit indicated by an index.
@@ -114,7 +114,7 @@ class Peripheral
          * @param index the index of the ROM unit to return
          * @return a pointer to the ROM unit
          */
-		ROM* GetROM(UINT16 index);
+        ROM* GetROM(UINT16 index);
 
         /**
          * Adds a video producer to this peripheral.
@@ -195,7 +195,7 @@ class Peripheral
               audioProducerCount(0),
               inputConsumerCount(0),
               ramCount(0),
-			  romCount(0)
+              romCount(0)
         {
             if (name) strcpy(peripheralName, name);
             else strcpy(peripheralName, "");
@@ -227,9 +227,9 @@ class Peripheral
         UINT8             audioProducerCount;
         InputConsumer*    inputConsumers[MAX_COMPONENTS];
         UINT8             inputConsumerCount;
-        RAM*			  rams[MAX_ROMS];
+        RAM*              rams[MAX_ROMS];
         UINT8             ramCount;
-        ROM*		      roms[MAX_ROMS];
+        ROM*              roms[MAX_ROMS];
         UINT8             romCount;
 };
 

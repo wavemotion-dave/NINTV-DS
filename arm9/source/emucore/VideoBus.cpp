@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,7 +45,7 @@ void VideoBus::removeVideoProducer(VideoProducer* p)
 {
     for (UINT32 i = 0; i < videoProducerCount; i++) {
         if (videoProducers[i] == p) {
-			videoProducers[i]->setPixelBuffer(NULL, 0);
+            videoProducers[i]->setPixelBuffer(NULL, 0);
 
             for (UINT32 j = i; j < (videoProducerCount-1); j++)
                 videoProducers[j] = videoProducers[j+1];
@@ -62,20 +63,20 @@ void VideoBus::removeAll()
 
 void VideoBus::init(UINT32 width, UINT32 height)
 {
-	VideoBus::release();
+    VideoBus::release();
 
-	pixelBufferWidth = width;
-	pixelBufferHeight = height;
-	pixelBufferRowSize = width * sizeof(UINT8);
-	pixelBufferSize = width * height * sizeof(UINT8);
-	pixelBuffer = new UINT8[width * height];
+    pixelBufferWidth = width;
+    pixelBufferHeight = height;
+    pixelBufferRowSize = width * sizeof(UINT8);
+    pixelBufferSize = width * height * sizeof(UINT8);
+    pixelBuffer = new UINT8[width * height];
 
-	if ( pixelBuffer ) {
-		memset(pixelBuffer, 0, pixelBufferSize);
-	}
+    if ( pixelBuffer ) {
+        memset(pixelBuffer, 0, pixelBufferSize);
+    }
 
-	for (UINT32 i = 0; i < videoProducerCount; i++)
-		videoProducers[i]->setPixelBuffer(pixelBuffer, pixelBufferRowSize);
+    for (UINT32 i = 0; i < videoProducerCount; i++)
+        videoProducers[i]->setPixelBuffer(pixelBuffer, pixelBufferRowSize);
 }
 
 ITCM_CODE void VideoBus::render()
@@ -88,15 +89,15 @@ ITCM_CODE void VideoBus::render()
 
 void VideoBus::release()
 {
-	if (pixelBuffer) {
-		for (UINT32 i = 0; i < videoProducerCount; i++)
-			videoProducers[i]->setPixelBuffer(NULL, 0);
+    if (pixelBuffer) {
+        for (UINT32 i = 0; i < videoProducerCount; i++)
+            videoProducers[i]->setPixelBuffer(NULL, 0);
 
-		pixelBufferWidth = 0;
-		pixelBufferHeight = 0;
-		pixelBufferRowSize = 0;
-		pixelBufferSize = 0;
-		delete[] pixelBuffer;
-		pixelBuffer = NULL;
-	}
+        pixelBufferWidth = 0;
+        pixelBufferHeight = 0;
+        pixelBufferRowSize = 0;
+        pixelBufferSize = 0;
+        delete[] pixelBuffer;
+        pixelBuffer = NULL;
+    }
 }

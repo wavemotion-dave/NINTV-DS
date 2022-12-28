@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -28,38 +28,38 @@ public:
     virtual ~ProcessorBus();
     void addProcessor(Processor* p);
     void removeProcessor(Processor* p);
-	void removeAll();
+    void removeAll();
 
-	void reset();
-	void run();
-	void stop();
+    void reset();
+    void run();
+    void stop();
 
-	void halt(Processor* p);
+    void halt(Processor* p);
     void unhalt(Processor* p);
     void pause(Processor* p, int ticks);
 
 private:
-	void reschedule(ScheduleQueue*);
+    void reschedule(ScheduleQueue*);
 
     UINT32      processorCount;
     Processor*  processors[MAX_PROCESSORS];
-	bool running;
-	ScheduleQueue* startQueue;
-	ScheduleQueue* endQueue;
+    bool running;
+    ScheduleQueue* startQueue;
+    ScheduleQueue* endQueue;
 
 };
 
 class ScheduleQueue
 {
-	friend class ProcessorBus;
+    friend class ProcessorBus;
 
 private:
     ScheduleQueue(Processor* p)
-		: tickFactor(0),
-		  tick(0),
-		  previous(NULL),
-		  next(NULL)
-	{
+        : tickFactor(0),
+          tick(0),
+          previous(NULL),
+          next(NULL)
+    {
         this->processor = p;
     }
 

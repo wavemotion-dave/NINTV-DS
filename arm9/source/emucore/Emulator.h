@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -38,8 +38,8 @@ class Emulator : public Peripheral
         UINT8 GetPeripheralCount();
         Peripheral* GetPeripheral(UINT8);
 
-		UINT16 GetVideoWidth();
-		UINT16 GetVideoHeight();
+        UINT16 GetVideoWidth();
+        UINT16 GetVideoHeight();
         
         virtual BOOL SaveState(struct _stateStruct *saveState) = 0;
         virtual BOOL LoadState(struct _stateStruct *saveState) = 0;
@@ -48,17 +48,17 @@ class Emulator : public Peripheral
 
         void SetRip(Rip* rip);
 
-		void InitVideo(VideoBus* video, UINT32 width, UINT32 height);
-		void ReleaseVideo();
-		void InitAudio(AudioMixer* audio, UINT32 sampleRate);
-		void ReleaseAudio();
+        void InitVideo(VideoBus* video, UINT32 width, UINT32 height);
+        void ReleaseVideo();
+        void InitAudio(AudioMixer* audio, UINT32 sampleRate);
+        void ReleaseAudio();
         void LoadFastMemory();
         void ApplyCheats();
 
         void Reset();
         void Run();
         void FlushAudio();
-		void Render();
+        void Render();
 
         static Emulator* GetEmulator(void);
         

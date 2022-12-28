@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include <stdio.h>
 #include <time.h>
@@ -104,12 +105,12 @@ BOOL Intellivision::SaveState(struct _stateStruct *saveState)
     intellivoice.getState(&saveState->ivoiceState);
     ecs.getState(&saveState->ecsState);
     
-	return didSave;
+    return didSave;
 }
 
 BOOL Intellivision::LoadState(struct _stateStruct *saveState)
 {
-	BOOL didLoadState = TRUE;
+    BOOL didLoadState = TRUE;
 
     cpu.setState(&saveState->cpuState);
     stic.setState(&saveState->sticState);
@@ -120,6 +121,6 @@ BOOL Intellivision::LoadState(struct _stateStruct *saveState)
     intellivoice.setState(&saveState->ivoiceState);
     ecs.getState(&saveState->ecsState);
     
-	return didLoadState;
+    return didLoadState;
 }
 

@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <stdio.h>
 #include <string.h>
 #include "ROM.h"
@@ -37,7 +38,7 @@ void ROM::Initialize(const CHAR* n, const CHAR* f, UINT32 o, UINT8 byteWidth, UI
     filename = new CHAR[strlen(f)+1];
     strcpy(filename, f);
     fileoffset = o;
-	this->byteWidth = byteWidth;
+    this->byteWidth = byteWidth;
     this->size = size;
     this->location = location;
     this->readAddressMask = readMask;
@@ -61,20 +62,20 @@ BOOL ROM::load(const char* filename)
 
 BOOL ROM::load(const char* filename, UINT32 offset)
 {
-	FILE* f = fopen(filename, "rb");
+    FILE* f = fopen(filename, "rb");
     if (!f)
         return FALSE;
 
     fseek(f, offset, SEEK_SET);
     int byteCount = size*byteWidth;
-	int totalSize = 0;
-	while (totalSize < byteCount) {
+    int totalSize = 0;
+    while (totalSize < byteCount) {
         for (UINT8 k = 0; k < byteWidth; k++)
-		    ((UINT8*)image)[totalSize+(byteWidth-k-1)] = (UINT8)fgetc(f);
-		totalSize += byteWidth;
-	}
-	fclose(f);
-	loaded = TRUE;
+            ((UINT8*)image)[totalSize+(byteWidth-k-1)] = (UINT8)fgetc(f);
+        totalSize += byteWidth;
+    }
+    fclose(f);
+    loaded = TRUE;
     
     return TRUE;
 }
@@ -83,14 +84,14 @@ BOOL ROM::load(void* buffer)
 {
     UINT8* byteImage = (UINT8*)buffer;
     int byteCount = size*byteWidth;
-	int totalSize = 0;
-	while (totalSize < byteCount) {
+    int totalSize = 0;
+    while (totalSize < byteCount) {
         for (UINT8 k = 0; k < byteWidth; k++)
-		    ((UINT8*)image)[totalSize+(byteWidth-k-1)] = byteImage[totalSize+k];
-		totalSize += byteWidth;
-	}
+            ((UINT8*)image)[totalSize+(byteWidth-k-1)] = byteImage[totalSize+k];
+        totalSize += byteWidth;
+    }
 
-	loaded = TRUE;
+    loaded = TRUE;
     return TRUE;
 }
 

@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -218,9 +218,9 @@ void MOB::setState(MOBState *state)
     boundingRectangle.width = state->mob_rect_width;
     boundingRectangle.height = state->mob_rect_height;    
 
-	this->boundsChanged = TRUE;
-	this->shapeChanged = TRUE;
-	this->colorChanged = TRUE;
+    this->boundsChanged = TRUE;
+    this->shapeChanged = TRUE;
+    this->colorChanged = TRUE;
     
 }
 

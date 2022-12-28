@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include <stdio.h>
 #include "MemoryBus.h"
@@ -24,7 +25,7 @@ class UnusedMemory : public Memory
 public:
     UnusedMemory() {};
     virtual ~UnusedMemory() {}
-	virtual void reset() {}
+    virtual void reset() {}
     UINT8  getByteWidth() {return 2;}
     UINT16 getReadSize() {return 2;}
     UINT16 getReadAddress() {return 0;}
@@ -41,13 +42,14 @@ public:
 // -------------------------------------------------------------------------------
 // This is a serious resource hog... it's multiple 16-bit 64k arrays take
 // up a significant bit of our RAM... the max overlapped memories is what
-// soaks up quite a bit of main RAM. We limit this to only 3 overlapping
+// soaks up quite a bit of main RAM. We limit this for older DS hardware
 // memories per address location which is sufficient provided we are only
 // loading normal ROMs into a stock intellivision with, at most, an intellivoice
 // or the JLP cart as the only peripherals... still, this is a strain on the
 // older DS-LITE/PHAT.  The original BLISS core allowed 16 overlapping memory 
-// regions (to handle page flipping) which barely fit into the DSi and wouldn't
-// run on the DS-LITE/PHAT so we've stripped that way down to the bare essentials.
+// regions (to handle page flipping) which does fit into the DSi but is too 
+// large for the original DS-LITE/PHAT so for older hardware, we strip down 
+// to the bare essentials.
 // -------------------------------------------------------------------------------
 UINT32 *overlappedMemoryPool = NULL;
 
@@ -71,7 +73,11 @@ MemoryBus::MemoryBus()
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size];
     
-    // We do this rather than allocate peicemeal so we avoid malloc overhead and extra bytes padded (saves almost 500K on DS)
+    // ---------------------------------------------------------------------------------------------------------------------------
+    // We do this rather than allocate piecemeal so we avoid malloc overhead and extra bytes padded (saves almost 500K on DS)
+    // On the DS with 3 overlapped memories (enough for most games), this is still 1.5MB of memory (out of the 3.5MB available)
+    // On the DSi with a full 16 overlapped memories (enough for any game), this is a whopping 8MB (out of the 15.5MB available)
+    // ---------------------------------------------------------------------------------------------------------------------------
     overlappedMemoryPool = new UINT32[size*MAX_OVERLAPPED_MEMORIES*2];
     
     for (i = 0; i < size; i++)
@@ -101,6 +107,8 @@ MemoryBus::MemoryBus()
 MemoryBus::~MemoryBus()
 {
     delete[] writeableMemoryCounts;
+    delete[] writeableMemorySpace;
+    delete[] readableMemorySpace;
     delete[] overlappedMemoryPool;
 }
 

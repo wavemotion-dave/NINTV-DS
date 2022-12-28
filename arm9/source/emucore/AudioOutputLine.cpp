@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include "AudioOutputLine.h"
 #include "AudioMixer.h"
@@ -46,8 +47,8 @@ ITCM_CODE void playSample1(INT16 sample) // ECS PSG or Intellivoice SP0256
 {
     sampleBuffer[1] += currentSample[1] * commonClocksPerSample[1];
     commonClockCounter[1] += commonClocksPerSample[1];
-	previousSample[1] = currentSample[1];
-	currentSample[1] = sample;
+    previousSample[1] = currentSample[1];
+    currentSample[1] = sample;
 }
 
 
@@ -55,8 +56,8 @@ ITCM_CODE void playSample2(INT16 sample) // ECS PSG or Intellivoice SP0256
 {
     sampleBuffer[2] += currentSample[2] * commonClocksPerSample[2];
     commonClockCounter[2] += commonClocksPerSample[2];
-	previousSample[2] = currentSample[2];
-	currentSample[2] = sample;
+    previousSample[2] = currentSample[2];
+    currentSample[2] = sample;
 }
 
 

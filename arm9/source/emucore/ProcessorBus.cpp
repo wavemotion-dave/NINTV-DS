@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include "ProcessorBus.h"
 
@@ -28,7 +29,7 @@ ProcessorBus::~ProcessorBus()
 void ProcessorBus::addProcessor(Processor* p)
 {
     processors[processorCount] = p;
-	processorCount++;
+    processorCount++;
     p->processorBus = this;
     p->scheduleQueue = new ScheduleQueue(p);
 }
@@ -64,7 +65,7 @@ void ProcessorBus::reset()
 
     //reorder the processor queue so that it is in the natural (starting) order
     for (UINT32 i = 0; i < processorCount; i++) {
-		Processor* p = processors[i];
+        Processor* p = processors[i];
         totalClockSpeed = lcm(totalClockSpeed, ((UINT64)p->getClockSpeed()));
 
         ScheduleQueue* nextQueue = p->scheduleQueue;
@@ -84,8 +85,8 @@ void ProcessorBus::reset()
     
     //pre-cache the multiplication factor required to convert each processor's clock speed to
     //the common clock speed, and reset each processor
-	for (UINT32 i = 0; i < processorCount; i++) {
-		Processor* p = processors[i];
+    for (UINT32 i = 0; i < processorCount; i++) {
+        Processor* p = processors[i];
         p->scheduleQueue->tickFactor = (totalClockSpeed / ((UINT64)p->getClockSpeed()));
         p->resetProcessor();
     }
@@ -95,9 +96,9 @@ ITCM_CODE void ProcessorBus::run()
 {
     running = true;
     while (running) {
-		if (startQueue->next == NULL) {
-			break;
-		}
+        if (startQueue->next == NULL) {
+            break;
+        }
         //tick the processor that is at the head of the queue
         int minTicks = (int)((startQueue->next->tick / startQueue->tickFactor) + 1);
         startQueue->tick = ((UINT64)startQueue->processor->tick(minTicks)) * startQueue->tickFactor;

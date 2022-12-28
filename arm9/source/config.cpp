@@ -1,7 +1,7 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
@@ -338,8 +338,8 @@ void ApplyOptions(void)
     // Check if the sound changed...
     fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
     bStartSoundFifo=true;
-	// clears the emulator side of the audio mixer
-	audioMixer->resetProcessor();
+    // clears the emulator side of the audio mixer
+    audioMixer->resetProcessor();
 
     // Set the screen scaling options for the game selected
     REG_BG3PA = myConfig.stretch_x;

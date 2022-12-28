@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include <string.h>
 #include "CP1610.h"
@@ -172,7 +173,7 @@ UINT16 CP1610::EIS() {
 
     I = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 4;
 }
 
@@ -182,7 +183,7 @@ UINT16 CP1610::DIS() {
 
     I = FALSE;
 
-	D = FALSE;
+    D = FALSE;
     return 4;
 }
 
@@ -192,7 +193,7 @@ UINT16 CP1610::TCI() {
 
     //What should this really do?
 
-	D = FALSE;
+    D = FALSE;
     return 4;
 }
 
@@ -202,7 +203,7 @@ UINT16 CP1610::CLRC() {
 
     C = FALSE;
 
-	D = FALSE;
+    D = FALSE;
     return 4;
 }
 
@@ -212,7 +213,7 @@ UINT16 CP1610::SETC() {
 
     C = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 4;
 }
 
@@ -220,7 +221,7 @@ UINT16 CP1610::J(UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 12;
 }
 
@@ -229,7 +230,7 @@ UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 12;
 }
 
@@ -238,7 +239,7 @@ UINT16 CP1610::JE(UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 12;
 }
 
@@ -248,7 +249,7 @@ UINT16 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 12;
 }
 
@@ -257,7 +258,7 @@ UINT16 CP1610::JD(UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 12;
 }
 
@@ -267,7 +268,7 @@ UINT16 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
     r[7] = target;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 12;
 }
 
@@ -280,7 +281,7 @@ UINT16 CP1610::INCR(UINT16 registerNum) {
     Z = !newValue;
     r[registerNum] = newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -293,7 +294,7 @@ UINT16 CP1610::DECR(UINT16 registerNum) {
     Z = !newValue;
     r[registerNum] = newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -309,7 +310,7 @@ UINT16 CP1610::NEGR(UINT16 registerNum) {
     Z = !(newValue & 0xFFFF);
     r[registerNum] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -326,7 +327,7 @@ UINT16 CP1610::ADCR(UINT16 registerNum) {
     Z = !(newValue & 0xFFFF);
     r[registerNum] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -340,7 +341,7 @@ UINT16 CP1610::RSWD(UINT16 registerNum) {
     O = !!(value & 0x0020);
     C = !!(value & 0x0010);
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -353,7 +354,7 @@ UINT16 CP1610::GSWD(UINT16 registerNum) {
     value |= (value << 8);
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -361,7 +362,7 @@ UINT16 CP1610::NOP(UINT16) {
     r[7]++;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -371,7 +372,7 @@ UINT16 CP1610::SIN(UINT16) {
 
     //TODO: does SIN need to do anything?!
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -385,7 +386,7 @@ UINT16 CP1610::SWAP_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -399,7 +400,7 @@ UINT16 CP1610::SWAP_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -412,7 +413,7 @@ UINT16 CP1610::COMR(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -425,7 +426,7 @@ UINT16 CP1610::SLL_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -438,7 +439,7 @@ UINT16 CP1610::SLL_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -454,7 +455,7 @@ UINT16 CP1610::RLC_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -472,7 +473,7 @@ UINT16 CP1610::RLC_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -487,7 +488,7 @@ UINT16 CP1610::SLLC_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -503,7 +504,7 @@ UINT16 CP1610::SLLC_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -516,7 +517,7 @@ UINT16 CP1610::SLR_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -529,7 +530,7 @@ UINT16 CP1610::SLR_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -543,7 +544,7 @@ UINT16 CP1610::SAR_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -558,7 +559,7 @@ UINT16 CP1610::SAR_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -574,7 +575,7 @@ UINT16 CP1610::RRC_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -592,7 +593,7 @@ UINT16 CP1610::RRC_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -607,7 +608,7 @@ UINT16 CP1610::SARC_1(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -624,7 +625,7 @@ UINT16 CP1610::SARC_2(UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 8;
 }
 
@@ -637,7 +638,7 @@ UINT16 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
     Z = !value;
     r[destReg] = value;
 
-	D = FALSE;
+    D = FALSE;
     return (destReg >= 6 ? 7 : 6);
 }
 
@@ -654,7 +655,7 @@ UINT16 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
     Z = !(newValue & 0xFFFF);
     r[destReg] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -671,7 +672,7 @@ UINT16 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
     Z = !(newValue & 0xFFFF);
     r[destReg] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -687,7 +688,7 @@ UINT16 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
     S = !!(newValue & 0x8000);
     Z = !(newValue & 0xFFFF);
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -700,7 +701,7 @@ UINT16 CP1610::ANDR(UINT16 sourceReg, UINT16 destReg) {
     Z = !newValue;
     r[destReg] = newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -713,7 +714,7 @@ UINT16 CP1610::XORR(UINT16 sourceReg, UINT16 destReg) {
     Z = !newValue;
     r[destReg] = newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 6;
 }
 
@@ -723,11 +724,11 @@ UINT16 CP1610::BEXT(UINT16 condition, INT16 displacement) {
 
     if (ext == condition) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -737,7 +738,7 @@ UINT16 CP1610::B(INT16 displacement) {
 
     r[7] = (UINT16)(r[7] + displacement);
 
-	D = FALSE;
+    D = FALSE;
     return 9;
 }
 
@@ -745,7 +746,7 @@ UINT16 CP1610::NOPP(INT16) {
     r[7] += 2;
     interruptible = TRUE;
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -755,11 +756,11 @@ UINT16 CP1610::BC(INT16 displacement) {
 
     if (C) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -769,11 +770,11 @@ UINT16 CP1610::BNC(INT16 displacement) {
 
     if (!C) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -783,11 +784,11 @@ UINT16 CP1610::BOV(INT16 displacement) {
 
     if (O) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -797,11 +798,11 @@ UINT16 CP1610::BNOV(INT16 displacement) {
 
     if (!O) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -811,11 +812,11 @@ UINT16 CP1610::BPL(INT16 displacement) {
 
     if (!S) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -825,11 +826,11 @@ UINT16 CP1610::BMI(INT16 displacement) {
 
     if (S) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -839,11 +840,11 @@ UINT16 CP1610::BEQ(INT16 displacement) {
 
     if (Z) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -853,11 +854,11 @@ UINT16 CP1610::BNEQ(INT16 displacement) {
 
     if (!Z) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -867,11 +868,11 @@ UINT16 CP1610::BLT(INT16 displacement) {
 
     if (S != O) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -881,11 +882,11 @@ UINT16 CP1610::BGE(INT16 displacement) {
 
     if (S == O) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -895,11 +896,11 @@ UINT16 CP1610::BLE(INT16 displacement) {
 
     if (Z || (S != O)) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -909,11 +910,11 @@ UINT16 CP1610::BGT(INT16 displacement) {
 
     if (!(Z || (S != O))) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -923,11 +924,11 @@ UINT16 CP1610::BUSC(INT16 displacement) {
 
     if (C != S) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -937,11 +938,11 @@ UINT16 CP1610::BESC(INT16 displacement) {
 
     if (C == S) {
         r[7] = (UINT16)(r[7] + displacement);
-		D = FALSE;
+        D = FALSE;
         return 9;
     }
 
-	D = FALSE;
+    D = FALSE;
     return 7;
 }
 
@@ -951,7 +952,7 @@ UINT16 CP1610::MVO(UINT16 registerNum, UINT16 address) {
 
     memoryBus->poke(address, r[registerNum]);
 
-	D = FALSE;
+    D = FALSE;
     return 11;
 }
 
@@ -965,7 +966,7 @@ UINT16 CP1610::MVO_ind(UINT16 registerWithAddress, UINT16 registerToMove) {
     if (registerWithAddress & 0x04)
         r[registerWithAddress]++;
 
-	D = FALSE;
+    D = FALSE;
     return 9;
 }
 
@@ -975,7 +976,7 @@ UINT16 CP1610::MVI(UINT16 address, UINT16 registerNum) {
 
     r[registerNum] = memoryBus->peek(address);
 
-	D = FALSE;
+    D = FALSE;
     return 10;
 }
 
@@ -985,7 +986,7 @@ UINT16 CP1610::MVI_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
 
     r[registerToReceive] = getIndirect(registerWithAddress);
 
-	D = FALSE;
+    D = FALSE;
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
@@ -1002,7 +1003,7 @@ UINT16 CP1610::ADD(UINT16 address, UINT16 registerNum) {
     Z = !(newValue & 0xFFFF);
     r[registerNum] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 10;
 }
 
@@ -1019,7 +1020,7 @@ UINT16 CP1610::ADD_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !(newValue & 0xFFFF);
     r[registerToReceive] = (UINT16)newValue;
     
-	D = FALSE;
+    D = FALSE;
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
@@ -1036,7 +1037,7 @@ UINT16 CP1610::SUB(UINT16 address, UINT16 registerNum) {
     Z = !(newValue & 0xFFFF);
     r[registerNum] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return 10;
 }
 
@@ -1053,7 +1054,7 @@ UINT16 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !(newValue & 0xFFFF);
     r[registerToReceive] = (UINT16)newValue;
 
-	D = FALSE;
+    D = FALSE;
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
@@ -1069,7 +1070,7 @@ UINT16 CP1610::CMP(UINT16 address, UINT16 registerNum) {
     S = !!(newValue & 0x8000);
     Z = !(newValue & 0xFFFF);
 
-	D = FALSE;
+    D = FALSE;
     return 10;
 }
 
@@ -1085,7 +1086,7 @@ UINT16 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     S = !!(newValue & 0x8000);
     Z = !(newValue & 0xFFFF);
 
-	D = FALSE;
+    D = FALSE;
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
@@ -1098,7 +1099,7 @@ UINT16 CP1610::AND(UINT16 address, UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 10;
 }
 
@@ -1111,7 +1112,7 @@ UINT16 CP1610::AND_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !value;
     r[registerToReceive] = value;
     
-	D = FALSE;
+    D = FALSE;
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
@@ -1124,7 +1125,7 @@ UINT16 CP1610::XOR(UINT16 address, UINT16 registerNum) {
     Z = !value;
     r[registerNum] = value;
 
-	D = FALSE;
+    D = FALSE;
     return 10;
 }
 
@@ -1137,7 +1138,7 @@ UINT16 CP1610::XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !value;
     r[registerToReceive] = value;
     
-	D = FALSE;
+    D = FALSE;
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
@@ -1153,7 +1154,7 @@ UINT16 CP1610::decode(void)
         case 0x0003:
             return DIS();
         case 0x0004:
-			{
+            {
             int read = PEEK_FAST((UINT16)(r[7] + 1));
             int reg = ((read & 0x0300) >> 8);
             int interrupt = (read & 0x0003);
@@ -1180,7 +1181,7 @@ UINT16 CP1610::decode(void)
                 else
                     return HLT(); //invalid opcode
             }
-			}
+            }
         case 0x0005:
             return TCI();
         case 0x0006:

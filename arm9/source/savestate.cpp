@@ -1,13 +1,14 @@
 // =====================================================================================
-// Copyright (c) 2021 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, it's source code and associated 
+// Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 // and Kyle Davis (BLISS) are thanked profusely. 
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
+
 #include <nds.h>
 #include <stdio.h>
 #include <fat.h>
@@ -79,18 +80,18 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
     if (slow_ram16_idx != 0) memcpy(slowRAMState[slot].image, slow_ram16, 0x4000*sizeof(UINT16));
 
     // Write the entire save states as a single file... overwrite if it exists.
-	FILE* file = fopen(filename, "wb+");
+    FILE* file = fopen(filename, "wb+");
 
-	if (file != NULL) 
+    if (file != NULL) 
     {
         fwrite(&saveState, 1, sizeof(saveState), file);
         if (currentRip->JLP16Bit) fwrite(&jlpState, 1, sizeof(jlpState), file);            // A few gaems utilize the JLP RAM
         if (slow_ram16_idx != 0)  fwrite(slowRAMState, 1, sizeof(slowRAMState), file);     // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
         didSave = TRUE;
         fclose(file);
-	} 
+    } 
     
-	return didSave;
+    return didSave;
 }
 
 // ----------------------------------------------------------------------------------
@@ -98,14 +99,14 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
 // ----------------------------------------------------------------------------------
 BOOL do_load(const CHAR* filename, UINT8 slot)
 {
-	BOOL didLoadState = FALSE;
+    BOOL didLoadState = FALSE;
 
     memset(&saveState, 0x00, sizeof(saveState));
-	FILE* file = fopen(filename, "rb");
+    FILE* file = fopen(filename, "rb");
 
-	if (file != NULL) 
+    if (file != NULL) 
     {
-		int size = fread(&saveState, 1, sizeof(saveState), file);
+        int size = fread(&saveState, 1, sizeof(saveState), file);
         
         if ((size != sizeof(saveState)) || (saveState.saveFileVersion != CURRENT_SAVE_FILE_VER))
         {
@@ -143,9 +144,9 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
             didLoadState = TRUE;
         }
         fclose(file);
-	}
+    }
 
-	return didLoadState;
+    return didLoadState;
 }
 
 
