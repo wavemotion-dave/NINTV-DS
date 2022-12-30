@@ -319,7 +319,7 @@ void dsShowEmuInfo(void)
     
     if (currentRip != NULL)
     {
-        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
@@ -330,11 +330,14 @@ void dsShowEmuInfo(void)
         sprintf(dbg, "RAM Indexes:   %d / %d ",  fast_ram16_idx, slow_ram16_idx);     dsPrintValue(0, idx++, 0, dbg);        
         sprintf(dbg, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, dbg);    
         sprintf(dbg, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, dbg);        
-        sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "Compat Tags:   %02X %02X %02X %02X %02X", tag_compatibility[0], 
+                tag_compatibility[1], tag_compatibility[2], tag_compatibility[3], 
+                tag_compatibility[4]);                                                dsPrintValue(0, idx++, 0, dbg);
     }
     else
     {
-        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz / 16MB":"DS 67MHz / 4 MB");  dsPrintValue(0, idx++, 0, dbg);
+        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
         sprintf(dbg, "NO GAME IS LOADED!");                                           dsPrintValue(0, idx++, 0, dbg);        
     }
@@ -946,9 +949,15 @@ ITCM_CODE void pollInputs(void)
     {
         touchPosition touch;
         touchRead(&touch);
-        
 #ifdef DEBUG_ENABLE
-        debugger_input(touch.px, touch.py);
+        if (debugger_input(touch.px, touch.py) == DBG_PRESS_META)
+        {
+            while (keysCurrent() & KEY_TOUCH)   // Wait for release
+            {           
+                WAITVBL;
+            }       
+            WAITVBL;
+        }
 #endif
         // -----------------------------------------------------------
         // Did we map any hotspots on the overlay to disc directions?
@@ -1367,9 +1376,15 @@ ITCM_CODE void Run(char *initial_file)
             // If we've been asked to put out the debug info at the top of the screen... mostly for developer use
             if (myGlobalConfig.show_fps == 2)
             {
-                //sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
-                sprintf(tmp,"%04X %04X %04X %04X %02X %02X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
+                sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
+                //sprintf(tmp,"%04X %04X %04X %04X %02X %02X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
                 dsPrintValue(6,0,0,tmp);
+            }
+            
+            // If we are using the JLP, we call into the 1 second tick function in case there is a dirty flash that needs writing...
+            if (bUseJLP)
+            {
+                currentRip->JLP16Bit->tick_one_second();
             }
         }
 

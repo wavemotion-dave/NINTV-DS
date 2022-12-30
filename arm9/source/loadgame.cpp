@@ -102,6 +102,16 @@ BOOL LoadCart(const CHAR* filename)
         FatalError("UNKNOWN FILE TYPE");
         return FALSE;
     }
+    
+    // ------------------------------------------------------------------------------------------------------------------
+    // The ECS uses 3 banked ROM areas... so we need to fill those in manually as we clear this array out on every load.
+    // ------------------------------------------------------------------------------------------------------------------
+    if (bUseECS)
+    {
+        gBankerIsMappedHere[0x2][1] = 1;
+        gBankerIsMappedHere[0x7][0] = 1;
+        gBankerIsMappedHere[0xE][1] = 1;
+    }
 
     // ---------------------------------------------------------------------
     // New game is loaded... (would have returned FALSE above otherwise)

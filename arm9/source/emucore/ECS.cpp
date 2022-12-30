@@ -10,6 +10,7 @@
 // =====================================================================================
 
 #include "ECS.h"
+#include "../debugger.h"
 
 extern UINT8 ecs_ram[];
 
@@ -39,10 +40,14 @@ ECS::ECS()
       
     AddRAM(&ecsRAM);      
 
+#ifdef DEBUG_ENABLE
+    debug_psg2  = &psg2;
+#endif
+      
     AddProcessor(&psg2);
     AddAudioProducer(&psg2);
     AddRAM(&psg2.registers);
-
+      
     AddInputConsumer(&keyboard);
 }
 

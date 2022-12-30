@@ -14,7 +14,8 @@
 #include "MemoryBus.h"
 #include "../ds_tools.h"
 
-UINT16 MAX_OVERLAPPED_MEMORIES = 3;
+UINT16 MAX_READ_OVERLAPPED_MEMORIES = 2;
+UINT16 MAX_WRITE_OVERLAPPED_MEMORIES = 3;
 
 // ----------------------------------------------------------------------------------------------
 // We use this class and single object to fill all unused memory locations in the memory map. 
@@ -60,11 +61,13 @@ MemoryBus::MemoryBus()
     // -------------------------------------------------------------------------------------
     if (isDSiMode()) 
     {
-        MAX_OVERLAPPED_MEMORIES       = 16;       // This will handle massive page-flip (banked) games
+        MAX_READ_OVERLAPPED_MEMORIES       = 16;        // Good enough for any page-flipping game. This is massive!
+        MAX_WRITE_OVERLAPPED_MEMORIES      = 17;        // Need one extra here to handle the GRAM mirrors up in odd splaces in ROM
     }
     else
     {
-        MAX_OVERLAPPED_MEMORIES       = 3;        // Good enough for almost all games
+        MAX_READ_OVERLAPPED_MEMORIES       = 2;        // Good enough for almost all games except very large page-flipping games
+        MAX_WRITE_OVERLAPPED_MEMORIES      = 3;        // Need one extra here to handle the GRAM mirrors up in odd splaces in ROM
     }
 
     UINT32 size = 1 << (sizeof(UINT16) << 3);
@@ -78,12 +81,12 @@ MemoryBus::MemoryBus()
     // On the DS with 3 overlapped memories (enough for most games), this is still 1.5MB of memory (out of the 3.5MB available)
     // On the DSi with a full 16 overlapped memories (enough for any game), this is a whopping 8MB (out of the 15.5MB available)
     // ---------------------------------------------------------------------------------------------------------------------------
-    overlappedMemoryPool = new UINT32[size*MAX_OVERLAPPED_MEMORIES*2];
+    overlappedMemoryPool = new UINT32[size*(MAX_READ_OVERLAPPED_MEMORIES+MAX_WRITE_OVERLAPPED_MEMORIES)];
     
     for (i = 0; i < size; i++)
     {
-        writeableMemorySpace[i] = (Memory **)overlappedMemoryPool;//new Memory*[MAX_OVERLAPPED_MEMORIES];
-        for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
+        writeableMemorySpace[i] = (Memory **)overlappedMemoryPool;
+        for (int j=0; j<MAX_WRITE_OVERLAPPED_MEMORIES; j++)
         {
             overlappedMemoryPool++;
             writeableMemorySpace[i][j] = &MyUnusedMemory;
@@ -94,8 +97,8 @@ MemoryBus::MemoryBus()
     readableMemorySpace = new Memory**[size];
     for (i = 0; i < size; i++)
     {
-        readableMemorySpace[i] = (Memory **)overlappedMemoryPool;//new Memory*[MAX_OVERLAPPED_MEMORIES];
-        for (int j=0; j<MAX_OVERLAPPED_MEMORIES; j++)
+        readableMemorySpace[i] = (Memory **)overlappedMemoryPool;
+        for (int j=0; j<MAX_READ_OVERLAPPED_MEMORIES; j++)
         {
             overlappedMemoryPool++;
             readableMemorySpace[i][j] = &MyUnusedMemory;
@@ -158,6 +161,11 @@ void MemoryBus::addMemory(Memory* m)
 
             for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = readableMemoryCounts[k];
+                if (memCount >= MAX_READ_OVERLAPPED_MEMORIES)
+                {
+                    FatalError("ERROR MAX READABLE MEM OVERLAP");
+                    return;
+                }
                 readableMemorySpace[k][memCount] = m;
                 readableMemoryCounts[k]++;
             }
@@ -184,6 +192,11 @@ void MemoryBus::addMemory(Memory* m)
 
             for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = writeableMemoryCounts[k];
+                if (memCount >= MAX_WRITE_OVERLAPPED_MEMORIES)
+                {
+                    FatalError("ERROR MAX WRITEABLE MEM OVERLAP");
+                    return;
+                }                
                 writeableMemorySpace[k][memCount] = m;
                 writeableMemoryCounts[k]++;
             }

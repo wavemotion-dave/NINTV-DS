@@ -27,8 +27,4 @@ struct Channel_t
     UINT8   isDirty;
 };
 
-extern struct Channel_t channel0;
-extern struct Channel_t channel1;
-extern struct Channel_t channel2;
-
 #endif

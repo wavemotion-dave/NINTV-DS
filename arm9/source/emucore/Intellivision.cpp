@@ -75,6 +75,7 @@ Intellivision::Intellivision()
 
 #ifdef DEBUG_ENABLE
     debug_stic = &stic;
+    debug_psg  = &psg;
 #endif
 
     //add the PSG

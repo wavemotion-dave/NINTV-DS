@@ -18,6 +18,7 @@
 #include "RAM.h"
 #include "Rip.h"
 #include "../config.h"
+#include "../ds_tools.h"
 
 extern Rip      *currentRip;
 
@@ -30,7 +31,7 @@ void JLP::reset()
     enabled = TRUE;
     for (UINT16 i = 0; i < JLP_RAM_SIZE; i++)
         jlp_ram[i] = 0xFFFF;
-    jlp_ram[JLP_RAM_SIZE-1] = 0;
+    jlp_ram[JLP_RAM_SIZE-1] = 0;                    /* The last byte of jlp RAM reads back as 0 */
     
     jlp_ram[0x23] = 0;                              /* First valid flash row number */
     jlp_ram[0x24] = NUM_JLP_ROWS;                   /* Last  valid flash row number */
@@ -38,7 +39,21 @@ void JLP::reset()
     jlp_ram[0x2E] = 0;                              /* Command regs read as 0   */
     jlp_ram[0x2F] = 0;                              /* Command regs read as 0   */
     
-    flash_read = 1;     // Force flash to read...
+    flash_read = 1;             // Force flash to read...
+    flash_write_time = 0;       // And reset the time to write...
+}
+
+// If the JLP flash needs to be written, we write it to the backing file. We do it this way so that quick-succession writes
+// to the flash do not force a write to the backing file which is slow and wasteful... so we have a 2 second backing timer.
+void JLP::tick_one_second(void)
+{
+    if (flash_write_time > 0)
+    {
+        if (--flash_write_time == 0)
+        {
+            WriteFlashFile();
+        }
+    }
 }
 
 UINT16 JLP::peek(UINT16 location)
@@ -113,6 +128,7 @@ void JLP::WriteFlashFile(void)
 {
     FILE *fp;
     
+    dsPrintValue(23,0,0, (char*)"JLP FLASH");
     GetFlashFilename();
     fp = fopen(flash_filename, "wb");
     if (fp != NULL)
@@ -120,12 +136,17 @@ void JLP::WriteFlashFile(void)
         fwrite(jlp_flash, 1, JLP_FLASH_SIZE, fp);
         fclose(fp);
     }
+    dsPrintValue(23,0,0,(char*)"         ");
 }
 
+void JLP::ScheduleWriteFlashFile(void)
+{
+    flash_write_time = 2;
+}
 
 void JLP::RamToFlash(void)
 {
-    UINT32 addr = jlp_ram[(0x8025&readAddressMask) - this->location] - 0x8000;
+    UINT32 addr = jlp_ram[(0x8025&readAddressMask) - this->location] - JLP_RAM_ADDRESS;
     UINT32 row  = (jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) * 192;
     int i, a;
 
@@ -146,12 +167,12 @@ void JLP::RamToFlash(void)
         jlp_flash[row + i + 0] = jlp_ram[addr + a] & 0xFF;
         jlp_flash[row + i + 1] = jlp_ram[addr + a] >> 8;
     }
-    WriteFlashFile();
+    ScheduleWriteFlashFile();
 }
 
 void JLP::FlashToRam(void)
 {
-    UINT32 addr = jlp_ram[(0x8025&readAddressMask) - this->location] - 0x8000;
+    UINT32 addr = jlp_ram[(0x8025&readAddressMask) - this->location] - JLP_RAM_ADDRESS;
     UINT32 row  = (jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) * 192;
     int i, a;
     
@@ -166,8 +187,7 @@ void JLP::FlashToRam(void)
         UINT16 lo = jlp_flash[row + i + 0];
         UINT16 hi = jlp_flash[row + i + 1];
         jlp_ram[addr + a] = lo | (hi << 8);
-    }
-    
+    }    
 }
 
 void JLP::EraseSector(void)
@@ -176,7 +196,7 @@ void JLP::EraseSector(void)
     if (jlp_ram[(0x8026&readAddressMask) - this->location] > NUM_JLP_ROWS) return;
     if (flash_read)  ReadFlashFile();
     memset((void *)&jlp_flash[row], 0xFF, 192 * 8);
-    WriteFlashFile();
+    ScheduleWriteFlashFile();
 }
 
 

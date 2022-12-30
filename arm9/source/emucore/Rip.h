@@ -23,9 +23,9 @@ using namespace std;
 
 typedef enum _PeripheralCompatibility
 {
-    PERIPH_REQUIRED = 0,
-    PERIPH_OPTIONAL = 1,
-    PERIPH_COMPATIBLE = 2,
+    PERIPH_REQUIRED     = 0,
+    PERIPH_OPTIONAL     = 1,
+    PERIPH_COMPATIBLE   = 2,
     PERIPH_INCOMPATIBLE = 3
 } PeripheralCompatibility;
 
@@ -34,6 +34,7 @@ typedef enum _PeripheralCompatibility
 #define ID_PERIPH_ECS               0x143D9A97
 #define ID_PERIPH_INTELLIVOICE      0x6EFF540A
 
+extern UINT8 tag_compatibility[];
 
 typedef struct _CartridgeConfiguration CartridgeConfiguration;
 

@@ -28,6 +28,7 @@
 #define ROM_TAG_RELEASE_DATE   0x05
 #define ROM_TAG_COMPATIBILITY  0x06
 
+UINT8 tag_compatibility[8] = {0};
 
 extern UINT8 *bin_image_buf;
 extern UINT16 *bin_image_buf16;
@@ -414,9 +415,9 @@ Rip* Rip::LoadRom(const CHAR* filename)
         return NULL;
     }
     
-    //read the magic byte (should always be $A8 or $41)
+    //read the magic byte (should always be $A8 or $41 or $61)
     int read = fgetc(infile);
-    if ((read != 0xA8) && (read != 0x41))
+    if ((read != 0xA8) && (read != 0x41) && (read != 0x61))
     {
         fclose(infile);
         FatalError("ROM MAGIC BYTE MISSING");
@@ -432,6 +433,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
         fclose(infile);
         return NULL;
     }
+    
+    memset(tag_compatibility, 0x00, sizeof(tag_compatibility));
 
     Rip* rip = new Rip(ID_SYSTEM_INTELLIVISION);
 
@@ -533,6 +536,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
             case ROM_TAG_COMPATIBILITY:
             {
                 read = fgetc(infile);
+                tag_compatibility[0] = read;
                 calcCrc16 = crc16_update(calcCrc16, read);
                 
                 // Check for ECS Supported or Required...
@@ -546,6 +550,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
                 for (i = 0; i < length-1; i++) // -1 because we already processed the first byte above...
                 {
                     read = fgetc(infile);
+                    tag_compatibility[1+i] = read;
                     calcCrc16 = crc16_update(calcCrc16, read);
                     // ------------------------------------------------------------------------
                     // Optional Byte 4 is of interest to us as that  one has JLP stuff in it 

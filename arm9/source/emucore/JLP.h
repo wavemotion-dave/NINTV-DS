@@ -34,6 +34,7 @@ class JLP : public RAM
         void reset();
         UINT16 peek(UINT16 location);
         void poke(UINT16 location, UINT16 value);
+        void tick_one_second(void);
         
         void getState(JLPState *state);
         void setState(JLPState *state);
@@ -46,8 +47,10 @@ class JLP : public RAM
         void EraseSector(void);
         void ReadFlashFile(void);
         void WriteFlashFile(void);
+        void ScheduleWriteFlashFile(void);
         void GetFlashFilename(void);
         UINT8 flash_read;
+        UINT8 flash_write_time;
 };
 
 #endif

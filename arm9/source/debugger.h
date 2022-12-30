@@ -17,16 +17,26 @@
 #include <nds.h>
 #include "types.h"
 #include "AY38900.h"
+#include "AY38914.h"
+
+#define DBG_PRESS_PLAY   0
+#define DBG_PRESS_STOP   1
+#define DBG_PRESS_STEP   2
+#define DBG_PRESS_FRAME  3
+#define DBG_PRESS_META   254
+#define DBG_PRESS_NONE   255
 
 extern UINT32 debug_frames;
 extern UINT32 debug_opcodes;
 extern AY38900 *debug_stic;
+extern AY38914 *debug_psg;
+extern AY38914 *debug_psg2;
 
 extern INT32 debug[];
 
 extern void show_debug_overlay(void);
 extern void debugger(void);
-extern UINT8 debugger_input(int tx, int ty);
+extern UINT8 debugger_input(UINT16 tx, UINT16 ty);
 extern int getMemUsed(void);
 
 #endif

@@ -19,7 +19,6 @@
 #define MAX_COMPONENTS       4
 #define MAX_ROMS             128
 
-extern UINT16 MAX_OVERLAPPED_MEMORIES;
 extern UINT32 MAX_ROM_FILE_SIZE;
 
 class Memory

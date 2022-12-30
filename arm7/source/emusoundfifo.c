@@ -22,11 +22,11 @@ typedef enum {
 //---------------------------------------------------------------------------------
 void soundEmuDataHandler(int bytes, void *user_data) 
 {
-	int channel = -1;
+    int channel = -1;
 
-	FifoMessage msg;
+    FifoMessage msg;
 
-	fifoGetDatamsg(FIFO_USER_01, bytes, (u8*)&msg);
+    fifoGetDatamsg(FIFO_USER_01, bytes, (u8*)&msg);
 
   switch (msg.type) {
     case EMUARM7_PLAY_SND:
@@ -48,48 +48,48 @@ void soundEmuDataHandler(int bytes, void *user_data)
 
 //---------------------------------------------------------------------------------
 void soundEmuCommandHandler(u32 command, void* userdata) {
-	int cmd = (command ) & 0x00F00000;
-	int data = command & 0xFFFF;
-	int channel = (command >> 16) & 0xF;
-	
-	switch(cmd) 
+    int cmd = (command ) & 0x00F00000;
+    int data = command & 0xFFFF;
+    int channel = (command >> 16) & 0xF;
+    
+    switch(cmd) 
   {
 
-	case SOUND_SET_VOLUME:
-		SCHANNEL_CR(channel) &= ~0xFF;
-		SCHANNEL_CR(channel) |= data;
-		break;
+    case SOUND_SET_VOLUME:
+        SCHANNEL_CR(channel) &= ~0xFF;
+        SCHANNEL_CR(channel) |= data;
+        break;
 
-	case SOUND_SET_PAN:
-		SCHANNEL_CR(channel) &= ~SOUND_PAN(0xFF);
-		SCHANNEL_CR(channel) |= SOUND_PAN(data);
-		break;
+    case SOUND_SET_PAN:
+        SCHANNEL_CR(channel) &= ~SOUND_PAN(0xFF);
+        SCHANNEL_CR(channel) |= SOUND_PAN(data);
+        break;
 
-	case SOUND_SET_FREQ:
-		SCHANNEL_TIMER(channel) = SOUND_FREQ(data);
-		break;
+    case SOUND_SET_FREQ:
+        SCHANNEL_TIMER(channel) = SOUND_FREQ(data);
+        break;
 
-	case SOUND_SET_WAVEDUTY:
-		SCHANNEL_CR(channel) &=	 ~(7 << 24);
-		SCHANNEL_CR(channel) |=	(data) << 24;
-		break;
+    case SOUND_SET_WAVEDUTY:
+        SCHANNEL_CR(channel) &=  ~(7 << 24);
+        SCHANNEL_CR(channel) |= (data) << 24;
+        break;
 
-	case SOUND_KILL:
-	case SOUND_PAUSE:
-		SCHANNEL_CR(channel) &= ~SCHANNEL_ENABLE;
-		break;
+    case SOUND_KILL:
+    case SOUND_PAUSE:
+        SCHANNEL_CR(channel) &= ~SCHANNEL_ENABLE;
+        break;
 
-	case SOUND_RESUME:
-		SCHANNEL_CR(channel) |= SCHANNEL_ENABLE;
-		break;
+    case SOUND_RESUME:
+        SCHANNEL_CR(channel) |= SCHANNEL_ENABLE;
+        break;
 
-	default: break;
-	}
+    default: break;
+    }
 }
 
 //---------------------------------------------------------------------------------
 void installSoundEmuFIFO(void) 
 {
-	fifoSetDatamsgHandler(FIFO_USER_01, soundEmuDataHandler, 0);
-	fifoSetValue32Handler(FIFO_USER_01, soundEmuCommandHandler, 0);
+    fifoSetDatamsgHandler(FIFO_USER_01, soundEmuDataHandler, 0);
+    fifoSetValue32Handler(FIFO_USER_01, soundEmuCommandHandler, 0);
 }
