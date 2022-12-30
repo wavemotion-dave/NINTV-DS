@@ -10,6 +10,7 @@ You must supply the BIOS files in the same directory as your ROM files (can be c
 * exec.bin
 
 Optional is ivoice.bin for Intellivoice games.
+
 Optional is ecs.bin for ECS games.
 
 The GROM and EXEC binaries are property of Intellivision and you will have to find them yourself. 
@@ -39,20 +40,19 @@ Technical Specs :
 
 Controller Types :
 -----------------------
-You can select Player1 controller or Player 2 controller. 
-More importantly you can select 'Dual Action A' or 'Dual Action B'
-Dual Action A uses the disc/buttons from Controller 1 and the Keypad for Controller 2 (perfect for AD&D Cloudy Mountain or Tron Deadly Discs)
-Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Controller 2 (perfect for Astrosmash, Buzz Bombers and any game you move and shoot)
-
+* You can select Player1 controller or Player 2 controller. 
+* More importantly you can select 'Dual Action A' or 'Dual Action B'
+* Dual Action A uses the disc/buttons from Controller 1 and the Keypad for Controller 2 (perfect for AD&D Cloudy Mountain or Tron Deadly Discs)
+* Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Controller 2 (perfect for Astrosmash, Buzz Bombers and any game you move and shoot)
+ 
 Missing / Known Issues :
 -----------------------
-ECS support is partial. No UART / Cassette. 
-The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
-World Series Baseball (without voice), MindStrike, Jetsons and Scooby Doo Maze Chase. On the DSi or above running with extra memory, a full page-flipping scheme
-is employed and it should play anything you throw at it (and World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter 
-just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
-
-Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
+* ECS support is partial. No UART / Cassette. 
+* The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
+* World Series Baseball (without voice), MindStrike, Jetsons and Scooby Doo Maze Chase. On the DSi or above running with extra memory, a full page-flipping scheme
+* is employed and it should play anything you throw at it (and World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter 
+* just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
+* Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 License :
 -----------------------
