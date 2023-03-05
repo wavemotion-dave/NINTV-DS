@@ -1,5 +1,5 @@
 # NINTV-DS
-NINTV-DS is an Intellivision console emulator running on the DS/DSi.
+NINTV-DS (aka Nintellivision) is an Intellivision console emulator running on the DS/DSi.
 
 Install :
 ----------
@@ -36,7 +36,7 @@ Technical Specs :
  * JLP Flash support of 168 rows (21 sectors) for a total of 32K bytes (actual 32256 bytes). Each game gets their own 32K of file-backed flash.
  * Up to 2K of 8-bit RAM emulated for the ECS module or for games like Chess or Land Battle.
  * Up to 32K of 16-bit RAM emulated beyond JLP/ECS RAM.
- * Paging on all segments of memory provided binary is 1024KB (bytes) or less.
+ * Paging on all segments of memory provided the full binary is 1024KB (bytes) or less.
 
 Controller Types :
 -----------------------
@@ -49,9 +49,7 @@ Missing / Known Issues :
 -----------------------
 * ECS support is partial. No UART / Cassette. 
 * The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
-* World Series Baseball (without voice), MindStrike, Jetsons and Scooby Doo Maze Chase. On the DSi or above running with extra memory, a full page-flipping scheme
-* is employed and it should play anything you throw at it (and World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter 
-* just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
+* On the DSi or above running with extra memory, a full page-flipping scheme is employed and it should play anything you throw at it (World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
 * Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
 License :
@@ -76,7 +74,7 @@ And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V3.8a ... Not yet officially released
+V3.9 : 05-Mar-2023
   * Improved ECS keyboard handling so we can handle 'transposed' scanning of columns/rows (allows demos like Adventure to run). 
   * Improved banking / page-flipping for faster page switches and more robust. There should be no more small audio 'gaps' when page-flipping music. 
   * For the DSi we now support 1024KB (512K Words) of binary ROM which is almost unfathomably large in the world of Intellivision games (130% larger than anything I'm aware of).
