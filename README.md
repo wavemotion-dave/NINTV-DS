@@ -48,7 +48,7 @@ Controller Types :
 Missing / Known Issues :
 -----------------------
 * ECS support is partial. No UART / Cassette. 
-* The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games including
+* The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games.
 * On the DSi or above running with extra memory, a full page-flipping scheme is employed and it should play anything you throw at it (World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
 * Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
 
