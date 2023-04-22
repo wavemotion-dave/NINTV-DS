@@ -18,8 +18,8 @@
 
 extern Emulator *currentEmu;
 
-UINT16 gLastBankers[16] = {0};                  // We use this to know what the last enabled bank write value was for each 4K page. Needed when we restore a saved state.
-UINT8  gBankerIsMappedHere[16][16] = {0};       // We use this matrix to know if a 4K page has banking logic. This lets us speed up page in/out processing and handle games where there is a non-paged bank overlapping with paged banks (which is OK so long as the paged banks are all flipped out)
+UINT16 gLastBankers[16] __attribute__((section(".dtcm"))) = {0};                  // We use this to know what the last enabled bank write value was for each 4K page. Needed when we restore a saved state.
+UINT8  gBankerIsMappedHere[16][16] __attribute__((section(".dtcm"))) = {0};       // We use this matrix to know if a 4K page has banking logic. This lets us speed up page in/out processing and handle games where there is a non-paged bank overlapping with paged banks (which is OK so long as the paged banks are all flipped out)
 
 ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UINT16 m)
 : RAM(1, address, 0, 0xFFFF),

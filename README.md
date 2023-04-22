@@ -74,6 +74,9 @@ And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.0 : 22-Apr-2023 by wavemotion-dave
+  * Small optmizations across the board - utilizing every bit of the NDS instruction cache to squeeze out another frame or two of performance.
+
 V3.9 : 05-Mar-2023 by wavemotion-dave
   * Improved ECS keyboard handling so we can handle 'transposed' scanning of columns/rows (allows demos like Adventure to run). 
   * Improved banking / page-flipping for faster page switches and more robust. There should be no more small audio 'gaps' when page-flipping music. 

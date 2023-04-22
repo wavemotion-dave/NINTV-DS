@@ -84,7 +84,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
     // Small speedup so we don't have to shift usedCycles on every loop..
     // ---------------------------------------------------------------------
     int min_shifted = (minimum >> 2);
-    if ((min_shifted<<2) != minimum) min_shifted++;
+    if (minimum & 0x03)  min_shifted++;
     
     do {
         // This chunk of code doesn't happen very often (less than 10%) so we use the unlikely() gcc switch to help optmize
@@ -225,7 +225,7 @@ UINT16 CP1610::J(UINT16 target) {
     return 12;
 }
 
-UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
+ITCM_CODE UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
     r[registerNum] = r[7]+3;
     r[7] = target;
     interruptible = TRUE;
@@ -238,7 +238,6 @@ UINT16 CP1610::JE(UINT16 target) {
     I = TRUE;
     r[7] = target;
     interruptible = TRUE;
-
     D = FALSE;
     return 12;
 }
@@ -272,7 +271,7 @@ UINT16 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
     return 12;
 }
 
-UINT16 CP1610::INCR(UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::INCR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -285,7 +284,7 @@ UINT16 CP1610::INCR(UINT16 registerNum) {
     return 6;
 }
 
-UINT16 CP1610::DECR(UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::DECR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -314,7 +313,7 @@ UINT16 CP1610::NEGR(UINT16 registerNum) {
     return 6;
 }
 
-UINT16 CP1610::ADCR(UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::ADCR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
@@ -629,7 +628,7 @@ UINT16 CP1610::SARC_2(UINT16 registerNum) {
     return 8;
 }
 
-UINT16 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
+ITCM_CODE UINT16 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -642,7 +641,7 @@ UINT16 CP1610::MOVR(UINT16 sourceReg, UINT16 destReg) {
     return (destReg >= 6 ? 7 : 6);
 }
 
-UINT16 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
+ITCM_CODE UINT16 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -659,7 +658,7 @@ UINT16 CP1610::ADDR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-UINT16 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
+ITCM_CODE UINT16 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -676,7 +675,7 @@ UINT16 CP1610::SUBR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-UINT16 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
+ITCM_CODE UINT16 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -692,7 +691,7 @@ UINT16 CP1610::CMPR(UINT16 sourceReg, UINT16 destReg) {
     return 6;
 }
 
-UINT16 CP1610::ANDR(UINT16 sourceReg, UINT16 destReg) {
+ITCM_CODE UINT16 CP1610::ANDR(UINT16 sourceReg, UINT16 destReg) {
     r[7]++;
     interruptible = TRUE;
 
@@ -732,10 +731,9 @@ UINT16 CP1610::BEXT(UINT16 condition, INT16 displacement) {
     return 7;
 }
 
-UINT16 CP1610::B(INT16 displacement) {
+ITCM_CODE UINT16 CP1610::B(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
-
     r[7] = (UINT16)(r[7] + displacement);
 
     D = FALSE;
@@ -834,7 +832,7 @@ UINT16 CP1610::BMI(INT16 displacement) {
     return 7;
 }
 
-UINT16 CP1610::BEQ(INT16 displacement) {
+ITCM_CODE UINT16 CP1610::BEQ(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -848,7 +846,7 @@ UINT16 CP1610::BEQ(INT16 displacement) {
     return 7;
 }
 
-UINT16 CP1610::BNEQ(INT16 displacement) {
+ITCM_CODE UINT16 CP1610::BNEQ(INT16 displacement) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -990,7 +988,7 @@ UINT16 CP1610::MVI_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-UINT16 CP1610::ADD(UINT16 address, UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::ADD(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1024,7 +1022,7 @@ UINT16 CP1610::ADD_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-UINT16 CP1610::SUB(UINT16 address, UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::SUB(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1058,7 +1056,7 @@ UINT16 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-UINT16 CP1610::CMP(UINT16 address, UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::CMP(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -1090,7 +1088,7 @@ UINT16 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
 }
 
-UINT16 CP1610::AND(UINT16 address, UINT16 registerNum) {
+ITCM_CODE UINT16 CP1610::AND(UINT16 address, UINT16 registerNum) {
     r[7] += 2;
     interruptible = TRUE;
 
@@ -4250,7 +4248,6 @@ UINT16 CP1610::decode(void)
         case 0x03FF:
         default :
             return XOR_ind(7, 7);
-
     }
 }
 

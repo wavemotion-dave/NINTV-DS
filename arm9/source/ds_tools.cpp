@@ -75,10 +75,10 @@ AudioMixer           *audioMixer __attribute__((section(".dtcm"))) = NULL;
 // ---------------------------------------------------------------------------------
 // Some emulator frame calcualtions and once/second computations for frame rate...
 // ---------------------------------------------------------------------------------
-UINT16 emu_frames=0;
-UINT16 frames_per_sec_calc=0;
-UINT8  oneSecTick=FALSE;
-bool bIsFatalError = false;
+UINT16 emu_frames                   __attribute__((section(".dtcm"))) = 0;
+UINT16 frames_per_sec_calc          __attribute__((section(".dtcm"))) = 0;
+UINT8  oneSecTick                   __attribute__((section(".dtcm"))) = FALSE;
+bool bIsFatalError                  __attribute__((section(".dtcm"))) = false;
 
 // -------------------------------------------------------------
 // Background screen buffer indexes for the DS video engine...
