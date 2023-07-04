@@ -53,12 +53,14 @@ struct Overlay_t
 #define OVL_META_MENU    21
 #define OVL_META_SWITCH  22
 #define OVL_META_MANUAL  23
-#define OVL_META_STRETCH 24
-#define OVL_META_GCONFIG 25
-#define OVL_META_CHEATS  26
-#define OVL_META_EMUINFO 27
+#define OVL_META_DISC_UP 24
+#define OVL_META_DISC_DN 25
+#define OVL_META_STRETCH 26
+#define OVL_META_GCONFIG 27
+#define OVL_META_CHEATS  28
+#define OVL_META_EMUINFO 29
 
-#define OVL_MAX          28
+#define OVL_MAX          30
 #define DISC_MAX         16
 
 extern struct Overlay_t myOverlay[OVL_MAX];

@@ -37,6 +37,7 @@
 #include "AudioMixer.h"
 #include "HandController.h"
 #include "printf.h"
+#include "CRC32.h"
 
 // --------------------------------------------------------
 // A set of boolean values so we know what to load and 
@@ -319,6 +320,7 @@ void dsShowEmuInfo(void)
     
     if (currentRip != NULL)
     {
+        sprintf(dbg, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, dbg);
@@ -337,6 +339,7 @@ void dsShowEmuInfo(void)
     }
     else
     {
+        sprintf(dbg, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
         sprintf(dbg, "NO GAME IS LOADED!");                                           dsPrintValue(0, idx++, 0, dbg);        
@@ -796,7 +799,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_AX_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_AX_map);
+            if (myConfig.key_AX_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_AX_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_AX_map);
         }
         else if (myConfig.key_AX_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_AX_map]  = 1;
@@ -808,7 +813,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_XY_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_XY_map);
+            if (myConfig.key_XY_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_XY_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_XY_map);
         }
         else if (myConfig.key_XY_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_XY_map]  = 1;
@@ -820,7 +827,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_YB_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_YB_map);
+            if (myConfig.key_YB_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_YB_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_YB_map);
         }
         else if (myConfig.key_YB_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_YB_map]  = 1;
@@ -832,7 +841,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_BA_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_BA_map);
+            if (myConfig.key_BA_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_BA_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_BA_map);
         }
         else if (myConfig.key_BA_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_BA_map]  = 1;
@@ -845,7 +856,9 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_A_map >= OVL_META_RESET)
             {
-                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
+                if (myConfig.key_A_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_A_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
             }
             else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
                 ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
@@ -857,7 +870,9 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_B_map >= OVL_META_RESET)
             {
-                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
+                if (myConfig.key_B_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_B_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
             }
             else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
                 ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
@@ -869,7 +884,9 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_X_map >= OVL_META_RESET)
             {
-                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
+                if (myConfig.key_X_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_X_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
             }
             else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
                 ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
@@ -881,7 +898,9 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_Y_map >= OVL_META_RESET)
             {
-                if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
+                if (myConfig.key_Y_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_Y_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
             }
             else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
                 ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
@@ -894,7 +913,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_L_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
+            if (myConfig.key_L_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_L_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
         }
         else if (myConfig.key_L_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_L_map]  = 1;
@@ -906,7 +927,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_R_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
+            if (myConfig.key_R_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_R_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
         }
         else if (myConfig.key_R_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_R_map]  = 1;
@@ -918,7 +941,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_START_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
+            if (myConfig.key_START_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_START_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
         }
         else if (myConfig.key_START_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_START_map]  = 1;
@@ -930,7 +955,9 @@ ITCM_CODE void pollInputs(void)
     {
         if (myConfig.key_SELECT_map >= OVL_META_RESET)
         {
-            if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
+            if (myConfig.key_SELECT_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+            else if (myConfig.key_SELECT_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
         }
         else if (myConfig.key_SELECT_map >= OVL_BTN_FIRE) 
             ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
@@ -1407,7 +1434,7 @@ void dsMainLoop(char *initial_file)
     videoBus = new VideoBusDS();
     audioMixer = new AudioMixerDS();
     
-    FindAndLoadConfig();
+    FindAndLoadConfig(CRC32::getCrc(initial_file));
     dsShowScreenMain(true);
     
     Run(initial_file);      // This will only return if the user opts to QUIT

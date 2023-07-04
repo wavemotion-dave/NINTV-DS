@@ -69,7 +69,7 @@ private:
     Rip(UINT32 systemID);
 
     void AddPeripheralUsage(const CHAR* periphName, PeripheralCompatibility usage);
-    static Rip* LoadBinCfg(const CHAR* cfgFile, UINT32 crc);
+    static Rip* LoadBinCfg(const CHAR* cfgFile, UINT32 crc, size_t size);
 
     void SetFileName(const CHAR* fname) {
         strncpy(this->filename, fname, sizeof(this->filename));

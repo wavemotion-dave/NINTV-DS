@@ -106,7 +106,7 @@ static void SetDefaultGameConfig(void)
     myConfig.sound_clock_div                = myGlobalConfig.def_sound_quality;
     myConfig.dpad_config                    = 0;
     myConfig.target_fps                     = 0;
-    myConfig.spare0                         = 0;
+    myConfig.load_options                   = 0x00;
     myConfig.palette                        = myGlobalConfig.def_palette;
     myConfig.stretch_x                      = ((160 / 256) << 8) | (160 % 256);
     myConfig.offset_x                       = 0;
@@ -189,7 +189,7 @@ void SaveConfig(bool bShow)
 // Find the NINTV-DS.DAT file and load it... if it doesn't exist, then
 // default values will be used for the entire configuration database...
 // -------------------------------------------------------------------------
-void FindAndLoadConfig(void)
+void FindAndLoadConfig(UINT32 crc)
 {
     FILE *fp;
 
@@ -216,11 +216,11 @@ void FindAndLoadConfig(void)
             memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
         }
         
-        if (currentRip != NULL)
+        if (crc != 0xFFFFFFFF)
         {
             for (int slot=0; slot<MAX_CONFIGS; slot++)
             {
-                if (allConfigs.game_config[slot].game_crc == currentRip->GetCRC())  // Got a match?!
+                if (allConfigs.game_config[slot].game_crc == crc)  // Got a match?!
                 {
                     memcpy(&myConfig, &allConfigs.game_config[slot], sizeof(struct Config_t));
                     if (myConfig.stretch_x < 0x50) myConfig.stretch_x = ((160 / 256) << 8) | (160 % 256);   // If we haven't saved a stretch... set it to normal
@@ -254,7 +254,7 @@ void FindAndLoadConfig(void)
 struct options_t
 {
     const char  *label;
-    const char  *option[25];
+    const char  *option[27];
     UINT8 *option_val;
     UINT8 option_max;
 };
@@ -263,33 +263,33 @@ const struct options_t Game_Option_Table[] =
 {
     {"OVERLAY",     {"GENERIC", "CUSTOM", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTANS", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "ECS"}, &myConfig.overlay_selected, 11},
     {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_A_map,        24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_A_map,        26},
     {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_B_map,        24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_B_map,        26},
     {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_X_map,        24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_X_map,        26},
     {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT",       
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_Y_map,        24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_Y_map,        26},
     {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_L_map,        24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_L_map,        26},
     {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_R_map,        24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_R_map,        26},
     {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_START_map,    24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_START_map,    26},
     {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_SELECT_map,   24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_SELECT_map,   26},
     
     {"A+X BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_AX_map,       24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_AX_map,       26},
 
     {"X+Y BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_XY_map,       24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_XY_map,       26},
 
     {"Y+B BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_YB_map,       24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_YB_map,       26},
 
     {"B+A BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "R-ACT", "L-ACT", 
-                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL"},                                                                 &myConfig.key_BA_map,       24},
+                     "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_BA_map,       26},
     
     {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
     {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},

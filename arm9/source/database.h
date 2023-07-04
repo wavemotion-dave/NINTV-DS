@@ -9,8 +9,8 @@
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
 
-#ifndef __CONFIG_H
-#define __CONFIG_H
+#ifndef __DATABASE_H
+#define __DATABASE_H
 
 #include <nds.h>
 #include "types.h"
@@ -46,6 +46,8 @@ struct Database_t
     
     struct MemArea_t mem_areas[MAX_MEM_AREAS];
 };
+
+extern const struct Database_t database[];
 
 struct SpecialRomDatabase_t 
 {

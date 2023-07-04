@@ -22,6 +22,7 @@
 #include "../database.h"
 #include "../ds_tools.h"
 #include "../loadgame.h"
+#include "../config.h"
 
 #define ROM_TAG_TITLE          0x01
 #define ROM_TAG_PUBLISHER      0x02
@@ -121,6 +122,23 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
+void ForceLoadOptions(void)
+{
+    if (load_options == 0x00) load_options = myConfig.load_options;
+    if (load_options)
+    {
+        bUseECS = 0;
+        bUseJLP = 0;
+        bUseIVoice = 0;
+        
+        if ((load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)  bUseJLP = 1;
+        if ((load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)  bUseECS = 1;
+        if ((load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
+        
+        myConfig.load_options = load_options;
+    }
+}
+
 char cfgFilename[128];
 Rip* Rip::LoadBin(const CHAR* filename)
 {
@@ -159,7 +177,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
     // Now go and try and load all the memory regions based on either 
     // the internal database table or the .cfg file if it exists...
     // ----------------------------------------------------------------
-    Rip* rip = LoadBinCfg(cfgFilename, crc);
+    Rip* rip = LoadBinCfg(cfgFilename, crc, size);
     if (rip == NULL)
     {
         FatalError("UNABLE TO CREATE RIP");
@@ -189,16 +207,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
     // --------------------------------------------------------------
     // If the user asked for a specific combination of hardware...
     // --------------------------------------------------------------
-    if (load_options)
-    {
-        bUseECS = 0;
-        bUseJLP = 0;
-        bUseIVoice = 0;
-        
-        if ((load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)  bUseJLP = 1;
-        if ((load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)  bUseECS = 1;
-        if ((load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
-    }
+    ForceLoadOptions();
     
     // Add the JLP RAM module if required...
     if (bUseJLP)
@@ -224,10 +233,30 @@ Rip* Rip::LoadBin(const CHAR* filename)
     return rip;
 }
 
-Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
+
+// Check if a file exists... return 1 if exists, return 0 if it does not exist...
+static u8 exists(const CHAR *filename)
+{
+    FILE *file;
+    if (file = fopen(filename, "r"))
+    {
+        fclose(file);
+        return 1;
+    }
+
+    return 0;
+}
+
+Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
 {
     Rip* rip = NULL;
     const struct Database_t *db_entry = FindDatabaseEntry(crc); // Try to find the CRC in our internal database...
+    
+    // If we didn't find a game in the database and no .cfg exists but the .bin is 16K or less, we can assume it will load at 0x5000
+    if ((db_entry == NULL) && !exists(configFile) && (size <= 16384))
+    {
+        db_entry = &database[0];    // Generic loader at 5000h for games up to 16K in size (fairly common)
+    }
     
     if (db_entry != NULL)   // We found an entry... let's go!
     {
@@ -386,6 +415,11 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc)
                 }
             }
             fclose(cfgFile);
+            
+            // --------------------------------------------------------------
+            // If the user asked for a specific combination of hardware...
+            // --------------------------------------------------------------
+            ForceLoadOptions();
         }
     }
 
@@ -601,16 +635,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
     // --------------------------------------------------------------
     // If the user asked for a specific combination of hardware...
     // --------------------------------------------------------------
-    if (load_options)
-    {
-        bUseECS = 0;
-        bUseJLP = 0;
-        bUseIVoice = 0;
-        
-        if ((load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)        bUseJLP = 1;
-        if ((load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)        bUseECS = 1;
-        if ((load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
-    }
+    ForceLoadOptions();
 
     // Load the JLP RAM module if required...
     if (bUseJLP)

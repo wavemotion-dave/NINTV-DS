@@ -41,7 +41,7 @@ struct Config_t
     UINT8  sound_clock_div;
     UINT8  dpad_config;
     UINT8  target_fps;
-    UINT8  spare0;
+    UINT8  load_options;
     UINT8  palette;
     UINT16 stretch_x;
     INT8   offset_x;
@@ -94,7 +94,7 @@ extern struct Config_t       myConfig;
 extern struct GlobalConfig_t myGlobalConfig;
 extern struct AllConfig_t    allConfigs;
 
-extern void FindAndLoadConfig(void);
+extern void FindAndLoadConfig(UINT32 crc);
 extern void dsChooseOptions(void);
 void SaveConfig(bool bShow);
 

@@ -63,14 +63,19 @@ UINT8 crcBuffer[256];
 UINT32 CRC32::getCrc(const CHAR* filename)
 {
     CRC32 crc;
+    
+    if (filename == NULL) return 0xFFFFFFFF;
 
     FILE* file = fopen(filename, "rb");
-    while (!feof(file))
+    if (file)
     {
-        int read = fread(crcBuffer, sizeof(UINT8), 256, file);  // Read up to 256 bytes into a buffer
-        crc.update(crcBuffer, (UINT32)read);                    // And compute the CRC of any bytes read
+        while (!feof(file))
+        {
+            int read = fread(crcBuffer, sizeof(UINT8), 256, file);  // Read up to 256 bytes into a buffer
+            crc.update(crcBuffer, (UINT32)read);                    // And compute the CRC of any bytes read
+        }
+        fclose(file);
     }
-    fclose(file);
 
     return crc.getValue();
 }

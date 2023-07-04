@@ -30,6 +30,7 @@
 
 const struct Database_t database[] =
 {
+    {0x00000000, "Generic Loader at 5000h",                     0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD7C78754, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xB91488E2, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xA60E25FC, "ABPA Backgammon (Mattel 1978)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -262,6 +263,15 @@ const struct SpecialRomDatabase_t rom_database[] =
     {0x69adbba6, "FW Diagnostics (IVoice)",                     1,  0,  0},
     {0x99e7b4fc, "Goatnom (IVoice)",                            1,  0,  0},
     {0x53bc0939, "Killer Bees (IVoice)",                        1,  0,  0},
+    {0xbb759a58, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},
+    {0x074ce00c, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},    
+    
+    // intydave's hacks for the "No ECS keyboard"
+    {0x9555dc00, "Jetsons_Way_With_Words (Controller)",         0,  0,  1},
+    {0x1be6fc51, "MindStrike.rom (Controller)",                 0,  0,  1},
+    {0xceb02406, "Scooby_Doo.rom (Controller)",                 0,  0,  1},
+    {0xbbe412bf, "Super_NFL.rom (Controller)",                  0,  0,  1},
+    {0xb07e407e, "Super_Series_Baseball.rom (Controller)",      1,  0,  1},
     
     {0x8ddd534e, "FreeCont (ECS)",                              0,  0,  1},
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0}
@@ -281,7 +291,7 @@ const struct Database_t *FindDatabaseEntry(UINT32 crc)
         }
         idx++;
     }
-    return NULL;   
+    return NULL;
 }
 
 // ---------------------------------------------------------

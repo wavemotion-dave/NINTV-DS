@@ -8,10 +8,8 @@ You must supply the BIOS files in the same directory as your ROM files (can be c
 
 * grom.bin
 * exec.bin
-
-Optional is ivoice.bin for Intellivoice games.
-
-Optional is ecs.bin for ECS games.
+* ivoice.bin (Optional for Intellivoice games)
+* ecs.bin (Optional for ECS games)
 
 The GROM and EXEC binaries are property of Intellivision and you will have to find them yourself. 
 Don't ask. If you own Intellivision Lives, you likely have both files already somewhere in your house. 
@@ -23,10 +21,10 @@ Features :
  * Custom Overlay Support. See the 'extras' folder for details.
  * Manual/Instruction Support. See the 'extras' folder for an example.
  * Save Sate support (3 save slots per game).
- * High Scores for up to 10 scores pre game with various sorting options.
+ * High Scores for up to 10 scores per game with various sorting options.
  * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
- * JLP support for accelerated functions, extra RAM and flash memory. When loading a game, use the X button to load with options and force JLP support ON if not auto-detected.
+ * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
  * ECS support for ECS games including sound-enchanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
 
 Technical Specs :
@@ -48,9 +46,7 @@ Controller Types :
 Missing / Known Issues :
 -----------------------
 * ECS support is partial. No UART / Cassette. 
-* The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games.
-* On the DSi or above running with extra memory, a full page-flipping scheme is employed and it should play anything you throw at it (World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
-* Check for updates on my web site : https://github.com/wavemotion-dave/NINTV-DS
+* The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games. The DSi has extra memory and will play anything you throw at it ((World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
 
 License :
 -----------------------
@@ -74,6 +70,12 @@ And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.1 : 04-Jul-2023 by wavemotion-dave
+  * Added the ability to map any DS key to the DISC UP and DISC DOWN which makes platform games like Rick Dynamite much more enjoyable.
+  * Force load of JLP/ECS/IVoice will now save out to configuration for the game so you don't have to do that more than once.
+  * Games of 16K or less without a specific .cfg or database entry will load at 5000h which is very likely where it wants to load.
+  * Numerous homebrews and hacks added to the internal database.
+
 V4.0 : 22-Apr-2023 by wavemotion-dave
   * Small optmizations across the board - utilizing every bit of the NDS instruction cache to squeeze out another frame or two of performance.
 

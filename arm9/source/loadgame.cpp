@@ -61,6 +61,9 @@ BOOL LoadCart(const CHAR* filename)
     bIsFatalError = false;
     bGameLoaded = FALSE;
     
+    // Load up the configuration based on the CRC32 of the game. Do this early since we need some of those properties to load the RIP
+    FindAndLoadConfig(CRC32::getCrc(filename));
+    
     // ----------------------------------------------------------------------
     // Set the RAM Bankers for page-flipping all back to zero on a new load
     // ----------------------------------------------------------------------
@@ -124,7 +127,6 @@ BOOL LoadCart(const CHAR* filename)
     if (currentRip->GetCRC() == 0x2DEACD15) bLatched = true;        // Stampede must have latched backtab access
     if (currentRip->GetCRC() == 0x573B9B6D) bLatched = true;        // Masters of the Universe must have latched backtab access
     
-    FindAndLoadConfig();
     dsShowScreenEmu();
     dsShowScreenMain(false);
     
@@ -416,7 +418,7 @@ void clrFavorite(char *filename)
 // time we are loading up files, use the global configuration to determine what directory
 // we should be starting in... after the first time we just load up the current directory).
 // ----------------------------------------------------------------------------------------
-ITCM_CODE void intvFindFiles(void) 
+void intvFindFiles(void) 
 {
   static bool bFirstTime = true;
   DIR *pdir;
@@ -504,7 +506,7 @@ ITCM_CODE void intvFindFiles(void)
 // it occasinoally gets out of sync... it's minor enough to not be an
 // issue but at some point this routine should be re-written...
 // --------------------------------------------------------------------------
-ITCM_CODE void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
+void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 {
   unsigned short ucBcl,ucGame;
 
@@ -825,7 +827,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
           if (keysCurrent() & KEY_X)
           {
               opt = LoadWithOptions();
-              if (opt == 0) {asm("nop");}       // Load Normally
+              if (opt == 0) {load_options = 0x00;}       // Load Normally - remove any overrides...
               if (opt == 1) {load_options = LOAD_WITH_STOCK_INTY;}
               if (opt == 2) {load_options = LOAD_WITH_JLP;}
               if (opt == 3) {load_options = LOAD_WITH_IVOICE;}
@@ -834,8 +836,15 @@ unsigned int dsWaitForRom(char *chosen_filename)
               if (opt == 6) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS;}
               if (opt == 7) {load_options = LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               if (opt == 8) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
-              while (keysCurrent() & KEY_A);
-              WAITVBL;
+              while (keysCurrent() & KEY_X);
+              
+              if (myConfig.load_options != load_options)
+              {
+                  myConfig.load_options = load_options;
+                  dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
+                  SaveConfig(false);
+              }
+              WAITVBL;WAITVBL;
           }
           if (opt != (LOAD_OPTION_MENU_ITEMS-1))
           {
