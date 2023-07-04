@@ -27,6 +27,7 @@ extern BOOL LoadPeripheralRoms(Peripheral* peripheral);
 extern unsigned int dsWaitForRom(char *chosen_filename);
 extern UINT8 load_options;
 
+#define LOAD_NORMALLY           0x01        // Use the normal .cfg or .rom to load the game
 #define LOAD_WITH_STOCK_INTY    0x80        // Do not load any periperhals - just the stock Intellivision as God created
 #define LOAD_WITH_JLP           0x81        // Load with stock Inty + JLP
 #define LOAD_WITH_ECS           0x82        // Load with stock Inty + ECS

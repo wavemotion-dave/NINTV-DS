@@ -827,7 +827,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
           if (keysCurrent() & KEY_X)
           {
               opt = LoadWithOptions();
-              if (opt == 0) {load_options = 0x00;}       // Load Normally - remove any overrides...
+              if (opt == 0) {load_options = LOAD_NORMALLY; }       // Load Normally - remove any overrides...
               if (opt == 1) {load_options = LOAD_WITH_STOCK_INTY;}
               if (opt == 2) {load_options = LOAD_WITH_JLP;}
               if (opt == 3) {load_options = LOAD_WITH_IVOICE;}
@@ -837,14 +837,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
               if (opt == 7) {load_options = LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               if (opt == 8) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               while (keysCurrent() & KEY_X);
-              
-              if (myConfig.load_options != load_options)
-              {
-                  myConfig.load_options = load_options;
-                  dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
-                  SaveConfig(false);
-              }
-              WAITVBL;WAITVBL;
+              WAITVBL;
           }
           if (opt != (LOAD_OPTION_MENU_ITEMS-1))
           {

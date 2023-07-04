@@ -124,18 +124,28 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
 
 void ForceLoadOptions(void)
 {
-    if (load_options == 0x00) load_options = myConfig.load_options;
-    if (load_options)
+    // --------------------------------------------------------------------
+    // If the user has picked some load options, we want to save those out
+    // --------------------------------------------------------------------
+    if ((load_options != 0x00) && (load_options != myConfig.load_options))
+    {
+        myConfig.load_options = (load_options == LOAD_NORMALLY ? 0x00: load_options);
+        dsPrintValue(2,23,0, (char*)"    SAVING CONFIGURATION     ");
+        SaveConfig(FALSE);
+        WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(2,23,0, (char*)"                             ");
+    }
+    
+    // If the user has overridden the load options for this game, use those instead...
+    if (myConfig.load_options)
     {
         bUseECS = 0;
         bUseJLP = 0;
         bUseIVoice = 0;
         
-        if ((load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)  bUseJLP = 1;
-        if ((load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)  bUseECS = 1;
-        if ((load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
-        
-        myConfig.load_options = load_options;
+        if ((myConfig.load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)  bUseJLP = 1;
+        if ((myConfig.load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)  bUseECS = 1;
+        if ((myConfig.load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
     }
 }
 
@@ -183,7 +193,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
         FatalError("UNABLE TO CREATE RIP");
         return NULL;
     }
-
+    
     //parse the file bin_image_buf[] into the rip
     UINT32 offset = 0;
     UINT16 romCount = rip->GetROMCount();
@@ -204,6 +214,11 @@ Rip* Rip::LoadBin(const CHAR* filename)
         offset += nextRom->getByteWidth() * nextRom->getReadSize();
     }
 
+    // Save some basic info which we need if we end up force-loading options
+    rip->SetFileName(filename);
+    rip->crc = CRC32::getCrc(filename);
+    rip->mySize = size;
+    
     // --------------------------------------------------------------
     // If the user asked for a specific combination of hardware...
     // --------------------------------------------------------------
@@ -225,10 +240,6 @@ Rip* Rip::LoadBin(const CHAR* filename)
     
     // Add the ECS module if required...
     if (bUseECS)    rip->AddPeripheralUsage("ECS", (bUseECS == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
-
-    rip->SetFileName(filename);
-    rip->crc = CRC32::getCrc(filename);
-    rip->mySize = size;
 
     return rip;
 }
@@ -415,11 +426,6 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                 }
             }
             fclose(cfgFile);
-            
-            // --------------------------------------------------------------
-            // If the user asked for a specific combination of hardware...
-            // --------------------------------------------------------------
-            ForceLoadOptions();
         }
     }
 
