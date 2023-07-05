@@ -16,7 +16,7 @@ Don't ask. If you own Intellivision Lives, you likely have both files already so
 
 Features :
 ----------
- * All known games run at full speed on a DSi or above.
+ * All known games run at full speed on a DSi or above  (the DSi has 2X the CPU and 4X the memory of the normal DS handhelds).
  * Many games run very close to full speed on the older DS-LITE and DS-PHAT hardware but you can play with config settings to get the most out of these games.
  * Custom Overlay Support. See the 'extras' folder for details.
  * Manual/Instruction Support. See the 'extras' folder for an example.
@@ -25,7 +25,7 @@ Features :
  * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
  * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
- * ECS support for ECS games including sound-enchanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
+ * ECS support for ECS games including sound-enhanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
 
 Technical Specs :
 ----------
