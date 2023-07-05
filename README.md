@@ -35,6 +35,7 @@ Technical Specs :
  * Up to 2K of 8-bit RAM emulated for the ECS module or for games like Chess or Land Battle.
  * Up to 32K of 16-bit RAM emulated beyond JLP/ECS RAM.
  * Paging on all segments of memory provided the full binary is 1024KB (bytes) or less.
+ * Loads .ROM or .BIN/.CFG format files.
 
 Controller Types :
 -----------------------
