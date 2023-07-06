@@ -12,7 +12,7 @@
 #include <nds.h>
 #include <nds/fifomessages.h>
 
-#include "ds_tools.h"
+#include "nintv-ds.h"
 #include "videoaud.h"
 #include "config.h"
 #include "Emulator.h"

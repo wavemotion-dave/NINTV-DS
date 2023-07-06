@@ -18,7 +18,7 @@
 #include <dirent.h>
 #include <unistd.h>
 
-#include "ds_tools.h"
+#include "nintv-ds.h"
 #include "overlay.h"
 #include "config.h"
 #include "bgBottom.h"

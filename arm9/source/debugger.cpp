@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <malloc.h>    // for mallinfo()
 
-#include "ds_tools.h"
+#include "nintv-ds.h"
 #include "bgBottom.h"
 #include "bgTop.h"
 #include "bgDebug.h"

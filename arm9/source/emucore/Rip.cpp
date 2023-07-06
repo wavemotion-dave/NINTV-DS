@@ -20,7 +20,7 @@
 #include "Memory.h"
 #include "CRC32.h"
 #include "../database.h"
-#include "../ds_tools.h"
+#include "../nintv-ds.h"
 #include "../loadgame.h"
 #include "../config.h"
 

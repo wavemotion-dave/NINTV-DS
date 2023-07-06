@@ -15,7 +15,7 @@
 #include "AudioMixer.h"
 #include "AudioOutputLine.h"
 #include "Emulator.h"
-#include "../ds_tools.h"
+#include "../nintv-ds.h"
 #include "../config.h"
 
 // ----------------------------------------------------------------------------------------------

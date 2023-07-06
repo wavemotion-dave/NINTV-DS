@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
-#include "ds_tools.h"
+#include "nintv-ds.h"
 #include "highscore.h"
 #include "Memory.h"
 

@@ -9,8 +9,8 @@
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
 
-#ifndef __DS_TOOLS_H
-#define __DS_TOOLS_H
+#ifndef _NINTYDS_H
+#define _NINTYDS_H
 
 #include <nds.h>
 #include "types.h"

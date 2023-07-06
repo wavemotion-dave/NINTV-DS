@@ -15,7 +15,7 @@
 #include <dirent.h>
 #include <unistd.h>
 
-#include "ds_tools.h"
+#include "nintv-ds.h"
 #include "savestate.h"
 #include "config.h"
 #include "bgBottom.h"

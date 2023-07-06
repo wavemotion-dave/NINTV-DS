@@ -10,7 +10,7 @@
 // =====================================================================================
 
 #include <nds.h>
-#include "../ds_tools.h"
+#include "../nintv-ds.h"
 #include "Intellivision.h"
 #include "RAM.h"
 #include "GRAM.h"

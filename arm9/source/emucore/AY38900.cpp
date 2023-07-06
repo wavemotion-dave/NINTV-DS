@@ -12,7 +12,7 @@
 #include <nds.h>
 #include "AY38900.h"
 #include "ProcessorBus.h"
-#include "../ds_tools.h"
+#include "../nintv-ds.h"
 #include "../config.h"
 
 #define MIN(v1, v2) (v1 < v2 ? v1 : v2)

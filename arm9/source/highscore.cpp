@@ -14,7 +14,7 @@
 #include <fat.h>
 #include <dirent.h>
 #include <unistd.h>
-#include "ds_tools.h"
+#include "nintv-ds.h"
 #include "highscore.h"
 #include "bgMenu-Green.h"
 #include "bgMenu-White.h"

@@ -12,7 +12,7 @@
 #include <nds.h>
 #include <stdio.h>
 #include "MemoryBus.h"
-#include "../ds_tools.h"
+#include "../nintv-ds.h"
 
 UINT16 MAX_READ_OVERLAPPED_MEMORIES = 2;
 UINT16 MAX_WRITE_OVERLAPPED_MEMORIES = 3;

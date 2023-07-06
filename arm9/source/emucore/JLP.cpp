@@ -18,7 +18,7 @@
 #include "RAM.h"
 #include "Rip.h"
 #include "../config.h"
-#include "../ds_tools.h"
+#include "../nintv-ds.h"
 
 extern Rip      *currentRip;
 
