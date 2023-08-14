@@ -604,6 +604,9 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 myConfig.controller_type = 1-myConfig.controller_type;
+                dsPrintValue(0,0,0,(char*) (myConfig.controller_type ? "P2 " : "P1 "));
+                WAITVBL;WAITVBL;WAITVBL;
+                dsPrintValue(0,0,0, (char*)"   ");
             }
             break;
             

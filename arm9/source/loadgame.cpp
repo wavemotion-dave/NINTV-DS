@@ -123,9 +123,10 @@ BOOL LoadCart(const CHAR* filename)
     extern UINT8 bLatched;
     fudge_timing = 0;
     bLatched = false;
-    if (currentRip->GetCRC() == 0x5F6E1AF6) fudge_timing = 1000;    // Motocross needs some fudge timing to run... known race condition...
-    if (currentRip->GetCRC() == 0x2DEACD15) bLatched = true;        // Stampede must have latched backtab access
-    if (currentRip->GetCRC() == 0x573B9B6D) bLatched = true;        // Masters of the Universe must have latched backtab access
+    if (currentRip->GetCRC() == 0x5F6E1AF6) fudge_timing = 1000;         // Motocross needs some fudge timing to run... known race condition...
+    if (currentRip->GetCRC() == 0x2DEACD15) bLatched = true;             // Stampede must have latched backtab access
+    if (currentRip->GetCRC() == 0x573B9B6D) bLatched = true;             // Masters of the Universe must have latched backtab access
+    if (currentRip->GetCRC() == 0x8AD19AB3) myConfig.frame_skip_opt = 0; // B-17 Bomber no frame skip
     
     dsShowScreenEmu();
     dsShowScreenMain(false);

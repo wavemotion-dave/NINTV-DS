@@ -30,7 +30,7 @@
 
 const struct Database_t database[] =
 {
-    {0xDEADBEEF, "Generic Loader at 5000h",                     0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xDEADBEEF, "Generic Loader at 5000h",                     0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0xD000, 0x1000},   {DB_NONE,  0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD7C78754, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xB91488E2, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xA60E25FC, "ABPA Backgammon (Mattel 1978)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -119,7 +119,7 @@ const struct Database_t database[] =
     {0x6B6E80EE, "Locomotion (Matel 1982)",                     0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xF3B0C759, "Magic Carousel (Matel 1982)",                 0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x573B9B6D, "Masters of the Universe-He Man! (Matel 1983)",0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0xFF68AA22, "Melody Blaster (Matel 1983)",                 0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xFF68AA22, "Melody Blaster (Matel 1983)",                 0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xE806AD91, "Microsurgeon (Imagic 1982)",                  0,  0,  0,  {{DB_ROM16, 0x4800, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x94096229, "Minehunter (Ryan Kinnen 2004)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x59898803, "Minehunter (Ryan Kinnen 2004)",               0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},

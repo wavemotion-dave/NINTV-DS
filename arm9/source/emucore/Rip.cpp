@@ -258,6 +258,12 @@ static u8 exists(const CHAR *filename)
     return 0;
 }
 
+
+u16 maybeRAM_start[16];
+u16 maybeRAM_end[16];
+u8 maybeRAMidx = 0;
+
+
 Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
 {
     Rip* rip = NULL;
@@ -268,6 +274,8 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
     {
         db_entry = &database[0];    // Generic loader at 5000h for games up to 16K in size (fairly common)
     }
+    
+    maybeRAMidx = 0;
     
     if (db_entry != NULL)   // We found an entry... let's go!
     {
@@ -397,7 +405,16 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                                 }
                                 else if (strstr(ptr, "RAM 16") != NULL)
                                 {
-                                    rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 16));
+                                    if ((start_addr >= 0x8000) && (start_addr <= 0x9FFF))
+                                    {
+                                        maybeRAM_start[maybeRAMidx] = start_addr;
+                                        maybeRAM_end[maybeRAMidx] = end_addr;
+                                        maybeRAMidx++;
+                                    }
+                                    else
+                                    {
+                                        rip->AddRAM(new RAM((UINT16)((end_addr-start_addr) + 1), start_addr, 0xFFFF, 0xFFFF, 16));
+                                    }
                                 }
                             }
                         }
@@ -426,6 +443,16 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                 }
             }
             fclose(cfgFile);
+
+            // If we were asked to have 16-bit RAM in the 8000-9FFF region and we didn't get JLP enabled (which has its own RAM mapped there), we map new RAM
+            if (maybeRAMidx && !bUseJLP)
+            {
+                for (u8 idx=0; idx<maybeRAMidx; idx++)
+                {
+                    rip->AddRAM(new RAM((UINT16)((maybeRAM_end[idx]-maybeRAM_start[idx]) + 1), maybeRAM_start[idx], 0xFFFF, 0xFFFF, 16));   
+                }
+            }
+            
         }
     }
 
