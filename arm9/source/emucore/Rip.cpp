@@ -420,7 +420,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                         }
                         if (cfg_mode == 3)  // [vars] Mode
                         {
-                            if (strstr(ptr, "jlp"))
+                            if (strstr(ptr, "jlp") || strstr(ptr, "jlp_accel") || strstr(ptr, "jlp_flash"))
                             {
                                 bUseJLP = 1;
                             }

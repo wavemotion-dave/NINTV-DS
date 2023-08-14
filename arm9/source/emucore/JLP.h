@@ -15,11 +15,13 @@
 #include <string.h>
 #include "RAM.h"
 
-#define JLP_RAM_SIZE    (0x2000)
-#define JLP_RAM_ADDRESS (0x8000)
-#define JLP_FLASH_SIZE  (32*1024)
-#define JLP_CRC_POLY    (0xAD52)
-#define NUM_JLP_ROWS    (168)
+#define JLP_RAM_SIZE            (0x2000)
+#define JLP_RAM_ADDRESS         (0x8000)
+#define JLP_FLASH_SIZE          (64*1024)
+#define JLP_CRC_POLY            (0xAD52)
+#define JLP_NUM_ROWS            (336)
+#define JLP_NUM_BYTES_PER_ROW   (192)
+#define JLP_NUM_SECTORS         (42)        // 1.5K per sector. 336x129=64512 bytes (roughly 64K) divided by 1513 bytes = 42
 
 TYPEDEF_STRUCT_PACK( _JLPState
 {

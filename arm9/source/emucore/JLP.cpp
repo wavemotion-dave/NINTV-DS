@@ -34,7 +34,7 @@ void JLP::reset()
     jlp_ram[JLP_RAM_SIZE-1] = 0;                    /* The last byte of jlp RAM reads back as 0 */
     
     jlp_ram[0x23] = 0;                              /* First valid flash row number */
-    jlp_ram[0x24] = NUM_JLP_ROWS;                   /* Last  valid flash row number */
+    jlp_ram[0x24] = JLP_NUM_ROWS;                   /* Last  valid flash row number */
     jlp_ram[0x2D] = 0;                              /* Command regs read as 0   */
     jlp_ram[0x2E] = 0;                              /* Command regs read as 0   */
     jlp_ram[0x2F] = 0;                              /* Command regs read as 0   */
@@ -110,16 +110,13 @@ void JLP::ReadFlashFile(void)
 {
     FILE *fp;
     
+    memset(jlp_flash, 0xFF, JLP_FLASH_SIZE);    // Ensure buffer is reset to FF before we read the file...
     GetFlashFilename();
     fp = fopen(flash_filename, "rb");
     if (fp != NULL)
     {
         fread(jlp_flash, 1, JLP_FLASH_SIZE, fp);
         fclose(fp);
-    }
-    else
-    {
-        memset(jlp_flash, 0xFF, JLP_FLASH_SIZE);
     }
     flash_read = 0;
 }
@@ -147,22 +144,22 @@ void JLP::ScheduleWriteFlashFile(void)
 void JLP::RamToFlash(void)
 {
     UINT32 addr = jlp_ram[(0x8025&readAddressMask) - this->location] - JLP_RAM_ADDRESS;
-    UINT32 row  = (jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) * 192;
+    UINT32 row  = (jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) * JLP_NUM_BYTES_PER_ROW;
     int i, a;
 
-    if (jlp_ram[(0x8026&readAddressMask) - this->location] > NUM_JLP_ROWS) return;
+    if (jlp_ram[(0x8026&readAddressMask) - this->location] > JLP_NUM_ROWS) return;
     
     if (flash_read)  ReadFlashFile();
     
     /* Refuse to write if row isn't empty. */
-    for (i = 0; i < 192; i++)
+    for (i = 0; i < JLP_NUM_BYTES_PER_ROW; i++)
         if (jlp_flash[row + i] != 0xFF)
         {
             return;
         }
 
     /* Explicitly copy little-endian regardless of machine endian */
-    for (i = a = 0; i < 192; i += 2, a++)
+    for (i = a = 0; i < JLP_NUM_BYTES_PER_ROW; i += 2, a++)
     {
         jlp_flash[row + i + 0] = jlp_ram[addr + a] & 0xFF;
         jlp_flash[row + i + 1] = jlp_ram[addr + a] >> 8;
@@ -173,16 +170,16 @@ void JLP::RamToFlash(void)
 void JLP::FlashToRam(void)
 {
     UINT32 addr = jlp_ram[(0x8025&readAddressMask) - this->location] - JLP_RAM_ADDRESS;
-    UINT32 row  = (jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) * 192;
+    UINT32 row  = (jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) * JLP_NUM_BYTES_PER_ROW;
     int i, a;
     
-    if (jlp_ram[(0x8026&readAddressMask) - this->location] > NUM_JLP_ROWS) return;
+    if (jlp_ram[(0x8026&readAddressMask) - this->location] > JLP_NUM_ROWS) return;
 
     // Check to see if we need to read in the flash file...
     if (flash_read)  ReadFlashFile();
     
     /* Explicitly copy little-endian regardless of machine endian */
-    for (i = a = 0; i < 192; i += 2, a++)
+    for (i = a = 0; i < JLP_NUM_BYTES_PER_ROW; i += 2, a++)
     {
         UINT16 lo = jlp_flash[row + i + 0];
         UINT16 hi = jlp_flash[row + i + 1];
@@ -192,10 +189,10 @@ void JLP::FlashToRam(void)
 
 void JLP::EraseSector(void)
 {
-    UINT32 row = ((jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) & -8) * 192;
-    if (jlp_ram[(0x8026&readAddressMask) - this->location] > NUM_JLP_ROWS) return;
+    UINT32 row = ((jlp_ram[(0x8026&readAddressMask) - this->location] - jlp_ram[(0x8023&readAddressMask) - this->location]) & -8) * JLP_NUM_BYTES_PER_ROW;
+    if (jlp_ram[(0x8026&readAddressMask) - this->location] > JLP_NUM_ROWS) return;
     if (flash_read)  ReadFlashFile();
-    memset((void *)&jlp_flash[row], 0xFF, 192 * 8);
+    memset((void *)&jlp_flash[row], 0xFF, JLP_NUM_BYTES_PER_ROW * 8);
     ScheduleWriteFlashFile();
 }
 
