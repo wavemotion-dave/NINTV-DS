@@ -73,6 +73,7 @@ History :
 --------------------------------------------------------------------------------
 V4.2 : 15-Aug-2023 by wavemotion-dave
   * Improved JLP 16-bit RAM when it contends with similar 16-bit RAM specified in a config (.cfg) file (games like TNT Cowboy and A-F now run properly).
+  * JLP Flash maximum increased to 64K per game.
   * Other minor cleanups and tweaks as time permitted.
 
 V4.1 : 04-Jul-2023 by wavemotion-dave
