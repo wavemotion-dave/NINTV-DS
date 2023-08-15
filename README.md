@@ -71,6 +71,10 @@ And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.2 : 15-Aug-2023 by wavemotion-dave
+  * Improved JLP 16-bit RAM when it contends with similar 16-bit RAM specified in a config (.cfg) file (games like TNT Cowboy and A-F now run properly).
+  * Other minor cleanups and tweaks as time permitted.
+
 V4.1 : 04-Jul-2023 by wavemotion-dave
   * Added the ability to map any DS key to the DISC UP and DISC DOWN which makes platform games like Rick Dynamite much more enjoyable.
   * Force load of JLP/ECS/IVoice will now save out to configuration for the game so you don't have to do that more than once.
