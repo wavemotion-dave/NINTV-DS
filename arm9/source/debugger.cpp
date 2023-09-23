@@ -32,7 +32,7 @@
 #include "AudioMixer.h"
 #include "printf.h"
 
-INT32 debug[6] __attribute__((section(".dtcm")))  = {0};
+INT32 debug[8] __attribute__((section(".dtcm")))  = {0};
 
 int getMemUsed(void)      // returns the amount of used memory in bytes
 {

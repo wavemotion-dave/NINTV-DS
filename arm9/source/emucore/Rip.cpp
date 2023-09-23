@@ -549,10 +549,16 @@ Rip* Rip::LoadRom(const CHAR* filename)
         }
     }
 
-    // Now skip over the enable tables.  These have a well-defined and fixed size and we don't use them.s
+    // Read and parse the enable tables. This might result in some RAM being mapped...
     for (i = 0; i < 50; i++)
     {
-        fgetc(infile);
+        int enable = fgetc(infile);
+        // The first 16 bytes encode into 32 4-bit nibbles each of which can specify a writable area in 2K chunks
+        if (i<16)
+        {
+            if (enable & 0x02) rip->AddRAM(new RAM(0x800, (i<<12) + 0x000, 0xFFFF, 0xFFFF, 8)); // Map RAM into the lower 2K of this segment
+            if (enable & 0x20) rip->AddRAM(new RAM(0x800, (i<<12) + 0x800, 0xFFFF, 0xFFFF, 8)); // Map RAM into the upper 2K of this segment
+        }
     }
     
     // Read through the rest of the .ROM and look for tags...
