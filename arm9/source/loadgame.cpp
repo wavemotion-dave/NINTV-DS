@@ -77,6 +77,7 @@ BOOL LoadCart(const CHAR* filename)
     // re-allocation of memory so we don't "leak" from our fixed memory pools
     // -------------------------------------------------------------------------
     slow_ram16_idx = 0;     // Nothing uses this internally so we can reset to 0
+    slow_ram8_idx = 0;      // Nothing uses this internally so we can reset to 0
     fast_ram16_idx = 0x200; // 512 bytes is more than enough for internal Inty RAM so this is safely above the threshold
 
     const CHAR* extStart = filename + strlen(filename) - 4;

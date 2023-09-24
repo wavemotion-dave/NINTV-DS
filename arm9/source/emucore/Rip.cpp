@@ -556,8 +556,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
         // The first 16 bytes encode into 32 4-bit nibbles each of which can specify a writable area in 2K chunks
         if (i<16)
         {
-            if (enable & 0x02) rip->AddRAM(new RAM(0x800, (i<<12) + 0x000, 0xFFFF, 0xFFFF, 8)); // Map RAM into the lower 2K of this segment
-            if (enable & 0x20) rip->AddRAM(new RAM(0x800, (i<<12) + 0x800, 0xFFFF, 0xFFFF, 8)); // Map RAM into the upper 2K of this segment
+            if (enable & 0x02) rip->AddRAM(new RAM(0x800, (i<<12) + 0x000, 0xFFFF, 0xFFFF, (enable & 0x04) ? 8:16)); // Map RAM into the lower 2K of this segment
+            if (enable & 0x20) rip->AddRAM(new RAM(0x800, (i<<12) + 0x800, 0xFFFF, 0xFFFF, (enable & 0x40) ? 8:16)); // Map RAM into the upper 2K of this segment
         }
     }
     

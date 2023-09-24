@@ -46,7 +46,7 @@ struct _stateStruct
     IntellivoiceState   ivoiceState;
     ECSState            ecsState;
     UINT16              lastBankers[16];
-    UINT16              extraRAM[0x800];
+    UINT8               ecsRAM[0x800];
 };
 
 

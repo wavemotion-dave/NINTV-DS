@@ -17,10 +17,12 @@
 
 extern UINT16 fast_ram16[];
 extern UINT16 *slow_ram16;
-extern UINT16 *ecs_ram8;
+extern UINT16 *slow_ram8;
 extern UINT16 *jlp_ram;
+extern UINT16 *ecs_ram8;
 extern UINT16 fast_ram16_idx;
 extern UINT16 slow_ram16_idx;
+extern UINT16 slow_ram8_idx;
 
 TYPEDEF_STRUCT_PACK( _RAMState
 {
@@ -35,10 +37,15 @@ TYPEDEF_STRUCT_PACK( _RAMState
 } RAMState; )
     
     
-TYPEDEF_STRUCT_PACK( _SlowRAMState
+TYPEDEF_STRUCT_PACK( _SlowRAM16State
 {
-    UINT16     image[0x4000];
-} SlowRAMState; )
+    UINT16     image[0x4000]; // 32K bytes allowing for an emulated 16K of 16-bit RAM
+} SlowRAM16State; )
+    
+TYPEDEF_STRUCT_PACK( _SlowRAM8State
+{
+    UINT16     image[0x1800];   // 12K bytes allowing for an emulated 6K of 8-bit RAM (beyond ECS RAM which has a dedicated 2K space)
+} SlowRAM8State; )
     
 class RAM : public Memory
 {

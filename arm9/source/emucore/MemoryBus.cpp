@@ -50,7 +50,8 @@ public:
 // older DS-LITE/PHAT.  The original BLISS core allowed 16 overlapping memory 
 // regions (to handle page flipping) which does fit into the DSi but is too 
 // large for the original DS-LITE/PHAT so for older hardware, we strip down 
-// to the bare essentials.
+// to the bare essentials. For the DSi we can allocate more memory and provide
+// the full 16 overlapped mapped memories.
 // -------------------------------------------------------------------------------
 UINT32 *overlappedMemoryPool = NULL;
 
@@ -62,12 +63,12 @@ MemoryBus::MemoryBus()
     if (isDSiMode()) 
     {
         MAX_READ_OVERLAPPED_MEMORIES       = 16;        // Good enough for any page-flipping game. This is massive!
-        MAX_WRITE_OVERLAPPED_MEMORIES      = 17;        // Need one extra here to handle the GRAM mirrors up in odd splaces in ROM
+        MAX_WRITE_OVERLAPPED_MEMORIES      = 17;        // Need one extra here to handle the GRAM mirrors up in odd places in ROM
     }
     else
     {
         MAX_READ_OVERLAPPED_MEMORIES       = 2;        // Good enough for almost all games except very large page-flipping games
-        MAX_WRITE_OVERLAPPED_MEMORIES      = 3;        // Need one extra here to handle the GRAM mirrors up in odd splaces in ROM
+        MAX_WRITE_OVERLAPPED_MEMORIES      = 3;        // Need one extra here to handle the GRAM mirrors up in odd places in ROM
     }
 
     UINT32 size = 1 << (sizeof(UINT16) << 3);

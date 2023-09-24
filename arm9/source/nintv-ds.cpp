@@ -38,6 +38,7 @@
 #include "HandController.h"
 #include "printf.h"
 #include "CRC32.h"
+#include "mus_intro_wav.h"
 
 // --------------------------------------------------------
 // A set of boolean values so we know what to load and 
@@ -108,6 +109,7 @@ void FatalError(const char *msg)
 {
     dsPrintValue(0,1,0,(char*)msg);
     bIsFatalError = true;
+    WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
 }
 
 // ---------------------------------------------------------------------------------
@@ -329,7 +331,7 @@ void dsShowEmuInfo(void)
         sprintf(dbg, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
         sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
-        sprintf(dbg, "RAM Indexes:   %d / %d ",  fast_ram16_idx, slow_ram16_idx);     dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(dbg, "RAM Indexes:   %d / %d / %d", fast_ram16_idx, slow_ram16_idx, slow_ram8_idx);  dsPrintValue(0, idx++, 0, dbg);        
         sprintf(dbg, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, dbg);    
         sprintf(dbg, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, dbg);        
         sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);
@@ -1169,6 +1171,8 @@ void dsShowScreenMain(bool bFull)
       decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
       decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
+        
+      soundPlaySample((const void *) mus_intro_wav, SoundFormat_ADPCM, mus_intro_wav_size, 22050, 127, 64, false, 0);
     }
 
     // Now show the bottom screen - usualy some form of overlay...
@@ -1192,9 +1196,9 @@ void dsInitScreenMain(void)
     vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - Used for Memory Bus Read Counter
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart "Fast Buffer" 64k x 16 = 128k
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Custom Tile Overlay Buffer (60K for tile[] buffer, 4K for map[] buffer)
-    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - ECS RAM Buffer (2K Words - some unused memory here could be stolen)
+    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - Slow 8-bit RAM buffer for ECS and games like USFC Chess and Land Battle (8K)
     vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 - JLP RAM Buffer (8K Words or 16K Bytes)
-    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Slow RAM buffer (16K Words or 32K Bytes)
+    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Slow 16-bit RAM buffer (16K Words or 32K Bytes)
     vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Unused
     
     WAITVBL;

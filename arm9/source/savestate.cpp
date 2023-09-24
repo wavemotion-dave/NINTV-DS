@@ -25,7 +25,7 @@ extern Emulator *currentEmu;
 extern Rip      *currentRip;
 extern UINT16 global_frames;
 
-#define CURRENT_SAVE_FILE_VER   0x0009
+#define CURRENT_SAVE_FILE_VER   0x000A
 
 // ------------------------------------------------------
 // We allow up to 3 saves per game. More than enough.
@@ -40,7 +40,8 @@ struct
 
 // Only for the games that require this... it's larger than all of the other saveState stuff above...
 JLPState jlpState[3];
-SlowRAMState slowRAMState[3];
+SlowRAM16State slowRAM16State[3];
+SlowRAM8State slowRAM8State[3];
 
 extern UINT16 gLastBankers[];
 
@@ -70,14 +71,15 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
         saveState.slot[slot].lastBankers[i] = gLastBankers[i];
     }
 
-    // Only a few games utilize extra RAM that isn't specifically JLP RAM - Chess and Land Battle and ECS games
-    for (int i=0; i<0x800; i++) saveState.slot[slot].extraRAM[i] = ecs_ram8[i];
+    // Save off the ECS RAM. Most games don't use it, but it's only 2K and we have dedicated space for it...
+    for (int i=0; i<ECS_RAM_SIZE; i++) saveState.slot[slot].ecsRAM[i] = (UINT8)ecs_ram8[i];
     
     // Only a few games utilize JLP RAM...
     if (currentRip->JLP16Bit) currentRip->JLP16Bit->getState(&jlpState[slot]);
     
-    // And even fewer games utilize the SLOW RAM... this significantly increases the size of the save file
-    if (slow_ram16_idx != 0) memcpy(slowRAMState[slot].image, slow_ram16, 0x4000*sizeof(UINT16));
+    // And even fewer games utilize extra RAM... this significantly increases the size of the save file
+    if (slow_ram16_idx != 0) memcpy(slowRAM16State[slot].image, slow_ram16, 0x4000*sizeof(UINT16));
+    if (slow_ram8_idx != 0)  memcpy(slowRAM8State[slot].image, slow_ram8, 0x1800*sizeof(UINT16));   // Technically we could spill 2K into the "ECS 8-bit" area but that's already preserved above.
 
     // Write the entire save states as a single file... overwrite if it exists.
     FILE* file = fopen(filename, "wb+");
@@ -86,7 +88,8 @@ BOOL do_save(const CHAR* filename, UINT8 slot)
     {
         fwrite(&saveState, 1, sizeof(saveState), file);
         if (currentRip->JLP16Bit) fwrite(&jlpState, 1, sizeof(jlpState), file);            // A few gaems utilize the JLP RAM
-        if (slow_ram16_idx != 0)  fwrite(slowRAMState, 1, sizeof(slowRAMState), file);     // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
+        if (slow_ram16_idx != 0)  fwrite(slowRAM16State, 1, sizeof(slowRAM16State), file); // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
+        if (slow_ram8_idx != 0)   fwrite(slowRAM8State,  1, sizeof(slowRAM8State), file);  // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
         didSave = TRUE;
         fclose(file);
     } 
@@ -115,14 +118,19 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
         }
         else
         {
-            if (currentRip->JLP16Bit) fread(&jlpState, 1, sizeof(jlpState), file);         // A few games utilize the JLP RAM
-            if (slow_ram16_idx != 0) fread(slowRAMState, 1, sizeof(slowRAMState), file);   // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
+            if (currentRip->JLP16Bit) fread(&jlpState, 1, sizeof(jlpState), file);            // A few games utilize the JLP RAM
+            if (slow_ram16_idx != 0) fread(slowRAM16State, 1, sizeof(slowRAM16State), file);  // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
+            if (slow_ram8_idx != 0)  fread(slowRAM8State,  1, sizeof(slowRAM8State), file);   // A tiny fraction of games need even MORE ram... we have a large "slow" buffer for those...
             
             // Ask the emulator to restore it's state...
             currentEmu->LoadState(&saveState.slot[slot]);
-            for (int i=0; i<0x800; i++) ecs_ram8[i] = saveState.slot[slot].extraRAM[i];
+            
+            //Restore ECS RAM. Most games don't use it, but it's only 2K and we have dedicated space for it...
+            for (int i=0; i<ECS_RAM_SIZE; i++) ecs_ram8[i] = saveState.slot[slot].ecsRAM[i];
+            
             if (currentRip->JLP16Bit) currentRip->JLP16Bit->setState(&jlpState[slot]);
-            if (slow_ram16_idx != 0) memcpy(slow_ram16, slowRAMState[slot].image, 0x4000*sizeof(UINT16));
+            if (slow_ram16_idx != 0) memcpy(slow_ram16, slowRAM16State[slot].image, 0x4000*sizeof(UINT16));
+            if (slow_ram8_idx != 0) memcpy(slow_ram8, slowRAM8State[slot].image, 0x1800*sizeof(UINT16));  // Technically we could spill 2K into the "ECS 8-bit" area but that's already restored above.
             
             global_frames = saveState.slot[slot].global_frames;
             emu_frames = saveState.slot[slot].emu_frames;
