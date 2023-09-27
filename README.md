@@ -29,15 +29,16 @@ Features :
 
 Technical Specs :
 ----------
+ * Loads .ROM or .BIN/.CFG format files.
  * Up to 1024KB (512K words) of ROM memory emulated.
  * JLP 16-bit RAM emulated (8K Words)
  * JLP Flash support of 336 rows (42 sectors) for a total of 64K bytes (actual 64512 bytes). Each game gets their own 64K of file-backed flash.
- * ECS 2K of 8-bit RAM emulated.
+ * ECS emulated with the 2K of 8-bit RAM, Keyboard, extra sound channels, etc.
+ * Intellivoice emulated for games that take advantage of voice enhancements.
  * Up to 8K of extra 8-bit RAM emulated for games like USFC Chess and Land Battle (note, the 2K of ECS 8-bit RAM comes out of this pool).
  * Up to 16K Words of extra 16-bit RAM emulated beyond dedicated 8K words of JLP RAM.
  * Paging on all segments of memory provided the full binary is 1024KB (bytes) or less.
- * Loads .ROM or .BIN/.CFG format files.
-
+ 
 Controller Types :
 -----------------------
 * You can select Player 1 controller or Player 2 controller. 
