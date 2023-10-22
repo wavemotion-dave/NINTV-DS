@@ -63,6 +63,14 @@ struct Overlay_t
 #define OVL_MAX          30
 #define DISC_MAX         16
 
+
+// For the various controller types...
+#define CONTROLLER_P1               0
+#define CONTROLLER_P2               1
+#define CONTROLLER_DUAL_ACTION_A    2
+#define CONTROLLER_DUAL_ACTION_B    3
+
+
 extern struct Overlay_t myOverlay[OVL_MAX];
 extern struct Overlay_t myDisc[DISC_MAX];
 

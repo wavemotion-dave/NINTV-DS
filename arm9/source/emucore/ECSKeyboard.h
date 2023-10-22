@@ -15,6 +15,11 @@
 #include "AY38914_InputOutput.h"
 #include "InputConsumer.h"
 
+// -------------------------------------------------------------
+// For the ECS Keybaord (if present)
+// -------------------------------------------------------------
+extern UINT8 ecs_key_pressed;
+
 class EmulationDirector;
 
 class ECSKeyboard : public AY38914_InputOutput, public InputConsumer

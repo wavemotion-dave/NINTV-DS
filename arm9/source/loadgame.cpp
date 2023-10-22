@@ -121,16 +121,11 @@ BOOL LoadCart(const CHAR* filename)
     // New game is loaded... (would have returned FALSE above otherwise)
     // ---------------------------------------------------------------------
     extern UINT16 fudge_timing;
-    extern UINT8 bLatched;
-    fudge_timing = 0;
-    bLatched = false;
-    if (currentRip->GetCRC() == 0x5F6E1AF6) fudge_timing = 1000;         // Motocross needs some fudge timing to run... known race condition...
-    if (currentRip->GetCRC() == 0x2DEACD15) bLatched = true;             // Stampede must have latched backtab access
-    if (currentRip->GetCRC() == 0x573B9B6D) bLatched = true;             // Masters of the Universe must have latched backtab access
-    if (currentRip->GetCRC() == 0x8AD19AB3) myConfig.frame_skip_opt = 0; // B-17 Bomber no frame skip
+
+    fudge_timing = 500*myConfig.fudgeTiming;
     
     dsShowScreenEmu();
-    dsShowScreenMain(false);
+    dsShowScreenMain(false, false);
     
     bGameLoaded = TRUE;    
     bInitEmulator = true;    
@@ -455,9 +450,19 @@ void intvFindFiles(void)
       {
         if (!( (szName2[0] == '.') && (strlen(szName2) == 1))) 
         {
-          intvromlist[countintv].directory = true;
-          strcpy(intvromlist[countintv].filename,szName2);
-          countintv++;
+            // Filter out the emulator directories from the list
+            if (strcasecmp(szName2, "BIOS") == 0) continue;
+            if (strcasecmp(szName2, "bios") == 0) continue;
+            if (strcasecmp(szName2, "MAN") == 0) continue;
+            if (strcasecmp(szName2, "man") == 0) continue;
+            if (strcasecmp(szName2, "OVL") == 0) continue;
+            if (strcasecmp(szName2, "ovl") == 0) continue;
+            if (strcasecmp(szName2, "SAV") == 0) continue;
+            if (strcasecmp(szName2, "sav") == 0) continue;
+            
+            intvromlist[countintv].directory = true;
+            strcpy(intvromlist[countintv].filename,szName2);
+            countintv++;
         }
       }
       else 
@@ -909,7 +914,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
   // ----------------------------------------------------------------------
   // We are going back to the main emulation now - restore bottom screen.
   // ----------------------------------------------------------------------
-  dsShowScreenMain(false);
+  dsShowScreenMain(false, false);
 
   return bRet;
 }

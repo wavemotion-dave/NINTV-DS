@@ -115,7 +115,7 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
         }
 
         //do the next instruction
-        op = *((UINT16 *)0x06860000 + r[7]);
+        op = *((UINT16 *)(0x06860000 | (r[7]<<1)));
 #ifdef DEBUG_ENABLE        
         debug_opcodes++;
         debugger();

@@ -65,7 +65,6 @@ UINT8 backgroundBuffer[160*96] __attribute__ ((aligned (4)));
 
 UINT16 global_frames        __attribute__((section(".dtcm"))) = 0;
 UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
-UINT8  bLatched             __attribute__((section(".dtcm"))) = false;
 
 UINT8 fgcolor              __attribute__((section(".dtcm"))) = 0;
 UINT8 bgcolor              __attribute__((section(".dtcm"))) = 0;
@@ -251,7 +250,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(0);
+                if (myConfig.bLatched) backtab.LatchRow(0);
                 mode = MODE_RENDER_ROW_0;
                 break;
             }
@@ -269,7 +268,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(1);
+                if (myConfig.bLatched) backtab.LatchRow(1);
                 mode = MODE_RENDER_ROW_1;
                 break;
             }
@@ -287,7 +286,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(2);
+                if (myConfig.bLatched) backtab.LatchRow(2);
                 mode = MODE_RENDER_ROW_2;
                 break;
             }
@@ -305,7 +304,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(3);
+                if (myConfig.bLatched) backtab.LatchRow(3);
                 mode = MODE_RENDER_ROW_3;
                 break;
             }
@@ -323,7 +322,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(4);
+                if (myConfig.bLatched) backtab.LatchRow(4);
                 mode = MODE_RENDER_ROW_4;
                 break;
             }
@@ -341,7 +340,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(5);
+                if (myConfig.bLatched) backtab.LatchRow(5);
                 mode = MODE_RENDER_ROW_5;
                 break;
             }
@@ -359,7 +358,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(6);
+                if (myConfig.bLatched) backtab.LatchRow(6);
                 mode = MODE_RENDER_ROW_6;
                 break;
             }
@@ -377,7 +376,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(7);
+                if (myConfig.bLatched) backtab.LatchRow(7);
                 mode = MODE_RENDER_ROW_7;
                 break;
             }
@@ -395,7 +394,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(8);
+                if (myConfig.bLatched) backtab.LatchRow(8);
                 mode = MODE_RENDER_ROW_8;
                 break;
             }
@@ -413,7 +412,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(9);
+                if (myConfig.bLatched) backtab.LatchRow(9);
                 mode = MODE_RENDER_ROW_9;
                 break;
             }
@@ -431,7 +430,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(10);
+                if (myConfig.bLatched) backtab.LatchRow(10);
                 mode = MODE_RENDER_ROW_10;
                 break;
             }
@@ -449,7 +448,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = FALSE;
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
-                if (bLatched) backtab.LatchRow(11);
+                if (myConfig.bLatched) backtab.LatchRow(11);
                 mode = MODE_RENDER_ROW_11;
                 break;
             }
@@ -536,7 +535,7 @@ ITCM_CODE void AY38900::markClean()
     bordersChanged = FALSE;
     colorStackChanged = FALSE;
     colorModeChanged = FALSE;
-    if (bLatched)
+    if (myConfig.bLatched)
         backtab.markCleanLatched();
     else
         backtab.markClean();
@@ -661,14 +660,14 @@ ITCM_CODE void AY38900::renderBackground()
 {
     if (colorStackMode)
     {
-        if (bLatched)
+        if (myConfig.bLatched)
             renderColorStackModeLatched();
         else
             renderColorStackMode();
     }
     else
     {
-        if (bLatched)
+        if (myConfig.bLatched)
             renderForegroundBackgroundModeLatched();
         else
             renderForegroundBackgroundMode();

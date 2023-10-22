@@ -11,6 +11,7 @@
 
 #include <nds.h>
 #include "BackTabRAM.h"
+#include "../config.h"
 
 // ---------------------------------------------------------------------------
 // We access the backtab ram often enough that it's worth putting these into
@@ -18,8 +19,6 @@
 // ---------------------------------------------------------------------------
 UINT16  bt_image[BACKTAB_SIZE]             __attribute__((section(".dtcm")));
 UINT16  bt_imageLatched[BACKTAB_SIZE]      __attribute__((section(".dtcm")));
-
-extern UINT8 bLatched;
 
 BackTabRAM::BackTabRAM()
 : RAM(BACKTAB_SIZE, BACKTAB_LOCATION, 0xFFFF, 0xFFFF)
@@ -92,15 +91,15 @@ ITCM_CODE void BackTabRAM::markCleanLatched()
 // -----------------------------------------------------------------------------------
 void BackTabRAM::getState(BackTabRAMState *state)
 {
-    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = (bLatched ? bt_imageLatched[i] : bt_image[i]);
-    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = (bLatched ? dirtyBytes[i] : dirtyBytesLatched[i]);
+    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = (myConfig.bLatched ? bt_imageLatched[i] : bt_image[i]);
+    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = (myConfig.bLatched ? dirtyBytes[i] : dirtyBytesLatched[i]);
     state->dirtyRAM = dirtyRAM;
     state->colorAdvanceBitsDirty = colorAdvanceBitsDirty;
 }
 
 void BackTabRAM::setState(BackTabRAMState *state)
 {
-    if (bLatched)
+    if (myConfig.bLatched)
     {
         for (int i=0; i<BACKTAB_SIZE; i++)  bt_imageLatched[i] = state->image[i];
         for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytesLatched[i] = state->dirtyBytes[i];

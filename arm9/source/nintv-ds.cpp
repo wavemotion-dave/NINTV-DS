@@ -62,8 +62,8 @@ UINT8 b_dsi_mode __attribute__((section(".dtcm"))) = true;
 // This is useful for games like Treasure of Tarmin where the user might
 // want to run the game at 120% speed to get faster gameplay in the same time.
 // ------------------------------------------------------------------------------
-UINT16 target_frames[]         __attribute__((section(".dtcm"))) = {60,  66,   72,  78,  84,  90,  999};
-UINT32 target_frame_timing[]   __attribute__((section(".dtcm"))) = {546, 496, 454, 420, 390, 364,    0};
+UINT16 target_frames[]         __attribute__((section(".dtcm"))) = {60,  66,   72,  78,  84,  90,  54, 999};
+UINT32 target_frame_timing[]   __attribute__((section(".dtcm"))) = {546, 496, 454, 420, 390, 364,  600,  0};
 
 // ---------------------------------------------------------------------------------
 // Here are the main classes for the emulator, the RIP (game rom), video bus, etc.
@@ -77,20 +77,15 @@ AudioMixer           *audioMixer __attribute__((section(".dtcm"))) = NULL;
 // ---------------------------------------------------------------------------------
 // Some emulator frame calcualtions and once/second computations for frame rate...
 // ---------------------------------------------------------------------------------
-UINT16 emu_frames                   __attribute__((section(".dtcm"))) = 0;
-UINT16 frames_per_sec_calc          __attribute__((section(".dtcm"))) = 0;
-UINT8  oneSecTick                   __attribute__((section(".dtcm"))) = FALSE;
-bool bIsFatalError                  __attribute__((section(".dtcm"))) = false;
+UINT16 emu_frames                __attribute__((section(".dtcm"))) = 0;
+UINT16 frames_per_sec_calc       __attribute__((section(".dtcm"))) = 0;
+UINT8  oneSecTick                __attribute__((section(".dtcm"))) = FALSE;
+bool bIsFatalError               __attribute__((section(".dtcm"))) = false;
 
 // -------------------------------------------------------------
 // Background screen buffer indexes for the DS video engine...
 // -------------------------------------------------------------
 int bg0, bg0b, bg1b;
-
-// -------------------------------------------------------------
-// For the ECS Keybaord (if present)
-// -------------------------------------------------------------
-extern UINT8 ecs_key_pressed;
 
 // ---------------------------------------------------------------
 // When we hit our target frames per second (default NTSC 60 FPS)
@@ -239,10 +234,9 @@ BOOL InitializeEmulator(void)
 // has an aline stretch built in... but we allow the user to tweak these stretch
 // and offset settings to try and produce the best video output possible...
 // ----------------------------------------------------------------------------------
+char tmpStr[33];
 void HandleScreenStretch(void)
 {
-    char tmpStr[33];
-    
     dsShowBannerScreen();
     swiWaitForVBlank();
     
@@ -252,8 +246,8 @@ void HandleScreenStretch(void)
     dsPrintValue(1, 16,0,  (char*)"START to SAVE, PRESS B TO EXIT");
     
     bool bDone = false;
-    int last_stretch_x = -99;
-    int last_offset_x = -99;
+    short int last_stretch_x = -99;
+    short int last_offset_x = -99;
     while (!bDone)
     {
         int keys_pressed = keysCurrent();
@@ -313,7 +307,6 @@ void HandleScreenStretch(void)
 // -------------------------------------------------------------------------
 void dsShowEmuInfo(void)
 {
-    char dbg[33];
     UINT8 bDone = false;
     UINT8 idx = 3;
     
@@ -322,29 +315,29 @@ void dsShowEmuInfo(void)
     
     if (currentRip != NULL)
     {
-        sprintf(dbg, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "JLP Enabled:   %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
-        sprintf(dbg, "RAM Indexes:   %d / %d / %d", fast_ram16_idx, slow_ram16_idx, slow_ram8_idx);  dsPrintValue(0, idx++, 0, dbg);        
-        sprintf(dbg, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, dbg);    
-        sprintf(dbg, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, dbg);        
-        sprintf(dbg, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Compat Tags:   %02X %02X %02X %02X %02X", tag_compatibility[0], 
+        sprintf(tmpStr, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "JLP Enabled:   %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, tmpStr);        
+        sprintf(tmpStr, "RAM Indexes:   %d / %d / %d", fast_ram16_idx, slow_ram16_idx, slow_ram8_idx);  dsPrintValue(0, idx++, 0, tmpStr);        
+        sprintf(tmpStr, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, tmpStr);    
+        sprintf(tmpStr, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, tmpStr);        
+        sprintf(tmpStr, "RIP RAM Count: %-9d ",     currentRip->GetRAMCount());          dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Compat Tags:   %02X %02X %02X %02X %02X", tag_compatibility[0], 
                 tag_compatibility[1], tag_compatibility[2], tag_compatibility[3], 
-                tag_compatibility[4]);                                                dsPrintValue(0, idx++, 0, dbg);
+                tag_compatibility[4]);                                                dsPrintValue(0, idx++, 0, tmpStr);
     }
     else
     {
-        sprintf(dbg, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, dbg);
-        sprintf(dbg, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, dbg);        
-        sprintf(dbg, "NO GAME IS LOADED!");                                           dsPrintValue(0, idx++, 0, dbg);        
+        sprintf(tmpStr, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, tmpStr);        
+        sprintf(tmpStr, "NO GAME IS LOADED!");                                           dsPrintValue(0, idx++, 0, tmpStr);        
     }
 
     while (!bDone)
@@ -386,7 +379,6 @@ const char *main_menu[MAIN_MENU_ITEMS] =
 int menu_entry(void)
 {
     UINT8 current_entry = 0;
-    extern int bg0, bg0b, bg1b;
     char bDone = 0;
 
     dsShowBannerScreen();
@@ -396,7 +388,7 @@ int menu_entry(void)
 
     for (int i=0; i<MAIN_MENU_ITEMS; i++)
     {
-           dsPrintValue(8,5+i, (i==0 ? 1:0), (char*)main_menu[i]);
+        dsPrintValue(8,5+i, (i==0 ? 1:0), (char*)main_menu[i]);
     }
     
     int last_keys_pressed = -1;
@@ -541,19 +533,16 @@ void ds_handle_meta(int meta_key)
   
         case OVL_META_CONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            if (currentRip != NULL) 
-            {
-                dsChooseOptions(0);
-                reset_emu_frames();
-                dsInitPalette();
-                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-            }
+            dsChooseOptions((currentRip == NULL ? 2:0)); // If no game selected, show global options
+            reset_emu_frames();
+            dsInitPalette();
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
             break;
 
         case OVL_META_GCONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            dsChooseOptions(1);
+            dsChooseOptions(0);
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
@@ -574,7 +563,7 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 highscore_display(currentRip->GetCRC());
-                dsShowScreenMain(false);
+                dsShowScreenMain(false, false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
             bStartSoundFifo = true;
@@ -585,7 +574,7 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 savestate_entry();      
-                dsShowScreenMain(false);
+                dsShowScreenMain(false, false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
             bStartSoundFifo = true;
@@ -596,7 +585,7 @@ void ds_handle_meta(int meta_key)
             ds_handle_meta(menu_entry());
             if (currentRip != NULL)
             {
-                dsShowScreenMain(false);
+                dsShowScreenMain(false, false);
             }
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
@@ -617,7 +606,7 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 dsShowManual();
-                dsShowScreenMain(false);
+                dsShowScreenMain(false, false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
             bStartSoundFifo = true;
@@ -626,7 +615,7 @@ void ds_handle_meta(int meta_key)
         case OVL_META_EMUINFO:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             dsShowEmuInfo();
-            dsShowScreenMain(false);
+            dsShowScreenMain(false, false);
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
             break;
@@ -636,7 +625,7 @@ void ds_handle_meta(int meta_key)
             if (currentRip != NULL) 
             {
                 HandleScreenStretch();
-                dsShowScreenMain(false);
+                dsShowScreenMain(false, false);
                 WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
             bStartSoundFifo = true;
@@ -655,6 +644,8 @@ void ds_handle_meta(int meta_key)
 // it could be actual intellivision keypad emulation (KEY_1, KEY_2, DISC movement, etc).
 // This is called every frame - so 60 times per second which is fairly responsive...
 // -------------------------------------------------------------------------------------------------
+UINT8 breather = 0;
+
 ITCM_CODE void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
@@ -665,13 +656,13 @@ ITCM_CODE void pollInputs(void)
     for (int i=0; i<16; i++) {ds_disc_input[0][i] = 0; ds_disc_input[1][i] = 0;}
     
     // Check for Dual Action
-    if (myConfig.controller_type == 2)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)
+    if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_A)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)
     {
         ctrl_disc = 0;
         ctrl_side = 0;
         ctrl_keys = 1;
     }
-    else if (myConfig.controller_type == 3) // Same as #2 above except side-buttons use controller #2
+    else if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_B) // Same as #2 above except side-buttons use controller #2
     {
         ctrl_disc = 0;
         ctrl_side = 1;
@@ -689,7 +680,7 @@ ITCM_CODE void pollInputs(void)
     // unless there is a custom .ovl overlay file mapping the disc.
     // ---------------------------------------------------------------
 
-    if (myConfig.dpad_config == 0)  // Normal handling
+    if (myConfig.dpad_config == DPAD_NORMAL)  // Normal handling
     {
         if (keys_pressed & KEY_UP)    
         {
@@ -712,7 +703,7 @@ ITCM_CODE void pollInputs(void)
             ds_disc_input[ctrl_disc][12] = 1;
         }
     }
-    else if (myConfig.dpad_config == 1) // Reverse Left/Right
+    else if (myConfig.dpad_config == DPAD_REV_LEFT_RIGHT) // Reverse Left/Right
     {
         if (keys_pressed & KEY_UP)    
         {
@@ -735,7 +726,7 @@ ITCM_CODE void pollInputs(void)
             ds_disc_input[ctrl_disc][4] = 1;
         }
     }
-    else if (myConfig.dpad_config == 2)  // Reverse Up/Down
+    else if (myConfig.dpad_config == DPAD_REV_UP_DOWN)  // Reverse Up/Down
     {
         if (keys_pressed & KEY_UP)    
         {
@@ -758,7 +749,7 @@ ITCM_CODE void pollInputs(void)
             ds_disc_input[ctrl_disc][12] = 1;
         }
     }    
-    else if (myConfig.dpad_config == 3)  // Diagnoals
+    else if (myConfig.dpad_config == DPAD_DIAGONALS)  // Diagnoals
     {
         if (keys_pressed & KEY_UP)    
         {
@@ -777,23 +768,31 @@ ITCM_CODE void pollInputs(void)
             ds_disc_input[ctrl_disc][14] = 1;
         }
     }
-    else if (myConfig.dpad_config == 4)  // Strict 4-way
+    else if (myConfig.dpad_config == DPAD_STRICT_4WAY)  // Strict 4-way
     {
+        // -----------------------------------------------------------------
+        // To help with qames like Beauty and the Beast, we provide a
+        // small 4 frame debounce between left/right switching to up/down.
+        // -----------------------------------------------------------------
         if (keys_pressed & KEY_UP)    
         {
-            ds_disc_input[ctrl_disc][0]  = 1;
+            if (breather) breather--;
+            else ds_disc_input[ctrl_disc][0]  = 1;
         }
         else if (keys_pressed & KEY_DOWN)
         {
-            ds_disc_input[ctrl_disc][8]  = 1;
+            if (breather) breather--;
+            else ds_disc_input[ctrl_disc][8]  = 1;
         }
         else if (keys_pressed & KEY_RIGHT)
         {
             ds_disc_input[ctrl_disc][4]  = 1;
+            breather = 4;
         }
         else if (keys_pressed & KEY_LEFT)
         {
             ds_disc_input[ctrl_disc][12] = 1;
+            breather = 4;
         }
     }    
     
@@ -1155,7 +1154,7 @@ ITCM_CODE void pollInputs(void)
 // This shows the main upper screen which is where the emulation takes place... 
 // the lower screen is used for overlay and debugger information.
 // ------------------------------------------------------------------------------
-void dsShowScreenMain(bool bFull) 
+void dsShowScreenMain(bool bFull, bool bPlayJingle) 
 {
     // Init BG mode for 16 bits colors
     if (bFull)
@@ -1171,8 +1170,11 @@ void dsShowScreenMain(bool bFull)
       decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
       decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
-        
-      soundPlaySample((const void *) mus_intro_wav, SoundFormat_ADPCM, mus_intro_wav_size, 22050, 127, 64, false, 0);
+      
+      if (bPlayJingle)
+      {
+        soundPlaySample((const void *) mus_intro_wav, SoundFormat_ADPCM, mus_intro_wav_size, 22050, 127, 64, false, 0);
+      }
     }
 
     // Now show the bottom screen - usualy some form of overlay...
@@ -1280,7 +1282,7 @@ bool dsWaitOnQuit(void)
   bool bRet=false, bDone=false;
   unsigned int keys_pressed;
   unsigned int posdeb=0;
-  char szName[32];
+  static char szName[32];
 
   dsShowBannerScreen();
     
@@ -1314,7 +1316,7 @@ bool dsWaitOnQuit(void)
     }
   }
     
-  dsShowScreenMain(false);
+  dsShowScreenMain(false, false);
 
   return bRet;
 }
@@ -1442,7 +1444,8 @@ void dsMainLoop(char *initial_file)
     audioMixer = new AudioMixerDS();
     
     FindAndLoadConfig(CRC32::getCrc(initial_file));
-    dsShowScreenMain(true);
+    
+    dsShowScreenMain(true, (initial_file ? false:true));    // Don't play the jingle if we are loading a file directly for play
     
     Run(initial_file);      // This will only return if the user opts to QUIT
 }

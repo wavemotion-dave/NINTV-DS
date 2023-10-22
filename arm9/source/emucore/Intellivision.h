@@ -41,9 +41,9 @@ class Intellivision : public Emulator
 
     private:
         //core processors
-        CP1610            cpu;
-        AY38900           stic;
-        AY38914           psg;
+        CP1610      cpu;
+        AY38900     stic;
+        AY38914     psg;
     
         //core memories
         RAM         RAM8bit;

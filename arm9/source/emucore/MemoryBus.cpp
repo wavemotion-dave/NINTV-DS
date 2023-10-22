@@ -48,7 +48,7 @@ public:
 // loading normal ROMs into a stock intellivision with, at most, an intellivoice
 // or the JLP cart as the only peripherals... still, this is a strain on the
 // older DS-LITE/PHAT.  The original BLISS core allowed 16 overlapping memory 
-// regions (to handle page flipping) which does fit into the DSi but is too 
+// regions (to handle page flipping) which will fit into the DSi but is too 
 // large for the original DS-LITE/PHAT so for older hardware, we strip down 
 // to the bare essentials. For the DSi we can allocate more memory and provide
 // the full 16 overlapped mapped memories.

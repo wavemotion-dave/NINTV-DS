@@ -57,7 +57,7 @@ extern void dsFreeEmu(void);
 extern void dsShowScreenEmu(void);
 extern bool dsWaitOnQuit(void);
 extern void dsChooseOptions(int global);
-extern void dsShowScreenMain(bool bFull);
+extern void dsShowScreenMain(bool bFull, bool bPlayJingle);
 extern void ApplyOptions(void);
 extern void dsShowBannerScreen(void);
 extern void reset_emu_frames(void);
