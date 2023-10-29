@@ -50,7 +50,7 @@ Because the Intellivision had an innovative controller/keypad arrangement, you m
 
 Overlays :
 -----------------------
-Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some of the most common menu items. Each game can also have a custom overlay which is user-defined. A large number of sample overlays are provided in Overlays.zip - you must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl and in Configuration for that game you set the overlay to 'Custom').
+Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some of the most common menu items. Each game can also have a custom overlay which is user-defined. A large number of sample overlays are provided in Extras.zip in the sample-overlays folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl and in Configuration for that game you set the overlay to 'Custom').
 
 ![Standard Overlay](normalovl.png) ![Custom Overlay](customovl.png) ![Custom Overlay](customovl2.png)
  
