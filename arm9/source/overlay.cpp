@@ -130,6 +130,7 @@ unsigned int *customTiles = (unsigned int *) 0x06880000;          //60K of video
 unsigned short *customMap = (unsigned short *)0x0688F000;         // 4K of video memory for the map (generally about 2.5K)
 unsigned short customPal[512];
 
+char directory[128];
 char filename[128];
 
 // -----------------------------------------------------------------------------------------------
@@ -140,37 +141,49 @@ char filename[128];
 void load_custom_overlay(bool bCustomGeneric)
 {
     FILE *fp = NULL;
-    // Read the associated .ovl file and parse it...
+    
+    // -------------------------------------------------------
+    // Read the associated .ovl file and parse it... Start by 
+    // getting the root folder where overlays are stored...
+    // -------------------------------------------------------
     if (myGlobalConfig.ovl_dir == 1)        // In: /ROMS/OVL
     {
-        strcpy(filename, "/roms/ovl/");
+        strcpy(directory, "/roms/ovl/");
     }
     else if (myGlobalConfig.ovl_dir == 2)   // In: /ROMS/INTY/OVL
     {
-        strcpy(filename, "/roms/intv/ovl/");
+        strcpy(directory, "/roms/intv/ovl/");
     }
     else if (myGlobalConfig.ovl_dir == 3)   // In: /DATA/OVL/
     {
-        strcpy(filename, "/data/ovl/");
+        strcpy(directory, "/data/ovl/");
     }
     else
     {
-        strcpy(filename, "./");              // In: Same DIR as ROM files
+        strcpy(directory, "./");              // In: Same DIR as ROM files
     }
     
+    u8 bFound = 0;
     // If we have a game (RIP) loaded, try to find a matching overlay
-    if ((currentRip != NULL) && !bCustomGeneric)
+    if (currentRip != NULL)
     {
+        strcpy(filename, directory);
         strcat(filename, currentRip->GetFileName());
         filename[strlen(filename)-4] = 0;
         strcat(filename, ".ovl");
+        fp = fopen(filename, "rb");
+        if (fp != NULL) // If file found
+        {
+            bFound = 1;
+        }
     }
-    else
+
+    if (bFound == 0)
     {
+        strcpy(filename, directory);
         strcat(filename, "generic.ovl");   
-    }
-    
-    fp = fopen(filename, "rb");
+        fp = fopen(filename, "rb");
+    }    
     
     // Default these to unused... 
     bUseDiscOverlay = false;
@@ -182,7 +195,7 @@ void load_custom_overlay(bool bCustomGeneric)
         myDisc[i].y2 = 255;
     }
     
-    if (fp != NULL)
+    if (fp != NULL)     // If overlay found, parse it and use it...
     {
       UINT8 ov_idx = 0;
       UINT8 disc_idx=0;
@@ -278,7 +291,7 @@ void load_custom_overlay(bool bCustomGeneric)
       decompress(customMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) customPal,(u16*) BG_PALETTE_SUB,256*2);
     }
-    else  // Just use the default overlay...
+    else  // Otherwise, just use the built-in default/generic overlay...
     {
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -298,59 +311,7 @@ void show_overlay(void)
     
     swiWaitForVBlank();
     
-    if (myConfig.overlay_selected == 1) // Custom Overlay!
-    {
-        load_custom_overlay(false);
-    }
-    else if (myConfig.overlay_selected == 2) // Treasure of Tarmin
-    {
-      decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 3) // Cloudy Mountain
-    {
-      decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 4) // Astrosmash
-    {
-      decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 5) // Space Spartans
-    {
-      decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 6) // B17 Bomber
-    {
-      decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 7) // Atlantis
-    {
-      decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 8) // Bomb Squad
-    {
-      decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 9) // Utopia
-    {
-      decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay_selected == 10) // ECS
+    if (myConfig.overlay == 1) // ECS mini keyboard overlay
     {
       decompress(bgBottom_ECSTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_ECSMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -358,7 +319,55 @@ void show_overlay(void)
       // ECS Overlay...  
       memcpy(&myOverlay, &ecsOverlay, sizeof(myOverlay));
     }
-    else    // Default Overlay...
+    else if (myConfig.overlay == 2) // Treasure of Tarmin
+    {
+      decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 3) // Cloudy Mountain
+    {
+      decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 4) // Astrosmash
+    {
+      decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 5) // Space Spartans
+    {
+      decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 6) // B17 Bomber
+    {
+      decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 7) // Atlantis
+    {
+      decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 8) // Bomb Squad
+    {
+      decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else if (myConfig.overlay == 9) // Utopia
+    {
+      decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+      decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+      dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
+    }
+    else    // Default Overlay... which might be custom!!
     {
         load_custom_overlay(true);  // This will try to load nintv-ds.ovl or else default to the generic background
     }

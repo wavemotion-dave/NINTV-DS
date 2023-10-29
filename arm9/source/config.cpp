@@ -144,7 +144,7 @@ static void SetDefaultGameConfig(UINT32 crc)
 {
     myConfig.game_crc                       = 0x00000000;
     myConfig.frame_skip_opt                 = 1;
-    myConfig.overlay_selected               = 0;
+    myConfig.overlay                        = 0;
     myConfig.key_A_map                      = OVL_BTN_FIRE;
     myConfig.key_B_map                      = OVL_BTN_FIRE;
     myConfig.key_X_map                      = OVL_BTN_R_ACT;
@@ -395,7 +395,7 @@ const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
-        {"OVERLAY",     {"GENERIC", "CUSTOM", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTANS", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA", "ECS"},           &myConfig.overlay_selected, 11},
+        {"OVERLAY",     {"GENERIC", "ECS", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTANS", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA"},                     &myConfig.overlay,          10},
         {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
                          "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_A_map,        26},
         {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 

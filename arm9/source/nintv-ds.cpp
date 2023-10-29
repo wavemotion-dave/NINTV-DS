@@ -971,7 +971,7 @@ ITCM_CODE void pollInputs(void)
     
     last_pressed = keys_pressed;
     
-    ecs_key_pressed = (myConfig.overlay_selected == 10) ? 0:255;
+    ecs_key_pressed = (myConfig.overlay == 1) ? 0:255;
     
     // -----------------------------------------------------------------
     // Now handle the on-screen Intellivision overlay and meta keys...
@@ -1070,7 +1070,7 @@ ITCM_CODE void pollInputs(void)
         // ---------------------------------------------------------------------------------------------------------
         // And, finally, if the ECS mini-keypad is being shown, we can directly check for any ECS keyboard keys...
         // ---------------------------------------------------------------------------------------------------------
-        if (myConfig.overlay_selected == 10)
+        if (myConfig.overlay == 1)
         {
             if ((touch.px > 5) && (touch.px < 98))
             {
