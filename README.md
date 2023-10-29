@@ -68,6 +68,9 @@ readme files, with or without modification, are permitted in any medium without
 royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
 and Kyle Davis (BLISS) are thanked profusely. 
 
+Sample Overlay graphics (other than the default generic keypad) are provided for personal use only
+and do not fall under this license model - the original copyright holders of the images is retained.
+
 The NINTV-DS emulator is offered as-is, without any warranty.
 
 Credits :
