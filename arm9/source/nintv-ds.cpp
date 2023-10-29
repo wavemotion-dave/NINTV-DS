@@ -542,7 +542,7 @@ void ds_handle_meta(int meta_key)
 
         case OVL_META_GCONFIG:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-            dsChooseOptions(0);
+            dsChooseOptions(2);
             reset_emu_frames();
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
