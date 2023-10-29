@@ -391,73 +391,57 @@ struct options_t
     UINT8 option_max;
 };
 
+#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"
+
 const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
-        {"OVERLAY",     {"GENERIC", "ECS", "MINOTAUR", "ADVENTURE", "ASTROSMASH", "SPACE SPARTANS", "B-17 BOMBER", "ATLANTIS", "BOMB SQUAD", "UTOPIA"},                     &myConfig.overlay,          10},
-        {"A BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_A_map,        26},
-        {"B BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_B_map,        26},
-        {"X BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_X_map,        26},
-        {"Y BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT",       
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_Y_map,        26},
-        {"L BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_L_map,        26},
-        {"R BUTTON",    {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_R_map,        26},
-        {"START BTN",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_START_map,    26},
-        {"SELECT BTN",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_SELECT_map,   26},
-
-        {"A+X BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_AX_map,       26},
-
-        {"X+Y BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_XY_map,       26},
-
-        {"Y+B BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_YB_map,       26},
-
-        {"B+A BUTTON",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"},                                         &myConfig.key_BA_map,       26},
-
-        {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                                &myConfig.controller_type,  4},
-        {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                           &myConfig.dpad_config,      5},
-        {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                                      &myConfig.frame_skip_opt,   4},
-        {"SOUND DIV",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (AVERAGE)", "24 (FAIR)", "DISABLED"},                                                               &myConfig.sound_clock_div,  6},
-        {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "54 FPS (90%)", "MAX SPEED"},                &myConfig.target_fps,       8},
-        {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myConfig.palette,          5},
-        {NULL,          {"",            ""},                                NULL,                   1},
-    },
-    // Page 2 options
-    {
-        {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                                         &myConfig.bLatched,         2},
-        {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                                           &myConfig.fudgeTiming,      5},
-        {NULL,          {"",            ""},                                NULL,                   1},
+        {"OVERLAY",     {"GENERIC", "ECS"},                                                                                                                         &myConfig.overlay,          2},
+        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_A_map,        26},
+        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_B_map,        26},
+        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_X_map,        26},
+        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_Y_map,        26},
+        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_L_map,        26},
+        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_R_map,        26},
+        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_START_map,    26},
+        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_SELECT_map,   26},
+        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_AX_map,       26},
+        {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_XY_map,       26},
+        {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_YB_map,       26},
+        {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_BA_map,       26},
+        {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                        &myConfig.controller_type,  4},
+        {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                   &myConfig.dpad_config,      5},
+        {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                              &myConfig.frame_skip_opt,   4},
+        {"SOUND DIV",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (AVERAGE)", "24 (FAIR)", "DISABLED"},                                                       &myConfig.sound_clock_div,  6},
+        {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "54 FPS (90%)", "MAX SPEED"},        &myConfig.target_fps,       8},
+        {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                           &myConfig.palette,          5},
+        {NULL,          {"",            ""},                                                                                                                        NULL,                       1},
     },
     
-    {   // Global Options
-        {"FPS",         {"OFF", "ON", "ON WITH DEBUG"},                                                                                                                     &myGlobalConfig.show_fps,               3},
-        {"SAVE STATE",  {"KEEP ON LOAD", "ERASE ON LOAD"},                                                                                                                  &myGlobalConfig.erase_saves,            2},
-        {"BIOS DIR",    {"SAME AS ROMS", "/ROMS/BIOS", "/ROMS/INTV/BIOS", "/DATA/BIOS"},                                                                                    &myGlobalConfig.bios_dir,               4},
-        {"SAVE DIR",    {"SAME AS ROMS", "/ROMS/SAV",  "/ROMS/INTV/SAV",  "/DATA/SAV"},                                                                                     &myGlobalConfig.save_dir,               4},
-        {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                                     &myGlobalConfig.ovl_dir,                4},
-        {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                                       &myGlobalConfig.rom_dir,                3},
-        {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                                     &myGlobalConfig.man_dir,                4},    
-        {"START DEF",   {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_START_map_default,  22},
-        {"SELECT DEF",  {"KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", 
-                         "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU"},                                                                                     &myGlobalConfig.key_SELECT_map_default, 22},
-        {"SOUND DEF",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                                                  &myGlobalConfig.def_sound_quality,      6},
-        {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                                   &myGlobalConfig.def_palette,            5},
-        {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                                                 &myGlobalConfig.brightness,             4},
-        {"MENU COLOR",  {"WHITE", "GREEN"},                                                                                                                                 &myGlobalConfig.menu_color,             2},
-
-        {NULL,          {"",            ""},                                NULL,                   1},
+    // Page 2 options
+    {
+        {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                                 &myConfig.bLatched,         2},
+        {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                                   &myConfig.fudgeTiming,      5},
+        {NULL,          {"",            ""},                                                                                                                        NULL,                       1},
+    },
+    
+    // Global Options
+    {   
+        {"FPS",         {"OFF", "ON", "ON WITH DEBUG"},                                                                                                 &myGlobalConfig.show_fps,               3},
+        {"SAVE STATE",  {"KEEP ON LOAD", "ERASE ON LOAD"},                                                                                              &myGlobalConfig.erase_saves,            2},
+        {"BIOS DIR",    {"SAME AS ROMS", "/ROMS/BIOS", "/ROMS/INTV/BIOS", "/DATA/BIOS"},                                                                &myGlobalConfig.bios_dir,               4},
+        {"SAVE DIR",    {"SAME AS ROMS", "/ROMS/SAV",  "/ROMS/INTV/SAV",  "/DATA/SAV"},                                                                 &myGlobalConfig.save_dir,               4},
+        {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                 &myGlobalConfig.ovl_dir,                4},
+        {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                   &myGlobalConfig.rom_dir,                3},
+        {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
+        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  26},
+        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 26},
+        {"SOUND DEF",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                              &myGlobalConfig.def_sound_quality,      6},
+        {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
+        {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                             &myGlobalConfig.brightness,             4},
+        {"MENU COLOR",  {"WHITE", "GREEN"},                                                                                                             &myGlobalConfig.menu_color,             2},
+        {NULL,          {"",            ""},                                                                                                            NULL,                                   1},
     }
 };
 

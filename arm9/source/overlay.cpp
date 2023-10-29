@@ -22,14 +22,6 @@
 #include "overlay.h"
 #include "config.h"
 #include "bgBottom.h"
-#include "bgBottom-treasure.h"
-#include "bgBottom-cloudy.h"
-#include "bgBottom-astro.h"
-#include "bgBottom-spartans.h"
-#include "bgBottom-b17.h"
-#include "bgBottom-atlantis.h"
-#include "bgBottom-bombsquad.h"
-#include "bgBottom-utopia.h"
 #include "bgBottom-ECS.h"
 #include "bgTop.h"
 #include "Emulator.h"
@@ -318,54 +310,6 @@ void show_overlay(void)
       dmaCopy((void *) bgBottom_ECSPal,(u16*) BG_PALETTE_SUB,256*2);
       // ECS Overlay...  
       memcpy(&myOverlay, &ecsOverlay, sizeof(myOverlay));
-    }
-    else if (myConfig.overlay == 2) // Treasure of Tarmin
-    {
-      decompress(bgBottom_treasureTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_treasureMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_treasurePal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 3) // Cloudy Mountain
-    {
-      decompress(bgBottom_cloudyTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_cloudyMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_cloudyPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 4) // Astrosmash
-    {
-      decompress(bgBottom_astroTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_astroMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_astroPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 5) // Space Spartans
-    {
-      decompress(bgBottom_spartansTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_spartansMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_spartansPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 6) // B17 Bomber
-    {
-      decompress(bgBottom_b17Tiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_b17Map, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_b17Pal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 7) // Atlantis
-    {
-      decompress(bgBottom_atlantisTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_atlantisMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_atlantisPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 8) // Bomb Squad
-    {
-      decompress(bgBottom_bombsquadTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_bombsquadMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_bombsquadPal,(u16*) BG_PALETTE_SUB,256*2);
-    }
-    else if (myConfig.overlay == 9) // Utopia
-    {
-      decompress(bgBottom_utopiaTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_utopiaMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_utopiaPal,(u16*) BG_PALETTE_SUB,256*2);
     }
     else    // Default Overlay... which might be custom!!
     {
