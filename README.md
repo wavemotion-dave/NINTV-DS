@@ -48,6 +48,8 @@ Controller Types :
 
 Because the Intellivision had an innovative controller/keypad arrangement, you may want to get creative in how you map your buttons. For example, selecting Dual Action A controller and then mapping ABXY (and the related diagonals) to the 8-arrow-fire keypad buttons makes for a very enjoyable experience. You move your adventurer with the d-pad and you fire with the ABXY into any of the 8 directions. Map the 'RUN' controller action button to the shoulder buttons on the DS and you can navigate any of Cloudy Mountain's dungeons with ease.
 
+![Mapping ABXY](ds-ABXY.png)
+
 Overlays :
 -----------------------
 Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some of the most common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in Extras.zip in the overlay-library folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl and in Configuration for that game you set the overlay to 'Custom'). By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
