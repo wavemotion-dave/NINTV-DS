@@ -50,7 +50,7 @@ Because the Intellivision had an innovative controller/keypad arrangement, you m
 
 Overlays :
 -----------------------
-Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some of the most common menu items. Each game can also have a custom overlay which is user-defined. A large number of sample overlays are provided in Extras.zip in the sample-overlays folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl and in Configuration for that game you set the overlay to 'Custom'). By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
+Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some of the most common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in Extras.zip in the overlay-library folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl and in Configuration for that game you set the overlay to 'Custom'). By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
 
 ![Standard Overlay](normalovl.png) ![Custom Overlay](customovl.png) ![Custom Overlay](customovl2.png)
  
@@ -84,6 +84,12 @@ And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.4 : 30-Oct-2023 by wavemotion-dave
+  * Major overhaul of configuration to provide for better future enhancements. Your old configurations will be wiped in favor of the new defaults. 
+  * Major cleanup of overlay support - gone are the built-in overlays except for the normal Intellivision controller graphic and the mini-ECS keyboard. All other overlays are stored externally and a library of more than 40 custom overlays for personal use are provided.
+  * Simplified use of custom overlays - if the .ovl file exists (with the same base name as the .ROM or .BIN file), it will automatically be loaded and used (you no longer need to specify that the overlay is 'Custom').
+  * Other minor cleanups and tweaks as time permitted.
+
 V4.3 : 24-Sep-2023 by wavemotion-dave
   * Improved 8-bit RAM support to provide a full 8K of 8-bit RAM (the ECS 2K of 8-bit RAM comes from this pool).
   * Added parsing of the .ROM enable/access table so that we properly allow for writable memory segments (allows the 'lilBro' games to work).
