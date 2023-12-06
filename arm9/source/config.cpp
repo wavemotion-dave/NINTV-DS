@@ -132,7 +132,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.spare3                   = 0;
     myGlobalConfig.spare4                   = 0;
     myGlobalConfig.spare5                   = 0;
-    myGlobalConfig.spare6                   = 1;
+    myGlobalConfig.frame_skip               = 1;
     memset(myGlobalConfig.reserved, 0x00, 256);
 }
 
@@ -143,7 +143,7 @@ static void SetDefaultGlobalConfig(void)
 static void SetDefaultGameConfig(UINT32 crc)
 {
     myConfig.game_crc                       = 0x00000000;
-    myConfig.frame_skip_opt                 = 1;
+    myConfig.frame_skip                     = myGlobalConfig.frame_skip;
     myConfig.overlay                        = 0;
     myConfig.key_A_map                      = OVL_BTN_FIRE;
     myConfig.key_B_map                      = OVL_BTN_FIRE;
@@ -191,7 +191,7 @@ static void SetDefaultGameConfig(UINT32 crc)
     // -----------------------------------------------------------------------------------------
     if (crc == 0x2DEACD15) myConfig.bLatched        = true;                     // Stampede must have latched backtab access
     if (crc == 0x573B9B6D) myConfig.bLatched        = true;                     // Masters of the Universe must have latched backtab access
-    if (crc == 0x8AD19AB3) myConfig.frame_skip_opt  = 0;                        // B-17 Bomber no frame skip
+    if (crc == 0x8AD19AB3) myConfig.frame_skip      = 0;                        // B-17 Bomber no frame skip
     if (crc == 0x5F6E1AF6) myConfig.fudgeTiming     = 2;                        // Motocross needs some fudge timing to run... known race condition...
     if (crc == 0xfab2992c) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Astrosmash is best with Dual Action B
     if (crc == 0xd0f83698) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Astrosmash (competition) is best with Dual Action B
@@ -412,7 +412,7 @@ const struct options_t Option_Table[3][20] =
         {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_BA_map,       26},
         {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                        &myConfig.controller_type,  4},
         {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                   &myConfig.dpad_config,      5},
-        {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                              &myConfig.frame_skip_opt,   4},
+        {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                              &myConfig.frame_skip,       4},
         {"SOUND DIV",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (AVERAGE)", "24 (FAIR)", "DISABLED"},                                                       &myConfig.sound_clock_div,  6},
         {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "54 FPS (90%)", "MAX SPEED"},        &myConfig.target_fps,       8},
         {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                           &myConfig.palette,          5},
@@ -437,8 +437,9 @@ const struct options_t Option_Table[3][20] =
         {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
         {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  26},
         {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 26},
-        {"SOUND DEF",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                              &myGlobalConfig.def_sound_quality,      6},
-        {"PALETTE DEF", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
+        {"DEF SOUND",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                              &myGlobalConfig.def_sound_quality,      6},
+        {"DEF PALETTE", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
+        {"DEF FRAMSKP", {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                  &myGlobalConfig.frame_skip,             4},
         {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                             &myGlobalConfig.brightness,             4},
         {"MENU COLOR",  {"WHITE", "GREEN"},                                                                                                             &myGlobalConfig.menu_color,             2},
         {NULL,          {"",            ""},                                                                                                            NULL,                                   1},

@@ -27,7 +27,7 @@
 struct Config_t 
 {
     UINT32 game_crc;                 // CRC32 of the game itself
-    UINT8  frame_skip_opt;
+    UINT8  frame_skip;
     UINT8  overlay;
     UINT8  key_A_map;
     UINT8  key_B_map;
@@ -98,7 +98,7 @@ struct GlobalConfig_t
     UINT8  spare3;
     UINT8  spare4;
     UINT8  spare5;
-    UINT8  spare6;
+    UINT8  frame_skip;
     UINT8  reserved[512];               // Not used yet... future use...
 };
 

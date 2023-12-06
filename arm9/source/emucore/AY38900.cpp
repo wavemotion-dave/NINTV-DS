@@ -512,7 +512,7 @@ ITCM_CODE void AY38900::renderFrame()
     // -------------------------------------------------------------------------------------
     // If we are skipping frames, we can skip rendering the pixels to the staging area...
     // -------------------------------------------------------------------------------------
-    if (renderz[myConfig.frame_skip_opt][global_frames&3])
+    if (renderz[myConfig.frame_skip][global_frames&3])
     {
         renderBorders();
         copyBackgroundBufferToStagingArea();

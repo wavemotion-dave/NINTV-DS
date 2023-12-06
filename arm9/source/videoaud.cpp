@@ -368,7 +368,7 @@ ITCM_CODE void VideoBusDS::render()
     // ------------------------------------------------------
     // Check if we are skipping rendering this frame...
     // ------------------------------------------------------
-    if (renderz[myConfig.frame_skip_opt][global_frames&3])
+    if (renderz[myConfig.frame_skip][global_frames&3])
     {
         UINT8 chan = 0;
         UINT32 *ds_video=(UINT32*)0x06000000;

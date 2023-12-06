@@ -39,6 +39,7 @@
 #include "printf.h"
 #include "CRC32.h"
 #include "mus_intro_wav.h"
+#include "screenshot.h"
 
 // --------------------------------------------------------
 // A set of boolean values so we know what to load and 
@@ -799,6 +800,14 @@ ITCM_CODE void pollInputs(void)
     // -------------------------------------------------------------------------------------
     // Now handle the main DS keys... these can be re-mapped to any Intellivision function
     // -------------------------------------------------------------------------------------
+    if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R))
+    {
+        dsPrintValue(3,0,0,(char*)"SNAP");
+        screenshot();
+        WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(3,0,0,(char*)"    ");
+    }
+    else
     if ((keys_pressed & KEY_A) && (keys_pressed & KEY_X))
     {
         if (myConfig.key_AX_map >= OVL_META_RESET)
