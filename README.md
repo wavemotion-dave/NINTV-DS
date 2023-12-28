@@ -81,7 +81,7 @@ Credits :
 * Most of the cheats are provided by the excellent work found at: http://www.midnightblueinternational.com/romhacks.php
 * Thanks to Michael Hayes for allowing the inclusion into NINTV-DS
 * Thanks to Stephen-J for help with many custom overlays.
-* Thanks to ts-x for help with the Intellivision manuals.
+* Thanks to ts-x for help with the Intellivision manuals and numerous custom overlays.
 * And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of all the ins and outs of Intellivision hardware so that better emulation is possible!
 
 
