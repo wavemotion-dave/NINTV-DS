@@ -63,7 +63,7 @@ Missing / Known Issues :
 
 License :
 -----------------------
-Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
+Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
 
 Copying and distribution of this emulator, its source code and associated 
 readme files, with or without modification, are permitted in any medium without 
@@ -88,6 +88,12 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.5 : 01-Jan-2024 by wavemotion-dave
+  * Added new Screenshot handling (press and hold the L+R shoulder buttons for ~1 second to take a .bmp snapshot written to the SD card)
+  * Added new meta key mapping to un-throttle (Speedup) the emulator. Useful for games where your character is resting and you want the emulator to run the frames as fast as it can.
+  * Minor cleanup on the internal database for the latest and greatest homebrew games.
+  * Lots of new and improved overlays in the extras.zip pack.
+
 V4.4 : 30-Oct-2023 by wavemotion-dave
   * Major overhaul of configuration to provide for better future enhancements. Your old configurations will be wiped in favor of the new defaults. 
   * Major cleanup of overlay support - gone are the built-in overlays except for the normal Intellivision controller graphic and the mini-ECS keyboard. All other overlays are stored externally and a library of more than 40 custom overlays for personal use are provided.

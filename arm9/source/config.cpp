@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -386,27 +386,27 @@ void FindAndLoadConfig(UINT32 crc)
 struct options_t
 {
     const char  *label;
-    const char  *option[27];
+    const char  *option[28];
     UINT8 *option_val;
     UINT8 option_max;
 };
 
-#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN"
+#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN", "SPEEDUP"
 
 const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
         {"OVERLAY",     {"GENERIC", "ECS"},                                                                                                                         &myConfig.overlay,          2},
-        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_A_map,        26},
-        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_B_map,        26},
-        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_X_map,        26},
-        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_Y_map,        26},
-        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_L_map,        26},
-        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_R_map,        26},
-        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_START_map,    26},
-        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_SELECT_map,   26},
-        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_AX_map,       26},
+        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_A_map,        27},
+        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_B_map,        27},
+        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_X_map,        27},
+        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_Y_map,        27},
+        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_L_map,        27},
+        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_R_map,        27},
+        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_START_map,    27},
+        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_SELECT_map,   27},
+        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP
         {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_XY_map,       26},
         {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_YB_map,       26},
         {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_BA_map,       26},
@@ -435,8 +435,8 @@ const struct options_t Option_Table[3][20] =
         {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                 &myGlobalConfig.ovl_dir,                4},
         {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                   &myGlobalConfig.rom_dir,                3},
         {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
-        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  26},
-        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 26},
+        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  27},
+        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 27},
         {"DEF SOUND",   {"12 (BEST)", "14 (EXELLENT)", "16 (GOOD)", "20 (FAIR)", "24 (POOR)", "DISABLED"},                                              &myGlobalConfig.def_sound_quality,      6},
         {"DEF PALETTE", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
         {"DEF FRAMSKP", {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                  &myGlobalConfig.frame_skip,             4},

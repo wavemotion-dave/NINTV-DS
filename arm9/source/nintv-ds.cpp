@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -52,6 +52,7 @@ UINT8 bUseIVoice        __attribute__((section(".dtcm"))) = false;
 UINT8 bInitEmulator     __attribute__((section(".dtcm"))) = false;
 UINT8 bUseDiscOverlay   __attribute__((section(".dtcm"))) = false;
 UINT8 bGameLoaded       __attribute__((section(".dtcm"))) = false;
+UINT8 bMetaSpeedup      __attribute__((section(".dtcm"))) = false;
 
 // -------------------------------------------------------------
 // This one is accessed rather often so we'll put it in .dtcm
@@ -463,7 +464,7 @@ int menu_entry(void)
             {
                 bDone=1;
             }
-            swiWaitForVBlank();
+            swiWaitForVBlank();swiWaitForVBlank();swiWaitForVBlank();
         }
     }    
     return OVL_MAX;
@@ -656,6 +657,9 @@ ITCM_CODE void pollInputs(void)
     for (int i=0; i<15; i++) {ds_key_input[0][i] = 0; ds_key_input[1][i] = 0;}
     for (int i=0; i<16; i++) {ds_disc_input[0][i] = 0; ds_disc_input[1][i] = 0;}
     
+    // Assume NO speedup unless that specific META key is held down...
+    bMetaSpeedup = false;
+    
     // Check for Dual Action
     if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_A)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)
     {
@@ -795,7 +799,10 @@ ITCM_CODE void pollInputs(void)
             ds_disc_input[ctrl_disc][12] = 1;
             breather = 4;
         }
-    }    
+    }
+    
+    // Unless told otherwise, we are NOT in un-throttle mode...
+    bMetaSpeedup = false;
     
     // -------------------------------------------------------------------------------------
     // Now handle the main DS keys... these can be re-mapped to any Intellivision function
@@ -871,6 +878,7 @@ ITCM_CODE void pollInputs(void)
             {
                 if (myConfig.key_A_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
                 else if (myConfig.key_A_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_A_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
             }
             else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
@@ -885,6 +893,7 @@ ITCM_CODE void pollInputs(void)
             {
                 if (myConfig.key_B_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
                 else if (myConfig.key_B_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_B_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
             }
             else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
@@ -899,6 +908,7 @@ ITCM_CODE void pollInputs(void)
             {
                 if (myConfig.key_X_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
                 else if (myConfig.key_X_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_X_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
             }
             else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
@@ -913,6 +923,7 @@ ITCM_CODE void pollInputs(void)
             {
                 if (myConfig.key_Y_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
                 else if (myConfig.key_Y_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_Y_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
             }
             else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
@@ -928,6 +939,7 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_L_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
             else if (myConfig.key_L_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (myConfig.key_L_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
             else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
         }
         else if (myConfig.key_L_map >= OVL_BTN_FIRE) 
@@ -942,6 +954,7 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_R_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
             else if (myConfig.key_R_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (myConfig.key_R_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
             else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
         }
         else if (myConfig.key_R_map >= OVL_BTN_FIRE) 
@@ -956,6 +969,7 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_START_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
             else if (myConfig.key_START_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (myConfig.key_START_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
             else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
         }
         else if (myConfig.key_START_map >= OVL_BTN_FIRE) 
@@ -970,6 +984,7 @@ ITCM_CODE void pollInputs(void)
         {
             if (myConfig.key_SELECT_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
             else if (myConfig.key_SELECT_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+            else if (myConfig.key_SELECT_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
             else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
         }
         else if (myConfig.key_SELECT_map >= OVL_BTN_FIRE) 
@@ -1372,8 +1387,11 @@ ITCM_CODE void Run(char *initial_file)
         }
     
         // Time 1 frame...
-        while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*(emu_frames+1)))
-            ;
+        if (!bMetaSpeedup)
+        {
+            while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*(emu_frames+1)))
+                ;
+        }
 
         // Have we processed target (default 60) frames... start over...
         if (++emu_frames >= target_frames[myConfig.target_fps])

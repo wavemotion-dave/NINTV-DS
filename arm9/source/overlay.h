@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2023 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -55,12 +55,14 @@ struct Overlay_t
 #define OVL_META_MANUAL  23
 #define OVL_META_DISC_UP 24
 #define OVL_META_DISC_DN 25
-#define OVL_META_STRETCH 26
-#define OVL_META_GCONFIG 27
-#define OVL_META_CHEATS  28
-#define OVL_META_EMUINFO 29
+#define OVL_META_SPEEDUP 26
 
-#define OVL_MAX          30
+#define OVL_META_STRETCH 27
+#define OVL_META_GCONFIG 28
+#define OVL_META_CHEATS  29
+#define OVL_META_EMUINFO 30
+
+#define OVL_MAX          31
 #define DISC_MAX         16
 
 
