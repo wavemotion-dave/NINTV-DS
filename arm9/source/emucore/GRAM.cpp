@@ -36,7 +36,7 @@ ITCM_CODE void GRAM::poke(UINT16 location, UINT16 value)
 {
     if (!enabled) return;
     location &= 0x01FF;
-
+    
     gram_image[location] = (UINT8)value;
     dirtyCards[location>>3] = TRUE;
     dirtyRAM = TRUE;

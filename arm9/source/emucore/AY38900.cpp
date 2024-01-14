@@ -119,7 +119,8 @@ UINT16  __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) stretch[
 extern UINT8 bCP1610_PIN_IN_BUSRQ;
 extern UINT8 bCP1610_PIN_IN_INTRM;
 extern UINT8 bCP1610_PIN_OUT_BUSAK;
-
+extern UINT8 bHandleInterrupts;
+extern UINT8 I;
 
 AY38900::AY38900(MemoryBus* mb, GROM* go, GRAM* ga)
     : Processor("AY-3-8900"),
@@ -157,6 +158,8 @@ void AY38900::resetProcessor()
     bordersChanged         = TRUE;
     colorStackChanged      = TRUE;
     offsetsChanged         = TRUE;
+    
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
     //local register data
     borderColor = 0;
@@ -195,7 +198,8 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = TRUE;
 
             //kick the irq line
-            bCP1610_PIN_IN_INTRM = FALSE;
+            bCP1610_PIN_IN_INTRM = FALSE;                
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
             totalTicks += TICK_LENGTH_VBLANK;
             if (totalTicks >= minimum) {
@@ -205,6 +209,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_START_ACTIVE_DISPLAY:
             bCP1610_PIN_IN_INTRM = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
             //if the display is not enabled, skip the rest of the modes
             if (!displayEnabled) {
@@ -221,6 +226,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             else {
                 previousDisplayEnabled = TRUE;
                 bCP1610_PIN_IN_BUSRQ = FALSE;
+                bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
                 totalTicks += TICK_LENGTH_START_ACTIVE_DISPLAY;
                 if (totalTicks >= minimum) {
                     mode = MODE_IDLE_ACTIVE_DISPLAY;
@@ -238,6 +244,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
             //release SR2
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
             totalTicks += TICK_LENGTH_IDLE_ACTIVE_DISPLAY +
                 (2*verticalOffset*TICK_LENGTH_SCANLINE);
@@ -248,6 +255,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_0:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(0);
@@ -257,6 +265,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_0:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -266,6 +275,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_1:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(1);
@@ -275,6 +285,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_1:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -284,6 +295,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_2:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(2);
@@ -293,6 +305,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_2:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -302,6 +315,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_3:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(3);
@@ -311,6 +325,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_3:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -320,6 +335,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_4:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));               
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(4);
@@ -329,6 +345,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_4:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -338,6 +355,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_5:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(5);
@@ -347,6 +365,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_5:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -356,6 +375,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_6:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(6);
@@ -365,6 +385,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_6:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -374,6 +395,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_7:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(7);
@@ -383,6 +405,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_7:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -392,6 +415,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_8:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(8);
@@ -401,6 +425,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_8:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -410,6 +435,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_9:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(9);
@@ -419,6 +445,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_9:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -428,6 +455,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_10:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(10);
@@ -437,6 +465,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_10:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -446,6 +475,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_11:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(11);
@@ -455,6 +485,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_11:
             bCP1610_PIN_IN_BUSRQ = TRUE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
 
             //this mode could be cut off in tick length if the vertical
             //offset is greater than 1
@@ -480,6 +511,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
         case MODE_FETCH_ROW_12:
         default:
             bCP1610_PIN_IN_BUSRQ = FALSE;
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
             totalTicks += TICK_LENGTH_SCANLINE;
             mode = MODE_VBLANK;
             break;

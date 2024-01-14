@@ -25,6 +25,9 @@ UINT16 amplitudes16Bit[16] __attribute__((section(".dtcm"))) =
 INT32 clockDivisor   __attribute__((section(".dtcm")));
 INT32 clocksPerSample  __attribute__((section(".dtcm")));
 
+INT32 cachedTotalOutput __attribute__((section(".dtcm")));
+
+
 extern UINT8 bUseIVoice;
 
 
@@ -97,7 +100,7 @@ void AY38914::setClockDivisor(INT32 clockDivisor)
     clockDivisor = clockDivisor;
 }
 
-ITCM_CODE INT32 AY38914::getClockDivisor() {
+INT32 AY38914::getClockDivisor() {
     return clockDivisor;
 }
 
@@ -185,7 +188,9 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
             playSample1(cachedTotalOutput);     // This is the ECS PSG on channel 1 
         }
         else
+        {
             playSample0(cachedTotalOutput);     // This is the normal Intellivision console PSG
+        }
 
         totalTicks += clocksPerSample;
 

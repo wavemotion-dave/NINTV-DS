@@ -125,7 +125,7 @@ void JLP::WriteFlashFile(void)
 {
     FILE *fp;
     
-    dsPrintValue(2,0,0, (char*)"JLP FLASH");
+    dsPrintValue(hud_x,hud_y,0, (char*)"JLP FLASH");
     GetFlashFilename();
     fp = fopen(flash_filename, "wb");
     if (fp != NULL)
@@ -133,7 +133,7 @@ void JLP::WriteFlashFile(void)
         fwrite(jlp_flash, 1, JLP_FLASH_SIZE, fp);
         fclose(fp);
     }
-    dsPrintValue(2,0,0,(char*)"         ");
+    dsPrintValue(hud_x,hud_y,0,(char*)"         ");
 }
 
 void JLP::ScheduleWriteFlashFile(void)

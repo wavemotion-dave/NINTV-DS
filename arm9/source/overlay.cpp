@@ -232,6 +232,22 @@ void load_custom_overlay(bool bCustomGeneric)
             }
         }
           
+        // Handle HUD_x Line
+        if (strstr(szName, ".hudx") != NULL)
+        {
+            char *ptr = strstr(szName, ".hudx");
+            ptr += 6;
+            hud_x = strtoul(ptr, &ptr, 10);
+        }          
+
+        // Handle HUD_y Line
+        if (strstr(szName, ".hudy") != NULL)
+        {
+            char *ptr = strstr(szName, ".hudy");
+            ptr += 6;
+            hud_y = strtoul(ptr, &ptr, 10);
+        }          
+          
         // Handle Tile Line
         if (strstr(szName, ".tile") != NULL)
         {

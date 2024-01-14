@@ -33,7 +33,7 @@ class MemoryBus
 
         void reset();
 
-        inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] == 1) return readableMemorySpace[location][0]->peek(location); else return peek_slow(location);}
+        inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] == 1) return readableMemorySpace[location>>4][0]->peek(location); else return peek_slow(location);}
         UINT16 peek_slow(UINT16 location);
         
         // ------------------------------------------------------------------------------------------------
@@ -51,9 +51,9 @@ class MemoryBus
         // ------------------------------------------------------
         UINT16 peek_slow_and_safe(UINT16 location) 
         {
-           if (readableMemorySpace[location])
+           if (readableMemorySpace[location>>4])
            {
-               if (readableMemorySpace[location][0])
+               if (readableMemorySpace[location>>4][0])
                {
                   return peek_slow(location);
                }
@@ -72,10 +72,10 @@ class MemoryBus
     private:
         Memory*     mappedMemories[MAX_MAPPED_MEMORIES];
         UINT16      mappedMemoryCount;
-        UINT8*      writeableMemoryCounts;
         Memory***   writeableMemorySpace;
-        UINT16*     readableMemoryCounts;
         Memory***   readableMemorySpace;
+        UINT16      *readableMemoryCounts;
+        UINT8       *writeableMemoryCounts;
 };
 
 #endif

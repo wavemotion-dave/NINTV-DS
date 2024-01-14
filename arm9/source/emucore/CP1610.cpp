@@ -19,7 +19,7 @@
 // We store the "fast buffer" out in video RAM which is faster than main RAM if 
 // there is a cache "miss". Experimentally, this buys us about 10% speed up.
 // ------------------------------------------------------------------------------
-#define PEEK_FAST(x) *((UINT16 *)0x06860000 + (x))
+#define PEEK_FAST(x) *((UINT16 *)(0x06860000 | ((x)<<1)))
 
 //the eight registers available in the CP1610
 UINT16 r[8] __attribute__((section(".dtcm")));
@@ -40,8 +40,8 @@ UINT8 interruptible __attribute__((section(".dtcm")));
 UINT8 bCP1610_PIN_IN_BUSRQ   __attribute__((section(".dtcm")));
 UINT8 bCP1610_PIN_IN_INTRM   __attribute__((section(".dtcm"))); 
 UINT8 bCP1610_PIN_OUT_BUSAK  __attribute__((section(".dtcm")));
+UINT8 bHandleInterrupts      __attribute__((section(".dtcm"))) = 0;
 
-//the four external lines
 INT8 ext __attribute__((section(".dtcm")));
 
 CP1610::CP1610(MemoryBus* m, UINT16 resetAddress,
@@ -69,6 +69,7 @@ void CP1610::resetProcessor()
     for (INT32 i = 0; i < 7; i++)
         r[i] = 0;
     r[7] = resetAddress;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 }
 
 /**
@@ -88,28 +89,32 @@ ITCM_CODE INT32 CP1610::tick(INT32 minimum)
     
     do {
         // This chunk of code doesn't happen very often (less than 10%) so we use the unlikely() gcc switch to help optmize
-        if (unlikely(!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM)))
+        if (unlikely(bHandleInterrupts))
         {
-            if ((!bCP1610_PIN_IN_BUSRQ))
+            if (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM))
             {
-                if (interruptible) 
+                if ((!bCP1610_PIN_IN_BUSRQ))
                 {
-                    bCP1610_PIN_OUT_BUSAK = bCP1610_PIN_IN_BUSRQ;
-                    return MAX((usedCycles<<2), minimum);
+                    if (interruptible) 
+                    {
+                        bCP1610_PIN_OUT_BUSAK = bCP1610_PIN_IN_BUSRQ;
+                        return MAX((usedCycles<<2), minimum);
+                    }
                 }
-            }
-            else // if ((I && !bCP1610_PIN_IN_INTRM))
-            {
-                if (interruptible) 
+                else // if ((I && !bCP1610_PIN_IN_INTRM))
                 {
-                    bCP1610_PIN_IN_INTRM = TRUE;
-                    interruptible = false;
-                    memoryBus->poke(r[6], r[7]);
-                    r[6]++;
-                    r[7] = interruptAddress;
-                    usedCycles += 7;
-                    if ((usedCycles << 2) >= minimum)
-                        return (usedCycles<<2);
+                    if (interruptible) 
+                    {
+                        bCP1610_PIN_IN_INTRM = TRUE;
+                        bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
+                        interruptible = false;
+                        memoryBus->poke(r[6], r[7]);
+                        r[6]++;
+                        r[7] = interruptAddress;
+                        usedCycles += 7;
+                        if ((usedCycles << 2) >= minimum)
+                            return (usedCycles<<2);
+                    }
                 }
             }
         }
@@ -172,6 +177,7 @@ UINT16 CP1610::EIS() {
     interruptible = FALSE;
 
     I = TRUE;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
     D = FALSE;
     return 4;
@@ -182,6 +188,7 @@ UINT16 CP1610::DIS() {
     interruptible = FALSE;
 
     I = FALSE;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
     D = FALSE;
     return 4;
@@ -236,6 +243,7 @@ ITCM_CODE UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
 
 UINT16 CP1610::JE(UINT16 target) {
     I = TRUE;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
     r[7] = target;
     interruptible = TRUE;
     D = FALSE;
@@ -244,6 +252,7 @@ UINT16 CP1610::JE(UINT16 target) {
 
 UINT16 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
     I = TRUE;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
     r[registerNum] = r[7]+3;
     r[7] = target;
     interruptible = TRUE;
@@ -254,6 +263,7 @@ UINT16 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
 
 UINT16 CP1610::JD(UINT16 target) {
     I = FALSE;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
     r[7] = target;
     interruptible = TRUE;
 
@@ -263,6 +273,7 @@ UINT16 CP1610::JD(UINT16 target) {
 
 UINT16 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
     I = FALSE;
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
     r[registerNum] = r[7]+3;
     r[7] = target;
     interruptible = TRUE;
@@ -275,10 +286,9 @@ ITCM_CODE UINT16 CP1610::INCR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
-    UINT16 newValue = r[registerNum]+1;
-    S = !!(newValue & 0x8000);
-    Z = !newValue;
-    r[registerNum] = newValue;
+    r[registerNum]++;
+    S = !!(r[registerNum] & 0x8000);
+    Z = !r[registerNum];
 
     D = FALSE;
     return 6;
@@ -288,10 +298,9 @@ ITCM_CODE UINT16 CP1610::DECR(UINT16 registerNum) {
     r[7]++;
     interruptible = TRUE;
 
-    UINT16 newValue = r[registerNum]-1;
-    S = !!(newValue & 0x8000);
-    Z = !newValue;
-    r[registerNum] = newValue;
+    r[registerNum]--;
+    S = !!(r[registerNum] & 0x8000);
+    Z = !r[registerNum];
 
     D = FALSE;
     return 6;
@@ -944,7 +953,7 @@ UINT16 CP1610::BESC(INT16 displacement) {
     return 7;
 }
 
-UINT16 CP1610::MVO(UINT16 registerNum, UINT16 address) {
+ITCM_CODE UINT16 CP1610::MVO(UINT16 registerNum, UINT16 address) {
     r[7] += 2;
     interruptible = FALSE;
 
@@ -984,8 +993,9 @@ UINT16 CP1610::MVI_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
 
     r[registerToReceive] = getIndirect(registerWithAddress);
 
+    UINT8 cycles = (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
     D = FALSE;
-    return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
+    return cycles;
 }
 
 ITCM_CODE UINT16 CP1610::ADD(UINT16 address, UINT16 registerNum) {
@@ -1018,8 +1028,9 @@ UINT16 CP1610::ADD_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !(newValue & 0xFFFF);
     r[registerToReceive] = (UINT16)newValue;
     
+    UINT8 cycles = (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
     D = FALSE;
-    return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
+    return cycles;
 }
 
 ITCM_CODE UINT16 CP1610::SUB(UINT16 address, UINT16 registerNum) {
@@ -1052,8 +1063,9 @@ UINT16 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !(newValue & 0xFFFF);
     r[registerToReceive] = (UINT16)newValue;
 
+    UINT8 cycles = (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
     D = FALSE;
-    return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
+    return cycles;
 }
 
 ITCM_CODE UINT16 CP1610::CMP(UINT16 address, UINT16 registerNum) {
@@ -1072,7 +1084,7 @@ ITCM_CODE UINT16 CP1610::CMP(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-UINT16 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+ITCM_CODE UINT16 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 
@@ -1084,8 +1096,9 @@ UINT16 CP1610::CMP_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     S = !!(newValue & 0x8000);
     Z = !(newValue & 0xFFFF);
 
+    UINT8 cycles = (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
     D = FALSE;
-    return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
+    return cycles;
 }
 
 ITCM_CODE UINT16 CP1610::AND(UINT16 address, UINT16 registerNum) {
@@ -1110,8 +1123,9 @@ UINT16 CP1610::AND_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !value;
     r[registerToReceive] = value;
     
+    UINT8 cycles = (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
     D = FALSE;
-    return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
+    return cycles;
 }
 
 UINT16 CP1610::XOR(UINT16 address, UINT16 registerNum) {
@@ -1136,8 +1150,9 @@ UINT16 CP1610::XOR_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     Z = !value;
     r[registerToReceive] = value;
     
+    UINT8 cycles = (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
     D = FALSE;
-    return (D ? 10 : (registerWithAddress == 6 ? 11 : 8));
+    return cycles;
 }
 
 UINT16 CP1610::decode(void)
@@ -4280,4 +4295,6 @@ void CP1610::setState(CP1610State *state)
     interruptAddress = state->interruptAddress;
     resetAddress = state->resetAddress;
     for (int i=0; i<8; i++)  r[i] = state->r[i];
+    
+    bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 }

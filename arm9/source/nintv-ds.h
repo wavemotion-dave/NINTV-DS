@@ -27,6 +27,7 @@ typedef enum _RunState
 extern UINT16 emu_frames;
 extern UINT16 frames_per_sec_calc;
 extern UINT8  oneSecTick;
+extern UINT8  hud_x, hud_y;
 
 extern UINT8 b_dsi_mode;
 

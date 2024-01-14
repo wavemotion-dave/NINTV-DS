@@ -16,7 +16,7 @@
 
 extern INT64 sampleBuffer[3];
 extern INT32 commonClockCounter[3];
-extern INT64 commonClocksPerSample[3];
+extern INT32 commonClocksPerSample[3];
 extern INT16 previousSample[3];
 extern INT16 currentSample[3];
 

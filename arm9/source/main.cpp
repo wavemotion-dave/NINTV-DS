@@ -60,7 +60,7 @@ int main(int argc, char **argv)
   else   
   {
       mySoundFrequency              = 12000;            // For the DS-LITE/PHAT we need more speed so we reduce the sound quality a bit...
-      MAX_ROM_FILE_SIZE             = (256 * 1024);     // Bit enough for all original 125 commercial games and 98% of homebrews
+      MAX_ROM_FILE_SIZE             = (512 * 1024);     // Bit enough for all original 125 commercial games and 98% of homebrews
   }
     
   bin_image_buf = new UINT8[MAX_ROM_FILE_SIZE];

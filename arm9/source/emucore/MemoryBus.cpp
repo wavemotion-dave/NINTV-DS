@@ -1,10 +1,10 @@
 // =====================================================================================
 // Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -18,7 +18,7 @@ UINT16 MAX_READ_OVERLAPPED_MEMORIES = 2;
 UINT16 MAX_WRITE_OVERLAPPED_MEMORIES = 3;
 
 // ----------------------------------------------------------------------------------------------
-// We use this class and single object to fill all unused memory locations in the memory map. 
+// We use this class and single object to fill all unused memory locations in the memory map.
 // Returns 0xFFFF on all access as a real intellivision would with unused memory regions.
 // ----------------------------------------------------------------------------------------------
 class UnusedMemory : public Memory
@@ -47,9 +47,9 @@ public:
 // memories per address location which is sufficient provided we are only
 // loading normal ROMs into a stock intellivision with, at most, an intellivoice
 // or the JLP cart as the only peripherals... still, this is a strain on the
-// older DS-LITE/PHAT.  The original BLISS core allowed 16 overlapping memory 
-// regions (to handle page flipping) which will fit into the DSi but is too 
-// large for the original DS-LITE/PHAT so for older hardware, we strip down 
+// older DS-LITE/PHAT.  The original BLISS core allowed 16 overlapping memory
+// regions (to handle page flipping) which will fit into the DSi but is too
+// large for the original DS-LITE/PHAT so for older hardware, we strip down
 // to the bare essentials. For the DSi we can allocate more memory and provide
 // the full 16 overlapped mapped memories.
 // -------------------------------------------------------------------------------
@@ -60,50 +60,49 @@ MemoryBus::MemoryBus()
     // -------------------------------------------------------------------------------------
     // We swap in a larger memory model for the DSi to handle really complex page flipping
     // -------------------------------------------------------------------------------------
-    if (isDSiMode()) 
+    if (isDSiMode())
     {
         MAX_READ_OVERLAPPED_MEMORIES       = 16;        // Good enough for any page-flipping game. This is massive!
         MAX_WRITE_OVERLAPPED_MEMORIES      = 17;        // Need one extra here to handle the GRAM mirrors up in odd places in ROM
     }
     else
     {
-        MAX_READ_OVERLAPPED_MEMORIES       = 2;        // Good enough for almost all games except very large page-flipping games
-        MAX_WRITE_OVERLAPPED_MEMORIES      = 3;        // Need one extra here to handle the GRAM mirrors up in odd places in ROM
+        MAX_READ_OVERLAPPED_MEMORIES       = 16;        // Good enough for almost all games except very large page-flipping games
+        MAX_WRITE_OVERLAPPED_MEMORIES      = 17;        // Need one extra here to handle the GRAM mirrors up in odd places in ROM
     }
 
     UINT32 size = 1 << (sizeof(UINT16) << 3);
     UINT32 i;
     writeableMemoryCounts = new UINT8[size];
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
-    writeableMemorySpace = new Memory**[size];
-    
+    writeableMemorySpace = new Memory**[size>>4];
+
     // ---------------------------------------------------------------------------------------------------------------------------
     // We do this rather than allocate piecemeal so we avoid malloc overhead and extra bytes padded (saves almost 500K on DS)
-    // On the DS with 3 overlapped memories (enough for most games), this is still 1.5MB of memory (out of the 3.5MB available)
-    // On the DSi with a full 16 overlapped memories (enough for any game), this is a whopping 8MB (out of the 15.5MB available)
     // ---------------------------------------------------------------------------------------------------------------------------
-    overlappedMemoryPool = new UINT32[size*(MAX_READ_OVERLAPPED_MEMORIES+MAX_WRITE_OVERLAPPED_MEMORIES)];
-    
-    for (i = 0; i < size; i++)
+    overlappedMemoryPool = new UINT32[(size*(MAX_READ_OVERLAPPED_MEMORIES+MAX_WRITE_OVERLAPPED_MEMORIES))>>4];
+    UINT32 *memPoolPtr = (UINT32 *)overlappedMemoryPool;
+
+    for (i = 0; i < size>>4; i++)
     {
-        writeableMemorySpace[i] = (Memory **)overlappedMemoryPool;
+        writeableMemorySpace[i] = (Memory **)memPoolPtr;
         for (int j=0; j<MAX_WRITE_OVERLAPPED_MEMORIES; j++)
         {
-            overlappedMemoryPool++;
+            memPoolPtr++;
             writeableMemorySpace[i][j] = &MyUnusedMemory;
         }
     }
     readableMemoryCounts = (UINT16 *) 0x06820000; // Use video memory ... slightly faster and saves main RAM
     memset(readableMemoryCounts, 0, sizeof(UINT16) * size);
-    readableMemorySpace = new Memory**[size];
-    for (i = 0; i < size; i++)
+    readableMemorySpace = new Memory**[size>>4];
+    for (i = 0; i < size>>4; i++)
     {
-        readableMemorySpace[i] = (Memory **)overlappedMemoryPool;
+        readableMemorySpace[i] = (Memory **)memPoolPtr;
         for (int j=0; j<MAX_READ_OVERLAPPED_MEMORIES; j++)
         {
-            overlappedMemoryPool++;
+            memPoolPtr++;
             readableMemorySpace[i][j] = &MyUnusedMemory;
-        }        
+        }
     }
     mappedMemoryCount = 0;
 }
@@ -141,7 +140,7 @@ void MemoryBus::addMemory(Memory* m)
         FatalError("GAME TOO COMPLEX - MAX MEMORIES");
         return;
     }
-    
+
     //add all of the readable locations, if any
     if (readAddressMask != 0) {
         UINT8 zeroCount = 0;
@@ -151,7 +150,7 @@ void MemoryBus::addMemory(Memory* m)
                 zeroCount++;
             }
         }
-    
+
         UINT8 combinationCount = (1<<zeroCount);
         for (i = 0; i < combinationCount; i++) {
             UINT16 orMask = 0;
@@ -167,7 +166,7 @@ void MemoryBus::addMemory(Memory* m)
                     FatalError("ERROR MAX READABLE MEM OVERLAP");
                     return;
                 }
-                readableMemorySpace[k][memCount] = m;
+                readableMemorySpace[k>>4][memCount] = m;
                 readableMemoryCounts[k]++;
             }
         }
@@ -182,7 +181,7 @@ void MemoryBus::addMemory(Memory* m)
                 zeroCount++;
             }
         }
-    
+
         UINT8 combinationCount = (1<<zeroCount);
         for (i = 0; i < combinationCount; i++) {
             UINT16 orMask = 0;
@@ -197,8 +196,8 @@ void MemoryBus::addMemory(Memory* m)
                 {
                     FatalError("ERROR MAX WRITEABLE MEM OVERLAP");
                     return;
-                }                
-                writeableMemorySpace[k][memCount] = m;
+                }
+                writeableMemorySpace[k>>4][memCount] = m;
                 writeableMemoryCounts[k]++;
             }
         }
@@ -232,7 +231,7 @@ void MemoryBus::removeMemory(Memory* m)
                 zeroCount++;
             }
         }
-    
+
         UINT8 combinationCount = (1<<zeroCount);
         for (i = 0; i < combinationCount; i++) {
             UINT16 orMask = 0;
@@ -241,18 +240,22 @@ void MemoryBus::removeMemory(Memory* m)
             UINT16 nextAddress = readAddress | orMask;
             UINT16 nextEnd = nextAddress + readSize - 1;
 
-            for (UINT32 k = nextAddress; k <= nextEnd; k++) {
+            for (UINT32 k = nextAddress; k <= nextEnd; k++) 
+            {
                 UINT16 memCount = readableMemoryCounts[k];
-                for (UINT16 n = 0; n < memCount; n++) {
-                    if (readableMemorySpace[k][n] == m) {
-                        for (INT32 l = n; l < (memCount-1); l++) {
-                            readableMemorySpace[k][l] = readableMemorySpace[k][l+1];
+                for (UINT16 n = 0; n < memCount; n++) 
+                {
+                    if (readableMemorySpace[k>>4][n] == m) 
+                    {
+                        for (INT32 l = n; l < (memCount-1); l++) 
+                        {
+                            readableMemorySpace[k>>4][l] = readableMemorySpace[k>>4][l+1];
                         }
-                        readableMemorySpace[k][memCount-1] = &MyUnusedMemory;
-                        readableMemoryCounts[k]--;
+                        readableMemorySpace[k>>4][memCount-1] = &MyUnusedMemory;
                         break;
                     }
                 }
+               readableMemoryCounts[k]--;
             }
         }
     }
@@ -266,7 +269,7 @@ void MemoryBus::removeMemory(Memory* m)
                 zeroCount++;
             }
         }
-    
+
         UINT8 combinationCount = (1<<zeroCount);
          for (i = 0; i < combinationCount; i++) {
             UINT16 orMask = 0;
@@ -277,17 +280,19 @@ void MemoryBus::removeMemory(Memory* m)
 
             for (UINT32 k = nextAddress; k <= nextEnd; k++) {
                 UINT16 memCount = writeableMemoryCounts[k];
-                for (UINT16 n = 0; n < memCount; n++) {
-                    if (writeableMemorySpace[k][n] == m) {
-                        for (INT32 l = n; l < (memCount-1); l++) {
-                            writeableMemorySpace[k][l] = 
-                                writeableMemorySpace[k][l+1];
+                for (UINT16 n = 0; n < memCount; n++) 
+                {
+                    if (writeableMemorySpace[k>>4][n] == m) 
+                    {
+                        for (INT32 l = n; l < (memCount-1); l++) 
+                        {
+                            writeableMemorySpace[k>>4][l] = writeableMemorySpace[k>>4][l+1];
                         }
-                        writeableMemorySpace[k][memCount-1] = &MyUnusedMemory;
-                        writeableMemoryCounts[k]--;
+                        writeableMemorySpace[k>>4][memCount-1] = &MyUnusedMemory;
                         break;
                     }
                 }
+                writeableMemoryCounts[k]--;
             }
         }
     }
@@ -310,7 +315,7 @@ void MemoryBus::removeAll()
 }
 
 // ------------------------------------------------------------------------------------------------------
-// This only needs to be called if we are in a region that might have multiple things mapped to it... 
+// This only needs to be called if we are in a region that might have multiple things mapped to it...
 // Most of the PC ROM access will go through the normal peek() handler which is significantly faster...
 // ------------------------------------------------------------------------------------------------------
 ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
@@ -320,7 +325,7 @@ ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
     UINT16 value = 0xFFFF;
     for (UINT16 i = 0; i < numMemories; i++)
     {
-        value &= readableMemorySpace[location][i]->peek(location);
+        value &= readableMemorySpace[location>>4][i]->peek(location);
     }
     return value;
 }
@@ -334,13 +339,13 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
 
     for (UINT16 i = 0; i < numMemories; i++)
     {
-        writeableMemorySpace[location][i]->poke(location, value);
+        writeableMemorySpace[location>>4][i]->poke(location, value);
     }
-    
+
     // For the lower 4K ... keep the "fast memory" updated
     if (location < 0x1000)
     {
-        *((UINT16 *)0x06860000 + location) = value;
+        *((UINT16 *)(0x06860000 | (location<<1))) = value;
     }
 }
 
@@ -348,7 +353,7 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
 // ---------------------------------------------------------------------------------------
 // Poke Cheat Codes does not need any optimization - only happens once after ROM load.
 // We allow poke to both readable and writable memory spaces - most of the time we are
-// modifying a ROM location to provide some special cheat effect.  We don't need to 
+// modifying a ROM location to provide some special cheat effect.  We don't need to
 // update the "fast memory" as the cheats are applied post ROM load but pre "fast buffer".
 // ---------------------------------------------------------------------------------------
 void MemoryBus::poke_cheat(UINT16 location, UINT16 value)
@@ -357,13 +362,13 @@ void MemoryBus::poke_cheat(UINT16 location, UINT16 value)
 
     for (UINT16 i = 0; i < numMemories; i++)
     {
-        readableMemorySpace[location][i]->poke_cheat(location, value);
+        readableMemorySpace[location>>4][i]->poke_cheat(location, value);
     }
 
     numMemories = writeableMemoryCounts[location];
 
     for (UINT16 i = 0; i < numMemories; i++)
     {
-        writeableMemorySpace[location][i]->poke_cheat(location, value);
+        writeableMemorySpace[location>>4][i]->poke_cheat(location, value);
     }
 }

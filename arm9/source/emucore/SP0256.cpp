@@ -800,7 +800,7 @@ void SP0256::PAUSE(INT32 immed4) {
     periodInterpolation = 0;
 }
 
-ITCM_CODE void SP0256::decode() {
+void SP0256::decode() {
     INT32 immed4 = readBits(4);
     INT32 nextInstruction = readBitsReverse(4);
     switch (nextInstruction) {
@@ -858,7 +858,7 @@ ITCM_CODE void SP0256::decode() {
     }
 }
 
-ITCM_CODE INT32 SP0256::flipEndian(INT32 value, INT32 bits) {
+INT32 SP0256::flipEndian(INT32 value, INT32 bits) {
     INT32 output = 0;
     INT32 bitMask = 1;
     for (INT32 i = 0; i < bits; i++) {

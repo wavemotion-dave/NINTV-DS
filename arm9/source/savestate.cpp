@@ -25,7 +25,7 @@ extern Emulator *currentEmu;
 extern Rip      *currentRip;
 extern UINT16 global_frames;
 
-#define CURRENT_SAVE_FILE_VER   0x000A
+#define CURRENT_SAVE_FILE_VER   0x000B
 
 // ------------------------------------------------------
 // We allow up to 3 saves per game. More than enough.

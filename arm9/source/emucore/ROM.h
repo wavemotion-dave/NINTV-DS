@@ -63,6 +63,12 @@ public:
         return ((UINT16*)image)[location];
     }
     
+    // Useful for when we are copying chunks of memory for bank-switching
+    inline UINT8 *peek_image_address() 
+    {   
+        return image;
+    }
+    
     UINT16 getWriteSize();
     UINT16 getWriteAddress();
     UINT16 getWriteAddressMask();

@@ -77,16 +77,14 @@ class AY38914 : public Processor, public AudioProducer
         void setClockDivisor(INT32 clockDivisor);
         INT32 getClockDivisor();
 
-        //registers
-        AY38914_Registers      registers;
+        AY38914_Registers registers;
         
         struct Channel_t channel0;
         struct Channel_t channel1;
-        struct Channel_t channel2;
-
+        struct Channel_t channel2;        
+        
         //cached total output sample
         UINT8 cachedTotalOutputIsDirty;
-        INT16 cachedTotalOutput;
 
         //envelope data
         UINT8 envelopeIdle;

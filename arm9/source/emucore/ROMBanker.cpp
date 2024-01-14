@@ -62,9 +62,12 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             if (bEnabled)                                               // If we are enabling this bank, we can quickly refresh the fast_memory[]
             {
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
-                for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
+                UINT32 *ptr = (UINT32 *)rom->peek_image_address();
+                UINT32 *dest = (UINT32 *) &fast_memory[(address&0xF000)];
+                
+                for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i+=2)
                 {
-                    fast_memory[i] = rom->peek_fast(i&0xFFF);
+                    *dest++ = *ptr++;   // Do this 32-bits at a time for a very slight speed improvement on moving the memory
                 }
             }
             else if (gBankerIsMappedHere[address>>12][value&0xF] == 0)   // Nothing is here... nothing will be swapped in... We need to check the main memory as there may be an unswapped bank in there...

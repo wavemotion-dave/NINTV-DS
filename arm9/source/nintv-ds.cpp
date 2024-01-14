@@ -54,6 +54,9 @@ UINT8 bUseDiscOverlay   __attribute__((section(".dtcm"))) = false;
 UINT8 bGameLoaded       __attribute__((section(".dtcm"))) = false;
 UINT8 bMetaSpeedup      __attribute__((section(".dtcm"))) = false;
 
+UINT8 hud_x = 3;
+UINT8 hud_y = 0;
+
 // -------------------------------------------------------------
 // This one is accessed rather often so we'll put it in .dtcm
 // -------------------------------------------------------------
@@ -809,10 +812,10 @@ ITCM_CODE void pollInputs(void)
     // -------------------------------------------------------------------------------------
     if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R))
     {
-        dsPrintValue(3,0,0,(char*)"SNAP");
+        dsPrintValue(hud_x+2,hud_y,0,(char*)"SNAP");
         screenshot();
         WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-        dsPrintValue(3,0,0,(char*)"    ");
+        dsPrintValue(hud_x+2,hud_y,0,(char*)"    ");
     }
     else
     if ((keys_pressed & KEY_A) && (keys_pressed & KEY_X))
@@ -1201,6 +1204,10 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
       }
     }
 
+    
+     hud_x = 3;
+     hud_y = 0;
+
     // Now show the bottom screen - usualy some form of overlay...
 #ifdef DEBUG_ENABLE
     show_debug_overlay();
@@ -1441,7 +1448,7 @@ ITCM_CODE void Run(char *initial_file)
             {
                 sprintf(tmp,"%-6d %-6d %-5d %-5d", debug[0], debug[1], debug[2], debug[3]);
                 //sprintf(tmp,"%04X %04X %04X %04X %02X %02X", debug[0], debug[1], debug[2], debug[3], debug[4], debug[5]);
-                dsPrintValue(6,0,0,tmp);
+                dsPrintValue(5,0,0,tmp);
             }
             
             // If we are using the JLP, we call into the 1 second tick function in case there is a dirty flash that needs writing...
