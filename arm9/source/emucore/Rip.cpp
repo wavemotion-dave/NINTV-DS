@@ -430,7 +430,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                             }
                             if (strstr(ptr, "ecs"))
                             {
-                                bUseECS = 1;
+                                bUseECS = (isDSiMode() ? 1 : 0);  // For the DS-Lite/Phat, we ignore this directive that is so often set even when there is no advantage to using it (and it chews up CPU). User can still override.
                             }
                         }
                         

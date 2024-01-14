@@ -132,7 +132,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.spare3                   = 0;
     myGlobalConfig.spare4                   = 0;
     myGlobalConfig.spare5                   = 0;
-    myGlobalConfig.frame_skip               = 1;
+    myGlobalConfig.frame_skip               = (isDSiMode() ? 0:1);
     memset(myGlobalConfig.reserved, 0x00, 256);
 }
 
