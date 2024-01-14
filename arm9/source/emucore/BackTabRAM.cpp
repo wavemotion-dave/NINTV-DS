@@ -19,6 +19,7 @@
 // ---------------------------------------------------------------------------
 UINT16  bt_image[BACKTAB_SIZE]             __attribute__((section(".dtcm")));
 UINT16  bt_imageLatched[BACKTAB_SIZE]      __attribute__((section(".dtcm")));
+UINT8   dirtyBytes[BACKTAB_SIZE]           __attribute__((section(".dtcm")));
 
 BackTabRAM::BackTabRAM()
 : RAM(BACKTAB_SIZE, BACKTAB_LOCATION, 0xFFFF, 0xFFFF)

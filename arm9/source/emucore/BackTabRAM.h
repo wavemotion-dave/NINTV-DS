@@ -19,6 +19,7 @@
 
 extern UINT16  bt_image[BACKTAB_SIZE];
 extern UINT16  bt_imageLatched[BACKTAB_SIZE];
+extern UINT8   dirtyBytes[BACKTAB_SIZE];
 
 TYPEDEF_STRUCT_PACK(_BackTabRAMState
 {
@@ -53,7 +54,6 @@ class BackTabRAM : public RAM
         void setState(BackTabRAMState *state);
 
     private:
-        UINT8        dirtyBytes[BACKTAB_SIZE];
         UINT8        dirtyRAM;
         UINT8        colorAdvanceBitsDirty;
         UINT8        dirtyBytesLatched[BACKTAB_SIZE];

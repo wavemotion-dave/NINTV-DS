@@ -232,7 +232,7 @@ UINT16 CP1610::J(UINT16 target) {
     return 12;
 }
 
-ITCM_CODE UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
+UINT16 CP1610::JSR(UINT16 registerNum, UINT16 target) {
     r[registerNum] = r[7]+3;
     r[7] = target;
     interruptible = TRUE;

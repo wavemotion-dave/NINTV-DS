@@ -700,12 +700,40 @@ ITCM_CODE void AY38900::renderBackground()
     else
     {
         if (myConfig.bLatched)
-            renderForegroundBackgroundModeLatched();
+        {
+            if (colorModeChanged) renderForegroundBackgroundModeLatchedForced(); else renderForegroundBackgroundModeLatched();
+        }
         else
-            renderForegroundBackgroundMode();
+        {
+            if (colorModeChanged) renderForegroundBackgroundModeForced(); else renderForegroundBackgroundMode();
+        }
     }
 }
 
+
+void AY38900::renderForegroundBackgroundModeForced()
+{
+    //iterate through all the cards in the backtab
+    for (UINT8 i = 0; i < 240; i++) 
+    {
+        //get the next card to render
+        UINT16 nextCard = backtab.peek_direct(i);
+        UINT16 isNotGrom = nextCard & 0x0800;
+        UINT16 memoryLocation = nextCard & 0x01F8;
+
+        //render this card only if this card has changed or if the card points to GRAM
+        //and one of the eight bytes in gram that make up this card have changed
+        fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+        bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+
+        Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
+        UINT16 address = memory->getReadAddress()+memoryLocation;
+        UINT8 nextx = (i%20) * 8;
+        UINT8 nexty = (i/20) * 8;
+        for (UINT16 j = 0; j < 8; j++)
+            renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+    }
+}
 
 ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 {
@@ -714,17 +742,17 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_direct(i);
-        BOOL isGrom = (nextCard & 0x0800) == 0;
+        UINT16 isNotGrom = (nextCard & 0x0800);
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (colorModeChanged || backtab.isDirtyDirect(i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+        if (backtab.isDirtyDirect(i) || (isNotGrom && gram->isCardDirty(memoryLocation))) 
         {
             fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
-            Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
+            Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
@@ -741,23 +769,45 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
-        BOOL isGrom = (nextCard & 0x0800) == 0;
+        UINT16 isNotGrom = nextCard & 0x0800;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (colorModeChanged || backtab.isDirtyLatched(i) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+        if (backtab.isDirtyLatched(i) || (isNotGrom && gram->isCardDirty(memoryLocation))) 
         {
             fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
-            Memory* memory = (isGrom ? (Memory*)grom : (Memory*)gram);
+            Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
             for (UINT16 j = 0; j < 8; j++)
                 renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
         }
+    }
+}
+
+void AY38900::renderForegroundBackgroundModeLatchedForced()
+{
+    //iterate through all the cards in the backtab
+    for (UINT8 i = 0; i < 240; i++) 
+    {
+        //get the next card to render
+        UINT16 nextCard = backtab.peek_latched(i);
+        UINT16 isNotGrom = nextCard & 0x0800;
+        UINT16 memoryLocation = nextCard & 0x01F8;
+
+        fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+        bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+
+        Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
+        UINT16 address = memory->getReadAddress()+memoryLocation;
+        UINT8 nextx = (i%20) * 8;
+        UINT8 nexty = (i/20) * 8;
+        for (UINT16 j = 0; j < 8; j++)
+            renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
     }
 }
 
@@ -1044,23 +1094,9 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     }
 }
 
-ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y)
+void AY38900::renderLine(UINT8 nextbyte, int x, int y)
 {
-    if (nextbyte == 0x00)
-    {
-        UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
-        UINT32 bgColor32 = color_repeat_table[bgcolor];
-        *nextTargetPixel++ = bgColor32;
-        *nextTargetPixel = bgColor32;
-    }
-    else if (nextbyte == 0xFF)
-    {
-        UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
-        UINT32 fgColor32 = color_repeat_table[fgcolor];
-        *nextTargetPixel++ = fgColor32;
-        *nextTargetPixel = fgColor32;
-    }
-    else
+    if (nextbyte)
     {
         UINT8* nextTargetPixel = backgroundBuffer + x + (y*160);
         *nextTargetPixel++ = (nextbyte & 0x80) ? fgcolor : bgcolor;
@@ -1071,7 +1107,14 @@ ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y)
         *nextTargetPixel++ = (nextbyte & 0x08) ? fgcolor : bgcolor;
         *nextTargetPixel++ = (nextbyte & 0x04) ? fgcolor : bgcolor;
         *nextTargetPixel++ = (nextbyte & 0x02) ? fgcolor : bgcolor;
-        *nextTargetPixel = (nextbyte & 0x01)   ? fgcolor : bgcolor;
+        *nextTargetPixel   = (nextbyte & 0x01) ? fgcolor : bgcolor;
+    }
+    else
+    {
+        UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
+        UINT32 bgColor32 = color_repeat_table[bgcolor];
+        *nextTargetPixel++ = bgColor32;
+        *nextTargetPixel = bgColor32;
     }
 }
 

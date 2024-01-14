@@ -155,6 +155,15 @@ void Emulator::SetRip(Rip* rip)
         videoBus->removeAll();
         audioMixer->removeAll();
         inputConsumerBus.removeAll();
+        
+        // If there are any ROMS attached to the old RIP, delete them now
+        for (UINT16 i = 0; i < this->currentRip->GetROMCount(); i++)
+        {
+            if (this->currentRip->GetROM(i))
+            {
+                delete this->currentRip->GetROM(i);
+            }
+        }        
     }
 
     currentRip = rip;

@@ -76,7 +76,7 @@ MemoryBus::MemoryBus()
     writeableMemoryCounts = new UINT8[size];
     memset(writeableMemoryCounts, 0, sizeof(UINT8) * size);
     writeableMemorySpace = new Memory**[size>>4];
-
+    
     // ---------------------------------------------------------------------------------------------------------------------------
     // We do this rather than allocate piecemeal so we avoid malloc overhead and extra bytes padded (saves almost 500K on DS)
     // ---------------------------------------------------------------------------------------------------------------------------

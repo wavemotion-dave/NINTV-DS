@@ -146,6 +146,21 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
   }
 }
 
+void dsPrintFPS(char *pchStr)
+{
+  u16 *pusEcran,*pusMap;
+  char *pTrTxt=pchStr;
+
+  pusEcran=(u16*) (bgGetMapPtr(bg1b))+0+(0<<5);
+  pusMap=(u16*) (bgGetMapPtr(bg0b)+(2*0+24)*32);
+
+  while((*pTrTxt)!='\0')
+  {
+    *pusEcran++ = *(pusMap+(*pTrTxt++)-' ');
+  }
+}
+
+
 // ------------------------------------------------------------------
 // Setup the emulator and basic perhipheral chips (BIOS, etc). 
 // ------------------------------------------------------------------
@@ -644,367 +659,8 @@ void ds_handle_meta(int meta_key)
     }
 }
 
-// -------------------------------------------------------------------------------------------------
-// Read the DS keys for input and handle it... this could be meta commands (LOAD, QUIT, CONFIG) or
-// it could be actual intellivision keypad emulation (KEY_1, KEY_2, DISC movement, etc).
-// This is called every frame - so 60 times per second which is fairly responsive...
-// -------------------------------------------------------------------------------------------------
-UINT8 breather = 0;
-
-ITCM_CODE void pollInputs(void)
+void poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
 {
-    UINT16 ctrl_disc, ctrl_keys, ctrl_side;
-    unsigned short keys_pressed = keysCurrent();
-    static short last_pressed = -1;
-
-    for (int i=0; i<15; i++) {ds_key_input[0][i] = 0; ds_key_input[1][i] = 0;}
-    for (int i=0; i<16; i++) {ds_disc_input[0][i] = 0; ds_disc_input[1][i] = 0;}
-    
-    // Assume NO speedup unless that specific META key is held down...
-    bMetaSpeedup = false;
-    
-    // Check for Dual Action
-    if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_A)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)
-    {
-        ctrl_disc = 0;
-        ctrl_side = 0;
-        ctrl_keys = 1;
-    }
-    else if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_B) // Same as #2 above except side-buttons use controller #2
-    {
-        ctrl_disc = 0;
-        ctrl_side = 1;
-        ctrl_keys = 1;
-    }
-    else
-    {
-        ctrl_disc = myConfig.controller_type;
-        ctrl_side = myConfig.controller_type;
-        ctrl_keys = myConfig.controller_type;
-    }
-    
-    // ---------------------------------------------------------------
-    // Handle 8 directions on keypad... best we can do with the d-pad
-    // unless there is a custom .ovl overlay file mapping the disc.
-    // ---------------------------------------------------------------
-
-    if (myConfig.dpad_config == DPAD_NORMAL)  // Normal handling
-    {
-        if (keys_pressed & KEY_UP)    
-        {
-            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
-            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
-            else ds_disc_input[ctrl_disc][0]  = 1;
-        }
-        else if (keys_pressed & KEY_DOWN)
-        {
-            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
-            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
-            else ds_disc_input[ctrl_disc][8]  = 1;
-        }
-        else if (keys_pressed & KEY_RIGHT)
-        {
-            ds_disc_input[ctrl_disc][4]  = 1;
-        }
-        else if (keys_pressed & KEY_LEFT)
-        {
-            ds_disc_input[ctrl_disc][12] = 1;
-        }
-    }
-    else if (myConfig.dpad_config == DPAD_REV_LEFT_RIGHT) // Reverse Left/Right
-    {
-        if (keys_pressed & KEY_UP)    
-        {
-            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][14]  = 1;
-            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][2] = 1;
-            else ds_disc_input[ctrl_disc][0]  = 1;
-        }
-        else if (keys_pressed & KEY_DOWN)
-        {
-            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][10]  = 1;
-            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][6] = 1;
-            else ds_disc_input[ctrl_disc][8]  = 1;
-        }
-        else if (keys_pressed & KEY_RIGHT)
-        {
-            ds_disc_input[ctrl_disc][12]  = 1;
-        }
-        else if (keys_pressed & KEY_LEFT)
-        {
-            ds_disc_input[ctrl_disc][4] = 1;
-        }
-    }
-    else if (myConfig.dpad_config == DPAD_REV_UP_DOWN)  // Reverse Up/Down
-    {
-        if (keys_pressed & KEY_UP)    
-        {
-            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
-            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
-            else ds_disc_input[ctrl_disc][8]  = 1;
-        }
-        else if (keys_pressed & KEY_DOWN)
-        {
-            if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
-            else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
-            else ds_disc_input[ctrl_disc][0]  = 1;
-        }
-        else if (keys_pressed & KEY_RIGHT)
-        {
-            ds_disc_input[ctrl_disc][4]  = 1;
-        }
-        else if (keys_pressed & KEY_LEFT)
-        {
-            ds_disc_input[ctrl_disc][12] = 1;
-        }
-    }    
-    else if (myConfig.dpad_config == DPAD_DIAGONALS)  // Diagnoals
-    {
-        if (keys_pressed & KEY_UP)    
-        {
-            ds_disc_input[ctrl_disc][2]  = 1;
-        }
-        else if (keys_pressed & KEY_DOWN)
-        {
-            ds_disc_input[ctrl_disc][10] = 1;
-        }
-        else if (keys_pressed & KEY_RIGHT)
-        {
-            ds_disc_input[ctrl_disc][6]  = 1;
-        }
-        else if (keys_pressed & KEY_LEFT)
-        {
-            ds_disc_input[ctrl_disc][14] = 1;
-        }
-    }
-    else if (myConfig.dpad_config == DPAD_STRICT_4WAY)  // Strict 4-way
-    {
-        // -----------------------------------------------------------------
-        // To help with qames like Beauty and the Beast, we provide a
-        // small 4 frame debounce between left/right switching to up/down.
-        // -----------------------------------------------------------------
-        if (keys_pressed & KEY_UP)    
-        {
-            if (breather) breather--;
-            else ds_disc_input[ctrl_disc][0]  = 1;
-        }
-        else if (keys_pressed & KEY_DOWN)
-        {
-            if (breather) breather--;
-            else ds_disc_input[ctrl_disc][8]  = 1;
-        }
-        else if (keys_pressed & KEY_RIGHT)
-        {
-            ds_disc_input[ctrl_disc][4]  = 1;
-            breather = 4;
-        }
-        else if (keys_pressed & KEY_LEFT)
-        {
-            ds_disc_input[ctrl_disc][12] = 1;
-            breather = 4;
-        }
-    }
-    
-    // Unless told otherwise, we are NOT in un-throttle mode...
-    bMetaSpeedup = false;
-    
-    // -------------------------------------------------------------------------------------
-    // Now handle the main DS keys... these can be re-mapped to any Intellivision function
-    // -------------------------------------------------------------------------------------
-    if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R))
-    {
-        dsPrintValue(hud_x+2,hud_y,0,(char*)"SNAP");
-        screenshot();
-        WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-        dsPrintValue(hud_x+2,hud_y,0,(char*)"    ");
-    }
-    else
-    if ((keys_pressed & KEY_A) && (keys_pressed & KEY_X))
-    {
-        if (myConfig.key_AX_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_AX_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_AX_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_AX_map);
-        }
-        else if (myConfig.key_AX_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_AX_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_AX_map]  = 1;
-    }
-    else
-    if ((keys_pressed & KEY_X) && (keys_pressed & KEY_Y))
-    {
-        if (myConfig.key_XY_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_XY_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_XY_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_XY_map);
-        }
-        else if (myConfig.key_XY_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_XY_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_XY_map]  = 1;
-    }
-    else
-    if ((keys_pressed & KEY_Y) && (keys_pressed & KEY_B))
-    {
-        if (myConfig.key_YB_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_YB_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_YB_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_YB_map);
-        }
-        else if (myConfig.key_YB_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_YB_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_YB_map]  = 1;
-    }
-    else
-    if ((keys_pressed & KEY_B) && (keys_pressed & KEY_A))
-    {
-        if (myConfig.key_BA_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_BA_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_BA_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_BA_map);
-        }
-        else if (myConfig.key_BA_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_BA_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_BA_map]  = 1;
-    }
-    else
-    {
-        if (keys_pressed & KEY_A)       
-        {
-            if (myConfig.key_A_map >= OVL_META_RESET)
-            {
-                if (myConfig.key_A_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_A_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-                else if (myConfig.key_A_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
-            }
-            else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
-                ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
-            else
-                ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
-        }
-
-        if (keys_pressed & KEY_B)
-        {
-            if (myConfig.key_B_map >= OVL_META_RESET)
-            {
-                if (myConfig.key_B_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_B_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-                else if (myConfig.key_B_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
-            }
-            else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
-                ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
-            else
-                ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
-        }
-
-        if (keys_pressed & KEY_X)
-        {
-            if (myConfig.key_X_map >= OVL_META_RESET)
-            {
-                if (myConfig.key_X_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_X_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-                else if (myConfig.key_X_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
-            }
-            else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
-                ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
-            else
-                ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
-        }
-
-        if (keys_pressed & KEY_Y)
-        {
-            if (myConfig.key_Y_map >= OVL_META_RESET)
-            {
-                if (myConfig.key_Y_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_Y_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-                else if (myConfig.key_Y_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
-            }
-            else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
-                ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
-            else
-                ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
-        }
-    }
-    
-    if (keys_pressed & KEY_L)
-    {
-        if (myConfig.key_L_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_L_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_L_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (myConfig.key_L_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
-        }
-        else if (myConfig.key_L_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_L_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_L_map]  = 1;
-    }
-
-    if (keys_pressed & KEY_R)
-    {
-        if (myConfig.key_R_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_R_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_R_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (myConfig.key_R_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
-        }
-        else if (myConfig.key_R_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_R_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_R_map]  = 1;
-    }
-
-    if (keys_pressed & KEY_START)   
-    {
-        if (myConfig.key_START_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_START_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_START_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (myConfig.key_START_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
-        }
-        else if (myConfig.key_START_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_START_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_START_map]  = 1;
-    }
-    
-    if (keys_pressed & KEY_SELECT)  
-    {
-        if (myConfig.key_SELECT_map >= OVL_META_RESET)
-        {
-            if (myConfig.key_SELECT_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-            else if (myConfig.key_SELECT_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
-            else if (myConfig.key_SELECT_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
-            else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
-        }
-        else if (myConfig.key_SELECT_map >= OVL_BTN_FIRE) 
-            ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
-        else
-            ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
-    }
-    
-    last_pressed = keys_pressed;
-    
-    ecs_key_pressed = (myConfig.overlay == 1) ? 0:255;
-    
-    // -----------------------------------------------------------------
-    // Now handle the on-screen Intellivision overlay and meta keys...
-    // -----------------------------------------------------------------
-    if (keys_pressed & KEY_TOUCH)
-    {
         touchPosition touch;
         touchRead(&touch);
 #ifdef DEBUG_ENABLE
@@ -1173,6 +829,375 @@ ITCM_CODE void pollInputs(void)
                 }
             }
         }
+}
+
+// -------------------------------------------------------------------------------------------------
+// Read the DS keys for input and handle it... this could be meta commands (LOAD, QUIT, CONFIG) or
+// it could be actual intellivision keypad emulation (KEY_1, KEY_2, DISC movement, etc).
+// This is called every frame - so 60 times per second which is fairly responsive...
+// -------------------------------------------------------------------------------------------------
+UINT8 breather = 0;
+
+ITCM_CODE void pollInputs(void)
+{
+    UINT16 ctrl_disc, ctrl_keys, ctrl_side;
+    unsigned short keys_pressed = keysCurrent();
+    static short last_pressed = -1;
+
+    for (int i=0; i<15; i++) {ds_key_input[0][i] = 0; ds_key_input[1][i] = 0;}
+    for (int i=0; i<16; i++) {ds_disc_input[0][i] = 0; ds_disc_input[1][i] = 0;}
+    
+    // Assume NO speedup unless that specific META key is held down...
+    bMetaSpeedup = false;
+    
+    // Check for Dual Action
+    if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_A)  // Standard Dual-Action (disc and side buttons on controller #1... keypad from controller #2)
+    {
+        ctrl_disc = 0;
+        ctrl_side = 0;
+        ctrl_keys = 1;
+    }
+    else if (myConfig.controller_type == CONTROLLER_DUAL_ACTION_B) // Same as #2 above except side-buttons use controller #2
+    {
+        ctrl_disc = 0;
+        ctrl_side = 1;
+        ctrl_keys = 1;
+    }
+    else
+    {
+        ctrl_disc = myConfig.controller_type;
+        ctrl_side = myConfig.controller_type;
+        ctrl_keys = myConfig.controller_type;
+    }
+    
+    // ---------------------------------------------------------------
+    // Handle 8 directions on keypad... best we can do with the d-pad
+    // unless there is a custom .ovl overlay file mapping the disc.
+    // ---------------------------------------------------------------
+    
+    // Unless told otherwise, we are NOT in un-throttle mode...
+    bMetaSpeedup = false;
+
+    
+    // If one of the NDS keys is pressed...
+    if (keys_pressed & (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT | KEY_L | KEY_R | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_SELECT | KEY_START))
+    {
+        if (myConfig.dpad_config == DPAD_NORMAL)  // Normal handling
+        {
+            if (keys_pressed & KEY_UP)    
+            {
+                if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
+                else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
+                else ds_disc_input[ctrl_disc][0]  = 1;
+            }
+            else if (keys_pressed & KEY_DOWN)
+            {
+                if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
+                else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
+                else ds_disc_input[ctrl_disc][8]  = 1;
+            }
+            else if (keys_pressed & KEY_RIGHT)
+            {
+                ds_disc_input[ctrl_disc][4]  = 1;
+            }
+            else if (keys_pressed & KEY_LEFT)
+            {
+                ds_disc_input[ctrl_disc][12] = 1;
+            }
+        }
+        else if (myConfig.dpad_config == DPAD_REV_LEFT_RIGHT) // Reverse Left/Right
+        {
+            if (keys_pressed & KEY_UP)    
+            {
+                if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][14]  = 1;
+                else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][2] = 1;
+                else ds_disc_input[ctrl_disc][0]  = 1;
+            }
+            else if (keys_pressed & KEY_DOWN)
+            {
+                if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][10]  = 1;
+                else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][6] = 1;
+                else ds_disc_input[ctrl_disc][8]  = 1;
+            }
+            else if (keys_pressed & KEY_RIGHT)
+            {
+                ds_disc_input[ctrl_disc][12]  = 1;
+            }
+            else if (keys_pressed & KEY_LEFT)
+            {
+                ds_disc_input[ctrl_disc][4] = 1;
+            }
+        }
+        else if (myConfig.dpad_config == DPAD_REV_UP_DOWN)  // Reverse Up/Down
+        {
+            if (keys_pressed & KEY_UP)    
+            {
+                if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1;
+                else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1;
+                else ds_disc_input[ctrl_disc][8]  = 1;
+            }
+            else if (keys_pressed & KEY_DOWN)
+            {
+                if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1;
+                else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1;
+                else ds_disc_input[ctrl_disc][0]  = 1;
+            }
+            else if (keys_pressed & KEY_RIGHT)
+            {
+                ds_disc_input[ctrl_disc][4]  = 1;
+            }
+            else if (keys_pressed & KEY_LEFT)
+            {
+                ds_disc_input[ctrl_disc][12] = 1;
+            }
+        }    
+        else if (myConfig.dpad_config == DPAD_DIAGONALS)  // Diagnoals
+        {
+            if (keys_pressed & KEY_UP)    
+            {
+                ds_disc_input[ctrl_disc][2]  = 1;
+            }
+            else if (keys_pressed & KEY_DOWN)
+            {
+                ds_disc_input[ctrl_disc][10] = 1;
+            }
+            else if (keys_pressed & KEY_RIGHT)
+            {
+                ds_disc_input[ctrl_disc][6]  = 1;
+            }
+            else if (keys_pressed & KEY_LEFT)
+            {
+                ds_disc_input[ctrl_disc][14] = 1;
+            }
+        }
+        else if (myConfig.dpad_config == DPAD_STRICT_4WAY)  // Strict 4-way
+        {
+            // -----------------------------------------------------------------
+            // To help with qames like Beauty and the Beast, we provide a
+            // small 4 frame debounce between left/right switching to up/down.
+            // -----------------------------------------------------------------
+            if (keys_pressed & KEY_UP)    
+            {
+                if (breather) breather--;
+                else ds_disc_input[ctrl_disc][0]  = 1;
+            }
+            else if (keys_pressed & KEY_DOWN)
+            {
+                if (breather) breather--;
+                else ds_disc_input[ctrl_disc][8]  = 1;
+            }
+            else if (keys_pressed & KEY_RIGHT)
+            {
+                ds_disc_input[ctrl_disc][4]  = 1;
+                breather = 4;
+            }
+            else if (keys_pressed & KEY_LEFT)
+            {
+                ds_disc_input[ctrl_disc][12] = 1;
+                breather = 4;
+            }
+        }
+    
+        // -------------------------------------------------------------------------------------
+        // Now handle the main DS keys... these can be re-mapped to any Intellivision function
+        // -------------------------------------------------------------------------------------
+        if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R))
+        {
+            dsPrintValue(hud_x+2,hud_y,0,(char*)"SNAP");
+            screenshot();
+            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+            dsPrintValue(hud_x+2,hud_y,0,(char*)"    ");
+        }
+        else
+        if ((keys_pressed & KEY_A) && (keys_pressed & KEY_X))
+        {
+            if (myConfig.key_AX_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_AX_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_AX_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_AX_map);
+            }
+            else if (myConfig.key_AX_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_AX_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_AX_map]  = 1;
+        }
+        else
+        if ((keys_pressed & KEY_X) && (keys_pressed & KEY_Y))
+        {
+            if (myConfig.key_XY_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_XY_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_XY_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_XY_map);
+            }
+            else if (myConfig.key_XY_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_XY_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_XY_map]  = 1;
+        }
+        else
+        if ((keys_pressed & KEY_Y) && (keys_pressed & KEY_B))
+        {
+            if (myConfig.key_YB_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_YB_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_YB_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_YB_map);
+            }
+            else if (myConfig.key_YB_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_YB_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_YB_map]  = 1;
+        }
+        else
+        if ((keys_pressed & KEY_B) && (keys_pressed & KEY_A))
+        {
+            if (myConfig.key_BA_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_BA_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_BA_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_BA_map);
+            }
+            else if (myConfig.key_BA_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_BA_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_BA_map]  = 1;
+        }
+        else
+        {
+            if (keys_pressed & KEY_A)       
+            {
+                if (myConfig.key_A_map >= OVL_META_RESET)
+                {
+                    if (myConfig.key_A_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                    else if (myConfig.key_A_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    else if (myConfig.key_A_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                    else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
+                }
+                else if (myConfig.key_A_map >= OVL_BTN_FIRE) 
+                    ds_key_input[ctrl_side][myConfig.key_A_map]  = 1;
+                else
+                    ds_key_input[ctrl_keys][myConfig.key_A_map]  = 1;
+            }
+
+            if (keys_pressed & KEY_B)
+            {
+                if (myConfig.key_B_map >= OVL_META_RESET)
+                {
+                    if (myConfig.key_B_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                    else if (myConfig.key_B_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    else if (myConfig.key_B_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                    else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
+                }
+                else if (myConfig.key_B_map >= OVL_BTN_FIRE) 
+                    ds_key_input[ctrl_side][myConfig.key_B_map]  = 1;
+                else
+                    ds_key_input[ctrl_keys][myConfig.key_B_map]  = 1;
+            }
+
+            if (keys_pressed & KEY_X)
+            {
+                if (myConfig.key_X_map >= OVL_META_RESET)
+                {
+                    if (myConfig.key_X_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                    else if (myConfig.key_X_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    else if (myConfig.key_X_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                    else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
+                }
+                else if (myConfig.key_X_map >= OVL_BTN_FIRE) 
+                    ds_key_input[ctrl_side][myConfig.key_X_map]  = 1;
+                else
+                    ds_key_input[ctrl_keys][myConfig.key_X_map]  = 1;
+            }
+
+            if (keys_pressed & KEY_Y)
+            {
+                if (myConfig.key_Y_map >= OVL_META_RESET)
+                {
+                    if (myConfig.key_Y_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                    else if (myConfig.key_Y_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    else if (myConfig.key_Y_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                    else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
+                }
+                else if (myConfig.key_Y_map >= OVL_BTN_FIRE) 
+                    ds_key_input[ctrl_side][myConfig.key_Y_map]  = 1;
+                else
+                    ds_key_input[ctrl_keys][myConfig.key_Y_map]  = 1;
+            }
+        }
+
+        if (keys_pressed & KEY_L)
+        {
+            if (myConfig.key_L_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_L_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_L_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_L_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
+            }
+            else if (myConfig.key_L_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_L_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_L_map]  = 1;
+        }
+
+        if (keys_pressed & KEY_R)
+        {
+            if (myConfig.key_R_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_R_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_R_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_R_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
+            }
+            else if (myConfig.key_R_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_R_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_R_map]  = 1;
+        }
+
+        if (keys_pressed & KEY_START)   
+        {
+            if (myConfig.key_START_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_START_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_START_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_START_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
+            }
+            else if (myConfig.key_START_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_START_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_START_map]  = 1;
+        }
+
+        if (keys_pressed & KEY_SELECT)  
+        {
+            if (myConfig.key_SELECT_map >= OVL_META_RESET)
+            {
+                if (myConfig.key_SELECT_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
+                else if (myConfig.key_SELECT_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                else if (myConfig.key_SELECT_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
+                else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
+            }
+            else if (myConfig.key_SELECT_map >= OVL_BTN_FIRE) 
+                ds_key_input[ctrl_side][myConfig.key_SELECT_map]  = 1;
+            else
+                ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
+        }
+    }
+    
+    last_pressed = keys_pressed;
+    
+    ecs_key_pressed = (myConfig.overlay == 1) ? 0:255;
+    
+    // -----------------------------------------------------------------
+    // Now handle the on-screen Intellivision overlay and meta keys...
+    // -----------------------------------------------------------------
+    if (keys_pressed & KEY_TOUCH)
+    {
+        poll_touch_screen(ctrl_disc, ctrl_keys, ctrl_side);
     }    
 }
 
@@ -1290,7 +1315,7 @@ void dsShowScreenEmu(void)
 // ------------------------------------------------------------------------------------------
 // Start Timer 0 - this is our frame timer counter...
 // ------------------------------------------------------------------------------------------
-ITCM_CODE void dsInitTimer(void)
+void dsInitTimer(void)
 {
     TIMER0_DATA=0;
     TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
@@ -1439,7 +1464,7 @@ ITCM_CODE void Run(char *initial_file)
                 tmp[1] = '0' + ((frames_per_sec_calc % 100) /10);
                 tmp[2] = '0' + ((frames_per_sec_calc % 100) %10);
                 tmp[3] = 0;
-                dsPrintValue(0,0,0,tmp);
+                dsPrintFPS(tmp);
             }
             frames_per_sec_calc=0;
             

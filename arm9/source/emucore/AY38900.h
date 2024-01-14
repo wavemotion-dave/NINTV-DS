@@ -96,6 +96,8 @@ private:
     void renderMOBs();
     void renderBackground();
     void renderForegroundBackgroundMode();
+    void renderForegroundBackgroundModeForced();
+    void renderForegroundBackgroundModeLatchedForced();
     void renderForegroundBackgroundModeLatched();
     void renderColorStackMode();
     void renderColorStackModeLatched();
