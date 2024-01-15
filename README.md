@@ -90,7 +90,7 @@ History :
 --------------------------------------------------------------------------------
 V4.6 : 15-Jan-2024 by wavemotion-dave
   * Massive overhaul to the core emulation to reduce memory footprint. The older DS-Lite/Phat (with 4MB of memory) can now load all of the newest homebrew games!
-  * Optmizations in Video, Audio and CPU cores providese 10% speed up across the board.
+  * Optimizations in Video, Audio and CPU cores provides 10% speed up across the board.
   * Improved sound quality for the DSi including a new "BEST" option (not enabled by default) that will render the sound as good as I can make it on the handheld.
   * A few small fixes for the CPU core to improve the cycle accuracy.
   * With the improved speed, the DSi largely disables frameskip for the best visual experience.
