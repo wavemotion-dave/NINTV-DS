@@ -58,8 +58,8 @@ Nintellivision contains a default standard overlay that mimics a real Intellivis
  
 Missing / Known Issues :
 -----------------------
-* ECS support is partial - there is no UART / Cassette handling.
-* The older DS-LITE/PHAT can only support a minimal ECS page-flipping scheme will let you play all the commercial ECS games. The DSi has extra memory and will play anything you throw at it ((World Series will have voice). Each ECS game will allow you to use the Intellivision Keypad to enter just enough keyboard information to start the game or you can pick the ECS mini-keyboard overlay.
+* ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
+* The latest Same Game & Robots Intellivoice will produce some garbled sounds - likely cycle timing issue.
 
 License :
 -----------------------
