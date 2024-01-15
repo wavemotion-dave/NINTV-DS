@@ -347,6 +347,18 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
         {
             bUseJLP = db_entry->bJLP;
         }
+        
+        // ---------------------------------------------------------------------------------------------------
+        // If we didn't find a specific config for this game and ECS is enabled, default to frameskip=1
+        // This is because the secondary audio processor is expensive to emulate and the DSi will just barely
+        // keep up. So we default back to some small level of frameskip to ensure the game runs properly. 
+        // The user is free to disable frameskip - or turn off the ECS handling if the game really isn't 
+        // utilizing it (many .cfg files specify "ecs=1" when it has no real effect on the game).
+        // ---------------------------------------------------------------------------------------------------
+        if ((bConfigWasFound == FALSE) && bUseECS)
+        {
+            myConfig.frame_skip = 1;
+        }        
     }
     else    // Didn't find it... let's see if we can read a .cfg file
     {
@@ -699,6 +711,18 @@ Rip* Rip::LoadRom(const CHAR* filename)
     {
         rip->JLP16Bit = NULL;
     }
+    
+    // ---------------------------------------------------------------------------------------------------
+    // If we didn't find a specific config for this game and ECS is enabled, default to frameskip=1
+    // This is because the secondary audio processor is expensive to emulate and the DSi will just barely
+    // keep up. So we default back to some small level of frameskip to ensure the game runs properly. 
+    // The user is free to disable frameskip - or turn off the ECS handling if the game really isn't 
+    // utilizing it (many .cfg files specify "ecs=1" when it has no real effect on the game).
+    // ---------------------------------------------------------------------------------------------------
+    if ((bConfigWasFound == FALSE) && bUseECS)
+    {
+        myConfig.frame_skip = 1;
+    }    
 
     // Load the Intellivoice if asked for...
     if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", (bUseIVoice == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
