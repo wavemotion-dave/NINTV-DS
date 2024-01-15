@@ -94,6 +94,7 @@ V4.6 : 15-Jan-2024 by wavemotion-dave
   * Improved sound quality for the DSi including a new "BEST" option (not enabled by default) that will render the sound as good as I can make it on the handheld.
   * A few small fixes for the CPU core to improve the cycle accuracy.
   * With the improved speed, the DSi largely disables frameskip for the best visual experience.
+  * Save States needed to be updated for all these changes - so your old save states can't be restored. Finish your current game before upgrading to 4.6!
 
 V4.5 : 01-Jan-2024 by wavemotion-dave
   * Added new Screenshot handling (press and hold the L+R shoulder buttons for ~1 second to take a .bmp snapshot written to the SD card)
