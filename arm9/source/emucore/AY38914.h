@@ -1,10 +1,10 @@
 // =====================================================================================
 // Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -70,7 +70,7 @@ class AY38914 : public Processor, public AudioProducer
         INT32 getClocksPerSample();
         INT32 getSampleRate() { return getClockSpeed(); }
         INT32 tick(INT32);
-        
+
         void getState(AY38914State *state);
         void setState(AY38914State *state);
 
@@ -78,11 +78,11 @@ class AY38914 : public Processor, public AudioProducer
         INT32 getClockDivisor();
 
         AY38914_Registers registers;
-        
+
         struct Channel_t channel0;
         struct Channel_t channel1;
-        struct Channel_t channel2;        
-        
+        struct Channel_t channel2;
+
         //cached total output sample
         UINT8 cachedTotalOutputIsDirty;
 
@@ -95,18 +95,18 @@ class AY38914 : public Processor, public AudioProducer
         UINT8 envelopeAltr;
         UINT8 envelopeAtak;
         UINT8 envelopeCont;
-        INT32 envelopeCounter;         
+        INT32 envelopeCounter;
 
         //noise data
         UINT8 noiseIdle;
         INT32 noisePeriod;
         INT32 noisePeriodValue;
-        INT32 noiseCounter;        
+        INT32 noiseCounter;
 
         //data for random number generator, used for white noise accuracy
         INT32 my_random;
         UINT8 noise;
-        
+
     private:
         AY38914_InputOutput*   psgIO0;
         AY38914_InputOutput*   psgIO1;

@@ -37,6 +37,9 @@ TYPEDEF_STRUCT_PACK( _CP1610State
     UINT8     I;
     UINT8     D;
     UINT8     interruptible;
+    UINT8     bCP1610_PIN_IN_BUSRQ;
+    UINT8     bCP1610_PIN_IN_INTRM; 
+    UINT8     bCP1610_PIN_OUT_BUSAK;
     INT8      ext;
     UINT16   interruptAddress;
     UINT16   resetAddress;

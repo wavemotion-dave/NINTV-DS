@@ -18,7 +18,7 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x0006
+#define CONFIG_VER  0x0007
 
 #define MAX_CONFIGS 625
 
@@ -123,5 +123,7 @@ extern struct AllConfig_t    allConfigs;
 extern void FindAndLoadConfig(UINT32 crc);
 extern void dsChooseOptions(void);
 extern void SaveConfig(bool bShow);
+
+extern UINT8 bConfigWasFound;
 
 #endif

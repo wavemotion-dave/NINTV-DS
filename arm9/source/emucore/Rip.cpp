@@ -430,7 +430,8 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                             }
                             if (strstr(ptr, "ecs"))
                             {
-                                bUseECS = (isDSiMode() ? 1 : 0);  // For the DS-Lite/Phat, we ignore this directive that is so often set even when there is no advantage to using it (and it chews up CPU). User can still override.
+                                if (strstr(ptr, "0")) bUseECS = 0;
+                                else bUseECS = (isDSiMode() ? 1 : 0);  // For the DS-Lite/Phat, we ignore this directive that is so often set even when there is no advantage to using it (and it chews up CPU). User can still override.
                             }
                         }
                         
@@ -443,7 +444,19 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                 }
             }
             fclose(cfgFile);
-
+            
+            // ---------------------------------------------------------------------------------------------------
+            // If we didn't find a specific config for this game and ECS is enabled, default to frameskip=1
+            // This is because the secondary audio processor is expensive to emulate and the DSi will just barely
+            // keep up. So we default back to some small level of frameskip to ensure the game runs properly. 
+            // The user is free to disable frameskip - or turn off the ECS handling if the game really isn't 
+            // utilizing it (many .cfg files specify "ecs=1" when it has no real effect on the game).
+            // ---------------------------------------------------------------------------------------------------
+            if ((bConfigWasFound == FALSE) && bUseECS)
+            {
+                myConfig.frame_skip = 1;
+            }
+            
             // If we were asked to have 16-bit RAM in the 8000-9FFF region and we didn't get JLP enabled (which has its own RAM mapped there), we map new RAM
             if (maybeRAMidx && !bUseJLP)
             {

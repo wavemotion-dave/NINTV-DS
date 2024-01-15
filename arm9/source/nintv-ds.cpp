@@ -337,6 +337,7 @@ void dsShowEmuInfo(void)
     {
         sprintf(tmpStr, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Frame Skip:    %s",        myConfig.frame_skip ? "YES":"NO ");  dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Binary Size:   %-9u ",     currentRip->GetSize());              dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Binary CRC:    %08X ",     currentRip->GetCRC());               dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);

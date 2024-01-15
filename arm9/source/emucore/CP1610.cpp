@@ -4279,6 +4279,11 @@ void CP1610::getState(CP1610State *state)
     state->ext = ext;
     state->interruptAddress = interruptAddress;
     state->resetAddress = resetAddress;
+    
+    state->bCP1610_PIN_IN_BUSRQ = bCP1610_PIN_IN_BUSRQ;
+    state->bCP1610_PIN_IN_INTRM = bCP1610_PIN_IN_INTRM; 
+    state->bCP1610_PIN_OUT_BUSAK = bCP1610_PIN_OUT_BUSAK;
+   
     for (int i=0; i<8; i++)  state->r[i] = r[i];
 }
  
@@ -4294,6 +4299,11 @@ void CP1610::setState(CP1610State *state)
     ext = state->ext;
     interruptAddress = state->interruptAddress;
     resetAddress = state->resetAddress;
+    
+    bCP1610_PIN_IN_BUSRQ = state->bCP1610_PIN_IN_BUSRQ;
+    bCP1610_PIN_IN_INTRM = state->bCP1610_PIN_IN_INTRM; 
+    bCP1610_PIN_OUT_BUSAK = state->bCP1610_PIN_OUT_BUSAK;
+    
     for (int i=0; i<8; i++)  r[i] = state->r[i];
     
     bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));

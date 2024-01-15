@@ -48,6 +48,8 @@ extern Rip *currentRip;
 // 1,2 = Game Options
 UINT8 options_shown = 0;        // Start with Global config... can toggle to game options as needed
 
+UINT8 bConfigWasFound = FALSE;
+
 short int display_options_list(bool);
 
 // --------------------------------------------
@@ -326,12 +328,31 @@ void FindAndLoadConfig(UINT32 crc)
 {
     FILE *fp;
 
+    bConfigWasFound = FALSE;
     SetDefaultGameConfig(crc);
     fp = fopen("/data/NINTV-DS.DAT", "rb");
     if (fp != NULL)
     {
         fread(&allConfigs, sizeof(allConfigs), 1, fp);
         fclose(fp);
+        
+        // ---------------------------------------------------------------------------------------
+        // Check for previous config... one time upgrade for DSi to remove frame skip by default.
+        // ---------------------------------------------------------------------------------------
+        if (allConfigs.config_ver == 0x0006)
+        {
+            allConfigs.config_ver = CONFIG_VER;
+            
+            // With all the recent speed improvements, we are upgrading the DSi to no frame skip by default!
+            if (isDSiMode())
+            {
+                allConfigs.global_config.frame_skip = 0;
+                for (int slot=0; slot<MAX_CONFIGS; slot++)
+                {
+                    allConfigs.game_config[slot].frame_skip = 0;
+                }
+            }
+        }
         
         if (allConfigs.config_ver != CONFIG_VER)
         {
@@ -355,6 +376,7 @@ void FindAndLoadConfig(UINT32 crc)
             {
                 if (allConfigs.game_config[slot].game_crc == crc)  // Got a match?!
                 {
+                    bConfigWasFound = TRUE;
                     memcpy(&myConfig, &allConfigs.game_config[slot], sizeof(struct Config_t));
                     break;                           
                 }
