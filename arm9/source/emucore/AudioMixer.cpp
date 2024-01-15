@@ -111,16 +111,16 @@ INT32 AudioMixer::getClockSpeed()
 }
 
 // ----------------------------------------------------------------------------------------------------------------
-// This is CPU heavy... we've optimized this as much as possible. We only support two audio producers - the normal
-// PSG sound chip for the Intellivision and the SP0256 chip for the speech on Intellivoice. For non-intellivoice
-// games (or when the intellivoice is idle), we can just deal with a single sound producer which helps...
+// This is CPU heavy... we've optimized this as much as possible. We support up to three audio producers - the 
+// normal PSG sound chip for the Intellivision and the SP0256 chip for the speech on Intellivoice and an optional
+// PSG sound chip for the ECS. For non-intellivoice games (or when the intellivoice is idle), we can just deal 
+// with a single sound producer which helps...
 // ----------------------------------------------------------------------------------------------------------------
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
     extern  INT32 clockDivisor;
     INT32 totalSample = 0;
     extern UINT8 sp_idle;
-    if (clockDivisor == SOUND_DIV_DISABLE) return minimum;
     
     UINT16 soundChannelsToProcess = audioProducerCount;
     if (bUseIVoice && sp_idle) soundChannelsToProcess--;    // If ECS is idle we can skip processing it...

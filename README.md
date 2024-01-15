@@ -23,7 +23,7 @@ Features :
  * Save Sate support (3 save slots per game).
  * High Scores for up to 10 scores per game with various sorting options.
  * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
- * Tons of button / controller mapping options. Dual-Controller support (run and shoot at the same time).
+ * Numerous button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
  * ECS support for ECS games including sound-enhanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
 
@@ -88,6 +88,13 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.6 : 15-Jan-2024 by wavemotion-dave
+  * Massive overhaul to the core emulation to reduce memory footprint. The older DS-Lite/Phat (with 4MB of memory) can now load all of the newest homebrew games!
+  * Optmizations in Video, Audio and CPU cores providese 10% speed up across the board.
+  * Improved sound quality for the DSi including a new "BEST" option (not enabled by default) that will render the sound as good as I can make it on the handheld.
+  * A few small fixes for the CPU core to improve the cycle accuracy.
+  * With the improved speed, the DSi largely disables frameskip for the best visual experience.
+
 V4.5 : 01-Jan-2024 by wavemotion-dave
   * Added new Screenshot handling (press and hold the L+R shoulder buttons for ~1 second to take a .bmp snapshot written to the SD card)
   * Added new meta key mapping to un-throttle (Speedup) the emulator. Useful for games where your character is resting and you want the emulator to run the frames as fast as it can.

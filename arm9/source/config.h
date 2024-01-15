@@ -18,7 +18,7 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x0007
+#define CONFIG_VER  0x0008
 
 #define MAX_CONFIGS 625
 
@@ -42,7 +42,7 @@ struct Config_t
     UINT8  key_YB_map;
     UINT8  key_BA_map;    
     UINT8  controller_type;
-    UINT8  sound_clock_div;
+    UINT8  sound_quality;
     UINT8  dpad_config;
     UINT8  target_fps;
     UINT8  load_options;
