@@ -1005,22 +1005,22 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
 
                 // If we are starting on an odd pixel, do that one first and then we can blast 16-bits at a time for speedup
+                short int idx = nextSourcePixel;
                 if (nextSourcePixel & 1)
                 {
-                    UINT8 nextColor = backgroundBuffer[nextSourcePixel];
+                    UINT8 nextColor = backgroundBuffer[idx++];
                     *nextPixelStore0++ = nextColor;
                     *nextPixelStore1++ = nextColor;
                 }
 
 
-                UINT16 *ptr = (UINT16*) &backgroundBuffer[nextSourcePixel];
+                UINT16 *backColor = (UINT16*) &backgroundBuffer[idx];
                 UINT16 *pix0 = (UINT16*) nextPixelStore0;
                 UINT16 *pix1 = (UINT16*) nextPixelStore1;
                 for (int x = 0; x < (sourceWidthX>>1); x++) 
                 {
-                    UINT16 nextColor = *ptr++;
-                    *pix0++ = nextColor;
-                    *pix1++ = nextColor;
+                    *pix0++ = *backColor;
+                    *pix1++ = *backColor++;
                 }
 
                 nextSourcePixel += 160;
