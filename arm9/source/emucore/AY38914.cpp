@@ -22,11 +22,9 @@ UINT16 amplitudes16Bit[16] __attribute__((section(".dtcm"))) =
 // ----------------------------------------------------------------
 // These are common no matter whether we have 1 PSG or 2 (for ECS)
 // ----------------------------------------------------------------
-INT32 clockDivisor   __attribute__((section(".dtcm")));
-INT32 clocksPerSample  __attribute__((section(".dtcm")));
-
-INT32 cachedTotalOutput __attribute__((section(".dtcm")));
-
+INT32 clockDivisor       __attribute__((section(".dtcm")));
+INT32 clocksPerSample    __attribute__((section(".dtcm")));
+INT32 cachedTotalOutput  __attribute__((section(".dtcm")));
 
 extern UINT8 bUseIVoice;
 
@@ -124,7 +122,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
             if (!envelopeIdle) 
             {
                 envelopeVolume += (envelopeAtak ? 1 : -1);
-                if (envelopeVolume > 15 || envelopeVolume < 0) 
+                if (envelopeVolume & 0xFFFFFFF0) 
                 {
                     if (!envelopeCont) {
                         envelopeVolume = 0;
@@ -159,7 +157,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         while (channel0.toneCounter <= 0)
         {
             channel0.toneCounter += channel0.periodValue;
-            channel0.tone = !channel0.tone;
+            channel0.tone ^= 1;
         }
 
         //iterate the tone generator for channel 1
@@ -167,7 +165,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         while (channel1.toneCounter <= 0)
         {
             channel1.toneCounter += channel1.periodValue;
-            channel1.tone = !channel1.tone;
+            channel1.tone ^= 1;
         }
 
         //iterate the tone generator for channel 2
@@ -175,7 +173,7 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         while (channel2.toneCounter <= 0)
         {
             channel2.toneCounter += channel2.periodValue;
-            channel2.tone = !channel2.tone;
+            channel2.tone ^= 1;
         }
 
         cachedTotalOutput  = amplitudes16Bit[(((channel0.toneDisabled | channel0.tone) & (channel0.noiseDisabled | noise)) ? (channel0.envelope ? envelopeVolume : channel0.volume) : 0)];
@@ -183,13 +181,13 @@ ITCM_CODE INT32 AY38914::tick(INT32 minimum)
         cachedTotalOutput += amplitudes16Bit[(((channel2.toneDisabled | channel2.tone) & (channel2.noiseDisabled | noise)) ? (channel2.envelope ? envelopeVolume : channel2.volume) : 0)];
 
         // Now place the sample onto the audio output line...
-        if (this->location == 0xF0)
+        if (this->location & 0x100)
         {
-            playSample1(cachedTotalOutput);     // This is the ECS PSG on channel 1 
+            playSample0(cachedTotalOutput);     // This is the normal Intellivision console PSG
         }
         else
         {
-            playSample0(cachedTotalOutput);     // This is the normal Intellivision console PSG
+            playSample1(cachedTotalOutput);     // This is the ECS PSG on channel 1 
         }
 
         totalTicks += clocksPerSample;

@@ -45,9 +45,8 @@ class HandController : public AY38914_InputOutput, public InputConsumer
 
         UINT16            inputValue;
 
-        static const UINT16 BUTTON_OUTPUT_VALUES[15];
-        static const UINT16 DIRECTION_OUTPUT_VALUES[16];
-
+        static const UINT8 BUTTON_OUTPUT_VALUES[15];
+        static const UINT8 DIRECTION_OUTPUT_VALUES[16];
 };
 
 #endif

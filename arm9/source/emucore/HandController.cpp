@@ -14,7 +14,7 @@
 #include "Intellivision.h"
 #include "../overlay.h"
 
-const UINT16 HandController::BUTTON_OUTPUT_VALUES[15] = {
+const UINT8 HandController::BUTTON_OUTPUT_VALUES[15] = {
     0x81, //OUTPUT_KEYPAD_ONE
     0x41, //OUTPUT_KEYPAD_TWO
     0x21, //OUTPUT_KEYPAD_THREE
@@ -32,7 +32,7 @@ const UINT16 HandController::BUTTON_OUTPUT_VALUES[15] = {
     0xC0  //OUTPUT_ACTION_BUTTON_BOTTOM_RIGHT
 };
 
-const UINT16 HandController::DIRECTION_OUTPUT_VALUES[16] = {
+const UINT8 HandController::DIRECTION_OUTPUT_VALUES[16] = {
     0x04, //OUTPUT_DISC_NORTH
     0x14, //OUTPUT_DISC_NORTH_NORTH_EAST
     0x16, //OUTPUT_DISC_NORTH_EAST

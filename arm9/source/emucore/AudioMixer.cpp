@@ -25,12 +25,12 @@
 // amount of NDS CPU so we try to make this as efficient as possible. Lots of ITCM and DTCM
 // memory usage here to squeeze out the best performance...
 // ----------------------------------------------------------------------------------------------
-UINT16 audio_mixer_buffer[256] __attribute__((section(".dtcm")));
-UINT16 currentSampleIdx16 __attribute__((section(".dtcm"))) = 0;
-UINT8  currentSampleIdx8 __attribute__((section(".dtcm"))) = 0;
-UINT32 commonClocksPerTick __attribute__((section(".dtcm"))) = 0;
-extern UINT64 lcm(UINT64, UINT64);
+UINT16 audio_mixer_buffer[256]  __attribute__((section(".dtcm"))) = {0};
+UINT16 currentSampleIdx16       __attribute__((section(".dtcm"))) = 0;
+UINT8  currentSampleIdx8        __attribute__((section(".dtcm"))) = 0;
+UINT32 commonClocksPerTick      __attribute__((section(".dtcm"))) = 0;
 
+extern UINT64 lcm(UINT64, UINT64);
 
 AudioMixer::AudioMixer()
   : Processor("Audio Mixer"),
@@ -128,7 +128,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
     {
         //mix and flush the sample buffers
-        for (UINT32 i = 0; i < soundChannelsToProcess; i++) 
+        for (UINT16 i = 0; i < soundChannelsToProcess; i++) 
         {
             INT32 missingClocks = (commonClocksPerTick - commonClockCounter[i]);
             INT32 sampleToUse = (missingClocks < 0 ? previousSample[i] : currentSample[i]);
@@ -151,9 +151,9 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
             sampleBuffer[i] = -partialSample;
             commonClockCounter[i] = -missingClocks;
         }
-
-        if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice or ECS extra sound channels, there are 2 or 3 audio producers... so we need to clip/cap the sound
     }
+    
+    if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice or ECS extra sound channels, there are 2 or 3 audio producers... so we need to clip/cap the sound
     
     // ------------------------------------------------------------------------------------------------
     // If we are DSi mode, we will have exactly 256 samples per frame. It's worth checking for that

@@ -148,7 +148,7 @@ void AY38900::resetProcessor()
         mobs[i].reset();
 
     //reset the state variables
-    mode = -1;
+    mode = 0xFF;
     bCP1610_PIN_IN_INTRM = TRUE;
     bCP1610_PIN_IN_BUSRQ = TRUE;
     previousDisplayEnabled = TRUE;
@@ -989,7 +989,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
             short int sourceHeightY = blockTop ? 88 : (96-verticalOffset);
             short int myHoriz = (blockLeft ? (8 - horizontalOffset) : 0);
             short int myVert  = (blockTop  ? (8 - verticalOffset)   : 0);
-            short int nextSourcePixel = myHoriz + (myVert * 160);           
+            short int nextSourcePixel = myHoriz + (myVert * 160);
             
             for (int y = 0; y < sourceHeightY; y++) 
             {
@@ -998,17 +998,31 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 
                 if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
                 else if (verticalOffset) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*(verticalOffset*2));
-                
+
                 if (blockLeft) nextPixelStore0 += 4;
                 else if (horizontalOffset) nextPixelStore0 += horizontalOffset;
-                
+
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-                for (int x = 0; x < sourceWidthX; x++) 
+
+                // If we are starting on an odd pixel, do that one first and then we can blast 16-bits at a time for speedup
+                if (nextSourcePixel & 1)
                 {
-                    UINT8 nextColor = backgroundBuffer[nextSourcePixel+x];
+                    UINT8 nextColor = backgroundBuffer[nextSourcePixel];
                     *nextPixelStore0++ = nextColor;
                     *nextPixelStore1++ = nextColor;
                 }
+
+
+                UINT16 *ptr = (UINT16*) &backgroundBuffer[nextSourcePixel];
+                UINT16 *pix0 = (UINT16*) nextPixelStore0;
+                UINT16 *pix1 = (UINT16*) nextPixelStore1;
+                for (int x = 0; x < (sourceWidthX>>1); x++) 
+                {
+                    UINT16 nextColor = *ptr++;
+                    *pix0++ = nextColor;
+                    *pix1++ = nextColor;
+                }
+
                 nextSourcePixel += 160;
             }
         }

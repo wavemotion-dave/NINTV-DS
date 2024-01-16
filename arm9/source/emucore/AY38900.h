@@ -33,7 +33,7 @@ TYPEDEF_STRUCT_PACK( _AY38900State
     MOBState        mobs[8];
     INT8            horizontalOffset;
     INT8            verticalOffset;
-    INT8            mode;
+    UINT8           mode;
     UINT16          registers[0x40];
     INT8            inVBlank;
     INT8            previousDisplayEnabled;
@@ -127,7 +127,7 @@ public:
     
     //state info
     UINT8            inVBlank;
-    INT8             mode;
+    UINT8            mode;
     UINT8            previousDisplayEnabled;
     UINT8            displayEnabled;
     UINT8            colorStackMode;
