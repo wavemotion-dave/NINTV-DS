@@ -1125,7 +1125,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
 
 void AY38900::renderLine(UINT8 nextbyte, int x, int y)
 {
-    if (nextbyte)
+    if (nextbyte && (nextbyte != 0xFF))
     {
         UINT8* nextTargetPixel = backgroundBuffer + x + (y*160);
         *nextTargetPixel++ = (nextbyte & 0x80) ? fgcolor : bgcolor;
@@ -1141,7 +1141,7 @@ void AY38900::renderLine(UINT8 nextbyte, int x, int y)
     else
     {
         UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
-        UINT32 bgColor32 = color_repeat_table[bgcolor];
+        UINT32 bgColor32 = color_repeat_table[nextbyte ? fgcolor:bgcolor];
         *nextTargetPixel++ = bgColor32;
         *nextTargetPixel = bgColor32;
     }
