@@ -61,6 +61,8 @@ BOOL LoadCart(const CHAR* filename)
     bIsFatalError = false;
     bGameLoaded = FALSE;
     
+    memset(debug, 0x00, 8 * (sizeof(UINT32)));
+    
     // Load up the configuration based on the CRC32 of the game. Do this early since we need some of those properties to load the RIP
     FindAndLoadConfig(CRC32::getCrc(filename));
     

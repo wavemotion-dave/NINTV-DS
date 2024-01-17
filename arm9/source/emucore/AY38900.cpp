@@ -1078,36 +1078,39 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
         INT16 nextY = (INT16)((r->y + verticalOffset) << 1);
         for (UINT8 y = 0; y < mobPixelHeight; y++) 
         {
-            UINT16 idx = (r->x+0)+ ((r->y+(y/2))*160);
-            for (UINT8 x = 0; x < r->width; x++) 
+            if (mobBuffers[i][y])
             {
-                //if this mob pixel is not on, then our life has no meaning
-                if ((mobBuffers[i][y] & (0x8000 >> x)) == 0)
-                    continue;
-
-                //if the next pixel location is on the border, then we
-                //have a border collision and we can ignore painting it
-                int nextX = leftX + x;
-                if (nextX < (blockLeft ? 8 : 0) || nextX > 158 ||
-                        nextY < (blockTop ? 16 : 0) || nextY > 191) {
-                    borderCollision = TRUE;
-                    continue;
-                }
-
-                //check for foreground collision
-                UINT8 currentPixel = backgroundBuffer[idx+x];
-                if ((currentPixel & FOREGROUND_BIT) != 0) 
+                UINT16 idx = (r->x+0)+ ((r->y+(y/2))*160);
+                for (UINT8 x = 0; x < r->width; x++) 
                 {
-                    foregroundCollision = TRUE;
-                    if (mobs[i].behindForeground)
+                    //if this mob pixel is not on, then our life has no meaning
+                    if ((mobBuffers[i][y] & (0x8000 >> x)) == 0)
                         continue;
-                }
-                if (mobs[i].isVisible) 
-                {
-                    UINT8* nextPixel = (UINT8*)pixelBuffer;
-                    nextPixel += leftX - (blockLeft ? 4 : 0) + x;
-                    nextPixel += (nextY - (blockTop ? 8 : 0)) * (PIXEL_BUFFER_ROW_SIZE);
-                    *nextPixel = fgcolor | (currentPixel & FOREGROUND_BIT);
+
+                    //if the next pixel location is on the border, then we
+                    //have a border collision and we can ignore painting it
+                    int nextX = leftX + x;
+                    if (nextX < (blockLeft ? 8 : 0) || nextX > 158 ||
+                            nextY < (blockTop ? 16 : 0) || nextY > 191) {
+                        borderCollision = TRUE;
+                        continue;
+                    }
+
+                    //check for foreground collision
+                    UINT8 currentPixel = backgroundBuffer[idx+x];
+                    if ((currentPixel & FOREGROUND_BIT) != 0) 
+                    {
+                        foregroundCollision = TRUE;
+                        if (mobs[i].behindForeground)
+                            continue;
+                    }
+                    if (mobs[i].isVisible) 
+                    {
+                        UINT8* nextPixel = (UINT8*)pixelBuffer;
+                        nextPixel += leftX - (blockLeft ? 4 : 0) + x;
+                        nextPixel += (nextY - (blockTop ? 8 : 0)) * (PIXEL_BUFFER_ROW_SIZE);
+                        *nextPixel = fgcolor | (currentPixel & FOREGROUND_BIT);
+                    }
                 }
             }
             nextY++;
@@ -1123,7 +1126,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     }
 }
 
-void AY38900::renderLine(UINT8 nextbyte, int x, int y)
+ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y)
 {
     if (nextbyte && (nextbyte != 0xFF))
     {
@@ -1190,55 +1193,6 @@ ITCM_CODE void AY38900::determineMOBCollisions()
     }
 }
 
-ITCM_CODE BOOL AY38900::mobCollidesWithBorder(int mobNum)
-{
-    MOBRect* r = mobs[mobNum].getBounds();
-    UINT8 mobPixelHeight = (UINT8)(r->height<<1);
-
-    UINT16 leftRightBorder = 0;
-    //check if could possibly touch the left border
-    if (r->x < (blockLeft ? 8 : 0)) {
-        leftRightBorder = (UINT16)((blockLeft ? 0xFFFF : 0xFF00) << mobs[mobNum].xLocation);
-    }
-    //check if could possibly touch the right border
-    else if (r->x+r->width > 158) {
-        leftRightBorder = 0xFFFF;
-        if (r->x < 158)
-            leftRightBorder >>= r->x-158;
-    }
-
-    //check if touching the left or right border
-    if (leftRightBorder) {
-        for (INT32 i = 0; i < mobPixelHeight; i++) {
-            if ((mobBuffers[mobNum][i] & leftRightBorder) != 0)
-                return TRUE;
-        }
-    }
-
-    //check if touching the top border
-    UINT8 overlappingStart = 0;
-    UINT8 overlappingHeight = 0;
-    if (r->y < (blockTop ? 8 : 0)) {
-        overlappingHeight = mobPixelHeight;
-        if (r->y+r->height > (blockTop ? 8 : 0))
-            overlappingHeight = (UINT8)(mobPixelHeight - (2*(r->y+r->height-(blockTop ? 8 : 0))));
-    }
-    //check if touching the bottom border
-    else if (r->y+r->height > 191) {
-        if (r->y < 191)
-            overlappingStart = (UINT8)(2*(191-r->y));
-        overlappingHeight = mobPixelHeight - overlappingStart;
-    }
-
-    if (overlappingHeight) {
-        for (UINT8 i = overlappingStart; i < overlappingHeight; i++) {
-            if (mobBuffers[mobNum][i] != 0)
-                return TRUE;
-        }
-    }
-
-    return FALSE;
-}
 
 ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 {
