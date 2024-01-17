@@ -975,7 +975,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                 UINT32* np0 = (UINT32 *)nextPixelStore0;
                 UINT32* np1 = (UINT32 *)nextPixelStore1;
                 UINT32* backColor = (UINT32*)(&backgroundBuffer[nextSourcePixel]);
-                for (int x = 0; x < sourceWidthX/4; x++) 
+                for (int x = 0; x < (sourceWidthX>>2); x++) 
                 {
                     *np0++ = *backColor;
                     *np1++ = *backColor++;
@@ -1003,24 +1003,44 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                 else if (horizontalOffset) nextPixelStore0 += horizontalOffset;
 
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-
-                // If we are starting on an odd pixel, do that one first and then we can blast 16-bits at a time for speedup
-                short int idx = nextSourcePixel;
-                if (nextSourcePixel & 1)
+                
+                if (!((nextSourcePixel | (u32)nextPixelStore0) & 3))  // We're on a 32-bit boundary
                 {
-                    UINT8 nextColor = backgroundBuffer[idx++];
-                    *nextPixelStore0++ = nextColor;
-                    *nextPixelStore1++ = nextColor;
+                    // At this point, everything is 16-bit aligned so  we can blast 32-bits at a time...
+                    UINT32 *backColor = (UINT32*) &backgroundBuffer[nextSourcePixel];
+                    UINT32 *pix0 = (UINT32*) nextPixelStore0;
+                    UINT32 *pix1 = (UINT32*) nextPixelStore1;
+
+                    for (int x = 0; x < (sourceWidthX>>2); x++) 
+                    {
+                        *pix0++ = *backColor;
+                        *pix1++ = *backColor++;
+                    }                
                 }
-
-
-                UINT16 *backColor = (UINT16*) &backgroundBuffer[idx];
-                UINT16 *pix0 = (UINT16*) nextPixelStore0;
-                UINT16 *pix1 = (UINT16*) nextPixelStore1;
-                for (int x = 0; x < (sourceWidthX>>1); x++) 
+                else
                 {
-                    *pix0++ = *backColor;
-                    *pix1++ = *backColor++;
+                    short int idx = nextSourcePixel;
+                    if (nextSourcePixel & 1)
+                    {
+                        *nextPixelStore0 = backgroundBuffer[idx];
+                        *nextPixelStore1 = backgroundBuffer[idx++];
+                    }
+                    
+                    // This is technically wrong... we're shifting the pixel store by 1 pixel to align it with the background buffer.
+                    // One pixel shift won't be noticable to the game player - but it gives us a very signifcant boost in performance.
+                    if ((u32)nextPixelStore0 & 1) nextPixelStore0++;
+                    if ((u32)nextPixelStore1 & 1) nextPixelStore1++;
+                    
+                    // At this point, everything is 16-bit aligned so  we can blast 16-bits at a time...
+                    UINT16 *backColor = (UINT16*) &backgroundBuffer[idx];
+                    UINT16 *pix0 = (UINT16*) nextPixelStore0;
+                    UINT16 *pix1 = (UINT16*) nextPixelStore1;
+
+                    for (int x = 0; x < (sourceWidthX>>1); x++) 
+                    {
+                        *pix0++ = *backColor;
+                        *pix1++ = *backColor++;
+                    }                
                 }
 
                 nextSourcePixel += 160;
