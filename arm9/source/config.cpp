@@ -489,7 +489,7 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern INT32 clockDivisor, clocksPerSample;
-    static UINT32 sound_divs[] = {8,12,16};
+    static UINT32 sound_divs[] = {8,12,15};
     clockDivisor = sound_divs[myConfig.sound_quality];
     clocksPerSample = clockDivisor<<4;
 

@@ -22,6 +22,9 @@
 
 class Intellivision;
 
+//#define NTSC_FREQUENCY 3579545
+  #define NTSC_FREQUENCY 3580200  // This should be 3579545 but this value is only 0.018% (0.00018) off and allows our clock dividers to work out evenly and reduce complexity in the audio processor core
+
 extern INT32 clockDivisor;
 extern INT32 clocksPerSample;
 

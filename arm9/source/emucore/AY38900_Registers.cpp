@@ -57,7 +57,7 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
         case 0x07:
             value &= 0x07FF;
             {
-            MOB* mob = &ay38900->mobs[location];
+            MOB* mob = &mobs[location];
             mob->setDoubleWidth((value & 0x0400) != 0);
             mob->setVisible((value & 0x0200) != 0);
             mob->setFlagCollisions((value & 0x0100) != 0);
@@ -74,7 +74,7 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
         case 0x0F:
             value &= 0x0FFF;
             {
-            MOB* mob = &ay38900->mobs[location & 0x07];
+            MOB* mob = &mobs[location & 0x07];
             mob->setVerticalMirror((value & 0x0800) != 0);
             mob->setHorizontalMirror((value & 0x0400) != 0);
             mob->setQuadHeight((value & 0x0200) != 0);
@@ -93,12 +93,11 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
         case 0x17:
             value &= 0x3FFF;
             {
-            MOB* mob = &ay38900->mobs[location & 0x07];
+            MOB* mob = &mobs[location & 0x07];
             mob->setBehindForeground((value & 0x2000) != 0);
             mob->setGROM((value & 0x0800) == 0);
             mob->setCardNumber((value & 0x07F8) >> 3);
-            mob->setForegroundColor(((value & 0x1000) >> 9) |
-                    (value & 0x0007));
+            mob->setForegroundColor(((value & 0x1000) >> 9) | (value & 0x0007));
             }
             break;
         case 0x18:
@@ -133,23 +132,19 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
         case 0x2C:
             value &= 0x000F;
             ay38900->borderColor = (UINT8)value;
-            ay38900->bordersChanged = TRUE;
             break;
         case 0x30:
             value &= 0x0007;
             ay38900->horizontalOffset = value;
-            ay38900->offsetsChanged = TRUE;
             break;
         case 0x31:
             value &= 0x0007;
             ay38900->verticalOffset = value;
-            ay38900->offsetsChanged = TRUE;
             break;
         case 0x32:
             value &= 0x0003;
             ay38900->blockLeft = (value & 0x0001) != 0;
             ay38900->blockTop = (value & 0x0002) != 0;
-            ay38900->bordersChanged = TRUE;
             break;
         default:  //  0x22 - 0x27
             value = 0;

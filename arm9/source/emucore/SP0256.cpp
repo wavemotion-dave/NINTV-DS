@@ -86,7 +86,7 @@ SP0256::~SP0256()
 }
 
 INT32 SP0256::getClockSpeed() {
-    return 10000;
+    return 9945;    // Should be 10000 but this value divides evenly into our Audio Processor Core Clock speed evenly and produces less complex code. It's only 0.5% off from the real speed and not noticable.
 }
 
 INT32 SP0256::getClocksPerSample() {

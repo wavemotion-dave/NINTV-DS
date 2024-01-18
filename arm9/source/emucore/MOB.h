@@ -61,9 +61,9 @@ class MOB
     public:
         void getState(MOBState *state);
         void setState(MOBState *state);
+        MOB() {};
 
     private:
-        MOB() {};
         void reset();
         void setXLocation(INT16 xLocation);
         void setYLocation(INT16 yLocation);

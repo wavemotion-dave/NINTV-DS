@@ -95,7 +95,6 @@ void VideoBus::release()
 
         pixelBufferWidth = 0;
         pixelBufferHeight = 0;
-        pixelBufferRowSize = 0;
         pixelBufferSize = 0;
         delete[] pixelBuffer;
         pixelBuffer = NULL;

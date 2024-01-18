@@ -3459,7 +3459,7 @@ void display_debug(void)
             case 2:
                 sprintf(dbg, "AUDIO MIXER BUFFER");
                 dsPrintValue(0, idx++, 0, dbg); idx++;
-                sprintf(dbg, "curSampIdx8   %-4d", currentSampleIdx8);
+                sprintf(dbg, "curSampIdx16  %-4d", currentSampleIdx16);
                 dsPrintValue(0, idx++, 0, dbg);
                 sprintf(dbg, "comClksPerTik %-9d", commonClocksPerTick);
                 dsPrintValue(0, idx++, 0, dbg);

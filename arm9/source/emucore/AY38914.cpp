@@ -48,7 +48,7 @@ AY38914::AY38914(UINT16 location, AY38914_InputOutput* io0,
 }
 
 INT32 AY38914::getClockSpeed() {
-    return 3579545;
+    return NTSC_FREQUENCY;
 }
 
 INT32 AY38914::getClocksPerSample() {

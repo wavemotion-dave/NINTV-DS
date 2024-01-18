@@ -275,6 +275,14 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
         db_entry = &database[0];    // Generic loader at 5000h for games up to 16K in size (fairly common)
     }
     
+    
+    // If we did find a game entry and we are not DSi, we check the frame skip setting
+    if ((db_entry != NULL) && (bConfigWasFound == FALSE) && !isDSiMode())
+    {
+        myConfig.frame_skip = (db_entry->bDSliteNoFrameSkip ? 0:1);
+    }
+    
+    
     maybeRAMidx = 0;
     
     if (db_entry != NULL)   // We found an entry... let's go!
@@ -357,7 +365,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
         // ---------------------------------------------------------------------------------------------------
         if ((bConfigWasFound == FALSE) && bUseECS)
         {
-            myConfig.frame_skip = 1;
+            //TODO: myConfig.frame_skip = 1;
         }        
     }
     else    // Didn't find it... let's see if we can read a .cfg file
@@ -466,7 +474,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
             // ---------------------------------------------------------------------------------------------------
             if ((bConfigWasFound == FALSE) && bUseECS)
             {
-                myConfig.frame_skip = 1;
+                //TODO: myConfig.frame_skip = 1;
             }
             
             // If we were asked to have 16-bit RAM in the 8000-9FFF region and we didn't get JLP enabled (which has its own RAM mapped there), we map new RAM
@@ -721,8 +729,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
     // ---------------------------------------------------------------------------------------------------
     if ((bConfigWasFound == FALSE) && bUseECS)
     {
-        myConfig.frame_skip = 1;
-    }    
+        //TODO: myConfig.frame_skip = 1;
+    }
 
     // Load the Intellivoice if asked for...
     if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", (bUseIVoice == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);

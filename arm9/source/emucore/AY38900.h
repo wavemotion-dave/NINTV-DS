@@ -17,6 +17,7 @@
 #include "ROM.h"
 #include "VideoProducer.h"
 #include "AY38900_Registers.h"
+#include "AY38914.h"
 #include "MOB.h"
 #include "BackTabRAM.h"
 #include "GRAM.h"
@@ -26,6 +27,13 @@
 #define AY38900_PIN_IN_SST  0
 #define AY38900_PIN_OUT_SR1 0
 #define AY38900_PIN_OUT_SR2 1
+
+#define PIXEL_BUFFER_ROW_SIZE  160
+
+// Movable objects
+extern MOB mobs[8];
+extern UINT8 renderz[4][4];
+
 
 TYPEDEF_STRUCT_PACK( _AY38900State
 {
@@ -58,7 +66,7 @@ public:
      * Returns the clock speed of the AY-3-8900, currently hardcoded to the NTSC clock
      * rate of 3.579545 Mhz.
      */
-    INT32 getClockSpeed() { return 3579545; }
+    INT32 getClockSpeed() { return NTSC_FREQUENCY; }
 
     /**
      * Implemented from the Processor interface.
@@ -120,27 +128,22 @@ private:
 #ifdef DEBUG_ENABLE
 public:
 #endif
-    // Movable objects
-    MOB              mobs[8];
     
     //state info
-    UINT8            inVBlank;
-    UINT8            mode;
-    UINT8            previousDisplayEnabled;
-    UINT8            displayEnabled;
-    UINT8            colorStackMode;
-    UINT8            colorModeChanged;
-    UINT8            bordersChanged;
-    UINT8            colorStackChanged;
-    UINT8            offsetsChanged;
-    UINT8            imageBufferChanged;
+    UINT8           inVBlank;
+    UINT8           mode;
+    UINT8           previousDisplayEnabled;
+    UINT8           displayEnabled;
+    UINT8           colorStackMode;
+    UINT8           colorModeChanged;
+    UINT8           colorStackChanged;
 
     //register info
-    UINT8  borderColor;
-    UINT8  blockLeft;
-    UINT8  blockTop;
-    INT8   horizontalOffset;
-    INT8   verticalOffset;
+    UINT8           borderColor;
+    UINT8           blockLeft;
+    UINT8           blockTop;
+    INT8            horizontalOffset;
+    INT8            verticalOffset;
 };
 
 #endif

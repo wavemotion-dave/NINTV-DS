@@ -69,6 +69,11 @@ UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
 UINT8 fgcolor              __attribute__((section(".dtcm"))) = 0;
 UINT8 bgcolor              __attribute__((section(".dtcm"))) = 0;
 
+
+// Movable objects
+MOB mobs[8] __attribute__((section(".dtcm")));
+
+
 UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_repeat_table[]  = {
         0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,  
         0x08080808,  0x09090909,  0x0A0A0A0A,  0x0B0B0B0B,  0x0C0C0C0C,  0x0D0D0D0D,  0x0E0E0E0E,  0x0F0F0F0F,  
@@ -155,9 +160,7 @@ void AY38900::resetProcessor()
     displayEnabled         = FALSE;
     colorStackMode         = FALSE;
     colorModeChanged       = TRUE;
-    bordersChanged         = TRUE;
     colorStackChanged      = TRUE;
-    offsetsChanged         = TRUE;
     
     bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
@@ -521,15 +524,11 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
     return totalTicks;
 }
 
-#define PIXEL_BUFFER_ROW_SIZE  160
-
 void AY38900::setPixelBuffer(UINT8* pixelBuffer, UINT32 rowSize)
 {
     AY38900::pixelBuffer = pixelBuffer;
     AY38900::pixelBufferRowSize = rowSize;
 }
-
-extern UINT8 renderz[4][4];
 
 ITCM_CODE void AY38900::renderFrame()
 {
@@ -563,8 +562,6 @@ ITCM_CODE void AY38900::render()
 ITCM_CODE void AY38900::markClean() 
 {
     //everything has been rendered and is now clean
-    offsetsChanged = FALSE;
-    bordersChanged = FALSE;
     colorStackChanged = FALSE;
     colorModeChanged = FALSE;
     if (myConfig.bLatched)
@@ -747,7 +744,7 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (backtab.isDirtyDirect(i) || (isNotGrom && gram->isCardDirty(memoryLocation))) 
+        if (backtab.isDirtyDirect(i) || (isNotGrom && dirtyCards[memoryLocation>>3])) 
         {
             fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
@@ -774,7 +771,7 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (backtab.isDirtyLatched(i) || (isNotGrom && gram->isCardDirty(memoryLocation))) 
+        if (backtab.isDirtyLatched(i) || (isNotGrom && dirtyCards[memoryLocation>>3])) 
         {
             fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
@@ -1144,9 +1141,9 @@ ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y)
     else
     {
         UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
-        UINT32 bgColor32 = color_repeat_table[nextbyte ? fgcolor:bgcolor];
-        *nextTargetPixel++ = bgColor32;
-        *nextTargetPixel = bgColor32;
+        UINT32 color32 = color_repeat_table[nextbyte ? fgcolor:bgcolor];
+        *nextTargetPixel++ = color32;
+        *nextTargetPixel = color32;
     }
 }
 
@@ -1213,7 +1210,8 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
     int overlappingHeight = (MIN(r0->y + r0->height, r1->y + r1->height) - startingY) * 2;
 
     //iterate over the intersecting bits to see if any touch
-    for (int y = 0; y < overlappingHeight; y++) {
+    for (int y = 0; y < overlappingHeight; y++) 
+    {
         if (((mobBuffers[mobNum0][offsetYr0 + y] << offsetXr0) & (mobBuffers[mobNum1][offsetYr1 + y] << offsetXr1)) != 0)
             return TRUE;
     }
@@ -1242,7 +1240,7 @@ void AY38900::getState(AY38900State *state)
 
     for (int i = 0; i < 8; i++) 
     {
-        this->mobs[i].getState(&state->mobs[i]);
+        mobs[i].getState(&state->mobs[i]);
     }
 }
 
@@ -1266,12 +1264,9 @@ void AY38900::setState(AY38900State *state)
 
     for (int i = 0; i < 8; i++) 
     {
-        this->mobs[i].setState(&state->mobs[i]);
+        mobs[i].setState(&state->mobs[i]);
     }
     
     this->colorModeChanged = TRUE;
-    this->bordersChanged = TRUE;
     this->colorStackChanged = TRUE;
-    this->offsetsChanged = TRUE;
-    this->imageBufferChanged = TRUE;
 }

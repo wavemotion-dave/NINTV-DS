@@ -13,7 +13,7 @@
 #include "AudioOutputLine.h"
 #include "AudioMixer.h"
 
-INT64 sampleBuffer[3]              __attribute__((section(".dtcm")));
+INT32 sampleBuffer[3]              __attribute__((section(".dtcm")));
 INT32 commonClockCounter[3]        __attribute__((section(".dtcm")));
 INT32 commonClocksPerSample[3]     __attribute__((section(".dtcm")));
 INT16 previousSample[3]            __attribute__((section(".dtcm")));
@@ -37,7 +37,7 @@ void audio_output_line_reset(void)
 // --------------------------------------------------------------------------------------
 ITCM_CODE void playSample0(INT16 sample) // Normal PSG
 {
-    sampleBuffer[0] += currentSample[0] * (INT64)commonClocksPerSample[0];
+    sampleBuffer[0] += currentSample[0] * (INT32)commonClocksPerSample[0];
     commonClockCounter[0] += commonClocksPerSample[0];
     previousSample[0] = currentSample[0];
     currentSample[0] = sample;
@@ -45,7 +45,7 @@ ITCM_CODE void playSample0(INT16 sample) // Normal PSG
 
 ITCM_CODE void playSample1(INT16 sample) // ECS PSG or Intellivoice SP0256
 {
-    sampleBuffer[1] += currentSample[1] * (INT64)commonClocksPerSample[1];
+    sampleBuffer[1] += currentSample[1] * (INT32)commonClocksPerSample[1];
     commonClockCounter[1] += commonClocksPerSample[1];
     previousSample[1] = currentSample[1];
     currentSample[1] = sample;
@@ -54,7 +54,7 @@ ITCM_CODE void playSample1(INT16 sample) // ECS PSG or Intellivoice SP0256
 
 ITCM_CODE void playSample2(INT16 sample) // ECS PSG or Intellivoice SP0256
 {
-    sampleBuffer[2] += currentSample[2] * (INT64)commonClocksPerSample[2];
+    sampleBuffer[2] += currentSample[2] * (INT32)commonClocksPerSample[2];
     commonClockCounter[2] += commonClocksPerSample[2];
     previousSample[2] = currentSample[2];
     currentSample[2] = sample;

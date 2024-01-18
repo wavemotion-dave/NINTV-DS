@@ -43,6 +43,7 @@ struct Database_t
     UINT8       bIntellivoice;            // TRUE if the game uses intellivoice
     UINT8       bJLP;                     // TRUE if the game uses JLP accelerator functions or extra RAM
     UINT8       bECS;                     // TRUE if the game uses ECS
+    UINT8       bDSliteNoFrameSkip;       // TRUE if the game should NOT frame skip on the DS-Lite (i.e. the game is simple enough that we can render all frames)
     
     struct MemArea_t mem_areas[MAX_MEM_AREAS];
 };

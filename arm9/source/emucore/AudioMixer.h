@@ -20,7 +20,6 @@
 
 extern UINT16 audio_mixer_buffer[256];
 extern UINT16 currentSampleIdx16;
-extern UINT8  currentSampleIdx8;
 extern UINT32 commonClocksPerTick;
 
 

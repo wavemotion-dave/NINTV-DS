@@ -55,7 +55,7 @@ CP1610::CP1610(MemoryBus* m, UINT16 resetAddress,
 
 // The clock speed is hard-coded to the NTSC frequency...
 INT32 CP1610::getClockSpeed() {
-    return 3579545;
+    return NTSC_FREQUENCY;
 }
 
 void CP1610::resetProcessor()
