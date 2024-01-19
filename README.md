@@ -91,7 +91,8 @@ History :
 V4.7 : 19-Jan-2024 by wavemotion-dave
   * Major refactor of the audio processor for a big speedup in rendering especially with more than one audio processor (i.e. ECS or Intellivoice)
   * Switched from individual pixel output to 16-bit (two pixel) output when dealing with scrolling games (big speedup for games like Tron Solar Sailor, Space Spartans, Sorrow, TNT Cowboy, etc).
-  * The DSi now defaults to NO frameskip on any game and the 'Best' sound quality.
+  * The DSi now defaults to NO frameskip on any game and the 'High' (best) sound quality.
+  * Aggressive frameskip no longer an option - it's not needed for any game even on the older DS hardware.
   * The DS-Lite/Phat gets a 15% improvement in sound quality and many of the classic games now run without frameskip.
   * With the many updates, the config format changed and will be wiped back to defaults - sorry!
 
