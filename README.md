@@ -69,7 +69,7 @@ The DS-Lite/Phat will run many of the classic games without any frameskip but fo
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
-* The DS-Lite/Phat can't handle World Series Major League Baseball when it has PSG + ECS + Intellivoice + Page Flipping so for the older DS Hardware, the Intellivoice is disabled so it will run full-speed.
+* The DS-Lite/Phat can't handle World Series Major League Baseball when it has PSG + ECS + Intellivoice + Page Flipping so for the older DS Hardware, the Intellivoice is disabled so it will run full-speed. The DSi runs this game as-intended.
 * The latest Same Game & Robots Intellivoice (with 'human' speech) will produce some garbled sounds - likely cycle timing issue as the emulator is not perfect.
 
 License :
