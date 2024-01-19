@@ -34,7 +34,7 @@ Technical Specs :
 ----------
  * Loads .ROM or .BIN/.CFG format files.
  * Up to 1024KB (512K words) of ROM memory emulated.
- * JLP 16-bit RAM emulated (8K Words)
+ * JLP 16-bit RAM emulated (8K Words) plus all accelerator functions supported.
  * JLP Flash support of 336 rows (42 sectors) for a total of 64K bytes (actual 64512 bytes). Each game gets their own 64K of file-backed flash.
  * ECS emulated with the 2K of 8-bit RAM, Keyboard, extra sound channels, etc.
  * Intellivoice emulated for games that take advantage of voice enhancements.
