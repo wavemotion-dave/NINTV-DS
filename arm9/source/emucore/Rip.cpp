@@ -343,6 +343,16 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
             }
         }
         
+        
+    
+        extern UINT8 bRenderBlanks;
+        bRenderBlanks = TRUE;
+        // Special handling for B-17 Bomber
+        if (db_entry->game_crc == 0x8AD19AB3)
+        {
+            bRenderBlanks = FALSE;
+        }
+        
         // Now add the required peripherals...
         if (db_entry->bIntellivoice)
         {
@@ -709,6 +719,9 @@ Rip* Rip::LoadRom(const CHAR* filename)
     
     // Load the ECS if asked for...
     if (bUseECS)    rip->AddPeripheralUsage("ECS", (bUseECS == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
+    
+    extern UINT8 bRenderBlanks;
+    bRenderBlanks = TRUE;
 
     return rip;
 }

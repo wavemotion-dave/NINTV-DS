@@ -69,6 +69,7 @@ UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
 UINT8 fgcolor              __attribute__((section(".dtcm"))) = 0;
 UINT8 bgcolor              __attribute__((section(".dtcm"))) = 0;
 
+UINT8 bRenderBlanks = TRUE; // Only B-17 Bomber sets this to false... still debugging it.
 
 // Movable objects
 MOB mobs[8] __attribute__((section(".dtcm")));
@@ -213,13 +214,20 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
         case MODE_START_ACTIVE_DISPLAY:
             bCP1610_PIN_IN_INTRM = TRUE;
             bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
-
             //if the display is not enabled, skip the rest of the modes
             if (!displayEnabled) {
-                if (previousDisplayEnabled) {
-                    //render a blank screen
-                    for (int x = 0; x < 160*192; x++)
-                        pixelBuffer[x] = borderColor;
+                if (previousDisplayEnabled) 
+                {
+                    if (bRenderBlanks)
+                    {
+                        UINT32 borderColor32 = color_repeat_table[borderColor];
+                        UINT32 *ptr = (UINT32 *)pixelBuffer;
+                        //render a blank screen
+                        for (int x = 0; x < (160*192)>>2; x++)
+                        {
+                            *ptr++ = borderColor32;
+                        }
+                    }
                 }
                 previousDisplayEnabled = FALSE;
                 mode = MODE_VBLANK;
