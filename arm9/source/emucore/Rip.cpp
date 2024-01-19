@@ -273,15 +273,23 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
     if ((db_entry == NULL) && !exists(configFile) && (size <= 16384))
     {
         db_entry = &database[0];    // Generic loader at 5000h for games up to 16K in size (fairly common)
-    }
+    }    
     
-    
-    // If we did find a game entry and we are not DSi, we check the frame skip setting
+    // If we found a game entry and we are not DSi, we check the frame skip setting
     if ((db_entry != NULL) && (bConfigWasFound == FALSE) && !isDSiMode())
     {
-        myConfig.frame_skip = (db_entry->bDSliteNoFrameSkip ? 0:1);
+        myConfig.frame_skip = ((db_entry->bDSliteNoFrameSkip & 1) ? 0:1);
     }
     
+    // If we found a game entry and we are not DSi, we see if we can bump the sound quality
+    if ((db_entry != NULL) && !isDSiMode())
+    {
+        if (db_entry->bDSliteNoFrameSkip & 2) 
+        {
+            if (myConfig.sound_quality == 0) myConfig.sound_quality = 1;  // boost from GOOD to GREAT
+        }
+        ApplyOptions();
+    }
     
     maybeRAMidx = 0;
     
@@ -355,18 +363,6 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
         {
             bUseJLP = db_entry->bJLP;
         }
-        
-        // ---------------------------------------------------------------------------------------------------
-        // If we didn't find a specific config for this game and ECS is enabled, default to frameskip=1
-        // This is because the secondary audio processor is expensive to emulate and the DSi will just barely
-        // keep up. So we default back to some small level of frameskip to ensure the game runs properly. 
-        // The user is free to disable frameskip - or turn off the ECS handling if the game really isn't 
-        // utilizing it (many .cfg files specify "ecs=1" when it has no real effect on the game).
-        // ---------------------------------------------------------------------------------------------------
-        if ((bConfigWasFound == FALSE) && bUseECS)
-        {
-            //TODO: myConfig.frame_skip = 1;
-        }        
     }
     else    // Didn't find it... let's see if we can read a .cfg file
     {
@@ -464,18 +460,6 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                 }
             }
             fclose(cfgFile);
-            
-            // ---------------------------------------------------------------------------------------------------
-            // If we didn't find a specific config for this game and ECS is enabled, default to frameskip=1
-            // This is because the secondary audio processor is expensive to emulate and the DSi will just barely
-            // keep up. So we default back to some small level of frameskip to ensure the game runs properly. 
-            // The user is free to disable frameskip - or turn off the ECS handling if the game really isn't 
-            // utilizing it (many .cfg files specify "ecs=1" when it has no real effect on the game).
-            // ---------------------------------------------------------------------------------------------------
-            if ((bConfigWasFound == FALSE) && bUseECS)
-            {
-                //TODO: myConfig.frame_skip = 1;
-            }
             
             // If we were asked to have 16-bit RAM in the 8000-9FFF region and we didn't get JLP enabled (which has its own RAM mapped there), we map new RAM
             if (maybeRAMidx && !bUseJLP)
@@ -720,18 +704,6 @@ Rip* Rip::LoadRom(const CHAR* filename)
         rip->JLP16Bit = NULL;
     }
     
-    // ---------------------------------------------------------------------------------------------------
-    // If we didn't find a specific config for this game and ECS is enabled, default to frameskip=1
-    // This is because the secondary audio processor is expensive to emulate and the DSi will just barely
-    // keep up. So we default back to some small level of frameskip to ensure the game runs properly. 
-    // The user is free to disable frameskip - or turn off the ECS handling if the game really isn't 
-    // utilizing it (many .cfg files specify "ecs=1" when it has no real effect on the game).
-    // ---------------------------------------------------------------------------------------------------
-    if ((bConfigWasFound == FALSE) && bUseECS)
-    {
-        //TODO: myConfig.frame_skip = 1;
-    }
-
     // Load the Intellivoice if asked for...
     if (bUseIVoice) rip->AddPeripheralUsage("Intellivoice", (bUseIVoice == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
     

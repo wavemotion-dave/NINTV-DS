@@ -125,7 +125,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.erase_saves              = 0;
     myGlobalConfig.key_START_map_default    = OVL_KEY_ENTER;
     myGlobalConfig.key_SELECT_map_default   = OVL_META_MENU;
-    myGlobalConfig.def_sound_quality        = (isDSiMode() ? 1:2);
+    myGlobalConfig.def_sound_quality        = (isDSiMode() ? 2:0);
     myGlobalConfig.def_palette              = 0;
     myGlobalConfig.brightness               = 0;
     myGlobalConfig.menu_color               = 1;
@@ -336,34 +336,6 @@ void FindAndLoadConfig(UINT32 crc)
         fread(&allConfigs, sizeof(allConfigs), 1, fp);
         fclose(fp);
         
-        // ---------------------------------------------------------------------------------------
-        // Check for previous config... one time upgrade for DSi to remove frame skip by default.
-        // ---------------------------------------------------------------------------------------
-        if (allConfigs.config_ver == 0x0006)
-        {
-            allConfigs.config_ver = CONFIG_VER;
-            
-            // With all the recent speed improvements, we are upgrading the DSi to no frame skip by default!
-            if (isDSiMode())
-            {
-                allConfigs.global_config.frame_skip = 0;        // No Frame Skip
-                allConfigs.global_config.def_sound_quality = 1; // "Great" Sound Quality by default
-                for (int slot=0; slot<MAX_CONFIGS; slot++)
-                {
-                    allConfigs.game_config[slot].frame_skip = 0;     // No Frame Skip
-                    allConfigs.game_config[slot].sound_quality = 1;  // "Great" Sound Quality
-                }
-            }
-            else
-            {
-                allConfigs.global_config.def_sound_quality = 2; // "Good" Sound Quality for DS-Lite/Phat by default
-                for (int slot=0; slot<MAX_CONFIGS; slot++)
-                {
-                    allConfigs.game_config[slot].sound_quality = 2;  // "Good" Sound Quality
-                }
-            }
-        }
-        
         if (allConfigs.config_ver != CONFIG_VER)
         {
             dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
@@ -445,7 +417,7 @@ const struct options_t Option_Table[3][20] =
         {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                        &myConfig.controller_type,  4},
         {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                   &myConfig.dpad_config,      5},
         {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                              &myConfig.frame_skip,       4},
-        {"SOUND QUAL",  {"BEST", "GREAT", "GOOD"},                                                                                                                  &myConfig.sound_quality,    3},
+        {"SOUND QUAL",  {"GOOD", "GREAT", "BEST"},                                                                                                                  &myConfig.sound_quality,    3},
         {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "54 FPS (90%)", "MAX SPEED"},        &myConfig.target_fps,       8},
         {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                           &myConfig.palette,          5},
         {NULL,          {"",            ""},                                                                                                                        NULL,                       1},
@@ -469,7 +441,7 @@ const struct options_t Option_Table[3][20] =
         {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
         {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  27},
         {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 27},
-        {"DEF SOUND",   {"BEST", "GREAT", "GOOD"},                                                                                                      &myGlobalConfig.def_sound_quality,      3},
+        {"DEF SOUND",   {"GOOD", "GREAT", "BEST"},                                                                                                      &myGlobalConfig.def_sound_quality,      3},
         {"DEF PALETTE", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
         {"DEF FRAMSKP", {"OFF", "ON (ODD)", "ON (EVEN)", "AGRESSIVE"},                                                                                  &myGlobalConfig.frame_skip,             4},
         {"BRIGTNESS",   {"MAX", "DIM", "DIMMER", "DIMEST"},                                                                                             &myGlobalConfig.brightness,             4},
@@ -489,7 +461,7 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern INT32 clockDivisor, clocksPerSample;
-    static UINT32 sound_divs[] = {8,12,15};
+    static UINT32 sound_divs[] = {15, 12, 8};
     clockDivisor = sound_divs[myConfig.sound_quality];
     clocksPerSample = clockDivisor<<4;
 

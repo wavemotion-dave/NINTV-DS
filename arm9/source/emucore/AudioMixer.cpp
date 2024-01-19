@@ -82,11 +82,7 @@ void AudioMixer::resetProcessor()
     for (UINT32 i = 0; i < audioProducerCount; i++) 
     {
         totalClockSpeed = lcm(totalClockSpeed, ((UINT64)audioProducers[i]->getClockSpeed()));
-        debug[i] = audioProducers[i]->getClockSpeed();
     }
-
-    debug[2] = totalClockSpeed;
-    debug[3] = getClockSpeed();
 
     //iterate again to determine the clock factor of each
     commonClocksPerTick = totalClockSpeed / getClockSpeed();
@@ -121,7 +117,6 @@ INT32 AudioMixer::getClockSpeed()
 // ----------------------------------------------------------------------------------------------------------------
 ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
 {
-    extern  INT32 clockDivisor;
     INT32 totalSample = 0;
     extern UINT8 sp_idle;
     

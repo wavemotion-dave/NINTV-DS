@@ -16,8 +16,8 @@ Don't ask. If you own Intellivision Lives, you likely have both files already so
 
 Features :
 ----------
- * All known games run at full speed on a DSi or above  (the DSi has 2X the CPU and 4X the memory of the normal DS handhelds).
- * Many games run very close to full speed on the older DS-LITE and DS-PHAT hardware but you can play with config settings to get the most out of these games.
+ * All known games run at full speed, full framerate and with the best sound quality on a DSi or above  (the DSi has 2X the CPU and 4X the memory of the normal DS handhelds).
+ * Almost every game runs at full speed on the older DS-LITE and DS-PHAT hardware with a slight reduction in sound quality.
  * Custom Overlay Support. See the 'extras' folder for details.
  * Manual/Instruction Support. See the 'extras' folder for an example.
  * Save Sate support (3 save slots per game).
@@ -88,6 +88,12 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.7 : 19-Jan-2024 by wavemotion-dave
+  * Major refactor of the audio processor for a big speedup in rendering especially with more than one audio processor (i.e. ECS or Intellivoice)
+  * Switched from individual pixel output to 16-bit (two pixel) output when dealing with scrolling games (big speedup for games like Tron Solar Sailor, Space Spartans, Sorrow, TNT Cowboy, etc).
+  * The DSi now defaults to NO frameskip on any game and the 'Best' sound quality.
+  * The DS-Lite/Phat gets a 15% improvement in sound quality and many of the classic games now run without frameskip.
+
 V4.6 : 15-Jan-2024 by wavemotion-dave
   * Massive overhaul to the core emulation to reduce memory footprint. The older DS-Lite/Phat (with 4MB of memory) can now load all of the newest homebrew games!
   * Optimizations in Video, Audio and CPU cores provides 10% speed up across the board.
