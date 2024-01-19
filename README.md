@@ -93,6 +93,7 @@ V4.7 : 19-Jan-2024 by wavemotion-dave
   * Switched from individual pixel output to 16-bit (two pixel) output when dealing with scrolling games (big speedup for games like Tron Solar Sailor, Space Spartans, Sorrow, TNT Cowboy, etc).
   * The DSi now defaults to NO frameskip on any game and the 'Best' sound quality.
   * The DS-Lite/Phat gets a 15% improvement in sound quality and many of the classic games now run without frameskip.
+  * With the many updates, the config format changed and will be wiped back to defaults - sorry!
 
 V4.6 : 15-Jan-2024 by wavemotion-dave
   * Massive overhaul to the core emulation to reduce memory footprint. The older DS-Lite/Phat (with 4MB of memory) can now load all of the newest homebrew games!
