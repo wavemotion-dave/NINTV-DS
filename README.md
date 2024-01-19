@@ -1,6 +1,9 @@
 # NINTV-DS
 NINTV-DS (aka Nintellivision) is an Intellivision console emulator running on the DS/DSi.
 
+
+![Nintellivision Logo](nintellivision.png)
+
 Install :
 ----------
 To make this work, place NINTV-DS.NDS on your flashcart or SD card which you can launch.
@@ -45,6 +48,7 @@ Controller Types :
 * More importantly you can select 'Dual Action A' or 'Dual Action B'
 * Dual Action A uses the disc/buttons from Controller 1 and the Keypad for Controller 2 (perfect for AD&D Cloudy Mountain or Tron Deadly Discs)
 * Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Controller 2 (perfect for Astrosmash, Buzz Bombers and any game you move and shoot)
+* In configuration you can press the 'X' button to cycle through some common controller mappings or assign your own custom map.
 
 Because the Intellivision had an innovative controller/keypad arrangement, you may want to get creative in how you map your buttons. For example, selecting Dual Action A controller and then mapping ABXY (and the related diagonals) to the 8-arrow-fire keypad buttons makes for a very enjoyable experience in games like AD&D Cloudy Mountain or Tron Deadly Discs. You move your adventurer with the d-pad and you fire with the ABXY into any of the 8 directions. Map the 'RUN' controller action button to the shoulder buttons on the DS and you can navigate any of Cloudy Mountain's dungeons with ease. In my opinion, for many of these games, this is pretty close to the original feel of playing on a real Intellivision. 
 
@@ -55,11 +59,18 @@ Overlays :
 Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in Extras.zip in the overlay-library folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl). By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
 
 ![Standard Overlay](normalovl.png) ![Custom Overlay](customovl.png) ![Custom Overlay](customovl2.png)
+
+Frameskip and Sound Quality :
+-----------------------
+The DSi will run all known games at full framerate without any frameskip needed and at the 'High' (best) sound quality setting. 
+The DS-Lite/Phat will run many of the classic games without any frameskip but for most of the homebrews and later INTV games, frameskip is enabled and the sound quality is a bit lower. You can play with these settings as you like but generally it will still be a good playing experience even on older DS hardware.
+
  
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
-* The latest Same Game & Robots Intellivoice will produce some garbled sounds - likely cycle timing issue.
+* The DS-Lite/Phat can't handle World Series Major League Baseball when it has PSG + ECS + Intellivoice + Page Flipping so for the older DS Hardware, the Intellivoice is disabled so it will run full-speed.
+* The latest Same Game & Robots Intellivoice (with 'human' speech) will produce some garbled sounds - likely cycle timing issue as the emulator is not perfect.
 
 License :
 -----------------------
