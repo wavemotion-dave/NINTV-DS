@@ -41,6 +41,12 @@ Technical Specs :
  * Up to 8K of extra 8-bit RAM emulated for games like USFC Chess and Land Battle (note, the 2K of ECS 8-bit RAM comes out of this pool).
  * Up to 16K Words of extra 16-bit RAM emulated beyond dedicated 8K words of JLP RAM.
  * Paging on all segments of memory provided the full binary is 1024KB (bytes) or less.
+
+Loading Games :
+-----------------------
+Most games you simply pick from the 'Load' list of roms and the game will load and play perfectly. In case it doesn't, you can load the game by pressing the X button (instead of the normal A button) and select from a list of possible hardware configurations (stock Intellivision, JLP, ECS and Intellivoice in all relevant combinations). Your last picked hardware setting will 'stick' and be saved for the game you are playing. 
+
+Intellivision games come in two main formats. .bin+cfg and .rom formats. The .int format is simply a .bin that has been renamed. The .rom format cannot be renamed - it is a special format that has meta-data related to where to load the binary into the emulated memory. The .bin (or .int) file may or may not run without a matching .cfg file. If the game is known in the Nintellivision internal database, no .cfg is needed. But modern homebrews in .bin format will need the matching .cfg file (in the same directory as the rom with the same base filename) as the .cfg file tells the emulator where to load the binary into the Intellivision memory map.
  
 Controller Types :
 -----------------------
