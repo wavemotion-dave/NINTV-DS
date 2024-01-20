@@ -40,11 +40,12 @@ char man_buf[MAX_MAN_ROWS][MAX_MAN_COLS +1];
 extern Rip *currentRip;
 extern int bg0, bg0b,bg1b;
 
+char filepath[32];
+char filebuf[128];
+
 static void ReadManual(void)
 {
     u8 bFound = false;
-    char filepath[32];
-    char filebuf[128];
     FILE *fp = NULL;
     // Read the associated .man file and parse it...
     if (currentRip != NULL)
@@ -187,9 +188,9 @@ static void ReadManual(void)
 // -------------------------------------------------------------------------
 // Show one page (16 lines) of the manual starting at start_line
 // -------------------------------------------------------------------------
+char strBuf[MAX_MAN_COLS +1];
 void DisplayManualPage(UINT16 start_line)
 {
-    char strBuf[MAX_MAN_COLS +1];
     UINT16 idx=0;
     for (UINT16 i=start_line; i<(start_line+ROWS_PER_PAGE); i++)
     {
@@ -208,7 +209,7 @@ void dsShowManual(void)
 {
     static UINT16 top_line = 0;
     static UINT32 last_crc=0;
-    bool bDone=false;
+    UINT8 bDone=false;
     int keys_pressed;
     static int last_keys = -1;
     

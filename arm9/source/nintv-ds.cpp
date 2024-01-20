@@ -39,6 +39,7 @@
 #include "printf.h"
 #include "CRC32.h"
 #include "mus_intro_wav.h"
+#include "keyclick_wav.h"
 #include "screenshot.h"
 
 // --------------------------------------------------------
@@ -56,6 +57,8 @@ UINT8 bMetaSpeedup      __attribute__((section(".dtcm"))) = false;
 
 UINT8 hud_x = 3;
 UINT8 hud_y = 0;
+
+UINT16 keypad_pressed = 0;
 
 // -------------------------------------------------------------
 // This one is accessed rather often so we'll put it in .dtcm
@@ -660,176 +663,179 @@ void ds_handle_meta(int meta_key)
     }
 }
 
-void poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
+UINT8 poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
 {
-        touchPosition touch;
-        touchRead(&touch);
+    UINT8 pad_pressed = 0;
+    touchPosition touch;
+    touchRead(&touch);
 #ifdef DEBUG_ENABLE
-        if (debugger_input(touch.px, touch.py) == DBG_PRESS_META)
-        {
-            while (keysCurrent() & KEY_TOUCH)   // Wait for release
-            {           
-                WAITVBL;
-            }       
+    if (debugger_input(touch.px, touch.py) == DBG_PRESS_META)
+    {
+        while (keysCurrent() & KEY_TOUCH)   // Wait for release
+        {           
             WAITVBL;
-        }
+        }       
+        WAITVBL;
+    }
 #endif
-        // -----------------------------------------------------------
-        // Did we map any hotspots on the overlay to disc directions?
-        // -----------------------------------------------------------
-        if (bUseDiscOverlay) 
+    // -----------------------------------------------------------
+    // Did we map any hotspots on the overlay to disc directions?
+    // -----------------------------------------------------------
+    if (bUseDiscOverlay) 
+    {
+        for (int i=0; i < DISC_MAX; i++)
         {
-            for (int i=0; i < DISC_MAX; i++)
-            {
-                if (touch.px > myDisc[i].x1  && touch.px < myDisc[i].x2 && touch.py > myDisc[i].y1 && touch.py < myDisc[i].y2) ds_disc_input[ctrl_disc][i] = 1;
-            }
+            if (touch.px > myDisc[i].x1  && touch.px < myDisc[i].x2 && touch.py > myDisc[i].y1 && touch.py < myDisc[i].y2) ds_disc_input[ctrl_disc][i] = 1;
         }
-        
-        // ----------------------------------------------------------------------
-        // Handle the 12 keypad keys on the intellivision controller overlay...
-        // ----------------------------------------------------------------------
-        for (int i=0; i <= OVL_KEY_ENTER; i++)
-        {
-            if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   ds_key_input[ctrl_keys][i] = 1;
-        }
+    }
 
-        // ----------------------------------------------------------------------
-        // Handle the 3 side buttons (top=Fire... Left-Action and Right-Action)
-        // ----------------------------------------------------------------------
-        for (int i=OVL_BTN_FIRE; i<=OVL_BTN_R_ACT; i++)
+    // ----------------------------------------------------------------------
+    // Handle the 12 keypad keys on the intellivision controller overlay...
+    // ----------------------------------------------------------------------
+    for (int i=0; i <= OVL_KEY_ENTER; i++)
+    {
+        if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   {ds_key_input[ctrl_keys][i] = 1; pad_pressed=1;}
+    }
+
+    // ----------------------------------------------------------------------
+    // Handle the 3 side buttons (top=Fire... Left-Action and Right-Action)
+    // ----------------------------------------------------------------------
+    for (int i=OVL_BTN_FIRE; i<=OVL_BTN_R_ACT; i++)
+    {
+        if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   ds_key_input[ctrl_side][i] = 1;
+    }
+
+    // ----------------------------------------------------------------------------------
+    // Handled "META" keys here... this includes things like RESET, LOAD, CONFIG, etc
+    // ----------------------------------------------------------------------------------
+
+    // RESET
+    if (touch.px > myOverlay[OVL_META_RESET].x1  && touch.px < myOverlay[OVL_META_RESET].x2 && touch.py > myOverlay[OVL_META_RESET].y1 && touch.py < myOverlay[OVL_META_RESET].y2) 
+    {
+        ds_handle_meta(OVL_META_RESET);
+    }
+    // LOAD
+    else if (touch.px > myOverlay[OVL_META_LOAD].x1  && touch.px < myOverlay[OVL_META_LOAD].x2 && touch.py > myOverlay[OVL_META_LOAD].y1 && touch.py < myOverlay[OVL_META_LOAD].y2) 
+    {
+        ds_handle_meta(OVL_META_LOAD);
+    }
+    // CONFIG
+    else if (touch.px > myOverlay[OVL_META_CONFIG].x1  && touch.px < myOverlay[OVL_META_CONFIG].x2 && touch.py > myOverlay[OVL_META_CONFIG].y1 && touch.py < myOverlay[OVL_META_CONFIG].y2) 
+    {
+        ds_handle_meta(OVL_META_CONFIG);
+    }
+    // HIGHSCORES
+    else if (touch.px > myOverlay[OVL_META_SCORES].x1  && touch.px < myOverlay[OVL_META_SCORES].x2 && touch.py > myOverlay[OVL_META_SCORES].y1 && touch.py < myOverlay[OVL_META_SCORES].y2) 
+    {
+        ds_handle_meta(OVL_META_SCORES);
+    }
+    // STATE
+    else if (touch.px > myOverlay[OVL_META_STATE].x1  && touch.px < myOverlay[OVL_META_STATE].x2 && touch.py > myOverlay[OVL_META_STATE].y1 && touch.py < myOverlay[OVL_META_STATE].y2) 
+    {
+        ds_handle_meta(OVL_META_STATE);
+    }
+    // QUIT
+    else if (touch.px > myOverlay[OVL_META_QUIT].x1  && touch.px < myOverlay[OVL_META_QUIT].x2 && touch.py > myOverlay[OVL_META_QUIT].y1 && touch.py < myOverlay[OVL_META_QUIT].y2) 
+    {
+        ds_handle_meta(OVL_META_QUIT);
+    }
+    // MENU
+    else if (touch.px > myOverlay[OVL_META_MENU].x1  && touch.px < myOverlay[OVL_META_MENU].x2 && touch.py > myOverlay[OVL_META_MENU].y1 && touch.py < myOverlay[OVL_META_MENU].y2) 
+    {
+        ds_handle_meta(OVL_META_MENU);
+    }
+    // SWITCH
+    else if (touch.px > myOverlay[OVL_META_SWITCH].x1  && touch.px < myOverlay[OVL_META_SWITCH].x2 && touch.py > myOverlay[OVL_META_SWITCH].y1 && touch.py < myOverlay[OVL_META_SWITCH].y2) 
+    {
+        ds_handle_meta(OVL_META_SWITCH);
+    }
+    // MANUAL
+    else if (touch.px > myOverlay[OVL_META_MANUAL].x1  && touch.px < myOverlay[OVL_META_MANUAL].x2 && touch.py > myOverlay[OVL_META_MANUAL].y1 && touch.py < myOverlay[OVL_META_MANUAL].y2) 
+    {
+        ds_handle_meta(OVL_META_MANUAL);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    // And, finally, if the ECS mini-keypad is being shown, we can directly check for any ECS keyboard keys...
+    // ---------------------------------------------------------------------------------------------------------
+    if (myConfig.overlay == 1)
+    {
+        if ((touch.px > 5) && (touch.px < 98))
         {
-            if (touch.px > myOverlay[i].x1  && touch.px < myOverlay[i].x2 && touch.py > myOverlay[i].y1 && touch.py < myOverlay[i].y2)   ds_key_input[ctrl_side][i] = 1;
-        }
-        
-        // ----------------------------------------------------------------------------------
-        // Handled "META" keys here... this includes things like RESET, LOAD, CONFIG, etc
-        // ----------------------------------------------------------------------------------
-    
-        // RESET
-        if (touch.px > myOverlay[OVL_META_RESET].x1  && touch.px < myOverlay[OVL_META_RESET].x2 && touch.py > myOverlay[OVL_META_RESET].y1 && touch.py < myOverlay[OVL_META_RESET].y2) 
-        {
-            ds_handle_meta(OVL_META_RESET);
-        }
-        // LOAD
-        else if (touch.px > myOverlay[OVL_META_LOAD].x1  && touch.px < myOverlay[OVL_META_LOAD].x2 && touch.py > myOverlay[OVL_META_LOAD].y1 && touch.py < myOverlay[OVL_META_LOAD].y2) 
-        {
-            ds_handle_meta(OVL_META_LOAD);
-        }
-        // CONFIG
-        else if (touch.px > myOverlay[OVL_META_CONFIG].x1  && touch.px < myOverlay[OVL_META_CONFIG].x2 && touch.py > myOverlay[OVL_META_CONFIG].y1 && touch.py < myOverlay[OVL_META_CONFIG].y2) 
-        {
-            ds_handle_meta(OVL_META_CONFIG);
-        }
-        // HIGHSCORES
-        else if (touch.px > myOverlay[OVL_META_SCORES].x1  && touch.px < myOverlay[OVL_META_SCORES].x2 && touch.py > myOverlay[OVL_META_SCORES].y1 && touch.py < myOverlay[OVL_META_SCORES].y2) 
-        {
-            ds_handle_meta(OVL_META_SCORES);
-        }
-        // STATE
-        else if (touch.px > myOverlay[OVL_META_STATE].x1  && touch.px < myOverlay[OVL_META_STATE].x2 && touch.py > myOverlay[OVL_META_STATE].y1 && touch.py < myOverlay[OVL_META_STATE].y2) 
-        {
-            ds_handle_meta(OVL_META_STATE);
-        }
-        // QUIT
-        else if (touch.px > myOverlay[OVL_META_QUIT].x1  && touch.px < myOverlay[OVL_META_QUIT].x2 && touch.py > myOverlay[OVL_META_QUIT].y1 && touch.py < myOverlay[OVL_META_QUIT].y2) 
-        {
-            ds_handle_meta(OVL_META_QUIT);
-        }
-        // MENU
-        else if (touch.px > myOverlay[OVL_META_MENU].x1  && touch.px < myOverlay[OVL_META_MENU].x2 && touch.py > myOverlay[OVL_META_MENU].y1 && touch.py < myOverlay[OVL_META_MENU].y2) 
-        {
-            ds_handle_meta(OVL_META_MENU);
-        }
-        // SWITCH
-        else if (touch.px > myOverlay[OVL_META_SWITCH].x1  && touch.px < myOverlay[OVL_META_SWITCH].x2 && touch.py > myOverlay[OVL_META_SWITCH].y1 && touch.py < myOverlay[OVL_META_SWITCH].y2) 
-        {
-            ds_handle_meta(OVL_META_SWITCH);
-        }
-        // MANUAL
-        else if (touch.px > myOverlay[OVL_META_MANUAL].x1  && touch.px < myOverlay[OVL_META_MANUAL].x2 && touch.py > myOverlay[OVL_META_MANUAL].y1 && touch.py < myOverlay[OVL_META_MANUAL].y2) 
-        {
-            ds_handle_meta(OVL_META_MANUAL);
-        }
-        
-        // ---------------------------------------------------------------------------------------------------------
-        // And, finally, if the ECS mini-keypad is being shown, we can directly check for any ECS keyboard keys...
-        // ---------------------------------------------------------------------------------------------------------
-        if (myConfig.overlay == 1)
-        {
-            if ((touch.px > 5) && (touch.px < 98))
+            if      (touch.py >= 25 && touch.py < 43)   // Row:  1 2 3 4 5
             {
-                if      (touch.py >= 25 && touch.py < 43)   // Row:  1 2 3 4 5
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 1;
-                    else if (touch.px <= 41) ecs_key_pressed = 2;
-                    else if (touch.px <= 60) ecs_key_pressed = 3;
-                    else if (touch.px <= 78) ecs_key_pressed = 4;
-                    else if (touch.px <= 97) ecs_key_pressed = 5;
-                    
-                }
-                else if (touch.py >= 43 && touch.py < 60)   // Row:  6 7 8 9 0
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 6;
-                    else if (touch.px <= 41) ecs_key_pressed = 7;
-                    else if (touch.px <= 60) ecs_key_pressed = 8;
-                    else if (touch.px <= 78) ecs_key_pressed = 9;
-                    else if (touch.px <= 97) ecs_key_pressed = 10;
-                }
-                else if (touch.py >= 60 && touch.py < 78)   // Row:  A B C D E
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 11;
-                    else if (touch.px <= 41) ecs_key_pressed = 12;
-                    else if (touch.px <= 60) ecs_key_pressed = 13;
-                    else if (touch.px <= 78) ecs_key_pressed = 14;
-                    else if (touch.px <= 97) ecs_key_pressed = 15;
-                }
-                else if (touch.py >= 78 && touch.py < 95)   // Row:  F G H I J
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 16;
-                    else if (touch.px <= 41) ecs_key_pressed = 17;
-                    else if (touch.px <= 60) ecs_key_pressed = 18;
-                    else if (touch.px <= 78) ecs_key_pressed = 19;
-                    else if (touch.px <= 97) ecs_key_pressed = 20;
-                }
-                else if (touch.py >= 95 && touch.py < 112)  // Row:  K L M N O
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 21;
-                    else if (touch.px <= 41) ecs_key_pressed = 22;
-                    else if (touch.px <= 60) ecs_key_pressed = 23;
-                    else if (touch.px <= 78) ecs_key_pressed = 24;
-                    else if (touch.px <= 97) ecs_key_pressed = 25;
-                }
-                else if (touch.py >= 112 && touch.py < 130) // Row:  P Q R S T
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 26;
-                    else if (touch.px <= 41) ecs_key_pressed = 27;
-                    else if (touch.px <= 60) ecs_key_pressed = 28;
-                    else if (touch.px <= 78) ecs_key_pressed = 29;
-                    else if (touch.px <= 97) ecs_key_pressed = 30;
-                }
-                else if (touch.py >= 130 && touch.py < 148) // Row:  U V W X Y
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 31;
-                    else if (touch.px <= 41) ecs_key_pressed = 32;
-                    else if (touch.px <= 60) ecs_key_pressed = 33;
-                    else if (touch.px <= 78) ecs_key_pressed = 34;
-                    else if (touch.px <= 97) ecs_key_pressed = 35;
-                }
-                else if (touch.py >= 148 && touch.py < 166) // Row:  Z [arrows]
-                {
-                    if      (touch.px <= 23) ecs_key_pressed = 36;
-                    else if (touch.px <= 41) ecs_key_pressed = 37;
-                    else if (touch.px <= 60) ecs_key_pressed = 38;
-                    else if (touch.px <= 78) ecs_key_pressed = 39;
-                    else if (touch.px <= 97) ecs_key_pressed = 40;
-                }
-                else if (touch.py >= 166 && touch.py < 190) // Row:  SPC  RET
-                {
-                    if      (touch.px <= 50) ecs_key_pressed = 41;
-                    else if (touch.px <= 97) ecs_key_pressed = 42;
-                }
+                if      (touch.px <= 23) ecs_key_pressed = 1;
+                else if (touch.px <= 41) ecs_key_pressed = 2;
+                else if (touch.px <= 60) ecs_key_pressed = 3;
+                else if (touch.px <= 78) ecs_key_pressed = 4;
+                else if (touch.px <= 97) ecs_key_pressed = 5;
+
+            }
+            else if (touch.py >= 43 && touch.py < 60)   // Row:  6 7 8 9 0
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 6;
+                else if (touch.px <= 41) ecs_key_pressed = 7;
+                else if (touch.px <= 60) ecs_key_pressed = 8;
+                else if (touch.px <= 78) ecs_key_pressed = 9;
+                else if (touch.px <= 97) ecs_key_pressed = 10;
+            }
+            else if (touch.py >= 60 && touch.py < 78)   // Row:  A B C D E
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 11;
+                else if (touch.px <= 41) ecs_key_pressed = 12;
+                else if (touch.px <= 60) ecs_key_pressed = 13;
+                else if (touch.px <= 78) ecs_key_pressed = 14;
+                else if (touch.px <= 97) ecs_key_pressed = 15;
+            }
+            else if (touch.py >= 78 && touch.py < 95)   // Row:  F G H I J
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 16;
+                else if (touch.px <= 41) ecs_key_pressed = 17;
+                else if (touch.px <= 60) ecs_key_pressed = 18;
+                else if (touch.px <= 78) ecs_key_pressed = 19;
+                else if (touch.px <= 97) ecs_key_pressed = 20;
+            }
+            else if (touch.py >= 95 && touch.py < 112)  // Row:  K L M N O
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 21;
+                else if (touch.px <= 41) ecs_key_pressed = 22;
+                else if (touch.px <= 60) ecs_key_pressed = 23;
+                else if (touch.px <= 78) ecs_key_pressed = 24;
+                else if (touch.px <= 97) ecs_key_pressed = 25;
+            }
+            else if (touch.py >= 112 && touch.py < 130) // Row:  P Q R S T
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 26;
+                else if (touch.px <= 41) ecs_key_pressed = 27;
+                else if (touch.px <= 60) ecs_key_pressed = 28;
+                else if (touch.px <= 78) ecs_key_pressed = 29;
+                else if (touch.px <= 97) ecs_key_pressed = 30;
+            }
+            else if (touch.py >= 130 && touch.py < 148) // Row:  U V W X Y
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 31;
+                else if (touch.px <= 41) ecs_key_pressed = 32;
+                else if (touch.px <= 60) ecs_key_pressed = 33;
+                else if (touch.px <= 78) ecs_key_pressed = 34;
+                else if (touch.px <= 97) ecs_key_pressed = 35;
+            }
+            else if (touch.py >= 148 && touch.py < 166) // Row:  Z [arrows]
+            {
+                if      (touch.px <= 23) ecs_key_pressed = 36;
+                else if (touch.px <= 41) ecs_key_pressed = 37;
+                else if (touch.px <= 60) ecs_key_pressed = 38;
+                else if (touch.px <= 78) ecs_key_pressed = 39;
+                else if (touch.px <= 97) ecs_key_pressed = 40;
+            }
+            else if (touch.py >= 166 && touch.py < 190) // Row:  SPC  RET
+            {
+                if      (touch.px <= 50) ecs_key_pressed = 41;
+                else if (touch.px <= 97) ecs_key_pressed = 42;
             }
         }
+    }
+
+    return pad_pressed;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -879,7 +885,6 @@ ITCM_CODE void pollInputs(void)
     // Unless told otherwise, we are NOT in un-throttle mode...
     bMetaSpeedup = false;
 
-    
     // If one of the NDS keys is pressed...
     if (keys_pressed & (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT | KEY_L | KEY_R | KEY_A | KEY_B | KEY_X | KEY_Y | KEY_SELECT | KEY_START))
     {
@@ -1198,8 +1203,17 @@ ITCM_CODE void pollInputs(void)
     // -----------------------------------------------------------------
     if (keys_pressed & KEY_TOUCH)
     {
-        poll_touch_screen(ctrl_disc, ctrl_keys, ctrl_side);
-    }    
+        if (poll_touch_screen(ctrl_disc, ctrl_keys, ctrl_side)) // Returns non-zero if we pressed one of the 12 keypad keys
+        {
+            if (++keypad_pressed == 3) // Need to see it pressed for several frames
+            {
+                if (myConfig.key_click)
+                {
+                    soundPlaySample(keyclick_wav, SoundFormat_16Bit, keyclick_wav_size, 44100, 127, 64, false, 0);
+                }
+            }
+        } else keypad_pressed = 0;            
+    } else keypad_pressed = 0;
 }
 
 
@@ -1229,7 +1243,6 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
         soundPlaySample((const void *) mus_intro_wav, SoundFormat_ADPCM, mus_intro_wav_size, 22050, 127, 64, false, 0);
       }
     }
-
     
      hud_x = 3;
      hud_y = 0;
@@ -1252,14 +1265,14 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
 // --------------------------------------------------------------------------------------------------------
 void dsInitScreenMain(void)
 {
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - Used for Memory Bus Read Counter
-    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart "Fast Buffer" 64k x 16 = 128k
-    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Custom Tile Overlay Buffer (60K for tile[] buffer, 4K for map[] buffer)
-    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - Slow 8-bit RAM buffer for ECS and games like USFC Chess and Land Battle (8K)
-    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 - JLP RAM Buffer (8K Words or 16K Bytes)
-    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Slow 16-bit RAM buffer (16K Words or 32K Bytes)
-    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Unused
-    
+    vramSetBankB(VRAM_B_LCD);           // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - Used for Memory Bus Read Counter
+    vramSetBankD(VRAM_D_LCD);           // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart "Fast Buffer" 64k x 16 = 128k
+    vramSetBankE(VRAM_E_LCD);           // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Custom Tile Overlay Buffer (60K for tile[] buffer, 4K for map[] buffer)
+    vramSetBankF(VRAM_F_LCD);           // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - Slow 8-bit RAM buffer for ECS and games like USFC Chess and Land Battle (8K)
+    vramSetBankG(VRAM_G_LCD);           // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 - JLP RAM Buffer (8K Words or 16K Bytes)
+    vramSetBankH(VRAM_H_LCD);           // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Slow 16-bit RAM buffer (16K Words or 32K Bytes)
+    vramSetBankI(VRAM_I_LCD);           // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Unused
+
     WAITVBL;
 }
 

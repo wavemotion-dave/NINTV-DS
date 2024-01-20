@@ -147,10 +147,10 @@ void CheatMenu(void)
 // -------------------------------------------------------------------------
 // Read the global nintv-ds.cht file and match it up with our current game
 // -------------------------------------------------------------------------
+extern char filebuf[];
 void LoadCheats(void)
 {
     u8 bFound = false;
-    char filebuf[128];
     FILE *fp = NULL;
     
     // --------------------------------------------

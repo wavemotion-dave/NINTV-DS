@@ -51,8 +51,8 @@ struct Config_t
     INT8   offset_x;
     UINT8  bLatched;
     UINT8  fudgeTiming;
-    UINT8  spare3;
-    UINT8  spare4;
+    UINT8  key_click;
+    UINT8  bSkipBlanks;
     UINT8  spare5;
     UINT8  spare6;
     UINT8  spare7;

@@ -169,8 +169,8 @@ static void SetDefaultGameConfig(UINT32 crc)
     myConfig.offset_x                       = 0;
     myConfig.bLatched                       = 0;
     myConfig.fudgeTiming                    = 0;
-    myConfig.spare3                         = 0;
-    myConfig.spare4                         = 0;
+    myConfig.key_click                      = 0;
+    myConfig.bSkipBlanks                    = 0;
     myConfig.spare5                         = 0;
     myConfig.spare6                         = 0;
     myConfig.spare7                         = 0;
@@ -193,7 +193,6 @@ static void SetDefaultGameConfig(UINT32 crc)
     // -----------------------------------------------------------------------------------------
     if (crc == 0x2DEACD15) myConfig.bLatched        = true;                     // Stampede must have latched backtab access
     if (crc == 0x573B9B6D) myConfig.bLatched        = true;                     // Masters of the Universe must have latched backtab access
-    if (crc == 0x8AD19AB3) myConfig.frame_skip      = 0;                        // B-17 Bomber no frame skip
     if (crc == 0x5F6E1AF6) myConfig.fudgeTiming     = 2;                        // Motocross needs some fudge timing to run... known race condition...
     if (crc == 0xfab2992c) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Astrosmash is best with Dual Action B
     if (crc == 0xd0f83698) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Astrosmash (competition) is best with Dual Action B
@@ -202,6 +201,7 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0xc047d487) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Beauty and the Beast is best with Dual Action B
     if (crc == 0xc047d487) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Beauty and the Beast is best with Strict 4-way
     if (crc == 0xD8C9856A) myConfig.dpad_config     = DPAD_DIAGONALS;           // Q-Bert is best with diagonal
+    if (crc == 0x8AD19AB3) myConfig.bSkipBlanks     = true;                     // B-17 Bomber needs to skip rendering blanks or the screen 'flashes'
 }
 
 
@@ -360,6 +360,7 @@ void FindAndLoadConfig(UINT32 crc)
                 {
                     bConfigWasFound = TRUE;
                     memcpy(&myConfig, &allConfigs.game_config[slot], sizeof(struct Config_t));
+                    if (crc == 0x8AD19AB3) myConfig.bSkipBlanks     = true;                     // B-17 Bomber needs to skip rendering blanks or the screen 'flashes'
                     break;                           
                 }
             }
@@ -427,6 +428,8 @@ const struct options_t Option_Table[3][20] =
     {
         {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                                 &myConfig.bLatched,         2},
         {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                                   &myConfig.fudgeTiming,      5},
+        {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                             &myConfig.key_click,        2},
+        {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                             &myConfig.bSkipBlanks,      2},
         {NULL,          {"",            ""},                                                                                                                        NULL,                       1},
     },
     

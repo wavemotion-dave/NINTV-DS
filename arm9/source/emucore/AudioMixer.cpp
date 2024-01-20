@@ -121,7 +121,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     extern UINT8 sp_idle;
     
     UINT16 soundChannelsToProcess = audioProducerCount;
-    if (bUseIVoice && sp_idle) soundChannelsToProcess--;    // If ECS is idle we can skip processing it...
+    if (bUseIVoice && sp_idle) soundChannelsToProcess--;    // If the Intellivoice is idle we can skip processing it... Saves CPU time.
 
     for (INT32 totalTicks = 0; totalTicks < minimum; totalTicks++) 
     {

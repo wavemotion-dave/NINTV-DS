@@ -344,15 +344,6 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
         }
         
         
-    
-        extern UINT8 bRenderBlanks;
-        bRenderBlanks = TRUE;
-        // Special handling for B-17 Bomber
-        if (db_entry->game_crc == 0x8AD19AB3)
-        {
-            bRenderBlanks = FALSE;
-        }
-        
         // Now add the required peripherals...
         if (db_entry->bIntellivoice)
         {
@@ -464,8 +455,8 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                         // ------------------------------------------------------------------------
                         // Make sure we haven't exceeded the maximum number of mapped ROM segments
                         // ------------------------------------------------------------------------
-                        if (rip->GetRAMCount() >= MAX_ROMS) break;
-                        if (rip->GetROMCount() >= MAX_ROMS) break;
+                        if (rip->GetRAMCount() >= MAX_RAM_ROM_SEGMENTS) break;
+                        if (rip->GetROMCount() >= MAX_RAM_ROM_SEGMENTS) break;
                     }
                 }
             }
@@ -720,9 +711,6 @@ Rip* Rip::LoadRom(const CHAR* filename)
     // Load the ECS if asked for...
     if (bUseECS)    rip->AddPeripheralUsage("ECS", (bUseECS == 3) ? PERIPH_OPTIONAL:PERIPH_REQUIRED);
     
-    extern UINT8 bRenderBlanks;
-    bRenderBlanks = TRUE;
-
     return rip;
 }
 

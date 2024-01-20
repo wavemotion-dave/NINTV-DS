@@ -146,7 +146,7 @@ BOOL LoadCart(const CHAR* filename)
 // -----------------------------------------------------------------------
 void CheckFirstTimeLoad(void)
 {
-  static bool bFirstTime = true;
+  static UINT8 bFirstTime = true;
     
   // First time in we use the config setting to determine where we open files...
   if (bFirstTime)
@@ -366,7 +366,7 @@ int intvFilescmp (const void *c1, const void *c2)
 // ----------------------------------------------------------------------------------------------
 bool isFavorite(char *filename)
 {
-    for (int i=0; i<64; i++)
+    for (UINT8 i=0; i<64; i++)
     {
         if (myGlobalConfig.favorites[i] != 0x00000000)
         {
@@ -384,7 +384,7 @@ bool isFavorite(char *filename)
 // ----------------------------------------------------------------------------------------
 void setFavorite(char *filename)
 {    
-    for (int i=0; i<64; i++)
+    for (UINT8 i=0; i<64; i++)
     {
         if (myGlobalConfig.favorites[i] == 0x00000000)
         {
@@ -400,7 +400,7 @@ void setFavorite(char *filename)
 // ----------------------------------------------------------------------------------------
 void clrFavorite(char *filename)
 {
-    for (int i=0; i<64; i++)
+    for (UINT8 i=0; i<64; i++)
     {
         if (myGlobalConfig.favorites[i] != 0x00000000)
         {
@@ -420,7 +420,7 @@ void clrFavorite(char *filename)
 // ----------------------------------------------------------------------------------------
 void intvFindFiles(void) 
 {
-  static bool bFirstTime = true;
+  static UINT8 bFirstTime = true;
   DIR *pdir;
   struct dirent *pent;
 

@@ -69,8 +69,6 @@ UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
 UINT8 fgcolor              __attribute__((section(".dtcm"))) = 0;
 UINT8 bgcolor              __attribute__((section(".dtcm"))) = 0;
 
-UINT8 bRenderBlanks = TRUE; // Only B-17 Bomber sets this to false... still debugging it.
-
 // Movable objects
 MOB mobs[8] __attribute__((section(".dtcm")));
 
@@ -218,7 +216,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             if (!displayEnabled) {
                 if (previousDisplayEnabled) 
                 {
-                    if (bRenderBlanks)
+                    if (myConfig.bSkipBlanks == 0)
                     {
                         UINT32 borderColor32 = color_repeat_table[borderColor];
                         UINT32 *ptr = (UINT32 *)pixelBuffer;

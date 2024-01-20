@@ -227,9 +227,9 @@ class Peripheral
         UINT8             audioProducerCount;
         InputConsumer*    inputConsumers[MAX_COMPONENTS];
         UINT8             inputConsumerCount;
-        RAM*              rams[MAX_ROMS];
+        RAM*              rams[MAX_RAM_ROM_SEGMENTS];
         UINT8             ramCount;
-        ROM*              roms[MAX_ROMS];
+        ROM*              roms[MAX_RAM_ROM_SEGMENTS];
         UINT8             romCount;
 };
 

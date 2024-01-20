@@ -41,7 +41,7 @@ Processor* Peripheral::GetProcessor(UINT16 i)
 
 void Peripheral::AddRAM(RAM* m)
 {
-    if (ramCount < MAX_ROMS)
+    if (ramCount < MAX_RAM_ROM_SEGMENTS)
     {
         rams[ramCount] = m;
         ramCount++;
@@ -108,7 +108,7 @@ InputConsumer* Peripheral::GetInputConsumer(UINT16 i)
 
 void Peripheral::AddROM(ROM* r)
 {
-    if (romCount < MAX_ROMS)
+    if (romCount < MAX_RAM_ROM_SEGMENTS)
     {
         roms[romCount] = r;
         romCount++;

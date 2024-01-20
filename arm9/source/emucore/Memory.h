@@ -14,10 +14,10 @@
 
 #include "types.h"
 
-#define MAX_MAPPED_MEMORIES  144
+#define MAX_MAPPED_MEMORIES  250
 #define MAX_PERIPHERALS      4
 #define MAX_COMPONENTS       4
-#define MAX_ROMS             128
+#define MAX_RAM_ROM_SEGMENTS 128
 
 extern UINT32 MAX_ROM_FILE_SIZE;
 
