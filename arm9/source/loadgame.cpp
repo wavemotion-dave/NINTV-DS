@@ -81,22 +81,27 @@ BOOL LoadCart(const CHAR* filename)
     slow_ram16_idx = 0;     // Nothing uses this internally so we can reset to 0
     slow_ram8_idx = 0;      // Nothing uses this internally so we can reset to 0
     fast_ram16_idx = 0x200; // 512 bytes is more than enough for internal Inty RAM so this is safely above the threshold
-    
-    
+
     const CHAR* extStart = filename + strlen(filename) - 4;
     
-    if (strcmpi(extStart, ".int") == 0 || strcmpi(extStart, ".bin") == 0)
+    UINT8 bIsROM = ((strcmpi(extStart, ".rom") == 0) ? true:false);
+    if (strcmpi(extStart, ".int") == 0)
     {
-        //load the bin file as a Rip - use internal database or maybe <filename>.cfg exists... LoadBin() handles all that.
-        currentRip = Rip::LoadBin(filename);
-        if (currentRip == NULL)
+        // A .int file might or might not be actual .rom format...
+        FILE* file = fopen(filename, "rb");
+        UINT8 buf[2];
+        if (file == NULL) 
         {
-            return FALSE;   // FatalError() will have already been called
+            FatalError("BIN FILE DOES NOT EXIST");
+            return NULL;
         }
+        if (fgetc(file) == 0xA8) bIsROM = true;
+        fclose(file);
     }
-    else if (strcmpi(extStart, ".rom") == 0)    // .rom files contain the loading info...
+    
+    if (bIsROM)
     {
-        //load the bin file as a Rip
+        //load the binary file as a Rip
         currentRip = Rip::LoadRom(filename);
         if (currentRip == NULL)
         {
@@ -105,9 +110,12 @@ BOOL LoadCart(const CHAR* filename)
     }
     else
     {
-        currentRip = NULL;
-        FatalError("UNKNOWN FILE TYPE");
-        return FALSE;
+        //load the binary file as a Rip - use internal database or maybe <filename>.cfg exists... LoadBin() handles all that.
+        currentRip = Rip::LoadBin(filename);
+        if (currentRip == NULL)
+        {
+            return FALSE;   // FatalError() will have already been called
+        }
     }
     
     // ------------------------------------------------------------------------------------------------------------------
