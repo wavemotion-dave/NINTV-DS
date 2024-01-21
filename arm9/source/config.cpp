@@ -428,7 +428,7 @@ const struct options_t Option_Table[3][20] =
         {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                            &myConfig.controller_type,  4},
         {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                       &myConfig.dpad_config,      5},
         {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                               &myConfig.frame_skip,       3},
-        {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH"},                                                                                                      &myConfig.sound_quality,    3},
+        {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH", "ULTIMATE"},                                                                                          &myConfig.sound_quality,    4},
         {"TGT SPEED",   {"60 FPS (100%)","66 FPS (110%)","72 FPS (120%)","78 FPS (130%)","84 FPS (140%)","90 FPS (150%)","54 FPS (90%)","MAX SPEED"},   &myConfig.target_fps,       8},
         {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myConfig.palette,          5},
         {NULL,          {"",            ""},                                                                                                            NULL,                       1},
@@ -474,7 +474,7 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern INT32 clockDivisor, clocksPerSample;
-    static UINT32 sound_divs[] = {15, 12, 8};
+    static UINT32 sound_divs[] = {15, 12, 8, 4};
     clockDivisor = sound_divs[myConfig.sound_quality];
     clocksPerSample = clockDivisor<<4;
 

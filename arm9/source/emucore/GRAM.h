@@ -40,7 +40,7 @@ class GRAM : public RAM
         GRAM();
 
         void reset();
-        inline UINT16 peek(UINT16 location) {if (!enabled) return (location & 0xFF); return gram_image[location & 0x01FF];}
+        inline UINT16 peek(UINT16 location) {return gram_image[location & 0x01FF];}
         void poke(UINT16 location, UINT16 value);
 
         void markClean();

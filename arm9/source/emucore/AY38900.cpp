@@ -721,7 +721,7 @@ void AY38900::renderForegroundBackgroundModeForced()
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_direct(i);
-        UINT16 isNotGrom = nextCard & 0x0800;
+        UINT16 isGram = nextCard & 0x0800;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
@@ -729,7 +729,7 @@ void AY38900::renderForegroundBackgroundModeForced()
         fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
         bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
-        Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
+        Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
         UINT16 address = memory->getReadAddress()+memoryLocation;
         UINT8 nextx = (i%20) * 8;
         UINT8 nexty = (i/20) * 8;
@@ -745,17 +745,17 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_direct(i);
-        UINT16 isNotGrom = (nextCard & 0x0800);
+        UINT16 isGram = (nextCard & 0x0800);
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (backtab.isDirtyDirect(i) || (isNotGrom && dirtyCards[memoryLocation>>3])) 
+        if (backtab.isDirtyDirect(i) || (isGram && dirtyCards[memoryLocation>>3])) 
         {
             fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
-            Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
+            Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
@@ -772,17 +772,17 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
-        UINT16 isNotGrom = nextCard & 0x0800;
+        UINT16 isGram = nextCard & 0x0800;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (backtab.isDirtyLatched(i) || (isNotGrom && dirtyCards[memoryLocation>>3])) 
+        if (backtab.isDirtyLatched(i) || (isGram && dirtyCards[memoryLocation>>3])) 
         {
             fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
             bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
-            Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
+            Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
@@ -799,13 +799,13 @@ void AY38900::renderForegroundBackgroundModeLatchedForced()
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
-        UINT16 isNotGrom = nextCard & 0x0800;
+        UINT16 isGram = nextCard & 0x0800;
         UINT16 memoryLocation = nextCard & 0x01F8;
 
         fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
         bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
-        Memory* memory = (isNotGrom ? (Memory*)gram : (Memory*)grom);
+        Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
         UINT16 address = memory->getReadAddress()+memoryLocation;
         UINT8 nextx = (i%20) * 8;
         UINT8 nexty = (i/20) * 8;
@@ -825,6 +825,7 @@ ITCM_CODE void AY38900::renderColorStackMode()
     
     UINT8 nextx = 0;
     UINT8 nexty = 0;
+    bgcolor = (UINT8)stic_memory[0x28 + csPtr];
     //iterate through all the cards in the backtab
     for (UINT8 h = 0; h < 240; h++) 
     {
@@ -835,45 +836,37 @@ ITCM_CODE void AY38900::renderColorStackMode()
         {
             if (renderAll || backtab.isDirtyDirect(h)) 
             {
-                UINT8 csColor = (UINT8)stic_memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
                 UINT8 color2 = (UINT8)((nextCard & 0x01C0) >> 6);
-                UINT8 color3 = (UINT8)(((nextCard & 0x2000) >> 11) |
-                    ((nextCard & 0x0600) >> 9));
+                UINT8 color3 = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x0600) >> 9));
                 renderColoredSquares(nextx, nexty,
-                    (color0 == 7 ? csColor : (UINT8)(color0 | FOREGROUND_BIT)),
-                    (color1 == 7 ? csColor : (UINT8)(color1 | FOREGROUND_BIT)),
-                    (color2 == 7 ? csColor : (UINT8)(color2 | FOREGROUND_BIT)),
-                    (color3 == 7 ? csColor : (UINT8)(color3 | FOREGROUND_BIT)));
+                    (color0 == 7 ? bgcolor : (UINT8)(color0 | FOREGROUND_BIT)),
+                    (color1 == 7 ? bgcolor : (UINT8)(color1 | FOREGROUND_BIT)),
+                    (color2 == 7 ? bgcolor : (UINT8)(color2 | FOREGROUND_BIT)),
+                    (color3 == 7 ? bgcolor : (UINT8)(color3 | FOREGROUND_BIT)));
             }
         }
         //color stack mode
         else 
         {
             //advance the color pointer, if necessary
-            if ((nextCard & 0x2000) != 0)
-                csPtr = (UINT8)((csPtr+1) & 0x03);
-
-            BOOL isGrom = (nextCard & 0x0800) == 0;
-            UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8) : (nextCard & 0x01F8));
-
-            if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+            if (nextCard & 0x2000) 
             {
-                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
+                csPtr = (csPtr+1) & 0x03; 
                 bgcolor = (UINT8)stic_memory[0x28 + csPtr];
-                if (isGrom)
-                {
-                    Memory* memory = (Memory*)grom;
-                    UINT16 address = memory->getReadAddress()+memoryLocation;
-                    for (UINT16 j = 0; j < 8; j++)
-                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
-                }
-                else
-                {
-                    for (UINT16 j = 0; j < 8; j++)
-                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j);
-                }
+            }
+
+            UINT16 isGram = (nextCard & 0x0800);
+            UINT16 memoryLocation = (isGram ? (nextCard & 0x01F8) : (nextCard & 0x07F8));
+
+            if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation))) 
+            {
+                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);                
+                Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
+                UINT16 address = memory->getReadAddress()+memoryLocation;
+                for (UINT16 j = 0; j < 8; j++)
+                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
             }
         }
         nextx += 8;
@@ -895,6 +888,7 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
     
     UINT8 nextx = 0;
     UINT8 nexty = 0;
+    bgcolor = (UINT8)stic_memory[0x28 + csPtr];
     //iterate through all the cards in the backtab
     for (UINT8 h = 0; h < 240; h++) 
     {
@@ -905,47 +899,39 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
         {
             if (renderAll || backtab.isDirtyDirect(h)) 
             {
-                UINT8 csColor = (UINT8)stic_memory[0x28 + csPtr];
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
                 UINT8 color2 = (UINT8)((nextCard & 0x01C0) >> 6);
                 UINT8 color3 = (UINT8)(((nextCard & 0x2000) >> 11) |
                     ((nextCard & 0x0600) >> 9));
                 renderColoredSquares(nextx, nexty,
-                    (color0 == 7 ? csColor : (UINT8)(color0 | FOREGROUND_BIT)),
-                    (color1 == 7 ? csColor : (UINT8)(color1 | FOREGROUND_BIT)),
-                    (color2 == 7 ? csColor : (UINT8)(color2 | FOREGROUND_BIT)),
-                    (color3 == 7 ? csColor : (UINT8)(color3 | FOREGROUND_BIT)));
+                    (color0 == 7 ? bgcolor : (UINT8)(color0 | FOREGROUND_BIT)),
+                    (color1 == 7 ? bgcolor : (UINT8)(color1 | FOREGROUND_BIT)),
+                    (color2 == 7 ? bgcolor : (UINT8)(color2 | FOREGROUND_BIT)),
+                    (color3 == 7 ? bgcolor : (UINT8)(color3 | FOREGROUND_BIT)));
             }
         }
         //color stack mode
         else 
         {
             //advance the color pointer, if necessary
-            if ((nextCard & 0x2000) != 0)
-                csPtr = (UINT8)((csPtr+1) & 0x03);
+            if (nextCard & 0x2000) 
+            {
+                csPtr = (csPtr+1) & 0x03; 
+                bgcolor = (UINT8)stic_memory[0x28 + csPtr];
+            }
 
-            BOOL isGrom = (nextCard & 0x0800) == 0;
-            UINT16 memoryLocation = (isGrom ? (nextCard & 0x07F8)
-                : (nextCard & 0x01F8));
+            UINT16 isGram = (nextCard & 0x0800);
+            UINT16 memoryLocation = (isGram ? (nextCard & 0x01F8) : (nextCard & 0x07F8));
 
-            if (renderAll || backtab.isDirtyDirect(h) || (!isGrom && gram->isCardDirty(memoryLocation))) 
+            if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation))) 
             {
                 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
-                bgcolor = (UINT8)stic_memory[0x28 + csPtr];
                 
-                if (isGrom)
-                {
-                    Memory* memory = (Memory*)grom;
-                    UINT16 address = memory->getReadAddress()+memoryLocation;
-                    for (UINT16 j = 0; j < 8; j++)
-                        renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
-                }
-                else
-                {
-                    for (UINT16 j = 0; j < 8; j++)
-                        renderLine(gram_image[memoryLocation+j], nextx, nexty+j);
-                }
+                Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
+                UINT16 address = memory->getReadAddress()+memoryLocation;
+                for (UINT16 j = 0; j < 8; j++)
+                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
             }
         }
         nextx += 8;
@@ -1129,7 +1115,7 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     }
 }
 
-ITCM_CODE void AY38900::renderLine(UINT8 nextbyte, int x, int y)
+inline void AY38900::renderLine(UINT8 nextbyte, int x, int y)
 {
     if (nextbyte && (nextbyte != 0xFF))
     {
@@ -1161,17 +1147,17 @@ ITCM_CODE void AY38900::renderColoredSquares(int x, int y, UINT8 color0, UINT8 c
     int bottomLeftPixel = topLeftPixel+640;
     int bottomRightPixel = bottomLeftPixel+4;
 
-    for (UINT8 w = 0; w < 4; w++) {
-        for (UINT8 i = 0; i < 4; i++) {
-            backgroundBuffer[topLeftPixel++] = color0;
-            backgroundBuffer[topRightPixel++] = color1;
-            backgroundBuffer[bottomLeftPixel++] = color2;
-            backgroundBuffer[bottomRightPixel++] = color3;
-        }
-        topLeftPixel += 156;
-        topRightPixel += 156;
-        bottomLeftPixel += 156;
-        bottomRightPixel += 156;
+    UINT8 *ptr0 = &backgroundBuffer[topLeftPixel];
+    UINT8 *ptr1 = &backgroundBuffer[topRightPixel];
+    UINT8 *ptr2 = &backgroundBuffer[bottomLeftPixel];
+    UINT8 *ptr3 = &backgroundBuffer[bottomRightPixel];
+    for (UINT8 w = 0; w < 4; w++) 
+    {
+        *ptr0++ = color0; *ptr0++ = color0; *ptr0++ = color0; *ptr0++ = color0;
+        *ptr1++ = color1; *ptr1++ = color1; *ptr1++ = color1; *ptr1++ = color1;
+        *ptr2++ = color2; *ptr2++ = color2; *ptr2++ = color2; *ptr2++ = color2;
+        *ptr3++ = color3; *ptr3++ = color3; *ptr3++ = color3; *ptr3++ = color3;
+        ptr0 += 156; ptr1 += 156; ptr2 += 156; ptr3 += 156;
     }
 }
 

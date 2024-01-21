@@ -109,6 +109,13 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.8 : ??-????-2024 by wavemotion-dave
+  * .int files are now auto-detected as either .bin(+cfg) or .rom files. This allows you to rename .rom files or .bin files to .int and let Twilight Menu++ auto-launch Nintellivision.
+  * Slight improvement to the Intellivoice driver to give a minor boost in performance (mostly for DS-Lite/Phat).
+  * Added new keyclick enable option in Configuration (page 2) that produces the typical Intellivision keyclick when you press the 12-button keypad (on the DS lower screen).
+  * Added a new level of sound quality 'Ultimate'. The default for the DSi and above is still 'High' as 'Ultimate' consumes significant CPU time but you can enable it on a per-game basis for some of the more simple games (e.g. Astrosmash, Beauty and the Beast, AD&D Tarmin, etc)
+  * Other minor tweaks and cleanup as time permitted.
+
 V4.7 : 19-Jan-2024 by wavemotion-dave
   * Major refactor of the audio processor for a big speedup in rendering especially with more than one audio processor (i.e. ECS or Intellivoice)
   * Switched from individual pixel output to 16-bit (two pixel) output when dealing with scrolling games (big speedup for games like Tron Solar Sailor, Space Spartans, Sorrow, TNT Cowboy, etc).
