@@ -61,7 +61,8 @@ BOOL LoadCart(const CHAR* filename)
     bIsFatalError = false;
     bGameLoaded = FALSE;
     
-    memset(debug, 0x00, 8 * (sizeof(UINT32)));
+    // Clear out the debug array with every new game loaded
+    memset(debug, 0x00, DEBUG_SIZE * (sizeof(UINT32)));
     
     // Load up the configuration based on the CRC32 of the game. Do this early since we need some of those properties to load the RIP
     FindAndLoadConfig(CRC32::getCrc(filename));
@@ -84,6 +85,11 @@ BOOL LoadCart(const CHAR* filename)
 
     const CHAR* extStart = filename + strlen(filename) - 4;
     
+    // -------------------------------------------------------------------------------------------------------------------------
+    // A .bin is always assumed to be a flat binary file (and may or may not have a .cfg file to go with it).
+    // A .rom is always assumed to be a file with extra meta-data that lets us know where to load it in memory.
+    // A .int file can switch-hit and might be a .bin or a .rom -- we look for the signature 0xA8 byte to see if it's a .rom
+    // -------------------------------------------------------------------------------------------------------------------------
     UINT8 bIsROM = ((strcmpi(extStart, ".rom") == 0) ? true:false);
     if (strcmpi(extStart, ".int") == 0)
     {
@@ -93,7 +99,7 @@ BOOL LoadCart(const CHAR* filename)
         if (file == NULL) 
         {
             FatalError("BIN FILE DOES NOT EXIST");
-            return NULL;
+            return FALSE;
         }
         if (fgetc(file) == 0xA8) bIsROM = true;
         fclose(file);
@@ -101,7 +107,7 @@ BOOL LoadCart(const CHAR* filename)
     
     if (bIsROM)
     {
-        //load the binary file as a Rip
+        //load the .rom file as a Rip with meta-data parsed
         currentRip = Rip::LoadRom(filename);
         if (currentRip == NULL)
         {

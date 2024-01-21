@@ -67,7 +67,7 @@ extern  INT32 currentBits;
 //registers
 extern  UINT16 pc;
 extern  UINT16 stack;
-extern  INT32 mode;
+extern  UINT8  mode;
 extern  INT32 repeatPrefix;
 extern  INT32 command;
 

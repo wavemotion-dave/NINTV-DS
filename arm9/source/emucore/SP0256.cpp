@@ -27,7 +27,7 @@ INT32 bitsLeft                  __attribute__((section(".dtcm")));
 INT32 currentBits               __attribute__((section(".dtcm")));
 UINT16 pc                       __attribute__((section(".dtcm")));
 UINT16 stack                    __attribute__((section(".dtcm")));
-INT32 mode                      __attribute__((section(".dtcm")));
+UINT8  mode                     __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 
 UINT16 fifoBytes[64] __attribute__((section(".dtcm")));
@@ -166,8 +166,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
             if (periodCounter == 0) {
                 periodCounter = 64;
                 repeat--;
-                for (UINT8 j = 0; j < 6; j++)
-                    y[j][0] = y[j][1] = 0;
+                memset(y, 0x00, sizeof(y));
             }
             else
                 periodCounter--;
@@ -183,9 +182,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
                 periodCounter = period;
                 repeat--;
                 sample = ((amplitude & 0x1F) << ((amplitude & 0xE0) >> 5));
-                for (INT32 j = 0; j < 6; j++)
-                    y[j][0] = y[j][1] = 0;
-
+                memset(y, 0x00, sizeof(y));
             }
             else
                 periodCounter--;
@@ -213,7 +210,7 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
     return totalTicks;
 }
 
-INT8 SP0256::readDelta(INT32 numBits) {
+ITCM_CODE INT8 SP0256::readDelta(INT32 numBits) {
     INT32 value = readBits(numBits);
     if ((value & (1 << (numBits - 1))) != 0)
         value |= -1 << numBits;
@@ -270,7 +267,6 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
             bitsLeft += 10;
             pc++;
         }
-
     }
 
     INT32 output = currentBits & bitMasks[numBits-1];
@@ -800,7 +796,7 @@ void SP0256::PAUSE(INT32 immed4) {
     periodInterpolation = 0;
 }
 
-void SP0256::decode() {
+ITCM_CODE void SP0256::decode() {
     INT32 immed4 = readBits(4);
     INT32 nextInstruction = readBitsReverse(4);
     switch (nextInstruction) {

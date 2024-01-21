@@ -32,6 +32,7 @@ extern AY38900 *debug_stic;
 extern AY38914 *debug_psg;
 extern AY38914 *debug_psg2;
 
+#define DEBUG_SIZE  8
 extern INT32 debug[];
 
 extern void show_debug_overlay(void);
