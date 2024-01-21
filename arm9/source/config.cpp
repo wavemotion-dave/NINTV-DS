@@ -67,7 +67,7 @@ static void SetDefaultGlobalConfig(void)
     
     for (int i=0; i<64; i++)
     {
-        myGlobalConfig.reserved32[i]        = 0;
+        myGlobalConfig.reserved32[i] = 0;
     }
     
     // --------------------------------------------------------------------
@@ -200,6 +200,7 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0x2a1e0c1c) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Buzz Bombers is best with Dual Action B
     if (crc == 0xc047d487) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Beauty and the Beast is best with Dual Action B
     if (crc == 0xc047d487) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Beauty and the Beast is best with Strict 4-way
+    if (crc == 0xD1D352A0) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Tower of Doom is best with Strict 4-way
     if (crc == 0xD8C9856A) myConfig.dpad_config     = DPAD_DIAGONALS;           // Q-Bert is best with diagonal
     if (crc == 0x8AD19AB3) myConfig.bSkipBlanks     = true;                     // B-17 Bomber needs to skip rendering blanks or the screen 'flashes'
 }
@@ -221,8 +222,11 @@ static void ToggleXYABasDirections(void)
         myConfig.key_L_map                      = OVL_KEY_3;
         myConfig.key_R_map                      = OVL_BTN_FIRE;
         myConfig.key_START_map                  = OVL_KEY_5;
+        dsPrintValue(24,0,0, (char*)"TARMIN");
+        WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(24,0,0, (char*)"      ");
     }
-    else if (myConfig.key_A_map == OVL_BTN_FIRE) // If we were normal map, go to AD&D map
+    else if (myConfig.key_A_map == OVL_BTN_FIRE) // If we were normal map, go to AD&D/TRON map
     {
         myConfig.key_A_map                      = OVL_KEY_6;
         myConfig.key_B_map                      = OVL_KEY_8;
@@ -236,6 +240,9 @@ static void ToggleXYABasDirections(void)
         myConfig.key_L_map                      = OVL_BTN_FIRE;
         myConfig.key_R_map                      = OVL_BTN_FIRE;
         myConfig.key_START_map                  = myGlobalConfig.key_START_map_default;
+        dsPrintValue(23,0,0, (char*)"AD&D/TRON");
+        WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(23,0,0, (char*)"         ");
     }
     else // Just cycle back to normal key map
     {
@@ -251,6 +258,9 @@ static void ToggleXYABasDirections(void)
         myConfig.key_L_map                      = OVL_KEY_1;
         myConfig.key_R_map                      = OVL_KEY_2;
         myConfig.key_START_map                  = myGlobalConfig.key_START_map_default;
+        dsPrintValue(24,0,0, (char*)"DEFAULT");
+        WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+        dsPrintValue(24,0,0, (char*)"       ");
     }
 }
 
@@ -402,35 +412,35 @@ const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
-        {"OVERLAY",     {"GENERIC", "ECS"},                                                                                                                         &myConfig.overlay,          2},
-        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_A_map,        27},
-        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_B_map,        27},
-        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_X_map,        27},
-        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_Y_map,        27},
-        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_L_map,        27},
-        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_R_map,        27},
-        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_START_map,    27},
-        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_SELECT_map,   27},
-        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP
-        {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_XY_map,       26},
-        {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_YB_map,       26},
-        {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                                          &myConfig.key_BA_map,       26},
-        {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                                        &myConfig.controller_type,  4},
-        {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                                   &myConfig.dpad_config,      5},
-        {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                                           &myConfig.frame_skip,       3},
-        {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH"},                                                                                                                  &myConfig.sound_quality,    3},
-        {"TGT SPEED",   {"60 FPS (100%)", "66 FPS (110%)", "72 FPS (120%)", "78 FPS (130%)", "84 FPS (140%)", "90 FPS (150%)", "54 FPS (90%)", "MAX SPEED"},        &myConfig.target_fps,       8},
-        {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                                           &myConfig.palette,          5},
-        {NULL,          {"",            ""},                                                                                                                        NULL,                       1},
+        {"OVERLAY",     {"NORMAL", "ECS"},                                                                                                              &myConfig.overlay,          2},
+        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        27},
+        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        27},
+        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        27},
+        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        27},
+        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        27},
+        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        27},
+        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    27},
+        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   27},
+        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP so the array here is one shorter
+        {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_XY_map,       26},
+        {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_YB_map,       26},
+        {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_BA_map,       26},
+        {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                            &myConfig.controller_type,  4},
+        {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                       &myConfig.dpad_config,      5},
+        {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                               &myConfig.frame_skip,       3},
+        {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH"},                                                                                                      &myConfig.sound_quality,    3},
+        {"TGT SPEED",   {"60 FPS (100%)","66 FPS (110%)","72 FPS (120%)","78 FPS (130%)","84 FPS (140%)","90 FPS (150%)","54 FPS (90%)","MAX SPEED"},   &myConfig.target_fps,       8},
+        {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myConfig.palette,          5},
+        {NULL,          {"",            ""},                                                                                                            NULL,                       1},
     },
     
     // Page 2 options
     {
-        {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                                 &myConfig.bLatched,         2},
-        {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                                   &myConfig.fudgeTiming,      5},
-        {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                             &myConfig.key_click,        2},
-        {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                             &myConfig.bSkipBlanks,      2},
-        {NULL,          {"",            ""},                                                                                                                        NULL,                       1},
+        {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                     &myConfig.bLatched,         2},
+        {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                       &myConfig.fudgeTiming,      5},
+        {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                 &myConfig.key_click,        2},
+        {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                 &myConfig.bSkipBlanks,      2},
+        {NULL,          {"",            ""},                                                                                                            NULL,                       1},
     },
     
     // Global Options
@@ -454,7 +464,7 @@ const struct options_t Option_Table[3][20] =
 };
 
 struct options_t *Current_Option_Table;
-static char strBuf[35];
+static char strBuf[36];
 
 // -------------------------------------------------------------------------------------------------
 // After settings hae changed, we call this to apply the new options to the game being played.
@@ -506,7 +516,7 @@ short int display_options_list(bool bFullDisplay)
     }
 
     dsPrintValue(0,22, 0, (char *)"D-PAD TOGGLE. B=EXIT, START=SAVE");
-    dsPrintValue(0,23, 0, (char *)"X=SWAP.  SELECT FOR MORE OPTIONS");
+    dsPrintValue(0,23, 0, (char *)"X=SWAP KEYS. SELECT=MORE OPTIONS");
     return len;    
 }
 
@@ -519,7 +529,7 @@ void dsChooseOptions(int global)
 {
     short int optionHighlighted;
     short int idx;
-    bool bDone=false;
+    UINT8 bDone=false;
     int keys_pressed;
     short int last_keys_pressed = 999;
 
