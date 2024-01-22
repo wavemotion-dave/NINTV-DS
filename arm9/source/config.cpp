@@ -48,6 +48,8 @@ extern Rip *currentRip;
 // 1,2 = Game Options
 UINT8 options_shown = 0;        // Start with Global config... can toggle to game options as needed
 
+UINT32 last_crc = 0x00000000;
+
 UINT8 bConfigWasFound = FALSE;
 
 short int display_options_list(bool);
@@ -203,6 +205,8 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0xD1D352A0) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Tower of Doom is best with Strict 4-way
     if (crc == 0xD8C9856A) myConfig.dpad_config     = DPAD_DIAGONALS;           // Q-Bert is best with diagonal
     if (crc == 0x8AD19AB3) myConfig.bSkipBlanks     = true;                     // B-17 Bomber needs to skip rendering blanks or the screen 'flashes'
+    
+    last_crc = crc;
 }
 
 
@@ -338,6 +342,7 @@ void FindAndLoadConfig(UINT32 crc)
 {
     FILE *fp;
 
+    last_crc = crc;
     bConfigWasFound = FALSE;
     SetDefaultGameConfig(crc);
     fp = fopen("/data/NINTV-DS.DAT", "rb");
@@ -476,6 +481,10 @@ void ApplyOptions(void)
     extern INT32 clockDivisor, clocksPerSample;
     static UINT32 sound_divs[] = {15, 12, 8, 4};
     clockDivisor = sound_divs[myConfig.sound_quality];
+    
+    if ((last_crc == 0xC2063C08) && (!isDSiMode())) // World Series Major League Baseball on DS-Lite/Phat needs a bit more help... lower sound quality a bit
+        clockDivisor = 24;    
+    
     clocksPerSample = clockDivisor<<4;
 
     // Check if the sound changed...

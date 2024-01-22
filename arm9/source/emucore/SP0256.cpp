@@ -29,10 +29,10 @@ UINT16 pc                       __attribute__((section(".dtcm")));
 UINT16 stack                    __attribute__((section(".dtcm")));
 UINT8  mode                     __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
+UINT8 cleared                   __attribute__((section(".dtcm"))) = false;
+UINT8 sp_idle                   __attribute__((section(".dtcm"))) = 1;
 
 UINT16 fifoBytes[64] __attribute__((section(".dtcm")));
-
-UINT8 sp_idle __attribute__((section(".dtcm"))) = 1;
 
 UINT16 bitMasks[16] __attribute__((section(".dtcm"))) = {
         0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF,
@@ -119,10 +119,11 @@ void SP0256::resetProcessor()
         y[i][0] = 0;
         y[i][1] = 0;
     }
+    
+    memset(fifoBytes, 0x00, sizeof(fifoBytes));
 }
 
 extern UINT8 bUseECS;
-UINT8 cleared = false;
 ITCM_CODE INT32 SP0256::tick(INT32 minimum)
 {
     if (idle) 
@@ -135,11 +136,11 @@ ITCM_CODE INT32 SP0256::tick(INT32 minimum)
                 if (bUseECS) playSample2(0); else playSample1(0);
             }
         }
-        else // Effective delay 1 tick...
+        else // Effective delay 2 ticks...
         {
             sp_idle = 1;
         }
-        return minimum;
+        return (minimum*2); // Waste twice the amount of normal tick-time since we're idle...
     } else sp_idle=0;
 
     cleared = false;
@@ -221,11 +222,11 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
-            currentBits |= (ivoiceROM.peek8((UINT16)pc) << bitsLeft);
+            currentBits |= (ivoiceROM.peek8a((UINT16)pc) << bitsLeft);
             bitsLeft += 8;
             pc++;
         }
-        else if (pc == 0x1800 && fifoSize > 0) {
+        else if (fifoSize > 0) {
             currentBits |= (fifoBytes[fifoHead] << bitsLeft);
             fifoHead = (fifoHead+1) & 0x3F;
             fifoSize--;
@@ -237,7 +238,6 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
             bitsLeft += 10;
             pc++;
         }
-
     }
 
     INT32 output = currentBits & bitMasks[numBits-1];
@@ -251,11 +251,11 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
-            currentBits |= (ivoiceROM.peek8((UINT16)pc) << bitsLeft);
+            currentBits |= (ivoiceROM.peek8a((UINT16)pc) << bitsLeft);
             bitsLeft += 8;
             pc++;
         }
-        else if (pc == 0x1800 && fifoSize > 0) {
+        else if (fifoSize > 0) {
             currentBits |= (fifoBytes[fifoHead] << bitsLeft);
             fifoHead = (fifoHead+1) & 0x3F;
             fifoSize--;

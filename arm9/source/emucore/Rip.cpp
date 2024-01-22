@@ -347,14 +347,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
         // Now add the required peripherals...
         if (db_entry->bIntellivoice)
         {
-            if ((db_entry->game_crc == 0xC2063C08) && !isDSiMode())
-            {
-                // Skip Intellivoice for World Series of Baseball on the DS-LITE
-            }
-            else
-            {
-                bUseIVoice = db_entry->bIntellivoice;
-            }
+            bUseIVoice = db_entry->bIntellivoice;
         }
         if (db_entry->bECS)
         {

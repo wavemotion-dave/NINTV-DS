@@ -46,8 +46,8 @@ ITCM_CODE void GRAM::markClean() {
     if (!dirtyRAM)
         return;
 
-    for (UINT16 i = 0; i < 0x40; i++)
-        dirtyCards[i] = FALSE;
+    memset(dirtyCards, 0x00, sizeof(dirtyCards));
+    
     dirtyRAM = FALSE;
 }
 

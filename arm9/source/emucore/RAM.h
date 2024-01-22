@@ -59,12 +59,14 @@ class RAM : public Memory
         UINT16 getReadSize();
         UINT16 getReadAddress();
         UINT16 getReadAddressMask();
-        virtual UINT16 peek(UINT16 location) {return image[(location&readAddressMask) - this->location];}
+        
+        // The only time a read or write mask is needed is for GRAM which has a dedicated class to handle that... we skip it here for speed.
+        virtual UINT16 peek(UINT16 location) {return image[location - this->location];}
+        virtual void poke(UINT16 location, UINT16 value) {image[location - this->location] = (value & trimmer);}
 
         UINT16 getWriteSize();
         UINT16 getWriteAddress();
         UINT16 getWriteAddressMask();
-        virtual void poke(UINT16 location, UINT16 value);
         virtual void poke_cheat(UINT16 location, UINT16 value);
 
         void getState(RAMState *state);

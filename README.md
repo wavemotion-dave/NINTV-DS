@@ -79,7 +79,6 @@ The DS-Lite/Phat will run many of the classic games without any frameskip but fo
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
-* The DS-Lite/Phat can't handle World Series Major League Baseball when it has PSG + ECS + Intellivoice + Page Flipping so for the older DS Hardware, the Intellivoice is disabled so it will run full-speed. The DSi runs this game as-intended.
 * The latest Same Game & Robots Intellivoice (with 'human' speech) will produce some garbled sounds - likely cycle timing issue as the emulator is not perfect.
 
 License :
@@ -114,6 +113,7 @@ V4.8 : ??-????-2024 by wavemotion-dave
   * Slight improvement to the Intellivoice driver to give a minor boost in performance (mostly for DS-Lite/Phat).
   * Added new keyclick enable option in Configuration (page 2) that produces the typical Intellivision keyclick when you press the 12-button keypad (on the DS lower screen).
   * Added a new level of sound quality 'Ultimate'. The default for the DSi and above is still 'High' as 'Ultimate' consumes significant CPU time but you can enable it on a per-game basis for some of the more simple games (e.g. Astrosmash, Beauty and the Beast, AD&D Tarmin, etc)
+  * DS-Lite now enables Intellivoice on World Series Major League Baseball - sound quality is a bit rough on the older handheld but very playalbe.
   * Other minor tweaks and cleanup as time permitted.
 
 V4.7 : 19-Jan-2024 by wavemotion-dave

@@ -137,11 +137,6 @@ UINT16 RAM::getWriteAddressMask()
     return writeAddressMask;
 }
 
-ITCM_CODE void RAM::poke(UINT16 location, UINT16 value)
-{
-    image[(location&writeAddressMask)-this->location] = (value & trimmer);
-}
-
 void RAM::poke_cheat(UINT16 location, UINT16 value)
 {
     return;
