@@ -118,14 +118,14 @@ class SP0256 : public Processor, public AudioProducer
         void decode();
         static INT32 flipEndian(INT32 value, INT32 bits);
         
-        UINT8                    idle;
-        UINT8                    lrqHigh;
-        UINT8                    speaking;
-        INT16                    fifoHead;
-        INT16                    fifoSize;
-        INT32                    command;
-        INT32                    random;
-        INT32                    page;
+        UINT8   idle;
+        UINT8   lrqHigh;
+        UINT8   speaking;
+        INT16   fifoHead;
+        INT16   fifoSize;
+        INT32   command;
+        INT32   random;
+        INT32   page;
 };
 
 #endif

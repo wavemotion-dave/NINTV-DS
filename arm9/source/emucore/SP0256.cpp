@@ -110,6 +110,7 @@ void SP0256::resetProcessor()
     fifoSize = 0;
     speaking = FALSE;
     sp_idle = 1;
+    cleared = true;
 
     amplitude = 0;
     period = 0;
@@ -119,7 +120,7 @@ void SP0256::resetProcessor()
         y[i][0] = 0;
         y[i][1] = 0;
     }
-    
+       
     memset(fifoBytes, 0x00, sizeof(fifoBytes));
 }
 
@@ -222,7 +223,7 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
-            currentBits |= (ivoiceROM.peek8a((UINT16)pc) << bitsLeft);
+            currentBits |= (ivoiceROM.peek8_fast(pc & 0x7FF) << bitsLeft);
             bitsLeft += 8;
             pc++;
         }
@@ -251,7 +252,7 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
-            currentBits |= (ivoiceROM.peek8a((UINT16)pc) << bitsLeft);
+            currentBits |= (ivoiceROM.peek8_fast(pc & 0x7FF) << bitsLeft);
             bitsLeft += 8;
             pc++;
         }
@@ -797,8 +798,8 @@ void SP0256::PAUSE(INT32 immed4) {
 }
 
 ITCM_CODE void SP0256::decode() {
-    INT32 immed4 = readBits(4);
-    INT32 nextInstruction = readBitsReverse(4);
+    UINT8 immed4 = readBits(4);
+    UINT8 nextInstruction = readBitsReverse(4);
     switch (nextInstruction) {
         case 0x0:
             if (immed4 == 0)
