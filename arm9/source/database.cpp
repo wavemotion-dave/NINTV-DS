@@ -161,8 +161,9 @@ const struct Database_t database[] =
     {0xDCF4B15D, "Royal Dealer (Matel 1981)",                   0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xbdf0ccb0, "RPN Calculator (Chevallier 2003)",            0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x47AA7977, "Safecracker (Imagic 1983)",                   0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0x6E0882E7, "SameGame and Robots (IntelligentVision 2005)",0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0x12BA58D1, "SameGame and Robots (IntelligentVision 2005)",0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0x6E0882E7, "SameGame and Robots (IntelligentVision 2005)",1,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0x12BA58D1, "SameGame and Robots (IntelligentVision 2005)",1,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0x20eb8b7c, "SameGame and Robots (IntelligentVision 2014)",1,  0,  0,  0,  {{DB_ROM16, 0x4800, 0x2800},   {DB_ROM16, 0x8800, 0x3000},   {DB_ROM16, 0xC800, 0x3800},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},    
     {0xE221808C, "Santa's Helper (Matel 1983)",                 0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xe9e3f60d, "Scooby Doo's Maze Chase:Mattel (Matel 1983)", 0,  0,  1,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xBEF0B0C7, "Scooby Doo's Maze Chase:Mattel (Matel 1983)", 0,  0,  1,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -266,6 +267,7 @@ const struct SpecialRomDatabase_t rom_database[] =
     {0x53bc0939, "Killer Bees (IVoice)",                        1,  0,  0},
     {0xbb759a58, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},
     {0x074ce00c, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},    
+    {0x239bd45e, "Same Game and Robots (IVoice)",               1,  0,  0},
     
     // intydave's hacks for the "No ECS keyboard"
     {0x9555dc00, "Jetsons_Way_With_Words (Controller)",         0,  0,  1},

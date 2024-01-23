@@ -31,13 +31,14 @@ ITCM_CODE void SP0256_Registers::poke(UINT16 location, UINT16 value)
             ms->resetProcessor();
         }
         else if (ms->fifoSize < FIFO_MAX_SIZE) {
-            fifoBytes[(ms->fifoHead+ms->fifoSize) & 0x3F] = value;
+            fifoBytes[(ms->fifoHead+ms->fifoSize) & 0x3F] = value & 0x3FF;  // Write DECLE into FIFO
             ms->fifoSize++;
-        }
+        } // else drop the write...
     }
     else //Any poke of any value into $80 means that the SP0256 should start speaking
     {
-        if (ms->lrqHigh) {
+        if (ms->lrqHigh) // If we're already busy, drop this write...
+        {
             ms->lrqHigh = FALSE;
 
             ms->command = value & 0xFF;

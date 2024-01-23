@@ -79,7 +79,6 @@ The DS-Lite/Phat will run many of the classic games without any frameskip but fo
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
-* The latest Same Game & Robots Intellivoice (with 'human' speech) will produce some garbled sounds - likely cycle timing issue as the emulator is not perfect.
 
 License :
 -----------------------
@@ -115,6 +114,8 @@ V4.8 : ??-????-2024 by wavemotion-dave
   * Added a new level of sound quality 'Ultimate'. The default for the DSi and above is still 'High' as 'Ultimate' consumes significant CPU time but you can enable it on a per-game basis for some of the more simple games (e.g. Astrosmash, Beauty and the Beast, AD&D Tarmin, etc)
   * DS-Lite now enables Intellivoice on World Series Major League Baseball - sound quality is a bit rough on the older handheld but very playalbe.
   * Fixed save/restore state including when backtab latched is TRUE (Stampede, Masters of the Universe)
+  * Fix for intellivoice games so there are no more glitches on the updated version of Same Game and Robots.
+  * Correction of one intellivoice coefficient value (thanks to documentation in JZINTV) so voice games sound their best.
   * Other minor tweaks and cleanup as time permitted.
 
 V4.7 : 19-Jan-2024 by wavemotion-dave

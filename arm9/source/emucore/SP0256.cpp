@@ -31,6 +31,7 @@ UINT8  mode                     __attribute__((section(".dtcm")));
 INT32 repeatPrefix              __attribute__((section(".dtcm")));
 UINT8 cleared                   __attribute__((section(".dtcm"))) = false;
 UINT8 sp_idle                   __attribute__((section(".dtcm"))) = 1;
+UINT8 context_switch            __attribute__((section(".dtcm"))) = 0;
 
 UINT16 fifoBytes[64] __attribute__((section(".dtcm")));
 
@@ -54,8 +55,9 @@ INT16 qtbl[256] __attribute__((section(".dtcm"))) = {
     257,    249,    241,    233,    225,    217,    209,    201,
     193,    185,    177,    169,    161,    153,    145,    137,
     129,    121,    113,    105,    97,     89,     81,     73,
-    65,     57,     49,     41,     33,     25,     12,     9,
-    0,     -9,     -12,    -25,    -33,    -41,    -49,    -57,
+    65,     57,     49,     41,     33,     25,     17,     9,
+    
+    0,     -9,     -17,    -25,    -33,    -41,    -49,    -57,
    -65,    -73,    -81,    -89,    -97,    -105,   -113,   -121,
    -129,   -137,   -145,   -153,   -161,   -169,   -177,   -185,
    -193,   -201,   -209,   -217,   -225,   -233,   -241,   -249,
@@ -111,6 +113,7 @@ void SP0256::resetProcessor()
     speaking = FALSE;
     sp_idle = 1;
     cleared = true;
+    context_switch = 0;
 
     amplitude = 0;
     period = 0;
@@ -223,6 +226,11 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
+            if (context_switch)  // Fix for Same Game and Robots - if we switch out of FIFO mode we need to throw away accumulated bits
+            {
+                currentBits = 0;
+                context_switch = false;
+            }
             currentBits |= (ivoiceROM.peek8_fast(pc & 0x7FF) << bitsLeft);
             bitsLeft += 8;
             pc++;
@@ -232,6 +240,7 @@ ITCM_CODE INT32 SP0256::readBitsReverse(INT32 numBits)
             fifoHead = (fifoHead+1) & 0x3F;
             fifoSize--;
             bitsLeft += 10;
+            context_switch = 1;
         }
         else {
             //error, read outside of bounds
@@ -252,6 +261,11 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
 {
     while (bitsLeft < numBits) {
         if (pc < 0x1800) {
+            if (context_switch)  // Fix for Same Game and Robots - if we switch out of FIFO mode we need to throw away accumulated bits
+            {
+                currentBits = 0;
+                context_switch = false;
+            }
             currentBits |= (ivoiceROM.peek8_fast(pc & 0x7FF) << bitsLeft);
             bitsLeft += 8;
             pc++;
@@ -261,6 +275,7 @@ ITCM_CODE INT32 SP0256::readBits(INT32 numBits)
             fifoHead = (fifoHead+1) & 0x3F;
             fifoSize--;
             bitsLeft += 10;
+            context_switch = 1;
         }
         else {
             //error, read outside of bounds
