@@ -92,25 +92,20 @@ ITCM_CODE void BackTabRAM::markCleanLatched()
 // -----------------------------------------------------------------------------------
 void BackTabRAM::getState(BackTabRAMState *state)
 {
-    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = (myConfig.bLatched ? bt_imageLatched[i] : bt_image[i]);
-    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = (myConfig.bLatched ? dirtyBytes[i] : dirtyBytesLatched[i]);
+    for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = bt_image[i];
+    for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = dirtyBytes[i];
+    
     state->dirtyRAM = dirtyRAM;
     state->colorAdvanceBitsDirty = colorAdvanceBitsDirty;
 }
 
 void BackTabRAM::setState(BackTabRAMState *state)
 {
-    if (myConfig.bLatched)
-    {
-        for (int i=0; i<BACKTAB_SIZE; i++)  bt_imageLatched[i] = state->image[i];
-        for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytesLatched[i] = state->dirtyBytes[i];
-    }
-    else
-    {
-        for (int i=0; i<BACKTAB_SIZE; i++)  bt_image[i] = state->image[i];
-        for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = state->dirtyBytes[i];
-    }
-    dirtyRAM = state->dirtyRAM;
-    colorAdvanceBitsDirty = state->colorAdvanceBitsDirty;
+    for (int i=0; i<BACKTAB_SIZE; i++)  bt_image[i]   = bt_imageLatched[i]   = state->image[i];
+    for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = dirtyBytesLatched[i] = state->dirtyBytes[i];
+    
+    // Just force the redraw...
+    dirtyRAM = TRUE;
+    colorAdvanceBitsDirty = TRUE;
 }
 

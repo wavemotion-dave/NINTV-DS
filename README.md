@@ -114,6 +114,7 @@ V4.8 : ??-????-2024 by wavemotion-dave
   * Added new keyclick enable option in Configuration (page 2) that produces the typical Intellivision keyclick when you press the 12-button keypad (on the DS lower screen).
   * Added a new level of sound quality 'Ultimate'. The default for the DSi and above is still 'High' as 'Ultimate' consumes significant CPU time but you can enable it on a per-game basis for some of the more simple games (e.g. Astrosmash, Beauty and the Beast, AD&D Tarmin, etc)
   * DS-Lite now enables Intellivoice on World Series Major League Baseball - sound quality is a bit rough on the older handheld but very playalbe.
+  * Fixed save/restore state including when backtab latched is TRUE (Stampede, Masters of the Universe)
   * Other minor tweaks and cleanup as time permitted.
 
 V4.7 : 19-Jan-2024 by wavemotion-dave

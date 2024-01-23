@@ -1259,6 +1259,7 @@ void AY38900::setState(AY38900State *state)
         mobs[i].setState(&state->mobs[i]);
     }
     
+    // Force the screen to redraw
     this->colorModeChanged = TRUE;
     this->colorStackChanged = TRUE;
 }

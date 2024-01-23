@@ -59,7 +59,7 @@ void JLP::tick_one_second(void)
 UINT16 JLP::peek(UINT16 location)
 {
     if (location == 0x9FFE) {return (UINT16)random();}
-    return jlp_ram[(location&readAddressMask) - this->location];
+    return jlp_ram[location&0x1FFF];
 }
 
 UINT32 JLP::crc16(UINT16 data, UINT16 crc)
@@ -204,9 +204,9 @@ void JLP::poke(UINT16 location, UINT16 value)
     
     if ((location >= 0x8040))
     {
-        jlp_ram[(location&writeAddressMask)-this->location] = value;
+        jlp_ram[location & 0x1FFF] = value;
     }
-
+    
     /* -------------------------------------------------------------------- */
     /*  Check for mult/div writes                                           */
     /*      $9F8(0,1):  s16($9F80) x s16($9F81) -> s32($9F8F:$9F8E)         */

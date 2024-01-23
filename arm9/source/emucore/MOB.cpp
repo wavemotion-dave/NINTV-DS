@@ -203,7 +203,7 @@ void MOB::setState(MOBState *state)
     cardNumber = state->cardNumber;
     collisionRegister = state->collisionRegister;
     isGrom = state->isGrom;
-    isGrom = state->isVisible;
+    isVisible = state->isVisible;
     doubleWidth = state->doubleWidth;
     doubleYResolution = state->doubleYResolution;
     doubleHeight = state->doubleHeight;
