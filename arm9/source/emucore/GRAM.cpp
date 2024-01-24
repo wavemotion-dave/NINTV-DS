@@ -62,5 +62,5 @@ void GRAM::setState(GRAMState *state)
 {
     for (int i=0; i<GRAM_SIZE; i++)         gram_image[i] = state->gram_image[i];
     for (int i=0; i<(GRAM_SIZE>>3); i++)    dirtyCards[i] = state->dirtyCards[i];
-    dirtyRAM = state->dirtyRAM;
+    dirtyRAM = TRUE;
 }

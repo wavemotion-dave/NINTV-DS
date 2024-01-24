@@ -1214,7 +1214,6 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 
 void AY38900::getState(AY38900State *state)
 {
-    extern UINT16 stic_memory[0x40];
     memcpy(state->registers, stic_memory, 0x40*sizeof(UINT16));
     this->backtab.getState(&state->backtab);
 
@@ -1238,7 +1237,6 @@ void AY38900::getState(AY38900State *state)
 
 void AY38900::setState(AY38900State *state)
 {
-    extern UINT16 stic_memory[0x40];
     memcpy(stic_memory, state->registers, 0x40*sizeof(UINT16));
     this->backtab.setState(&state->backtab);
 

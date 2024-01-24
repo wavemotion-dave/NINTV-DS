@@ -134,17 +134,26 @@ BOOL do_load(const CHAR* filename, UINT8 slot)
             
             global_frames = saveState.slot[slot].global_frames;
             emu_frames = saveState.slot[slot].emu_frames;
-            
+
             // We need to run through all the last known banking writes and poke those back into the system
             for (UINT8 i=0; i<16; i++)
             {
                 gLastBankers[i] = saveState.slot[slot].lastBankers[i];
                 if (gLastBankers[i] != 0x0000)
                 {
+                    // ----------------------------------------------------------------------------------------------------
+                    // Sometimes poking values back in at xFFF will trigger a write to the last WORD in the GRAM memory
+                    // due to aliases. We want to make sure we don't disturb that when we restore state as the original 
+                    // game programmer may have done this in a very careful way and here we're being very brute-force.
+                    // ----------------------------------------------------------------------------------------------------
+                    UINT16 save_gram = gram_image[GRAM_SIZE-1];
                     currentEmu->memoryBus.poke((i<<12)|0xFFF, gLastBankers[i]);
+                    gram_image[GRAM_SIZE-1] = save_gram;
                 }
             }
-
+            // Refresh the fast memory now that we've got it all loaded in...
+            currentEmu->RefreshFastMemory();
+            
             if (myGlobalConfig.erase_saves)
             {
                 remove(savefilename);

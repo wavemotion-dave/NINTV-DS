@@ -47,6 +47,20 @@ void Emulator::LoadFastMemory()
     }
 }
 
+void Emulator::RefreshFastMemory()
+{
+    UINT16 *fast_memory = (UINT16 *)0x06860000;     // LCD RAM area... slightly faster 16-bit access...
+    
+    for (int i=0x0100; i<=0x01EF; i++)
+    {
+        fast_memory[i] = memoryBus.peek_slow_and_safe(i);
+    }
+    for (int i=0x0200; i<=0x035F; i++)
+    {
+        fast_memory[i] = memoryBus.peek_slow_and_safe(i);
+    }            
+}
+
 // ---------------------------------------------------
 // Apply Cheats before we read back the "fast memory"
 // ---------------------------------------------------

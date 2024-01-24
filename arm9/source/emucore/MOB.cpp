@@ -210,7 +210,7 @@ void MOB::setState(MOBState *state)
     quadHeight = state->quadHeight;
     flagCollisions = state->flagCollisions;
     horizontalMirror = state->horizontalMirror;
-    horizontalMirror = state->verticalMirror;
+    verticalMirror = state->verticalMirror;
     behindForeground = state->behindForeground;
     
     boundingRectangle.x = state->mob_rect_x;
@@ -221,7 +221,4 @@ void MOB::setState(MOBState *state)
     this->boundsChanged = TRUE;
     this->shapeChanged = TRUE;
     this->colorChanged = TRUE;
-    
 }
-
-

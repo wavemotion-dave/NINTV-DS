@@ -107,7 +107,7 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V4.8 : ??-????-2024 by wavemotion-dave
+V4.8 : 24-Jan-2024 by wavemotion-dave
   * .int files are now auto-detected as either .bin(+cfg) or .rom files. This allows you to rename .rom files or .bin files to .int and let Twilight Menu++ auto-launch Nintellivision.
   * Slight improvement to the Intellivoice driver to give a minor boost in performance (mostly for DS-Lite/Phat).
   * Added new keyclick enable option in Configuration (page 2) that produces the typical Intellivision keyclick when you press the 12-button keypad (on the DS lower screen).
@@ -115,6 +115,7 @@ V4.8 : ??-????-2024 by wavemotion-dave
   * DS-Lite now enables Intellivoice on World Series Major League Baseball - sound quality is a bit rough on the older handheld but very playalbe.
   * Fixed save/restore state including when backtab latched is TRUE (Stampede, Masters of the Universe)
   * Fix for intellivoice games so there are no more glitches on the updated version of Same Game and Robots.
+  * Fix for ecs games so they don't inadvertantly write over the last graphics card in memory (causing minor graphics corruption on some games)
   * Correction of one intellivoice coefficient value (thanks to documentation in JZINTV) so voice games sound their best.
   * Other minor tweaks and cleanup as time permitted.
 
