@@ -7,7 +7,7 @@ NINTV-DS (aka Nintellivision) is an Intellivision console emulator running on th
 Install :
 ----------
 To make this work, place NINTV-DS.NDS on your flashcart or SD card which you can launch.
-You must supply the BIOS files in the same directory as your ROM files (can be changed in Global Options):
+You must supply the BIOS files in the same directory as your ROM files (bios location can be changed in Global Options):
 
 * grom.bin
 * exec.bin
