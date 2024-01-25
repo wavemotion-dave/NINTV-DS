@@ -79,6 +79,7 @@ The DS-Lite/Phat will run many of the classic games without any frameskip but fo
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
+* Intellivision emulation is NTSC only - no PAL support.
 
 License :
 -----------------------
