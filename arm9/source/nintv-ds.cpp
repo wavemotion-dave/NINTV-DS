@@ -228,7 +228,7 @@ BOOL InitializeEmulator(void)
     audioMixer->resetProcessor();
 
     //put the RIP in the currentEmulator
-    currentEmu->SetRip(currentRip);
+    currentEmu->SetRip(currentRip, TRUE);
     
     // Read out any Cheats from disk...
     LoadCheats();
@@ -522,7 +522,7 @@ void ds_handle_meta(int meta_key)
                     bCheatChanged = false;
                     
                     //put the RIP in the currentEmulator
-                    currentEmu->SetRip(currentRip);
+                    currentEmu->SetRip(currentRip, FALSE);
 
                     // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
                     currentEmu->ApplyCheats();

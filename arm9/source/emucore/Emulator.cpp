@@ -161,7 +161,7 @@ void Emulator::Reset()
     memoryBus.reset();
 }
 
-void Emulator::SetRip(Rip* rip)
+void Emulator::SetRip(Rip* rip, BOOL bDeleteROMs)
 {
     if (this->currentRip != NULL) {
         processorBus.removeAll();
@@ -170,14 +170,17 @@ void Emulator::SetRip(Rip* rip)
         audioMixer->removeAll();
         inputConsumerBus.removeAll();
         
-        // If there are any ROMS attached to the old RIP, delete them now
-        for (UINT16 i = 0; i < this->currentRip->GetROMCount(); i++)
+        if (bDeleteROMs)
         {
-            if (this->currentRip->GetROM(i))
+            // If there are any ROMS attached to the old RIP, delete them now
+            for (UINT16 i = 0; i < this->currentRip->GetROMCount(); i++)
             {
-                delete this->currentRip->GetROM(i);
+                if (this->currentRip->GetROM(i))
+                {
+                    delete this->currentRip->GetROM(i);
+                }
             }
-        }        
+        }
     }
 
     currentRip = rip;

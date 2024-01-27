@@ -46,7 +46,7 @@ class Emulator : public Peripheral
 
         void UsePeripheral(UINT8, BOOL);
 
-        void SetRip(Rip* rip);
+        void SetRip(Rip* rip, BOOL bDeleteROMs);
 
         void InitVideo(VideoBus* video, UINT32 width, UINT32 height);
         void ReleaseVideo();
