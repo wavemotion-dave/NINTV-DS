@@ -31,6 +31,8 @@
 
 UINT8 tag_compatibility[8] = {0};
 
+UINT8 bGenericLoad = false;
+
 extern UINT8 *bin_image_buf;
 extern UINT16 *bin_image_buf16;
 
@@ -201,6 +203,8 @@ Rip* Rip::LoadBin(const CHAR* filename)
     {
         if (offset >= size) 
         {
+            if (bGenericLoad) continue; // If we are using the generic loader, it's okay to be undersized...
+            
             // -------------------------------------------------------------------------------
             // Something is wrong, the file we're trying to load isn't large enough getting
             // here indicates a likely incorrect memory map in the database or the .cfg file
@@ -269,10 +273,12 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
     Rip* rip = NULL;
     const struct Database_t *db_entry = FindDatabaseEntry(crc); // Try to find the CRC in our internal database...
     
+    bGenericLoad = false;
     // If we didn't find a game in the database and no .cfg exists but the .bin is 16K or less, we can assume it will load at 0x5000
     if ((db_entry == NULL) && !exists(configFile) && (size <= 16384))
     {
         db_entry = &database[0];    // Generic loader at 5000h for games up to 16K in size (fairly common)
+        bGenericLoad = true;
     }    
     
     // If we found a game entry and we are not DSi, we check the frame skip setting
@@ -475,6 +481,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
     static char tmp_buf[64];
     u16 crc16;
 
+    bGenericLoad = false;
+    
     FILE* infile = fopen(filename, "rb");
     if (infile == NULL) 
     {

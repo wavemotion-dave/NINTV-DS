@@ -30,7 +30,7 @@
 
 const struct Database_t database[] =
 {
-    {0xDEADBEEF, "Generic Loader at 5000h",                     0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0xD000, 0x1000},   {DB_NONE,  0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xDEADBEEF, "Generic Loader at 5000h",                     0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD7C78754, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xB91488E2, "4-TRIS (Joseph Zbiciak 2001)",                0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xA60E25FC, "ABPA Backgammon (Mattel 1978)",               0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -49,6 +49,7 @@ const struct Database_t database[] =
     {0xDAB36628, "Baseball (Mattel 1978)",                      0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xEAF650CC, "Beamrider (Activision 1983)",                 0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xC047D487, "Beauty and the Beast (Imagic 1982)",          0,  0,  0,  1,  {{DB_ROM16, 0x4800, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0x44519F2D, "Biplanes (Matel 1979)",                       0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xB03F739B, "Blockade Runner (Interphase 1983)",           0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xA63AA3D8, "Blow Out (Mattel 1983)",                      0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},    
     {0x515E1D7E, "Body Slam Super Pro Wrestling (Mattel 1988)", 0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -222,10 +223,12 @@ const struct Database_t database[] =
     {0xA4A20354, "Vectron (Matel 1982)",                        0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x6EFA67B2, "Venture (Coleco 1982)",                       0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xF1ED7D27, "White Water! (Imagic 1983)",                  0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0xb8ae7e3b, "Word Hunt (INTV 1987)",                       0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x4b35d11d, "Word Rockets (INTV 1987)",                    0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x15D9D27A, "World Cup Football (Nice Ideas 1985)",        0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xC2063C08, "World Series Major League Baseball (Matel)",  1,  0,  1,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_R16B0, 0xE000, 0x1000},   {DB_R16B0, 0xF000, 0x1000},   {DB_R16B1, 0xF000, 0x1000}}},
     {0x24B667B9, "Worm Whomper (Activision 1983)",              0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
+    {0x752b73dd, "Yogi's Frustration (Proto)",                  0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x15C65DC5, "Zaxxon (Coleco 1982)",                        0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD89AEC27, "Zombie Marbles (John Doherty 2004)",          0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xEF1BEC41, "DK Arcade (Carl Muller 2010)",                0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000}}},
