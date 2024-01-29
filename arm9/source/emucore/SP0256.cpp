@@ -77,7 +77,7 @@ INT16 qtbl[256] __attribute__((section(".dtcm"))) = {
 
 SP0256::SP0256()
     : Processor("SP0256"),
-      ivoiceROM("Intellivoice ROM", "ivoice.bin", 0, 1, 0x800, 0x1000, TRUE)
+      ivoiceROM("Intellivoice ROM", "ivoice.bin", 0, 1, 0x0800, 0x1000, TRUE)
 {
     registers.init(this);
 }

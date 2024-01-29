@@ -342,8 +342,8 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
         writeableMemorySpace[location>>4][i]->poke(location, value);
     }
 
-    // For the lower 4K ... keep the "fast memory" updated
-    if (location < 0x1000)
+    // For the lower RAM area... keep the "fast memory" updated
+    if (!(location & 0xF800))
     {
         *((UINT16 *)(0x06860000 | (location<<1))) = value;
     }

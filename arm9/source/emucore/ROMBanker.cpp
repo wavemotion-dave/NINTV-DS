@@ -63,9 +63,9 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             {
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
                 UINT32 *ptr = (UINT32 *)rom->peek_image_address();
-                UINT32 *dest = (UINT32 *) &fast_memory[(address&0xF000)];
+                UINT32 *dest = (UINT32 *) &fast_memory[(address&0xF000) + (rom->getReadAddress() & 0xFFF)];
                 
-                for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i+=2)
+                for (int i=(address&0xF000) + (rom->getReadAddress() & 0xFFF); i<=((address&0xF000)|0xFFF); i+=2)
                 {
                     *dest++ = *ptr++;   // Do this 32-bits at a time for a very slight speed improvement on moving the memory
                 }
@@ -73,7 +73,7 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             else if (gBankerIsMappedHere[address>>12][value&0xF] == 0)   // Nothing is here... nothing will be swapped in... We need to check the main memory as there may be an unswapped bank in there...
             {
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
-                for (int i=(address&0xF000); i<=((address&0xF000)|0xFFF); i++)
+                for (int i=(address&0xF000)  + (rom->getReadAddress() & 0xFFF); i<=((address&0xF000)|0xFFF); i++)
                 {
                     fast_memory[i] = currentEmu->memoryBus.peek_slow(i);
                 }
