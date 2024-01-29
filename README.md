@@ -66,15 +66,21 @@ Because the Intellivision had an innovative controller/keypad arrangement, you m
 
 Overlays :
 -----------------------
-Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in Extras.zip in the overlay-library folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl). By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
+Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in Extras.zip in the overlay-library folder. You must name the .ovl file the same as the base filename of the ROM (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl) - loading such a game would bring up the custom overlay automatically. If the custom overlay doesn't show, double check that the base filenames are exactly the same. By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
 
 ![Standard Overlay](normalovl.png) ![Custom Overlay](customovl.png) ![Custom Overlay](customovl2.png)
 
 Frameskip and Sound Quality :
 -----------------------
-The DSi will run all known games at full framerate without any frameskip needed and at the 'High' (best) sound quality setting. 
+The DSi will run all known games at full framerate without any frameskip needed and at the 'High' sound quality setting.  There is an 'Ultimate' sound quality that is slightly better than 'High' - it's marginally better but does take a significant amount of CPU time. Use it only for "simple" games (e.g. Astrosmash, Beauty and the Beast, etc.).
+
 The DS-Lite/Phat will run many of the classic games without any frameskip but for most of the homebrews and later INTV games, frameskip is enabled and the sound quality is a bit lower. You can play with these settings as you like but generally it will still be a good playing experience even on older DS hardware.
 
+Settings you should probably not touch :
+-----------------------
+* Backtab Latched is normally disabled. There are two known games (Stampede and Masters of the Universe) that need this to display properly. Most games do not change the backtab while the screen is rendering but to gain speed, these two games do just that. Setting this to TRUE chews up significant DS CPU time - but is a more accurate rendering.  If you encounter a future game where the images on screen appear to "jump" or "jitter" - try turing this to TRUE, Save your settings and reload the game.
+* Fudge Timing is needed for the original version of Matel Motocross which is running right at the edge of proper timing... some non NTSC systems had problems running that game back in the day. The cycle emulation on Nintellivision is pretty close but not perfect - so the fudge timing is used make it so Motocross runs properly. It's unlikely you would ever need to change this but I put it in to future-proof the emulator in there is another game discovered with borderline timing chartacteristics.
+* Skip Blanks is needed for B-17 bomber as it should not blank the display when it's not active. The timing in Nintellivision is not perfect and without this set to TRUE, B-17 bomber will "flash" and it's a bit jarring. I don't know of any other games that need this setting but I've included it just in case.
  
 Missing / Known Issues :
 -----------------------
