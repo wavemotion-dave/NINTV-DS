@@ -58,9 +58,9 @@ static void ReadManual(void)
         {
             strcpy(filepath, "/roms/intv/man/");
         }
-        else if (myGlobalConfig.man_dir == 3)   // In: /DATA/MAN/
+        else if (myGlobalConfig.man_dir == 3)   // In: /DATA/
         {
-            strcpy(filepath, "/data/man/");
+            strcpy(filepath, "/data/");
         }
         else
         {

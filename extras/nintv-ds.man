@@ -8766,6 +8766,190 @@ the comb stands between your
 knight and a safe retreat.
 
 //==============================
+// TOWER OF DOOM
+//==============================
+$D1D352A0
+TOWER OF DOOM
+(c)1987 INTV CORP.
+
+Monsters. Magic. Good. Evil. 
+Strength. Cunning. Traps. Mazes.
+Prepare to face the greatest 
+challenge any mortal has ever
+known -- the Tower of Doom. 
+
+Select your adventure. 
+Select your character. 
+Then enter the Tower of Doom!
+
+THE ADVENTURES:
+----------------
+NOVICE
+No. of Levels: 6
+Mazes: Same each time
+Difficulty: Easiest
+Color of Items: Same*
+
+THE TOWER
+No. of Levels: 8, 12 or 20
+Mazes: Same each time
+Difficulty: Easy
+Color of Items: Same*
+
+THE CATACOMBS
+No. of Levels: 12, 18 or 32
+Mazes: Different each time
+Difficulty: Medium
+Color of Items: Different
+
+THE FORTRESS
+No. of Levels: 6, 12, 18 or 32
+Mazes: Different each time
+Difficulty: Difficult
+Color of Items: Different
+
+THE CHALLENGE
+No. of Levels: 14
+Mazes: Different each time
+Difficulty: Difficult
+Color of Items: Same
+
+WIZARD HUNT
+No. of Levels: 32
+Mazes: Different each time
+Difficulty: Difficult
+Color of Items: Different
+
+GRAIL QUEST
+No. of Levels: 32
+Mazes: Different each time
+Difficulty: The Hardest
+Color of Items: Different
+
+COLORS:
+-----------------
+Gray     - Weakest
+Cyan
+Orange
+Brown
+Pink
+Lavender
+Green
+Magenta  - Strongest
+
+CHARACTERS:
+-----------------
+Novice      3     12  12  12
+Warrior     2.25  13   9  12
+Archer      3.25  10  13   8
+Knight      4     11  11  11
+Trader      2     13   6  18
+Barbarian   2.25  12   9  10
+Waif        1.5    6   6   6
+Friar       3.75  10  10  10
+Warlord     5.5    9   9   9
+Warlock     4.5    9   9   9
+
+BOOKS:
+-----------------
+Gray       Book of Strength
+Cyan       Book of Blindness
+Orange     Book of Stamina
+Brown      Book of Weakness
+Pink       Book of Diplomacy
+Lavender   Book of Affliction
+Green      Book of Experience
+Magenta    Book of Inexperience
+
+CLOAKS:
+-----------------
+Gray       Cloak of Helping
+Cyan       Cloak of Weakness
+Orange     Cloak of Protection+1
+Brown      Cloak of Protection+2
+Pink       Cloak of Protection+3
+Lavender   Cloak of Protection+4
+Green      Cloak of Protection+5
+Magenta    Cloak of Good Karma
+
+GRAILS:
+-----------------
+Gray       Grail of Strength
+Cyan       Grail of Superpower
+Orange     False Grail of Str
+Brown      False Grail of Sta
+Pink       Grail of Diplomacy
+Lavender   Grail of Unknown
+Green      Grail of Glory
+Magenta    Holy Grail
+
+POTIONS - BOTTLE:
+-----------------
+Gray      Bottle of Healing
+Cyan      Bottle of Slowness
+Orange    Bottle of Fire Prot
+Brown     Bottle of Haste
+Pink      Bottle of Blindness
+Lavender  Bottle of Sight
+Green     Bottle of Strength
+Magenta   Bottle of Power
+
+POTIONS - FLASK:
+-----------------
+Gray      Flask of Healing
+Cyan      Flask of Poison
+Orange    Flask of Toughness
+Brown     Flask of Invisibility
+Pink      Flask of Paralysis
+Lavender  Flask of Confusion
+Green     Flask of Bartering
+Magenta   Flask of Superpower
+
+RINGS:
+-----------------
+Gray      Ring of Rapid Healing
+Cyan      Ring of Weakness
+Orange    Ring of Defense
+Brown     Ring of Fire Protect
+Pink      Ring of Helping
+Lavender  Ring of Attacking
+Green     Ring of Protection
+Magenta   Ring of Magic
+
+SMALL SCROLL:
+-----------------
+Gray      Scroll of Summoning
+Cyan      Cursed Scroll
+Orange    Enemy Slowness
+Brown     Enemy Paralysis
+Pink      Scroll of Friendship
+Lavender  Enemy Haste
+Green     Trap Removal
+Magenta   Remove Curse
+
+LARGE SCROLL:
+-----------------
+Gray      Scroll of Battle
+Cyan      Exploding Scroll
+Orange    Remove Curse
+Brown     Teleportation
+Pink      Scroll of Stamina
+Lavender  Scroll of Helping
+Green     Trap Removal
+Magenta   Remove Curse
+
+MORTAR & PESTLE:
+-----------------
+Gray      Healing
+Cyan      Slowness
+Orange    Friendship
+Brown     Invisibility
+Pink      Lose HP/Stanima
+Lavender  Improve Battle
+Green     Weakness
+Magenta   Rudeness
+
+//==============================
 // ULTIMATE PONG
 //==============================
 $6b8e956c
