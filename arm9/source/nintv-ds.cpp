@@ -510,38 +510,6 @@ void ds_handle_meta(int meta_key)
     }
     switch (meta_key)
     {
-        case OVL_META_RESET:
-            if (bGameLoaded)
-            {
-                extern u8 bCheatChanged;
-                // -------------------------------------------------------------------------------------------
-                // If any CHEAT has been changed, we must load back the original RIP and re-apply any cheats.
-                // -------------------------------------------------------------------------------------------
-                if (bCheatChanged)   
-                {
-                    bCheatChanged = false;
-                    
-                    //put the RIP in the currentEmulator
-                    currentEmu->SetRip(currentRip, FALSE);
-
-                    // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
-                    currentEmu->ApplyCheats();
-                }
-
-                // Perform the actual reset on everything
-                currentEmu->Reset();
-                
-                // Load up the fast ROM memory for quick fetches
-                currentEmu->LoadFastMemory();
-                
-                // And put the Sound Fifo back at the start...
-                bStartSoundFifo = true;
-
-                // Make sure we're starting fresh...
-                reset_emu_frames();
-            }                
-            break;
- 
         case OVL_META_LOAD:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (dsWaitForRom(newFile))
@@ -580,8 +548,43 @@ void ds_handle_meta(int meta_key)
             dsInitPalette();
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
-            break;
+            extern u8 bCheatEngineReset;
+            if (bCheatEngineReset == false)
+            {
+                break;
+            } // Else fall through to reset!
             
+        case OVL_META_RESET:
+            if (bGameLoaded)
+            {
+                extern u8 bCheatChanged;
+                // -------------------------------------------------------------------------------------------
+                // If any CHEAT has been changed, we must load back the original RIP and re-apply any cheats.
+                // -------------------------------------------------------------------------------------------
+                if (bCheatChanged)   
+                {
+                    bCheatChanged = false;
+                    
+                    //put the RIP in the currentEmulator
+                    currentEmu->SetRip(currentRip, FALSE);
+                    
+                    // Apply any cheats/hacks to the current game (do this before loading Fast Memory)
+                    currentEmu->ApplyCheats();
+                }
+
+                // Perform the actual reset on everything
+                currentEmu->Reset();
+                
+                // Load up the fast ROM memory for quick fetches
+                currentEmu->LoadFastMemory();
+                
+                // And put the Sound Fifo back at the start...
+                bStartSoundFifo = true;
+
+                // Make sure we're starting fresh...
+                reset_emu_frames();
+            }                
+            break;            
         case OVL_META_SCORES:
             fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
             if (currentRip != NULL) 

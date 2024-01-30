@@ -12,8 +12,72 @@
 $D1D352A0
 
 [Consistent Colors]
-p ae0b 02b8 ; set operand
-p ae0c 6    ; magenta
+p AE0E  0200
+p AE0F  01D4
+p AFE4  0064           
+p AFE5  0064           
+p AFE6  004C           
+p AFE7  004C           
+p AFE8  02F8
+p AFE9  0008
+p AFEA  0240
+p AFEB  031C
+p AFEC  0220
+p AFED  01DD
+
+; -----------------------
+; Thin Ice - Released Version
+; -----------------------
+$975AE6DF
+
+[Max Lives to 99]
+p 68b8 63   ; Max extra lives can go to 99 instead of 19
+p 68cf 63   ; |
+
+[Score Flips 2.56M]
+p 68e4 0    ; Score rolls over at 2.56 million points instead of 1.00 million.
+p 68e6 2ba  ; | Blank out the millions-of-points digit for when the other player takes over.
+p 68e7 32   ; | |
+p 68e8 42   ; | |
+p 68e9 2bc  ; | |
+p 68ea 204  ; | |
+p 68eb 262  ; | |
+p 68fb 204  ; | Millions-of-points digit drawn one position to the left
+p 68fd 3    ; | Three digits to display the tens of thousands of points
+
+[Infinite Lives]
+p 690e 34   ; Infinite lives, both players
+
+[Max Lobsters to 99]
+p 6a8e 63   ; Max lobsters can go to 99 instead of 20
+
+
+; -----------------------
+; Thin Ice - 16K Version
+; -----------------------
+$F3DF94E0
+
+[Max Lives to 99]
+p da27 63   ; Max extra lives can go to 99 instead of 19
+p da4a 63   ; |
+
+[Score Flips 2.56M]
+p da57 0    ; Score rolls over at 2.56 million points instead of 1.00 million.
+p da59 2ba  ; | Blank out the millions-of-points digit for when the other player takes over.
+p da5a 32   ; | |
+p da5b 42   ; | |
+p da5c 2bc  ; | |
+p da5d 204  ; | |
+p da5e 262  ; | |
+p da6e 204  ; | Millions-of-points digit drawn one position to the left
+p da70 3    ; | Three digits to display the tens of thousands of points
+
+[Infinite Lives]
+p da81 34   ; Infinite lives, both players
+
+[Max Lobsters to 99]
+p dd4b 63   ; Max lobsters can go to 99 instead of 20
+
 
 ; -----------------------
 ; Treasure of Tarmin 

@@ -33,6 +33,7 @@ extern Rip *currentRip;
 extern int bg0, bg0b, bg1b;
 
 u8 bCheatChanged = false;
+u8 bCheatEngineReset = false;
 
 // ---------------------------------------------------------------------
 // Display the current list of cheats. There may be none for this
@@ -62,7 +63,7 @@ u8 display_cheat_list(bool bFullDisplay)
     }
 
     dsPrintValue(0,22, 0, (char *)"   D-PAD TOGGLE CHEAT. B=EXIT   ");
-    dsPrintValue(0,23, 0, (char *)"   RESET GAME TO APPLY CHEATS   ");
+    dsPrintValue(0,23, 0, (char *)"START = RESET GAME APPLY CHEATS ");
     return count;    
 }
 
@@ -77,6 +78,8 @@ void CheatMenu(void)
     int keys_pressed = 0;
     int last_keys_pressed = 999;
     u8 bDone = false;
+    
+    bCheatEngineReset = false;
 
     // Show the Options background...
     dsShowBannerScreen();
@@ -135,6 +138,12 @@ void CheatMenu(void)
             if (keys_pressed & (KEY_A | KEY_B))
             {
                 bDone = true;
+            }
+            else
+            if (keys_pressed & KEY_START)  // Reset emulator - apply current cheats
+            {
+                bDone = true;
+                bCheatEngineReset = true;
             }
         }
         swiWaitForVBlank();
