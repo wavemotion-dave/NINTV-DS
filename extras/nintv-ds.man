@@ -8852,36 +8852,36 @@ Warlock     4.5    9   9   9
 
 BOOKS:
 -----------------
-Gray       Book of Strength
-Cyan       Book of Blindness
-Orange     Book of Stamina
-Brown      Book of Weakness
-Pink       Book of Diplomacy
-Lavender   Book of Affliction
-Green      Book of Experience
-Magenta    Book of Inexperience
+Gray      Book of Strength
+Cyan      Book of Blindness
+Orange    Book of Stamina
+Brown     Book of Weakness
+Pink      Book of Diplomacy
+Lavender  Book of Affliction
+Green     Book of Experience
+Magenta   Book of Inexperience
 
 CLOAKS:
 -----------------
-Gray       Cloak of Helping
-Cyan       Cloak of Weakness
-Orange     Cloak of Protection+1
-Brown      Cloak of Protection+2
-Pink       Cloak of Protection+3
-Lavender   Cloak of Protection+4
-Green      Cloak of Protection+5
-Magenta    Cloak of Good Karma
+Gray      Cloak of Helping
+Cyan      Cloak of Weakness
+Orange    Cloak of Protection+1
+Brown     Cloak of Protection+2
+Pink      Cloak of Protection+3
+Lavender  Cloak of Protection+4
+Green     Cloak of Protection+5
+Magenta   Cloak of Good Karma
 
 GRAILS:
 -----------------
-Gray       Grail of Strength
-Cyan       Grail of Superpower
-Orange     False Grail of Str
-Brown      False Grail of Sta
-Pink       Grail of Diplomacy
-Lavender   Grail of Unknown
-Green      Grail of Glory
-Magenta    Holy Grail
+Gray      Grail of Strength
+Cyan      Grail of Superpower
+Orange    False Grail of Str
+Brown     False Grail of Sta
+Pink      Grail of Diplomacy
+Lavender  Grail of Mystery
+Green     Grail of Glory
+Magenta   The Holy Grail!
 
 POTIONS - BOTTLE:
 -----------------
