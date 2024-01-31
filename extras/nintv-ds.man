@@ -8949,6 +8949,29 @@ Lavender  Improve Battle
 Green     Weakness
 Magenta   Rudeness
 
+ROSARY NECKLACE:
+-----------------
+Gray      Rosary of Potions
+Cyan      Rosary of Darkness
+Orange    Rosary of Healing
+Brown     Rosary of Protection
+Pink      Rosary of Blessing
+Lavender  Rosary of Fulfillment
+Green     Rosary of Literacy
+Magenta   Rosary of Anti-Friend
+
+KEYS:
+-----------------
+Gray      Bypass Transporter
+Cyan      Bypass Transporter
+Orange    Bypass Brown Gas
+Brown     Bypass Brown Gas
+Pink      Bypass Fire
+Lavender  Bypass Confusion
+Green     Bypass Green Gas
+Magenta   Bypass Everything!
+
+
 //==============================
 // ULTIMATE PONG
 //==============================
