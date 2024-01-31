@@ -11,7 +11,7 @@
 ; -----------------------
 $D1D352A0
 
-[Consistent Colors]
+[Show True Colors on Items]
 p AE0E  0200
 p AE0F  01D4
 p AFE4  0064           
