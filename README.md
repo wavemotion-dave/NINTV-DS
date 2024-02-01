@@ -114,6 +114,12 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.9 : 01-Feb-2024 by wavemotion-dave
+  * Improved cheat database selection - after selecting cheats, just press START to reset and apply cheats directly on the cheat picker screen.
+  * Improved bankswitching/paged roms so that partially filled banks can be switched (some recent homebrews require this).
+  * Updated internal database so more games load and run properly without tweaks.
+  * Minor cleanups across the board as time permitted.
+  
 V4.8 : 24-Jan-2024 by wavemotion-dave
   * .int files are now auto-detected as either .bin(+cfg) or .rom files. This allows you to rename .rom files or .bin files to .int and let Twilight Menu++ auto-launch Nintellivision.
   * Slight improvement to the Intellivoice driver to give a minor boost in performance (mostly for DS-Lite/Phat).
