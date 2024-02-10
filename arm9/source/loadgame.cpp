@@ -101,7 +101,8 @@ BOOL LoadCart(const CHAR* filename)
             FatalError("BIN FILE DOES NOT EXIST");
             return FALSE;
         }
-        if (fgetc(file) == 0xA8) bIsROM = true;
+        u8 firstByte = fgetc(file);
+        if ((firstByte == 0xA8) || (firstByte == 0x41)) bIsROM = true;  // We accept eitehr ICART (0xA8) or CC3 (0x41) as proof that this is probably a ROM file
         fclose(file);
     }
     
