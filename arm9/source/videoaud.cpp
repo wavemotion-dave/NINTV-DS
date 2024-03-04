@@ -295,6 +295,7 @@ void AudioMixerDS::resetProcessor()
         outputBufferWritePosition = 0;
     }
 
+    audioRampDown();
     fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
    
     // clears the emulator side of the audio mixer

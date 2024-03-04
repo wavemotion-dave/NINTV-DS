@@ -488,8 +488,10 @@ void ApplyOptions(void)
     clocksPerSample = clockDivisor<<4;
 
     // Check if the sound changed...
-    fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
+    extern void audioRampDown(void);
+    audioRampDown();
     bStartSoundFifo=true;
+    
     // clears the emulator side of the audio mixer
     audioMixer->resetProcessor();
 
