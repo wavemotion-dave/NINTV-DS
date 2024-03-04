@@ -511,7 +511,7 @@ void ds_handle_meta(int meta_key)
     switch (meta_key)
     {
         case OVL_META_LOAD:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             if (dsWaitForRom(newFile))
             {
                 if (LoadCart(newFile)) 
@@ -524,7 +524,7 @@ void ds_handle_meta(int meta_key)
             break;
   
         case OVL_META_CONFIG:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             dsChooseOptions((currentRip == NULL ? 2:0)); // If no game selected, show global options
             reset_emu_frames();
             dsInitPalette();
@@ -533,7 +533,7 @@ void ds_handle_meta(int meta_key)
             break;
 
         case OVL_META_GCONFIG:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             dsChooseOptions(2);
             reset_emu_frames();
             dsInitPalette();
@@ -542,7 +542,7 @@ void ds_handle_meta(int meta_key)
             break;
 
         case OVL_META_CHEATS:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             CheatMenu();
             reset_emu_frames();
             dsInitPalette();
@@ -586,7 +586,7 @@ void ds_handle_meta(int meta_key)
             }                
             break;            
         case OVL_META_SCORES:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             if (currentRip != NULL) 
             {
                 highscore_display(currentRip->GetCRC());
@@ -597,7 +597,7 @@ void ds_handle_meta(int meta_key)
             break;
 
         case OVL_META_STATE:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             if (currentRip != NULL) 
             {
                 savestate_entry();      
@@ -608,7 +608,7 @@ void ds_handle_meta(int meta_key)
             break;
 
         case OVL_META_MENU:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             ds_handle_meta(menu_entry());
             if (currentRip != NULL)
             {
@@ -629,7 +629,7 @@ void ds_handle_meta(int meta_key)
             break;
             
         case OVL_META_MANUAL:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             if (currentRip != NULL) 
             {
                 dsShowManual();
@@ -640,7 +640,7 @@ void ds_handle_meta(int meta_key)
             break;
 
         case OVL_META_EMUINFO:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             dsShowEmuInfo();
             dsShowScreenMain(false, false);
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
@@ -648,7 +648,7 @@ void ds_handle_meta(int meta_key)
             break;
             
         case OVL_META_STRETCH:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             if (currentRip != NULL) 
             {
                 HandleScreenStretch();
@@ -659,7 +659,7 @@ void ds_handle_meta(int meta_key)
             break;
             
         case OVL_META_QUIT:
-            fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+            audioRampDown();
             if (dsWaitOnQuit()){ runState = Quit; }
             bStartSoundFifo = true;
             break;

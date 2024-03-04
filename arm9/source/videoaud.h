@@ -59,5 +59,6 @@ public:
 
 extern void dsInstallSoundEmuFIFO(void);
 extern void dsInitPalette(void);
+extern void audioRampDown(void);
 
 #endif

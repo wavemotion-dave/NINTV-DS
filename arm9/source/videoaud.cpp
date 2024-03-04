@@ -41,6 +41,23 @@ ITCM_CODE void VsoundHandler(void)
   }
 }
 
+// -----------------------------------------------------------------------
+// Gentle (but fast) ramp down of the audio to prevent pops and clicks
+// when transitioning in and out of the game running to the menu
+// -----------------------------------------------------------------------
+void audioRampDown(void)
+{
+    // Stop the background processing of audio - we'll manually control it below
+    irqDisable(IRQ_TIMER2);
+    UINT16 rampDownAudio = (*aptr) & 0xFFF0;
+    while(rampDownAudio) 
+    {
+        *aptr = (UINT32)rampDownAudio | ((UINT32)rampDownAudio << 16);
+        if (rampDownAudio > 0x800) rampDownAudio -= 0x300; // Ramp a little slower to avoid pops
+        else rampDownAudio = rampDownAudio>>1;             // Ramp faster to get to zero quickly
+        swiWaitForVBlank();                                // Wait for 1 vertical blank (1/60th of a sec)
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------------
 // This starts the sound engine... the ARM7 is told about the 1-sample buffer and runs at 2x the normal processing
@@ -68,11 +85,14 @@ void dsInstallSoundEmuFIFO(void)
         aptr = (UINT32*) (&audio_arm7_xfer_buffer + 0x00400000/4);
     }
     
-    *aptr = 0x00000000;
-    memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
+    // Stop the background sound handler and ramp it down to prevent 'pops'
+    audioRampDown();
     
     fifoSendValue32(FIFO_USER_01,(1<<16) | SOUND_KILL);
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to stop...
+
+    *aptr = 0x00000000;
+    memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
     
     FifoMessage msg;
     msg.SoundPlay.data = &audio_arm7_xfer_buffer;
