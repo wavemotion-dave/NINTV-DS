@@ -494,7 +494,7 @@ void intvFindFiles(void)
         if (strcasecmp(szName2, "ecs.bin") == 0) continue;
         if (strstr(szName2, "[BIOS]") != NULL) continue;
         if (strstr(szName2, "[bios]") != NULL) continue;
-        if (szName2[0] == '_') continue;    // For MAC files with the underscore starting a name
+        if ((szName2[0] == '.') && (szName2[1] == '_')) continue;    // For MAC files with the underscore starting a name
         
         if (strlen(szName2)>4) 
         {
