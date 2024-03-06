@@ -487,7 +487,7 @@ void ApplyOptions(void)
     
     clocksPerSample = clockDivisor<<4;
 
-    // Check if the sound changed...
+    // In case the sound changed... restart the audio processor
     extern void audioRampDown(void);
     audioRampDown();
     bStartSoundFifo=true;

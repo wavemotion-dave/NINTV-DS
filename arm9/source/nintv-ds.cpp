@@ -1243,7 +1243,7 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
       
       if (bPlayJingle)
       {
-        soundPlaySample((const void *) mus_intro_wav, SoundFormat_ADPCM, mus_intro_wav_size, 22050, 127, 64, false, 0);
+        soundPlaySample((const void *) mus_intro_wav, SoundFormat_16Bit, mus_intro_wav_size, 22050, 127, 64, false, 0);
       }
     }
     
