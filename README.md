@@ -116,6 +116,12 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.0 : 06-Mar-2024 by wavemotion-dave
+  * New splash screen jingle.
+  * Boosted audio output by almost 25% so you don't have to max out your DS volume.
+  * New audio ramp down/up to help soften (and partially eliminate) audio pops/clicks when transitioning in and out of a game to the menus.
+  * Minor cleanup and tweaks as time permitted.
+  
 V4.9 : 01-Feb-2024 by wavemotion-dave
   * Improved cheat database selection - after selecting cheats, just press START to reset and apply cheats directly on the cheat picker screen.
   * Improved bankswitching/paged roms so that partially filled banks can be switched (some recent homebrews require this).

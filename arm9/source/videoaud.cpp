@@ -53,7 +53,7 @@ void audioRampDown(void)
     while(rampDownAudio) 
     {
         *aptr = (UINT32)rampDownAudio | ((UINT32)rampDownAudio << 16);
-        if (rampDownAudio > 0x800) rampDownAudio -= 0x300; // Ramp a little slower to avoid pops
+        if (rampDownAudio > 0x800) rampDownAudio -= 0x400; // Ramp a little slower to avoid pops
         else rampDownAudio = rampDownAudio>>1;             // Ramp faster to get to zero quickly
         swiWaitForVBlank();                                // Wait for 1 vertical blank (1/60th of a sec)
     }
