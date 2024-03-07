@@ -14,7 +14,7 @@ You must supply the BIOS files:
 * ivoice.bin (Optional for Intellivoice games)
 * ecs.bin (Optional for ECS games)
 
-These can go in one of three places:  same directory as your ROMS, /roms/bios or /roms/intv/bios (you can change the default location using the Global Configuration once you load the emulator).
+These can go in one of four places:  same directory as your ROMS, /roms/bios (recommended) or /roms/intv/bios or /data/bios (you can change the default location using the Global Configuration once you load the emulator).
 
 The GROM and EXEC binaries are property of Intellivision and you will have to find them yourself. 
 Don't ask. If you own Intellivision Lives, you likely have both files already somewhere in your house. 
