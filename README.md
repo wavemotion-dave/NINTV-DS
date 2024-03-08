@@ -123,6 +123,7 @@ V5.0 : 06-Mar-2024 by wavemotion-dave
   * Boosted audio output by almost 25% so you don't have to max out your DS volume.
   * New audio ramp down/up to help soften (and partially eliminate) audio pops/clicks when transitioning in and out of a game to the menus.
   * Minor cleanup and tweaks as time permitted.
+  * 5.0a with new Gold/Black menu buttons!
   
 V4.9 : 01-Feb-2024 by wavemotion-dave
   * Improved cheat database selection - after selecting cheats, just press START to reset and apply cheats directly on the cheat picker screen.
