@@ -609,12 +609,15 @@ void ds_handle_meta(int meta_key)
 
         case OVL_META_MENU:
             audioRampDown();
-            ds_handle_meta(menu_entry());
-            if (currentRip != NULL)
+            if (currentRip != NULL) 
             {
-                dsShowScreenMain(false, false);
+                ds_handle_meta(menu_entry());
+                if (currentRip != NULL)
+                {
+                    dsShowScreenMain(false, false);
+                }
+                WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             }
-            WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             bStartSoundFifo = true;
             break;
 
