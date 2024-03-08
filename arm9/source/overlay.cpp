@@ -59,13 +59,13 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_L_ACT
     {255,   255,    255,   255},    // KEY_R_ACT
     
-    { 23,    82,     16,    36},    // META_RESET
-    { 23,    82,     45,    65},    // META_LOAD
-    { 23,    82,     74,    94},    // META_CONFIG
-    { 23,    82,    103,   123},    // META_SCORE
+    { 10,    87,     10,    40},    // META_RESET
+    { 10,    87,     41,    70},    // META_LOAD
+    { 10,    87,     71,   100},    // META_CONFIG
+    { 10,    87,    101,   131},    // META_SCORE
     {255,   255,    255,   255},    // META_QUIT
-    { 23,    82,    132,   152},    // META_STATE
-    { 23,    82,    161,   181},    // META_MENU
+    { 10,    87,    131,   160},    // META_STATE
+    { 10,    87,    161,   191},    // META_MENU
     {255,   255,    255,   255},    // META_SWAP
     {255,   255,    255,   255},    // META_MANUAL
     {255,   255,    255,   255},    // META_STRETCH
