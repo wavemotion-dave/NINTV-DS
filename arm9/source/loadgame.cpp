@@ -18,8 +18,6 @@
 #include "nintv-ds.h"
 #include "savestate.h"
 #include "config.h"
-#include "bgBottom.h"
-#include "bgTop.h"
 #include "bgMenu-Green.h"
 #include "bgMenu-White.h"
 #include "Emulator.h"

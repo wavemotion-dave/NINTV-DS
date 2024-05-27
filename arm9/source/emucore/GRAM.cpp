@@ -28,14 +28,14 @@ void GRAM::reset()
     for (i = 0; i < GRAM_SIZE; i++)
         gram_image[i] = 0;
 
-    for (i = 0; i < 0x40; i++)
+    for (i = 0; i < (GRAM_SIZE>>3); i++)
         dirtyCards[i] = TRUE;
 }
 
 ITCM_CODE void GRAM::poke(UINT16 location, UINT16 value)
 {
     if (!enabled) return;
-    location &= 0x01FF;
+    location &= GRAM_MASK;
     
     gram_image[location] = (UINT8)value;
     dirtyCards[location>>3] = TRUE;
@@ -62,5 +62,5 @@ void GRAM::setState(GRAMState *state)
 {
     for (int i=0; i<GRAM_SIZE; i++)         gram_image[i] = state->gram_image[i];
     for (int i=0; i<(GRAM_SIZE>>3); i++)    dirtyCards[i] = state->dirtyCards[i];
-    dirtyRAM = TRUE;
+    dirtyRAM = TRUE; // Force a redraw to be safe
 }

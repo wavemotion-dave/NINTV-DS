@@ -20,6 +20,7 @@
 // ----------------------------------------------------------------------------------
 UINT16   stic_memory[0x40] __attribute__((section(".dtcm")));
 
+// Technically the STIC is read-responsive at 0x40-0x7F but we ignore that for now (nothing seems to rely on it)
 AY38900_Registers::AY38900_Registers()
 : RAM(0x40, 0x0000, 0xFFFF, 0x3FFF)
 {}

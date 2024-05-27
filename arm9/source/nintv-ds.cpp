@@ -26,6 +26,7 @@
 #include "manual.h"
 #include "bgBottom.h"
 #include "bgTop.h"
+#include "bgTop2K.h"
 #include "bgMenu-Green.h"
 #include "bgMenu-White.h"
 #include "Emulator.h"
@@ -1240,9 +1241,15 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
       bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
       bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
 
+#ifdef GRAM_2K
+      decompress(bgTop2KTiles, bgGetGfxPtr(bg0), LZ77Vram);
+      decompress(bgTop2KMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
+      dmaCopy((void *) bgTop2KPal,(u16*) BG_PALETTE,256*2);
+#else
       decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
       decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
       dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
+#endif      
       
       if (bPlayJingle)
       {

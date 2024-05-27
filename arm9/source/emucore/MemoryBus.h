@@ -17,6 +17,8 @@
 #include "Memory.h"
 #include "ROM.h"
 
+#define MEM_DIV    4       // Divide by 16 which gives us 16 byte resolution on memory mapping - good enough and saves us a huge amount of RAM
+
 
 /**
  * Emulates a 64K memory bus which may be composed of 8-bit or 16-bit memory units.
@@ -33,7 +35,7 @@ class MemoryBus
 
         void reset();
 
-        inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] == 1) return readableMemorySpace[location>>4][0]->peek(location); else return peek_slow(location);}
+        inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] == 1) return readableMemorySpace[location>>MEM_DIV][0]->peek(location); else return peek_slow(location);}
         UINT16 peek_slow(UINT16 location);
         
         // ------------------------------------------------------------------------------------------------
@@ -51,9 +53,9 @@ class MemoryBus
         // ------------------------------------------------------
         UINT16 peek_slow_and_safe(UINT16 location) 
         {
-           if (readableMemorySpace[location>>4])
+           if (readableMemorySpace[location>>MEM_DIV])
            {
-               if (readableMemorySpace[location>>4][0])
+               if (readableMemorySpace[location>>MEM_DIV][0])
                {
                   return peek_slow(location);
                }

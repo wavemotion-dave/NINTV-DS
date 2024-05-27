@@ -66,8 +66,8 @@ UINT8 backgroundBuffer[160*96] __attribute__ ((aligned (4)));
 UINT16 global_frames        __attribute__((section(".dtcm"))) = 0;
 UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
 
-UINT8 fgcolor              __attribute__((section(".dtcm"))) = 0;
-UINT8 bgcolor              __attribute__((section(".dtcm"))) = 0;
+UINT8 fgcolor               __attribute__((section(".dtcm"))) = 0;
+UINT8 bgcolor               __attribute__((section(".dtcm"))) = 0;
 
 // Movable objects
 MOB mobs[8] __attribute__((section(".dtcm")));
@@ -153,8 +153,8 @@ void AY38900::resetProcessor()
 
     //reset the state variables
     mode = 0xFF;
-    bCP1610_PIN_IN_INTRM = TRUE;
-    bCP1610_PIN_IN_BUSRQ = TRUE;
+    bCP1610_PIN_IN_INTRM   = TRUE;
+    bCP1610_PIN_IN_BUSRQ   = TRUE;
     previousDisplayEnabled = TRUE;
     displayEnabled         = FALSE;
     colorStackMode         = FALSE;
@@ -644,7 +644,27 @@ ITCM_CODE void AY38900::renderMOBs()
         UINT16 card = mobs[i].cardNumber;
         // If we are double Y, the STIC requires the card be on an even boundary. Without this we get glitches in the ape climbing in D1K/D2K
         if (mobs[i].doubleYResolution) card &= 0xFE;
-        UINT16 firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + (card << 3) : ((card & 0x3F) << 3));
+        
+        // ------------------------------------------------------------------------------------
+        // In Color Stack Mode, the MOB location can index any of the full GROM / GRAM tiles.  
+        // In FG/BG mode, it can only index the first 64 tiles of GROM or GRAM. This is all
+        // according to the STIC documentation: 
+        //
+        //    Bits 9 and 10 of the attribute register (bits 7 and 6 of the card #) 
+        //    are ignored when the bitmap comes from GRAM, or when the display is 
+        //    in Foreground/Background mode. (This means that only 128 of the 320 
+        //    pictures are available when the display is in FGBG mode. GROM cards
+        //    #64 - #255 are unavailable in FGBG mode.)
+        // ------------------------------------------------------------------------------------
+        UINT16 firstMemoryLocation = 0x0000;
+        if (colorStackMode)
+        {
+            firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + ((card & 0xFF) << 3) : ((card & GRAM_CARD_MOB_MASK) << 3));
+        }
+        else
+        {
+            firstMemoryLocation = (UINT16)(mobs[i].isGrom ? LOCATION_GROM + ((card & 0x3F) << 3) : ((card & 0x3F) << 3));
+        }
 
         //end at this memory location
         UINT16 lastMemoryLocation = (UINT16)(firstMemoryLocation + 8);
@@ -691,6 +711,12 @@ ITCM_CODE void AY38900::renderMOBs()
     }
 }
 
+// -------------------------------------------------------------------
+// Render the entire Intellivision background according to what mode 
+// we are in (FG/BG vs ColorStack) and whether we are doing the more
+// complicated latched backtab (uses a bit more emulation CPU power
+// but is more accurate).
+// -------------------------------------------------------------------
 ITCM_CODE void AY38900::renderBackground()
 {
     if (colorStackMode)
@@ -746,7 +772,7 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
         //get the next card to render
         UINT16 nextCard = backtab.peek_direct(i);
         UINT16 isGram = (nextCard & 0x0800);
-        UINT16 memoryLocation = nextCard & 0x01F8;
+        UINT16 memoryLocation = nextCard & 0x01F8; // Can only index 64 tiles max in FG/BG mode
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
@@ -773,7 +799,7 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
         UINT16 isGram = nextCard & 0x0800;
-        UINT16 memoryLocation = nextCard & 0x01F8;
+        UINT16 memoryLocation = nextCard & 0x01F8; // Can only index 64 tiles max in FG/BG mode
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
@@ -800,7 +826,7 @@ void AY38900::renderForegroundBackgroundModeLatchedForced()
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
         UINT16 isGram = nextCard & 0x0800;
-        UINT16 memoryLocation = nextCard & 0x01F8;
+        UINT16 memoryLocation = nextCard & 0x01F8; // Can only index 64 tiles max in FG/BG mode
 
         fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
         bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
@@ -858,7 +884,7 @@ ITCM_CODE void AY38900::renderColorStackMode()
             }
 
             UINT16 isGram = (nextCard & 0x0800);
-            UINT16 memoryLocation = (isGram ? (nextCard & 0x01F8) : (nextCard & 0x07F8));
+            UINT16 memoryLocation = (isGram ? (nextCard & GRAM_COL_STACK_MASK) : (nextCard & 0x07F8)); // Can index all 256 tiles max in Color Stack mode
 
             if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation))) 
             {
@@ -922,12 +948,11 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
             }
 
             UINT16 isGram = (nextCard & 0x0800);
-            UINT16 memoryLocation = (isGram ? (nextCard & 0x01F8) : (nextCard & 0x07F8));
+            UINT16 memoryLocation = (isGram ? (nextCard & GRAM_COL_STACK_MASK) : (nextCard & 0x07F8)); // Can index all 256 tiles max in Color Stack mode
 
             if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation))) 
             {
-                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
-                
+                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);                
                 Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
                 UINT16 address = memory->getReadAddress()+memoryLocation;
                 for (UINT16 j = 0; j < 8; j++)

@@ -22,7 +22,7 @@ UINT16 inty_8bit_ram[RAM8BIT_SIZE]       __attribute__((section(".dtcm"))) = {0}
 UINT16 fast_ram16[0x400]                 __attribute__((section(".dtcm"))) = {0};
 UINT16 fast_ram16_idx = 0;
 UINT16 slow_ram16_idx = 0;
-UINT16 slow_ram8_idx = 0;
+UINT16 slow_ram8_idx  = 0;
 
 UINT16 *slow_ram8  = (UINT16*)0x06890000;   // 6K of 8-bit RAM here (utilizing 12K of VRAM) - used for carts that define extra 8-bit RAM like Chess and Land Battle. We allow this to expand into the 2K section below.
 UINT16 *ecs_ram8   = (UINT16*)0x06893000;   // 2K of 8-bit ECS RAM (utilizing 4K of VRAM) for the ECS computer peripheral.  We do allow the 6K RAM to expand into this area... so non-ECS games can get 8K of 8-bit ram allocated.

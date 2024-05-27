@@ -41,7 +41,7 @@ Technical Specs :
  * ECS emulated with the 2K of 8-bit RAM, Keyboard, extra sound channels, etc.
  * Intellivoice emulated for games that take advantage of voice enhancements.
  * Up to 8K of extra 8-bit RAM emulated for games like USFC Chess and Land Battle (note, the 2K of ECS 8-bit RAM comes out of this pool).
- * Up to 16K Words of extra 16-bit RAM emulated beyond dedicated 8K words of JLP RAM.
+ * Up to 16K Words of extra 16-bit RAM emulated beyond dedicated 8K words of JLP RAM (so technically 24K Words of 16-bit RAM available to carts)
  * Paging on all segments of memory provided the full binary is 1024KB (bytes) or less.
 
 Loading Games :
@@ -58,7 +58,7 @@ Controller Types :
 -----------------------
 * You can select Player 1 controller or Player 2 controller. 
 * More importantly you can select 'Dual Action A' or 'Dual Action B'
-* Dual Action A uses the disc/buttons from Controller 1 and the Keypad for Controller 2 (perfect for AD&D Cloudy Mountain or Tron Deadly Discs)
+* Dual Action A uses the disc/buttons from Controller 1 and the Keypad for Controller 2 (perfect for AD&D Cloudy Mountain or Tron Deadly Discs - you can use the NDS ABXY keys to fire arrows/discs)
 * Dual Action B uses the disc from Controller 1 and the Buttons/Keypad for Controller 2 (perfect for Astrosmash, Buzz Bombers and any game you move and shoot)
 * In configuration you can press the 'X' button to cycle through some common controller mappings or assign your own custom map.
 
@@ -119,6 +119,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.1 : 28-May-2024 by wavemotion-dave
+  * Improved STIC emulation to properly restrict MOBS for both GRAM and GROM to cards 0-63 in FG/BG mode.
+  * Separate 2K GRAM build - experimental but functional. Use NINTV-DS-2KGRAM (will coexist with the normal NINTV-DS build)
+  * Minor cleanup and tweaks as time permitted.
+  
 V5.0 : 06-Mar-2024 by wavemotion-dave
   * New splash screen jingle.
   * Boosted audio output by almost 25% so you don't have to max out your DS volume.
