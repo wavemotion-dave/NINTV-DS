@@ -25,7 +25,7 @@
 #define GRAM_WRITE_MASK     0x3FFF  // This is what produces the GRAM write aliases due to incomplete address decoding
 #define GRAM_MASK           0x07FF  // Allows indexing all 2K of GRAM
 #define GRAM_COL_STACK_MASK 0x07F8  // Allows for indexing 256 tiles in Color Stack mode
-#define GRAM_CARD_MOB_MASK  0xFF    // Allows for indexing 256 tiles for MOBs (technically should only be allowed in Color Stack but whatevs...)
+#define GRAM_CARD_MOB_MASK  0xFF    // Allows for indexing 256 tiles for MOBs in Color Stack mode
 
 #else // Normal 512b GRAM
 
@@ -34,7 +34,7 @@
 #define GRAM_WRITE_MASK     0x39FF  // This is what produces the GRAM write aliases due to incomplete address decoding
 #define GRAM_MASK           0x01FF  // Allows indexing the 512 bytes of GRAM
 #define GRAM_COL_STACK_MASK 0x01F8  // Allows for indexing 64 tiles in Color Stack mode
-#define GRAM_CARD_MOB_MASK  0x3F    // Allows for indexing 64 tiles for MOBs
+#define GRAM_CARD_MOB_MASK  0x3F    // Allows for indexing 64 tiles for MOBs in Color Stack mode
 
 #endif // GRAM_2K
 
