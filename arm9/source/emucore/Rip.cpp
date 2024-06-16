@@ -438,7 +438,19 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                         {
                             if (strstr(ptr, "jlp") || strstr(ptr, "jlp_accel") || strstr(ptr, "jlp_flash"))
                             {
-                                bUseJLP = 1;
+                                // If we haven't already enabled JLP, see if this config entry turns it on...
+                                if (bUseJLP == 0)
+                                {
+                                    u8 zeros = 0;
+                                    u8 nonzeros = 0;
+                                    for (int i=0; i<strlen(ptr); i++)
+                                    {
+                                        if (ptr[i] == '0') zeros++;
+                                        else if ((ptr[i] >= '1') && (ptr[i] <= '9')) nonzeros++;
+                                        
+                                    }
+                                    bUseJLP = ((zeros == 1) && (nonzeros == 0)) ? 0:1; // If the line was "= 0", we keep JLP disabled
+                                }
                             }
                             if (strstr(ptr, "voice"))
                             {

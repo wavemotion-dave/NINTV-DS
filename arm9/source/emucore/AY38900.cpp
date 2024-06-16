@@ -1078,7 +1078,9 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
 {
     for (INT8 i = 7; i >= 0; i--) 
     {
-        if (mobs[i].xLocation == 0 || mobs[i].xLocation > 167 || (!mobs[i].flagCollisions && !mobs[i].isVisible))
+        // A mob X location of zero is special and is not rendered. A Y location of zero is not special. 
+        // But we do also check the out of bounds X (167) and Y (104) and don't bother to render offscreen MOBs.
+        if (mobs[i].xLocation == 0 || mobs[i].xLocation >= 167 || (!mobs[i].flagCollisions && !mobs[i].isVisible) || mobs[i].yLocation >= 104)
             continue;
         
         BOOL borderCollision = FALSE;
@@ -1190,13 +1192,17 @@ ITCM_CODE void AY38900::determineMOBCollisions()
 {
     for (int i = 0; i < 7; i++) 
     {
-        if (mobs[i].xLocation == 0 || !mobs[i].flagCollisions || mobs[i].xLocation > 167)
+        // Technically there is nothing special about a Y location of zero (0) but at least one game (GORF) uses it to move the 
+        // object off-screen. This is a bit non-standard as one pixel is still visible (better would be to move the object to
+        // an X position of 0 or beyond 168) but we don't bother to check collisions when the object has just one pixel hanging
+        // on the screen - it's easier than having a more complex mob collision algorithm and fixes games like GORF.
+        if (mobs[i].xLocation == 0 || !mobs[i].flagCollisions || mobs[i].xLocation >= 167 || mobs[i].yLocation >= 104 || mobs[i].yLocation == 0)
             continue;
 
         //check MOB on MOB collisions
         for (int j = i+1; j < 8; j++) 
         {
-            if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation > 167)
+            if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation >= 167 || mobs[j].yLocation >= 104  || mobs[i].yLocation == 0)
                 continue;
 
             if (mobsCollide(i, j)) {
