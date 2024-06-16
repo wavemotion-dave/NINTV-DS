@@ -119,6 +119,10 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.1a : 15-Jun-2024 by wavemotion-dave
+  * Improved MOB collision detection to fix GORF
+  * Improved JLP detection so we don't enable it inadvertantly.
+
 V5.1 : 28-May-2024 by wavemotion-dave
   * Improved STIC emulation to properly restrict MOBS for both GRAM and GROM to cards 0-63 in FG/BG mode.
   * Separate 2K GRAM build - experimental but functional. Use NINTV-DS-2KGRAM (will coexist with the normal NINTV-DS build)

@@ -1202,7 +1202,7 @@ ITCM_CODE void AY38900::determineMOBCollisions()
         //check MOB on MOB collisions
         for (int j = i+1; j < 8; j++) 
         {
-            if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation >= 167 || mobs[j].yLocation >= 104  || mobs[i].yLocation == 0)
+            if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation >= 167 || mobs[j].yLocation >= 104 || mobs[i].yLocation == 0)
                 continue;
 
             if (mobsCollide(i, j)) {
