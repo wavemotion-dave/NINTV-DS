@@ -119,8 +119,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V5.1a : 15-Jun-2024 by wavemotion-dave
+V5.2 : 22-Jun-2024 by wavemotion-dave
   * Improved MOB collision detection to fix GORF
+  * Improved MOB rendering so that Y coordinates of zero don't draw (fixes minor glitch in Beauty and the Beast at end of levels)
   * Improved JLP detection so we don't enable it inadvertantly.
 
 V5.1 : 28-May-2024 by wavemotion-dave
