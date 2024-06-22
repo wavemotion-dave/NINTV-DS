@@ -122,7 +122,7 @@ History :
 V5.2 : 22-Jun-2024 by wavemotion-dave
   * Improved MOB collision detection to fix GORF
   * Improved MOB rendering so that Y coordinates of zero don't draw (fixes minor glitch in Beauty and the Beast at end of levels)
-  * Improved JLP detection so we don't enable it inadvertantly.
+  * Improved JLP detection so we don't enable it inadvertently.
 
 V5.1 : 28-May-2024 by wavemotion-dave
   * Improved STIC emulation to properly restrict MOBS for both GRAM and GROM to cards 0-63 in FG/BG mode.
