@@ -56,13 +56,14 @@ struct Overlay_t
 #define OVL_META_DISC_UP 24
 #define OVL_META_DISC_DN 25
 #define OVL_META_SPEEDUP 26
+#define OVL_META_DISC    27
 
-#define OVL_META_STRETCH 27
-#define OVL_META_GCONFIG 28
-#define OVL_META_CHEATS  29
-#define OVL_META_EMUINFO 30
+#define OVL_META_STRETCH 28
+#define OVL_META_GCONFIG 29
+#define OVL_META_CHEATS  30
+#define OVL_META_EMUINFO 31
 
-#define OVL_MAX          31
+#define OVL_MAX          32
 #define DISC_MAX         16
 
 
@@ -77,6 +78,6 @@ extern struct Overlay_t myOverlay[OVL_MAX];
 extern struct Overlay_t myDisc[DISC_MAX];
 
 extern void load_custom_overlay(void);
-extern void show_overlay(void);
+extern void show_overlay(u8 bShowDisc);
 
 #endif

@@ -23,6 +23,7 @@
 #include "config.h"
 #include "bgBottom.h"
 #include "bgBottom-ECS.h"
+#include "bgBottom-disc.h"
 #include "bgTop.h"
 #include "Emulator.h"
 #include "Rip.h"
@@ -110,6 +111,43 @@ struct Overlay_t ecsOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_GCONFIG        
 };
 
+// ----------------------------------------------------------------------------------------
+// This is the ECS overlay with reduced menu options...
+// ----------------------------------------------------------------------------------------
+struct Overlay_t discOverlay[OVL_MAX] =
+{
+    {255,   255,    255,   255},    // KEY_1
+    {255,   255,    255,   255},    // KEY_2
+    {255,   255,    255,   255},    // KEY_3
+    
+    {255,   255,    255,   255},    // KEY_4
+    {255,   255,    255,   255},    // KEY_5
+    {255,   255,    255,   255},    // KEY_6
+
+    {255,   255,    255,   255},    // KEY_7
+    {255,   255,    255,   255},    // KEY_8
+    {255,   255,    255,   255},    // KEY_9
+
+    {255,   255,    255,   255},    // KEY_CLEAR
+    {255,   255,    255,   255},    // KEY_0
+    {255,   255,    255,   255},    // KEY_ENTER
+
+    {255,   255,    255,   255},    // KEY_FIRE
+    {255,   255,    255,   255},    // KEY_L_ACT
+    {255,   255,    255,   255},    // KEY_R_ACT
+    
+    {255,   255,    255,   255},    // META_RESET
+    {255,   255,    255,   255},    // META_LOAD
+    {255,   255,    255,   255},    // META_CONFIG
+    {255,   255,    255,   255},    // META_SCORE
+    {255,   255,    255,   255},    // META_QUIT
+    {255,   255,    255,   255},    // META_STATE
+    {255,   255,    255,   255},    // META_MENU
+    {255,   255,    255,   255},    // META_SWAP
+    {255,   255,    255,   255},    // META_MANUAL
+    {255,   255,    255,   255},    // META_STRETCH
+    {255,   255,    255,   255},    // META_GCONFIG        
+};
 
 struct Overlay_t myOverlay[OVL_MAX];
 struct Overlay_t myDisc[DISC_MAX];
@@ -312,7 +350,7 @@ void load_custom_overlay(bool bCustomGeneric)
 // This puts the overlay on the main screen. It can be one of the built-in 
 // overlays or it might be a custom overlay that will be rendered...
 // ---------------------------------------------------------------------------
-void show_overlay(void)
+void show_overlay(u8 bShowDisc)
 {
     // Assume default overlay... custom can change it below...
     memcpy(&myOverlay, &defaultOverlay, sizeof(myOverlay));
@@ -329,7 +367,18 @@ void show_overlay(void)
     }
     else    // Default Overlay... which might be custom!!
     {
-        load_custom_overlay(true);  // This will try to load nintv-ds.ovl or else default to the generic background
+        if (bShowDisc)
+        {
+            decompress(bgBottom_discTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+            decompress(bgBottom_discMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+            dmaCopy((void *) bgBottom_discPal,(u16*) BG_PALETTE_SUB,256*2);
+            // Disc Overlay...  
+            memcpy(&myOverlay, &discOverlay, sizeof(myOverlay));
+        }
+        else
+        {
+            load_custom_overlay(true);  // This will try to load nintv-ds.ovl or else default to the generic background
+        }
     }
     
     unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);

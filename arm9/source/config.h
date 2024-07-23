@@ -18,7 +18,7 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x0009
+#define CONFIG_VER  0x000A
 
 #define MAX_CONFIGS 625
 

@@ -40,6 +40,7 @@ char szName2[256];
 UINT8 load_options = 0x00;
 
 extern Rip *currentRip;
+extern u8 bShowDisc;
 
 u8 bFavsOnlyMode = false;
 
@@ -58,6 +59,7 @@ BOOL LoadCart(const CHAR* filename)
     
     bIsFatalError = false;
     bGameLoaded = FALSE;
+    bShowDisc = false; // Normal overlay to start
     
     // Clear out the debug array with every new game loaded
     memset(debug, 0x00, DEBUG_SIZE * (sizeof(UINT32)));

@@ -55,6 +55,7 @@ UINT8 bInitEmulator     __attribute__((section(".dtcm"))) = false;
 UINT8 bUseDiscOverlay   __attribute__((section(".dtcm"))) = false;
 UINT8 bGameLoaded       __attribute__((section(".dtcm"))) = false;
 UINT8 bMetaSpeedup      __attribute__((section(".dtcm"))) = false;
+UINT8 bShowDisc         __attribute__((section(".dtcm"))) = false;
 
 UINT8 hud_x = 3;
 UINT8 hud_y = 0;
@@ -667,6 +668,11 @@ void ds_handle_meta(int meta_key)
             if (dsWaitOnQuit()){ runState = Quit; }
             bStartSoundFifo = true;
             break;
+            
+        case OVL_META_DISC:
+            bShowDisc ^= 1;
+            show_overlay(bShowDisc);
+            break;
     }
 }
 
@@ -840,6 +846,29 @@ UINT8 poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
                 else if (touch.px <= 97) ecs_key_pressed = 42;
             }
         }
+    }
+    else if (bShowDisc) // Full touch-screen disc overlay is shown... do our best to map to the 16-position disc using approximating rectangular areas...
+    {
+             if ((touch.px >= 117) && (touch.px < 144) && (touch.py >= 16)  && (touch.py < 61))  ds_disc_input[ctrl_disc][0] = 1;   // North
+        else if ((touch.px >= 144) && (touch.px < 162) && (touch.py >= 18)  && (touch.py < 51))  ds_disc_input[ctrl_disc][1] = 1;
+        else if ((touch.px >= 163) && (touch.px < 196) && (touch.py >= 26)  && (touch.py < 60))  ds_disc_input[ctrl_disc][2] = 1;
+        else if ((touch.px >= 154) && (touch.px < 170) && (touch.py >= 51)  && (touch.py < 70))  ds_disc_input[ctrl_disc][2] = 1;
+        else if ((touch.px >= 171) && (touch.px < 205) && (touch.py >= 61)  && (touch.py < 80))  ds_disc_input[ctrl_disc][3] = 1;
+        else if ((touch.px >= 162) && (touch.px < 211) && (touch.py >= 80)  && (touch.py < 107)) ds_disc_input[ctrl_disc][4] = 1;   // East
+        else if ((touch.px >= 173) && (touch.px < 202) && (touch.py >= 107) && (touch.py < 127)) ds_disc_input[ctrl_disc][5] = 1;
+        else if ((touch.px >= 163) && (touch.px < 196) && (touch.py >= 127) && (touch.py < 163)) ds_disc_input[ctrl_disc][6] = 1;
+        else if ((touch.px >= 155) && (touch.px < 173) && (touch.py >= 115) && (touch.py < 136)) ds_disc_input[ctrl_disc][6] = 1;
+        else if ((touch.px >= 144) && (touch.px < 164) && (touch.py >= 136) && (touch.py < 170)) ds_disc_input[ctrl_disc][7] = 1;
+        else if ((touch.px >= 117) && (touch.px < 144) && (touch.py >= 126) && (touch.py < 173)) ds_disc_input[ctrl_disc][8] = 1;   // South
+        else if ((touch.px >=  95) && (touch.px < 117) && (touch.py >= 136) && (touch.py < 171)) ds_disc_input[ctrl_disc][9] = 1;
+        else if ((touch.px >=  86) && (touch.px < 103) && (touch.py >= 116) && (touch.py < 136)) ds_disc_input[ctrl_disc][10]= 1;
+        else if ((touch.px >=  62) && (touch.px < 95)  && (touch.py >= 127) && (touch.py < 163)) ds_disc_input[ctrl_disc][10]= 1;
+        else if ((touch.px >=  51) && (touch.px < 86)  && (touch.py >= 106) && (touch.py < 127)) ds_disc_input[ctrl_disc][11]= 1;
+        else if ((touch.px >=  49) && (touch.px < 96)  && (touch.py >= 83)  && (touch.py < 106)) ds_disc_input[ctrl_disc][12]= 1;   // West
+        else if ((touch.px >=  50) && (touch.px < 87)  && (touch.py >= 64)  && (touch.py < 83))  ds_disc_input[ctrl_disc][13]= 1;
+        else if ((touch.px >=  62) && (touch.px < 96)  && (touch.py >= 28)  && (touch.py < 62))  ds_disc_input[ctrl_disc][14]= 1;
+        else if ((touch.px >=  87) && (touch.px < 104) && (touch.py >= 53)  && (touch.py < 73))  ds_disc_input[ctrl_disc][14]= 1;
+        else if ((touch.px >=  96) && (touch.px < 117) && (touch.py >= 21)  && (touch.py < 52))  ds_disc_input[ctrl_disc][15]= 1;
     }
 
     return pad_pressed;
@@ -1264,7 +1293,7 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
 #ifdef DEBUG_ENABLE
     show_debug_overlay();
 #else
-    show_overlay();
+    show_overlay(bShowDisc);
 #endif
 }
 
