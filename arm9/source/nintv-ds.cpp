@@ -866,9 +866,9 @@ UINT8 poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
         else if ((touch.px >=  51) && (touch.px < 86)  && (touch.py >= 106) && (touch.py < 127)) ds_disc_input[ctrl_disc][11]= 1;
         else if ((touch.px >=  49) && (touch.px < 96)  && (touch.py >= 83)  && (touch.py < 106)) ds_disc_input[ctrl_disc][12]= 1;   // West
         else if ((touch.px >=  50) && (touch.px < 87)  && (touch.py >= 64)  && (touch.py < 83))  ds_disc_input[ctrl_disc][13]= 1;
-        else if ((touch.px >=  62) && (touch.px < 96)  && (touch.py >= 28)  && (touch.py < 62))  ds_disc_input[ctrl_disc][14]= 1;
+        else if ((touch.px >=  62) && (touch.px < 96)  && (touch.py >= 28)  && (touch.py < 64))  ds_disc_input[ctrl_disc][14]= 1;
         else if ((touch.px >=  87) && (touch.px < 104) && (touch.py >= 53)  && (touch.py < 73))  ds_disc_input[ctrl_disc][14]= 1;
-        else if ((touch.px >=  96) && (touch.px < 117) && (touch.py >= 21)  && (touch.py < 52))  ds_disc_input[ctrl_disc][15]= 1;
+        else if ((touch.px >=  96) && (touch.px < 117) && (touch.py >= 20)  && (touch.py < 52))  ds_disc_input[ctrl_disc][15]= 1;
     }
 
     return pad_pressed;
