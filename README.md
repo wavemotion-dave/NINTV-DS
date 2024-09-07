@@ -31,6 +31,7 @@ Features :
  * Numerous button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
  * ECS support for ECS games including sound-enhanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
+ * 2K GRAM (aka Tutorvision mode) is supported on a per-game basis. Select 2K GRAM in the second page of Configuration for any game (reload game for it to take effect).
 
 Technical Specs :
 ----------
@@ -125,6 +126,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.3 : 07-Sep-2024 by wavemotion-dave
+  * Integrated 2KGRAM build into the main code. There is now one unified Nintellivision build. Use Configuration to select 2KGRAM (aka Tutorvision mode) for games that support it.
+
 V5.2 : 22-Jun-2024 by wavemotion-dave
   * Improved MOB collision detection to fix GORF
   * Improved MOB rendering so that Y coordinates of zero don't draw (fixes minor glitch in Beauty and the Beast at end of levels)

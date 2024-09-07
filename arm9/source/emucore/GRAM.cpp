@@ -11,11 +11,19 @@
 
 #include <nds.h>
 #include "GRAM.h"
-
+#include "../config.h"
 
 UINT8     gram_image[GRAM_SIZE]         __attribute__((section(".dtcm")));
 UINT8     dirtyCards[GRAM_SIZE>>3]      __attribute__((section(".dtcm")));
 UINT8     dirtyRAM                      __attribute__((section(".dtcm")));
+
+// ------------------------------------------------------------------------------------------------------
+// These are not defines so that we can adjust based on whether the 2K GRAM (aka Tutorvision mode) is
+// enabled. This is 1% slower emulation but provides for the ability to have an upgraded GRAM emulation.
+// ------------------------------------------------------------------------------------------------------
+UINT16 GRAM_MASK            __attribute__((section(".dtcm"))) = 0x01FF;  // Allows indexing the 512 or 2K bytes of GRAM
+UINT16 GRAM_COL_STACK_MASK  __attribute__((section(".dtcm"))) = 0x01F8;  // Allows for indexing 64 / 256 tiles in Color Stack mode
+UINT16 GRAM_CARD_MOB_MASK   __attribute__((section(".dtcm"))) =   0x3F;  // Allows for indexing 64 / 256 tiles for MOBs in Color Stack mode
 
 GRAM::GRAM()
 : RAM(GRAM_SIZE, GRAM_ADDRESS, GRAM_READ_MASK, GRAM_WRITE_MASK, 8)
@@ -30,6 +38,19 @@ void GRAM::reset()
 
     for (i = 0; i < (GRAM_SIZE>>3); i++)
         dirtyCards[i] = TRUE;
+        
+    if (myConfig.gramSize == GRAM_2K)
+    {
+        GRAM_MASK            = 0x07FF;
+        GRAM_COL_STACK_MASK  = 0x07F8;
+        GRAM_CARD_MOB_MASK   =   0xFF;
+    }
+    else
+    {
+        GRAM_MASK            = 0x01FF;
+        GRAM_COL_STACK_MASK  = 0x01F8;
+        GRAM_CARD_MOB_MASK   =   0x3F;
+    }
 }
 
 ITCM_CODE void GRAM::poke(UINT16 location, UINT16 value)

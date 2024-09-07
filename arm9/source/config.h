@@ -53,7 +53,7 @@ struct Config_t
     UINT8  fudgeTiming;
     UINT8  key_click;
     UINT8  bSkipBlanks;
-    UINT8  spare5;
+    UINT8  gramSize;
     UINT8  spare6;
     UINT8  spare7;
     UINT8  spare8;
@@ -115,6 +115,9 @@ struct AllConfig_t
 #define DPAD_REV_UP_DOWN        2
 #define DPAD_DIAGONALS          3
 #define DPAD_STRICT_4WAY        4
+
+#define GRAM_512B               0
+#define GRAM_2K                 1
 
 extern struct Config_t       myConfig;
 extern struct GlobalConfig_t myGlobalConfig;

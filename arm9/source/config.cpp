@@ -173,7 +173,7 @@ static void SetDefaultGameConfig(UINT32 crc)
     myConfig.fudgeTiming                    = 0;
     myConfig.key_click                      = 0;
     myConfig.bSkipBlanks                    = 0;
-    myConfig.spare5                         = 0;
+    myConfig.gramSize                       = GRAM_512B;    // Normal 512 bytes
     myConfig.spare6                         = 0;
     myConfig.spare7                         = 0;
     myConfig.spare8                         = 0;
@@ -460,6 +460,7 @@ const struct options_t Option_Table[3][20] =
     // Page 2 options
     {
         {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                     &myConfig.bLatched,         2},
+        {"GRAM SIZE",   {"512B", "2K (TUTOR)"},                                                                                                         &myConfig.gramSize,         2},
         {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                       &myConfig.fudgeTiming,      5},
         {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                 &myConfig.key_click,        2},
         {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                 &myConfig.bSkipBlanks,      2},

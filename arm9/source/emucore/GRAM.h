@@ -16,27 +16,13 @@
 
 #define GRAM_ADDRESS        0x3800  // GRAM base address (mirros handled with READ/WRITE masks below)
 
-//#define GRAM_2K   // Enable this line if you want to experiment with a 2K GRAM build
+#define GRAM_SIZE           0x0800  // Max of 2K GRAM even though most of the time we will only use the normal 512 byte version
+#define GRAM_READ_MASK      0xFFFF  // To allow for a full 2K GRAM even though the actual GRAM MASK might restrict
+#define GRAM_WRITE_MASK     0x3FFF  // To allow for a full 2K GRAM even though the actual GRAM MASK might restrict 
 
-#ifdef GRAM_2K
-
-#define GRAM_SIZE           0x0800  // 2K of GRAM is non-standard but possible!
-#define GRAM_READ_MASK      0xFFFF  // This is what produces the GRAM read aliases due to incomplete address decoding
-#define GRAM_WRITE_MASK     0x3FFF  // This is what produces the GRAM write aliases due to incomplete address decoding
-#define GRAM_MASK           0x07FF  // Allows indexing all 2K of GRAM
-#define GRAM_COL_STACK_MASK 0x07F8  // Allows for indexing 256 tiles in Color Stack mode
-#define GRAM_CARD_MOB_MASK  0xFF    // Allows for indexing 256 tiles for MOBs in Color Stack mode
-
-#else // Normal 512b GRAM
-
-#define GRAM_SIZE           0x0200  // 512 bytes of GRAM
-#define GRAM_READ_MASK      0xF9FF  // This is what produces the GRAM read aliases due to incomplete address decoding
-#define GRAM_WRITE_MASK     0x39FF  // This is what produces the GRAM write aliases due to incomplete address decoding
-#define GRAM_MASK           0x01FF  // Allows indexing the 512 bytes of GRAM
-#define GRAM_COL_STACK_MASK 0x01F8  // Allows for indexing 64 tiles in Color Stack mode
-#define GRAM_CARD_MOB_MASK  0x3F    // Allows for indexing 64 tiles for MOBs in Color Stack mode
-
-#endif // GRAM_2K
+extern UINT16 GRAM_MASK;
+extern UINT16 GRAM_COL_STACK_MASK;
+extern UINT16 GRAM_CARD_MOB_MASK;
 
 extern UINT8     gram_image[GRAM_SIZE];
 extern UINT8     dirtyCards[GRAM_SIZE>>3];
