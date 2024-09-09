@@ -65,19 +65,19 @@ Controller Types :
 
 Because the Intellivision had an innovative controller/keypad arrangement, you may want to get creative in how you map your buttons. For example, selecting Dual Action A controller and then mapping ABXY (and the related diagonals) to the 8-arrow-fire keypad buttons makes for a very enjoyable experience in games like AD&D Cloudy Mountain or Tron Deadly Discs. You move your adventurer with the d-pad and you fire with the ABXY into any of the 8 directions. Map the 'RUN' controller action button to the shoulder buttons on the DS and you can navigate any of Cloudy Mountain's dungeons with ease. In my opinion, for many of these games, this is pretty close to the original feel of playing on a real Intellivision. 
 
-![Mapping ABXY](ds-ABXY.png)
+![Mapping ABXY](png/ds-ABXY.png)
 
 Overlays :
 -----------------------
 Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in **extras.zip** in the overlay-library folder here on the github site. You must name the .ovl file the same as the base filename of the ROM you are loading (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl) - loading such a game would bring up the custom overlay automatically. If the custom overlay doesn't show, double check that the base filenames are exactly the same. By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
 
-![Standard Overlay](normalovl.png) ![Custom Overlay](customovl.png) ![Custom Overlay](customovl2.png)
+![Standard Overlay](png/normalovl.png) ![Custom Overlay](png/customovl.png) ![Custom Overlay](png/customovl2.png)
 
 Disc Overlay:
 -----------------------
 Built into the emulator is a full-disc overlay that maps to the 16-digital positions of a real Intellivision controller. It's not perfect - without the tactile feel of a real controller, it's not usable as a generic replacement for the D-Pad for smooth movement but it works great for games like Bowling or Golf where you need the discrete 16-digital position accuracy.  The DS START Button will toggle the disc overlay on/off (switching back to the normal overlay for the game).
 
-![Disc Overlay](disc.png)
+![Disc Overlay](png/disc.png)
 
 Frameskip and Sound Quality :
 -----------------------
