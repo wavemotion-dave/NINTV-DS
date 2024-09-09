@@ -18,7 +18,7 @@ You must supply the BIOS files:
 
 These can go in one of four places:  same directory as your ROMS, /roms/bios (recommended) or /roms/intv/bios or /data/bios (you can change the default location using the Global Configuration once you load the emulator).
 
-The GROM and EXEC binaries are property of Intellivision and you will have to find them yourself. 
+The GROM and EXEC binaries are property of whomever currently holds the Intellivision rights and you will have to find and install them yourself.
 Don't ask. If you own Intellivision Lives, you likely have both files already somewhere in your house. 
 
 Features :
