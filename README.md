@@ -53,7 +53,15 @@ Intellivision games come in two main formats: .bin+cfg and .rom formats.
 
 A flat-binary (.bin) may or may not have an associated .cfg file to help describe where to load it in memory. If no .cfg file is found, the Nintellivision internal database (with over 200 games known) will try to load it automatically.
 
-Nintellivision emulator also supports the .int extension which can be either a .bin or a .rom format file. As of version 4.8, the emulator will look at the first byte of the file to determine if it's a flat-binary (.bin) or a meta-data .rom (the file will start with a 0xA8 byte).  This is useful as Twilight Menu only supports auto-launching Nintellvision with .int files.
+Nintellivision emulator also supports the .int extension which can be either a .bin or a .rom format file. This is useful as Twilight Menu only supports auto-launching Nintellvision with .int files.
+
+When loading games, you have the choice of just loading the game normally by pressing the A button which will try to determine the best 'machine' options to use for that game (e.g. Intellivoice, JLP, ECS, etc):
+
+![Load Game](png/loadgame.png)
+
+Or you can press the X button to launch the game with a selected machine type to override the best guess by the emulator:
+
+![Load Options](png/loadopt.png)
  
 Controller Types :
 -----------------------
