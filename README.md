@@ -13,6 +13,8 @@ You must supply the BIOS files:
 * exec.bin
 * ivoice.bin (Optional for Intellivoice games)
 * ecs.bin (Optional for ECS games)
+* wbexec.bin (Optional for full Tutorvision mode)
+* wbgrom.bin (Optional for full Tutorvision mode)
 
 These can go in one of four places:  same directory as your ROMS, /roms/bios (recommended) or /roms/intv/bios or /data/bios (you can change the default location using the Global Configuration once you load the emulator).
 
@@ -31,7 +33,8 @@ Features :
  * Numerous button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
  * ECS support for ECS games including sound-enhanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
- * 2K GRAM (aka Tutorvision mode) is supported on a per-game basis. Select 2K GRAM in the second page of Configuration for any game (reload game for it to take effect).
+ * Tutorvision mode is supported which brings in the WBEXEC (REX) revised executive ROM as well as extra GRAM and main 16-bit RAM memory.
+ * Extra 2K GRAM (aka half-Tutorvision mode) is supported on a per-game basis. Select 2K GRAM in the second page of Configuration for any game (reload game for it to take effect).
 
 Technical Specs :
 ----------
