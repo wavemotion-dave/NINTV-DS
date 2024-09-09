@@ -62,7 +62,20 @@ When loading games, you have the choice of just loading the game normally by pre
 Or you can press the X button to launch the game with a selected machine type to override the best guess by the emulator:
 
 ![Load Options](png/loadopt.png)
- 
+
+This may be necessary if the game does not auto-detect the settings needed - for example, perhaps the game utilizes JLP Flash functionality or Intellivoice capabilities but the .rom or .bin/cfg does not specify those correctly, this is your way of overriding the machine type such that the game should run properly and with full capabilities.  Selecting any option here will save that at the default load option for this game in the future.  Selecting "Load Normally" will go back to the default behavior of trying to guess the best options to run.
+
+Configuration Options :
+-----------------------
+
+There are three pages of configuration options! Two pages are for the game selected:
+
+![Config 1](png/config1.png) ![Config 2](png/config2.png)
+
+And the last page is for Global Options that apply to any new game you selct going forward (existing games that you've already overridden configuration options for will still retain those settings):
+
+![Global Config](png/config3.png)
+
 Controller Types :
 -----------------------
 * You can select Player 1 controller or Player 2 controller. 
