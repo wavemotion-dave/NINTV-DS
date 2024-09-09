@@ -307,4 +307,9 @@ ITCM_CODE void Emulator::FlushAudio()
     audioMixer->flushAudio();
 }
 
+void Emulator::SetMachineType()
+{
+    inty.SetMachineType();
+}
+
 // End of file

@@ -125,6 +125,12 @@ BOOL LoadCart(const CHAR* filename)
         }
     }
     
+    // The Tutorvision adds in some extra 16-bit RAM so we do that here...
+    if (bUseTutorvision)
+    {
+        currentRip->AddRAM(new RAM(0x1a0, 0x360, 0xFFFF, 0xFFFF, 16));
+    }
+    
     // ------------------------------------------------------------------------------------------------------------------
     // The ECS uses 3 banked ROM areas... so we need to fill those in manually as we clear this array out on every load.
     // ------------------------------------------------------------------------------------------------------------------
@@ -178,6 +184,39 @@ void CheckFirstTimeLoad(void)
   }
 }
 
+void SearchForFile(char *szFoundName, UINT16 size, UINT32 crc32)
+{
+  // Look through all files in the current directory to see if we get a CRC32 match...
+  DIR *pdir;
+  struct dirent *pent;
+
+  CheckFirstTimeLoad();
+    
+  pdir = opendir(".");
+
+  if (pdir) 
+  {
+    while (((pent=readdir(pdir))!=NULL)) 
+    {
+      if (pent->d_type != DT_DIR)
+      {
+        struct stat st;
+        stat(pent->d_name, &st);
+        if (st.st_size == size)
+        {
+            if (CRC32::getCrc(pent->d_name) == crc32)
+            {
+                // Found it!!
+                strcpy(szFoundName, pent->d_name);
+                break;
+            }
+        }
+      }
+    }
+    closedir(pdir);
+  }
+}
+
 // ---------------------------------------------------------------------------------------------
 // If the exec.bin was not found, we will do a search for it in the current directory
 // to see if we get a match via CRC32.  We keep our search as fast as possible, we 
@@ -186,115 +225,28 @@ void CheckFirstTimeLoad(void)
 // ---------------------------------------------------------------------------------------------
 void FindAndLoadExec(char *szFoundName)
 {
-  // Look through all files in the current directory to see if we get a CRC32 match...
-  DIR *pdir;
-  struct dirent *pent;
-
-  CheckFirstTimeLoad();
-    
-  pdir = opendir(".");
-
-  if (pdir) 
-  {
-    while (((pent=readdir(pdir))!=NULL)) 
-    {
-      if (pent->d_type != DT_DIR)
-      {
-        struct stat st;
-        stat(pent->d_name, &st);
-        if (st.st_size == 8192)
-        {
-            if (CRC32::getCrc(pent->d_name) == 0xcbce86f7)
-            {
-                // Found it!!
-                strcpy(szFoundName, pent->d_name);
-                break;
-            }
-        }
-      }
-    }
-    closedir(pdir);
-  }    
+    SearchForFile(szFoundName, 8192, 0xcbce86f7); // Look for the normal exec.bin 
 }
 
 
-// ---------------------------------------------------------------------------------------------
-// If the grom.bin was not found, we will do a search for it in the current directory
-// to see if we get a match via CRC32.  We keep our search as fast as possible, we 
-// will only look at files that are exactly 2k in size.  This will still take a solid
-// second or two on the NDS - it's better if the user has the right filename to avoid this.
-// ---------------------------------------------------------------------------------------------
+void FindAndLoadTutorExec(char *szFoundName)
+{
+    SearchForFile(szFoundName, 16384, 0x7558a4cf); // Look for the Tutorvision wbexec.bin 
+}
+
 void FindAndLoadGrom(char *szFoundName)
 {
-  // Look through all files in the current directory to see if we get a CRC32 match...
-  DIR *pdir;
-  struct dirent *pent;
-
-  CheckFirstTimeLoad();
-    
-  pdir = opendir(".");
-
-  if (pdir) 
-  {
-    while (((pent=readdir(pdir))!=NULL)) 
-    {
-      if (pent->d_type != DT_DIR)
-      {
-        struct stat st;
-        stat(pent->d_name, &st);
-        if (st.st_size == 2048)
-        {
-            if (CRC32::getCrc(pent->d_name) == 0x683a4158)
-            {
-                // Found it!!
-                strcpy(szFoundName, pent->d_name);
-                break;
-            }
-        }
-      }
-    }
-    closedir(pdir);
-  }    
+    SearchForFile(szFoundName, 2048, 0x683a4158); // Look for the normal grom.bin
 }
 
+void FindAndLoadTutorGrom(char *szFoundName)
+{
+    SearchForFile(szFoundName, 2048, 0x82736456); // Look for the Tutorvision wbgrom.bin 
+}
 
-// ---------------------------------------------------------------------------------------------
-// If the ivoice.bin was not found, we will do a search for it in the current directory
-// to see if we get a match via CRC32.  We keep our search as fast as possible, we 
-// will only look at files that are exactly 2k in size.  This will still take a solid
-// second or two on the NDS - it's better if the user has the right filename to avoid this.
-// ---------------------------------------------------------------------------------------------
 void FindAndLoadIVoice(char *szFoundName)
 {
-  // Look through all files in the current directory to see if we get a CRC32 match...
-  DIR *pdir;
-  struct dirent *pent;
-
-  CheckFirstTimeLoad();
-    
-  pdir = opendir(".");
-
-  if (pdir) 
-  {
-    while (((pent=readdir(pdir))!=NULL)) 
-    {
-      if (pent->d_type != DT_DIR)
-      {
-        struct stat st;
-        stat(pent->d_name, &st);
-        if (st.st_size == 2048)
-        {
-            if (CRC32::getCrc(pent->d_name) == 0x0de7579d)
-            {
-                // Found it!!
-                strcpy(szFoundName, pent->d_name);
-                break;
-            }
-        }
-      }
-    }
-    closedir(pdir);
-  }    
+    SearchForFile(szFoundName, 2048, 0x0de7579d); // Look for the Intellivioice ivoice.bin 
 }
 
 
@@ -306,7 +258,7 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
     UINT16 count = peripheral->GetROMCount();
     for (UINT16 i = 0; i < count; i++) {
         ROM* r = peripheral->GetROM(i);
-        if (r->isLoaded())
+        if (r->isLoaded()) // If already loaded, we don't need to read the file again...
             continue;
 
         CHAR nextFile[MAX_PATH];
@@ -329,10 +281,15 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
         }
 
         strcat(nextFile, r->getDefaultFileName());
+        
         if (!r->load(nextFile, r->getDefaultFileOffset())) 
         {
-            if (strstr(nextFile, "grom") != NULL) FindAndLoadGrom(nextFile);
-            if (strstr(nextFile, "exec") != NULL) FindAndLoadExec(nextFile);
+            if (strstr(nextFile, "wbgrom") != NULL) FindAndLoadTutorGrom(nextFile);
+            else if (strstr(nextFile, "grom") != NULL) FindAndLoadGrom(nextFile);
+            
+            if (strstr(nextFile, "wbexec") != NULL) FindAndLoadTutorExec(nextFile);
+            else if (strstr(nextFile, "exec") != NULL) FindAndLoadExec(nextFile);            
+            
             if (strstr(nextFile, "ivoice") != NULL) FindAndLoadIVoice(nextFile);
             
             if (!r->load(nextFile, r->getDefaultFileOffset()))
@@ -488,12 +445,13 @@ void intvFindFiles(void)
         // ------------------------------------------------
         // Filter out the BIOS files from the list...
         // ------------------------------------------------
-        if (strcasecmp(szName2, "grom.bin") == 0) continue;
-        if (strcasecmp(szName2, "exec.bin") == 0) continue;
+        if (strcasecmp(szName2, "grom.bin") == 0)   continue;
+        if (strcasecmp(szName2, "exec.bin") == 0)   continue;
+        if (strcasecmp(szName2, "wbexec.bin") == 0) continue;
         if (strcasecmp(szName2, "ivoice.bin") == 0) continue;
-        if (strcasecmp(szName2, "ecs.bin") == 0) continue;
-        if (strstr(szName2, "[BIOS]") != NULL) continue;
-        if (strstr(szName2, "[bios]") != NULL) continue;
+        if (strcasecmp(szName2, "ecs.bin") == 0)    continue;
+        if (strstr(szName2, "[BIOS]") != NULL)      continue;
+        if (strstr(szName2, "[bios]") != NULL)      continue;
         if ((szName2[0] == '.') && (szName2[1] == '_')) continue;    // For MAC files with the underscore starting a name
         
         if (strlen(szName2)>4) 
@@ -572,7 +530,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 }
 
 
-#define LOAD_OPTION_MENU_ITEMS 10
+#define LOAD_OPTION_MENU_ITEMS 11
 const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] = 
 {
     "LOAD GAME NORMALLY",  
@@ -584,6 +542,7 @@ const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] =
     "LOAD GAME WITH JLP+ECS",  
     "LOAD GAME WITH ECS+IVOICE",
     "LOAD GAME WITH JLP+ECS+IV",
+    "LOAD GAME WITH TUTORVISION",
     "EXIT THIS MENU",  
 };
 
@@ -593,12 +552,12 @@ UINT8 LoadWithOptions(void)
 
     dsShowBannerScreen();
     swiWaitForVBlank();
-    dsPrintValue(3,3,0, (char*) "  LOAD GAME OPTIONS       ");
+    dsPrintValue(3,3,0, (char*) "LOAD GAME OPTIONS         ");
     dsPrintValue(3,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");
 
     for (int i=0; i<LOAD_OPTION_MENU_ITEMS; i++)
     {
-           dsPrintValue(5,5+i, (i==0 ? 1:0), (char*)load_options_menu[i]);
+           dsPrintValue(3,5+i, (i==0 ? 1:0), (char*)load_options_menu[i]);
     }
     
     int last_keys_pressed = -1;
@@ -611,15 +570,15 @@ UINT8 LoadWithOptions(void)
             last_keys_pressed = keys_pressed;
             if (keys_pressed & KEY_DOWN)
             {
-                dsPrintValue(5,5+current_entry, 0, (char*)load_options_menu[current_entry]);
+                dsPrintValue(3,5+current_entry, 0, (char*)load_options_menu[current_entry]);
                 if (current_entry < (LOAD_OPTION_MENU_ITEMS-1)) current_entry++; else current_entry=0;
-                dsPrintValue(5,5+current_entry, 1, (char*)load_options_menu[current_entry]);
+                dsPrintValue(3,5+current_entry, 1, (char*)load_options_menu[current_entry]);
             }
             if (keys_pressed & KEY_UP)
             {
-                dsPrintValue(5,5+current_entry, 0, (char*)load_options_menu[current_entry]);
+                dsPrintValue(3,5+current_entry, 0, (char*)load_options_menu[current_entry]);
                 if (current_entry > 0) current_entry--; else current_entry=(LOAD_OPTION_MENU_ITEMS-1);
-                dsPrintValue(5,5+current_entry, 1, (char*)load_options_menu[current_entry]);
+                dsPrintValue(3,5+current_entry, 1, (char*)load_options_menu[current_entry]);
             }
             if (keys_pressed & KEY_A)
             {
@@ -832,7 +791,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
     if ( keysCurrent() & KEY_START )
     {
         dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
-        SaveConfig(false);
+        SaveConfig(0x00000000, FALSE);
         WAITVBL;WAITVBL;WAITVBL;
         dsDisplayLoadInstructions();
         while (keysCurrent() & KEY_START);
@@ -849,6 +808,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
           bUseJLP=false;
           bUseIVoice=false;
           bUseECS=false;
+          bUseTutorvision=false;
           load_options = 0x00;  // If the user selects a specific load configuration, the high bit of this will be set plus some combo of the LOAD_WITH_xxxx bits
           if (keysCurrent() & KEY_X)
           {
@@ -862,6 +822,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
               if (opt == 6) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS;}
               if (opt == 7) {load_options = LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               if (opt == 8) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
+              if (opt == 9) {load_options = LOAD_WITH_TUTORVISION;}
               while (keysCurrent() & KEY_X);
               WAITVBL;
           }

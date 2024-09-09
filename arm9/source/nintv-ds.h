@@ -37,6 +37,7 @@ extern UINT8 bStartSoundFifo;
 extern UINT8 bUseJLP;
 extern UINT8 bUseECS;
 extern UINT8 bUseIVoice;
+extern UINT8 bUseTutorvision;
 extern UINT8 bInitEmulator;
 extern UINT8 bUseDiscOverlay;
 extern UINT8 bGameLoaded;

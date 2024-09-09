@@ -124,7 +124,7 @@ PeripheralCompatibility Rip::GetPeripheralUsage(const CHAR* periphName)
     return PERIPH_INCOMPATIBLE;
 }
 
-void ForceLoadOptions(void)
+void ForceLoadOptions(UINT32 crc)
 {
     // --------------------------------------------------------------------
     // If the user has picked some load options, we want to save those out
@@ -133,7 +133,7 @@ void ForceLoadOptions(void)
     {
         myConfig.load_options = (load_options == LOAD_NORMALLY ? 0x00: load_options);
         dsPrintValue(2,23,0, (char*)"    SAVING CONFIGURATION     ");
-        SaveConfig(FALSE);
+        SaveConfig(crc, FALSE);
         WAITVBL;WAITVBL;WAITVBL;
         dsPrintValue(2,23,0, (char*)"                             ");
     }
@@ -141,13 +141,19 @@ void ForceLoadOptions(void)
     // If the user has overridden the load options for this game, use those instead...
     if (myConfig.load_options)
     {
-        bUseECS = 0;
-        bUseJLP = 0;
-        bUseIVoice = 0;
+        // For TUTORVISION, don't override any of the values that were found in the .bin/.cfg or .rom
+        if ((myConfig.load_options & LOAD_WITH_TUTORVISION) != LOAD_WITH_TUTORVISION)
+        {
+            bUseECS = 0;
+            bUseJLP = 0;
+            bUseIVoice = 0;
+        }
+        bUseTutorvision = 0;
         
-        if ((myConfig.load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)  bUseJLP = 1;
-        if ((myConfig.load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)  bUseECS = 1;
-        if ((myConfig.load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)  bUseIVoice = 1;
+        if ((myConfig.load_options & LOAD_WITH_JLP) == LOAD_WITH_JLP)                   bUseJLP = 1;
+        if ((myConfig.load_options & LOAD_WITH_ECS) == LOAD_WITH_ECS)                   bUseECS = 1;
+        if ((myConfig.load_options & LOAD_WITH_IVOICE) == LOAD_WITH_IVOICE)             bUseIVoice = 1;
+        if ((myConfig.load_options & LOAD_WITH_TUTORVISION) == LOAD_WITH_TUTORVISION)   {bUseTutorvision = 1; bUseECS = 0; myConfig.gramSize = GRAM_2K;} // Force 2K GRAM but don't force the save above
     }
 }
 
@@ -226,7 +232,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
     // --------------------------------------------------------------
     // If the user asked for a specific combination of hardware...
     // --------------------------------------------------------------
-    ForceLoadOptions();
+    ForceLoadOptions(rip->crc);
     
     // Add the JLP RAM module if required...
     if (bUseJLP)
@@ -262,11 +268,9 @@ static u8 exists(const CHAR *filename)
     return 0;
 }
 
-
 u16 maybeRAM_start[16];
 u16 maybeRAM_end[16];
 u8 maybeRAMidx = 0;
-
 
 Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
 {
@@ -705,7 +709,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
     // --------------------------------------------------------------
     // If the user asked for a specific combination of hardware...
     // --------------------------------------------------------------
-    ForceLoadOptions();
+    ForceLoadOptions(rip->crc);
 
     // Load the JLP RAM module if required...
     if (bUseJLP)

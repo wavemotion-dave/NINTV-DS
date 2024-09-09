@@ -23,7 +23,7 @@ class GROM : public ROM
     friend class AY38900;
 
     public:
-        GROM();
+        GROM(const char *name, const char *fileName);
 
         void reset();
         virtual UINT16 peek(UINT16 location) {return ROM::peek8(location);}     // GROM is 8-bits wide so force the call to get 8-bit value only

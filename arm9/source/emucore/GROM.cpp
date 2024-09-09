@@ -11,8 +11,8 @@
 
 #include "GROM.h"
 
-GROM::GROM()
-: ROM("GROM", "grom.bin", 0, 1, GROM_SIZE, GROM_ADDRESS)
+GROM::GROM(const char *name, const char *fileName)
+: ROM(name, fileName, 0, 1, GROM_SIZE, GROM_ADDRESS)
 {}
 
 void GROM::reset()

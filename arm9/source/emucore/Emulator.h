@@ -55,6 +55,7 @@ class Emulator : public Peripheral
         void LoadFastMemory();
         void RefreshFastMemory();
         void ApplyCheats();
+        void SetMachineType();
 
         void Reset();
         void Run();

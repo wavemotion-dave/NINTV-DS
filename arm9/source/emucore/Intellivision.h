@@ -36,6 +36,7 @@ class Intellivision : public Emulator
 {
     public:
         Intellivision();
+        void SetMachineType(void);
         BOOL SaveState(struct _stateStruct *saveState);
         BOOL LoadState(struct _stateStruct *saveState);
 
@@ -49,7 +50,9 @@ class Intellivision : public Emulator
         RAM         RAM8bit;
         RAM         RAM16bit;
         ROM         execROM;
+        ROM         tutorROM;
         GROM        grom;
+        GROM        tutorGrom;
         GRAM        gram;
 
         //hand controllers

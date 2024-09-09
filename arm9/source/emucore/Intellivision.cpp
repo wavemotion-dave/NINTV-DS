@@ -14,6 +14,8 @@
 #include <time.h>
 
 #include "Intellivision.h"
+#include "../nintv-ds.h"
+#include "../config.h"
 #include "../debugger.h"
 #include "../savestate.h"
 
@@ -30,7 +32,9 @@ Intellivision::Intellivision()
       RAM8bit(RAM8BIT_SIZE, RAM8BIT_LOCATION, 0xFFFF, 0xFFFF, 8),
       RAM16bit(RAM16BIT_SIZE, RAM16BIT_LOCATION, 0xFFFF, 0xFFFF, 16),
       execROM("Executive ROM", "exec.bin", 0, 2, 0x1000, 0x1000),
-      grom(),
+      tutorROM("Tutorvision ROM", "wbexec.bin", 0, 2, 0x2000, 0x1000),
+      grom("GROM", "grom.bin"),
+      tutorGrom("Tutorvision GROM", "wbgrom.bin"),
       gram(),
       cpu(&memoryBus, 0x1000, 0x1004),
       stic(&memoryBus, &grom, &gram)
@@ -53,7 +57,7 @@ Intellivision::Intellivision()
 
     //add the executive ROM
     AddROM(&execROM);
-
+    
     //add the GROM
     AddROM(&grom);
 
@@ -92,6 +96,29 @@ Intellivision::Intellivision()
     AddPeripheral(&intellivoice);
 }
 
+// -------------------------------------------------------------------
+// This function will switch between the normal Intellivision console
+// and the Tutorvision version which has expanded EXEC, larger GRAM
+// and a revised GROM character set. We simply switch out one set
+// of ROMs for another and reset the GRAM masks...
+// -------------------------------------------------------------------
+void Intellivision::SetMachineType(void)
+{
+    if (bUseTutorvision)
+    {
+        SwapROM(&execROM, &tutorROM);
+        SwapROM(&grom, &tutorGrom);
+        stic.SetGROM(&tutorGrom);
+        gram.reset();
+    }
+    else // Normal Intellivision exec
+    {
+        SwapROM(&tutorROM, &execROM);
+        SwapROM(&tutorGrom, &grom);
+        stic.SetGROM(&grom);
+        gram.reset();
+    }
+}
 
 BOOL Intellivision::SaveState(struct _stateStruct *saveState)
 {

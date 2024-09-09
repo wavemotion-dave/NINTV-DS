@@ -272,7 +272,7 @@ static void ToggleXYABasDirections(void)
 // Write out the NINTV-DS.DAT configuration file to capture the settings for
 // each game.  This one file contains global settings + 300 game settings.
 // ---------------------------------------------------------------------------
-void SaveConfig(bool bShow)
+void SaveConfig(UINT32 crc, bool bShow)
 {
     FILE *fp;
     int slot = 0;
@@ -286,9 +286,10 @@ void SaveConfig(bool bShow)
     memcpy(&allConfigs.global_config, &myGlobalConfig, sizeof(struct GlobalConfig_t));
     
     // If there is a game loaded, save that into a slot... re-use the same slot if it exists
-    if (currentRip != NULL)
+    if (crc != 0x00000000)
     {
-        myConfig.game_crc = currentRip->GetCRC();
+        myConfig.game_crc = crc;
+        
         // Find the slot we should save into...
         for (slot=0; slot<MAX_CONFIGS; slot++)
         {
@@ -365,7 +366,7 @@ void FindAndLoadConfig(UINT32 crc)
             }
             allConfigs.config_ver = CONFIG_VER;
             memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
-            SaveConfig(FALSE);
+            SaveConfig(0x00000000, FALSE);
             dsPrintValue(0,1,0, (char*)"              ");
         }
         
@@ -376,7 +377,7 @@ void FindAndLoadConfig(UINT32 crc)
             allConfigs.config_ver = CONFIG_VER;
             SetDefaultGlobalConfig();
             SetDefaultGameConfig(crc);
-            SaveConfig(FALSE);
+            SaveConfig(0x00000000, FALSE);
             dsPrintValue(0,1,0, (char*)"              ");
         }
         else
@@ -406,7 +407,7 @@ void FindAndLoadConfig(UINT32 crc)
         allConfigs.config_ver = CONFIG_VER;
         SetDefaultGlobalConfig();
         SetDefaultGameConfig(crc);
-        SaveConfig(FALSE);
+        SaveConfig(0x00000000, FALSE);
         dsPrintValue(0,1,0, (char*)"              ");
     }
     
@@ -460,7 +461,7 @@ const struct options_t Option_Table[3][20] =
     // Page 2 options
     {
         {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                     &myConfig.bLatched,         2},
-        {"GRAM SIZE",   {"512B", "2K (TUTOR)"},                                                                                                         &myConfig.gramSize,         2},
+        {"GRAM SIZE",   {"512B (NORMAL)", "2K (EXPANDED)"},                                                                                             &myConfig.gramSize,         2},
         {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                       &myConfig.fudgeTiming,      5},
         {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                 &myConfig.key_click,        2},
         {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                 &myConfig.bSkipBlanks,      2},
@@ -610,7 +611,7 @@ void dsChooseOptions(int global)
             }
             if (keysCurrent() & KEY_START)  // Save Options
             {
-                SaveConfig(TRUE);
+                SaveConfig(currentRip ? currentRip->GetCRC():0x00000000, TRUE);
             }
             if (keysCurrent() & (KEY_SELECT | KEY_L | KEY_R))  // Toggle Between Option Pages
             {

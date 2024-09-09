@@ -142,6 +142,11 @@ AY38900::AY38900(MemoryBus* mb, GROM* go, GRAM* ga)
     mode             = 0;
 }
 
+void AY38900::SetGROM(GROM *gp)
+{
+    grom = gp;
+}
+
 void AY38900::resetProcessor()
 {
     //switch to bus copy mode

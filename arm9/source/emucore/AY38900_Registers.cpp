@@ -20,6 +20,8 @@
 // ----------------------------------------------------------------------------------
 UINT16   stic_memory[0x40] __attribute__((section(".dtcm")));
 
+extern UINT8 bUseTutorvision;
+
 // Technically the STIC is read-responsive at 0x40-0x7F but we ignore that for now (nothing seems to rely on it)
 AY38900_Registers::AY38900_Registers()
 : RAM(0x40, 0x0000, 0xFFFF, 0x3FFF)
@@ -198,6 +200,8 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
                 ay38900->colorModeChanged = TRUE;
             }
             return stic_memory[location];
+        case 0x22:
+            return (bUseTutorvision ? 0x3ff7 : 0x3fff);  // STIC 1 vs 1A for Tutorvision
         case 0x28:
         case 0x29:
         case 0x2A:

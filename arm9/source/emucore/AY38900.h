@@ -90,6 +90,8 @@ public:
      * Implemented from the VideoProducer interface.
      */
     void render();
+    
+    void SetGROM(GROM *gp);
 
     //registers
     AY38900_Registers registers;

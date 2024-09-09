@@ -125,7 +125,7 @@ extern struct AllConfig_t    allConfigs;
 
 extern void FindAndLoadConfig(UINT32 crc);
 extern void dsChooseOptions(void);
-extern void SaveConfig(bool bShow);
+extern void SaveConfig(UINT32 crc, bool bShow);
 
 extern UINT8 bConfigWasFound;
 

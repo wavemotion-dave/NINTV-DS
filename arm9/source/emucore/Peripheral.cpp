@@ -115,6 +115,14 @@ void Peripheral::AddROM(ROM* r)
     }
 }
 
+void Peripheral::SwapROM(ROM* swapThis, ROM *withThis)
+{
+    for (UINT16 i=0; i < romCount; i++)
+    {
+        if (roms[i] == swapThis)  roms[i] = withThis;
+    }
+}
+
 UINT16 Peripheral::GetROMCount()
 {
     return romCount;

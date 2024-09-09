@@ -50,6 +50,7 @@ UINT8 bStartSoundFifo   __attribute__((section(".dtcm"))) = false;
 UINT8 bUseJLP           __attribute__((section(".dtcm"))) = false;
 UINT8 bUseECS           __attribute__((section(".dtcm"))) = false;
 UINT8 bUseIVoice        __attribute__((section(".dtcm"))) = false;
+UINT8 bUseTutorvision   __attribute__((section(".dtcm"))) = false;
 UINT8 bInitEmulator     __attribute__((section(".dtcm"))) = false;
 UINT8 bUseDiscOverlay   __attribute__((section(".dtcm"))) = false;
 UINT8 bGameLoaded       __attribute__((section(".dtcm"))) = false;
@@ -179,6 +180,12 @@ BOOL InitializeEmulator(void)
         return FALSE;
     }
     
+    // --------------------------------------------------------------------------------------
+    // In case we are a Tutorvision, we need to swap out the exec.bin ROM for the wbexec.bin
+    // Do this before we load the peripheral ROMs into memory so everything is in place.
+    // --------------------------------------------------------------------------------------
+    currentEmu->SetMachineType();
+    
     //load the BIOS files required for this currentEmulator
     if (!LoadPeripheralRoms(currentEmu))
     {
@@ -304,9 +311,8 @@ void HandleScreenStretch(void)
         }
         else if (keys_pressed & KEY_START)
         {
-            extern void SaveConfig(bool bShow);
             dsPrintValue(2,20,0, (char*)"    SAVING CONFIGURATION     ");
-            SaveConfig(FALSE);
+            SaveConfig(currentRip ? currentRip->GetCRC():0x00000000, FALSE);
             WAITVBL;WAITVBL;WAITVBL;WAITVBL;
             dsPrintValue(2,20,0, (char*)"                             ");
         }
@@ -347,6 +353,7 @@ void dsShowEmuInfo(void)
         sprintf(tmpStr, "Intellivoice:  %s   ",     (bUseIVoice ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "JLP Enabled:   %s   ",     (bUseJLP    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
+        sprintf(tmpStr, "Tutorvision:   %s   ",     (bUseTutorvision ? "YES":"NO"));     dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, tmpStr);        
         sprintf(tmpStr, "RAM Indexes:   %d / %d / %d", fast_ram16_idx, slow_ram16_idx, slow_ram8_idx);  dsPrintValue(0, idx++, 0, tmpStr);        

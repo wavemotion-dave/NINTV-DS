@@ -100,6 +100,11 @@ class Peripheral
          * @param rom the ROM unit to add
          */
         void AddROM(ROM* rom);
+        
+        /**
+         * Swap one ROM with Another - used to swap normal exec with Tutorvision exec
+         */
+        void SwapROM(ROM* swapThis, ROM *withThis);
 
         /**
          * Gets the number of ROM units in this peripheral.

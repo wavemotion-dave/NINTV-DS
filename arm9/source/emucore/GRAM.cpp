@@ -39,7 +39,7 @@ void GRAM::reset()
     for (i = 0; i < (GRAM_SIZE>>3); i++)
         dirtyCards[i] = TRUE;
         
-    if (myConfig.gramSize == GRAM_2K)
+    if (myConfig.gramSize)
     {
         GRAM_MASK            = 0x07FF;
         GRAM_COL_STACK_MASK  = 0x07F8;

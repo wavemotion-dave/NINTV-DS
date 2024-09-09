@@ -32,6 +32,7 @@ extern UINT8 load_options;
 #define LOAD_WITH_JLP           0x81        // Load with stock Inty + JLP
 #define LOAD_WITH_ECS           0x82        // Load with stock Inty + ECS
 #define LOAD_WITH_IVOICE        0x84        // Load with stock Inty + IVOICE
+#define LOAD_WITH_TUTORVISION   0x88        // Load in Tutorvision Mode (wbexec, expanded GRAM, expanded system RAM)
 // The above bits can be ORed so you can load with combinations (e.g. JLP+ECS or ECS+IVOICE)
 
 #endif
