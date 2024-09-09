@@ -114,7 +114,16 @@ Settings you should probably not touch :
 * Backtab Latched is normally disabled. There are two known games (Stampede and Masters of the Universe) that need this to display properly. Most games do not change the backtab while the screen is rendering but to gain speed, these two games do just that. Setting this to TRUE chews up significant DS CPU time - but is a more accurate rendering.  If you encounter a future game where the images on screen appear to "jump" or "jitter" - try turing this to TRUE, Save your settings and reload the game.
 * Fudge Timing is needed for the original version of Mattel Motocross which is running right at the edge of proper timing... some non NTSC systems had problems running that game back in the day. The cycle emulation on Nintellivision is pretty close but not perfect - so the fudge timing is used make it so Motocross runs properly. It's unlikely you would ever need to change this but I put it in to future-proof the emulator in there is another game discovered with borderline timing chartacteristics.
 * Skip Blanks is needed for B-17 bomber as it should not blank the display when it's not active. The timing in Nintellivision is not perfect and without this set to TRUE, B-17 bomber will "flash" and it's a bit jarring. I don't know of any other games that need this setting but I've included it just in case.
- 
+
+Tutorvision Mode :
+-----------------------
+To run in Tutorvision mode, you must select the X button when you select a game and pick the "RUN AS TUTORVISION". This setting will be saved (so you don't have to do that more than once). Running in Tutorvision mode requires the BIOS files wbexec.bin and wbgrom.bin which you can find with a bit of online searching (do not ask!). In Tutorvision mode, you get the following emulation changes:
+* wbexec.bin replaces the normal exec.bin for enhanded executive ROM capabilities needed for Tutorvision games
+* wbgrom.bin replaces the normal grom.bin for a slightly different font
+* Automatically engages the 2K GRAM enhancement for improved graphics capabilities
+* Adds addtional 16-bit System RAM from 0x360 to 0x4FF
+* Identifies as a STIC 1A for purposes of auto-detection by some programs (such as FW Diagnostics)
+
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
