@@ -117,8 +117,11 @@ Settings you should probably not touch :
 
 Tutorvision Mode :
 -----------------------
+Late in the Intellivision life (1989), a joint venture to produce an updated Intellivision Console with a line of educational games was developed. This was known as the Tutorvision - it had some upgraded capabilities over a normal Intellivision. Unfortunately the project was scrapped and only a handful of Tutorvisions exist today. There were 16 educational games developed - of which only 2 (possibly 3) have been dumped. And there is one homebrew game (Little Man Computer) that uses the upgraded specifications.
+
 To run in Tutorvision mode, you must select the X button when you select a game and pick the "RUN AS TUTORVISION". This setting will be saved (so you don't have to do that more than once). Running in Tutorvision mode requires the BIOS files wbexec.bin and wbgrom.bin which you can find with a bit of online searching (do not ask!). In Tutorvision mode, you get the following emulation changes:
-* wbexec.bin replaces the normal exec.bin for enhanded executive ROM capabilities needed for Tutorvision games
+
+* wbexec.bin replaces the normal exec.bin for enhanced executive ROM capabilities needed for Tutorvision games
 * wbgrom.bin replaces the normal grom.bin for a slightly different font
 * Automatically engages the 2K GRAM enhancement for improved graphics capabilities
 * Adds addtional 16-bit System RAM from 0x360 to 0x4FF
