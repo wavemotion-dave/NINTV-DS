@@ -25,6 +25,7 @@
 #include "Emulator.h"
 #include "Rip.h"
 #include "overlay.h"
+#include "loadgame.h"
 #include "printf.h"
 
 // -------------------------------------------------------------------------
@@ -205,7 +206,26 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0xD1D352A0) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Tower of Doom is best with Strict 4-way
     if (crc == 0xD8C9856A) myConfig.dpad_config     = DPAD_DIAGONALS;           // Q-Bert is best with diagonal
     if (crc == 0x8AD19AB3) myConfig.bSkipBlanks     = true;                     // B-17 Bomber needs to skip rendering blanks or the screen 'flashes'
+
+    if (crc == 0xc0c84a13) myConfig.gramSize        = GRAM_2K;                  // Chippi-Plus is best with 2K Expanded GRAM
+    if (crc == 0xb8417889) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x51bd4fed) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x1deeee3e) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x3acd33e4) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x39eec5c7) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x788b440d) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x1a6b9100) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x52bb127b) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x2c0edc53) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x490f1348) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0x3f490bd2) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0xccb7fe6d) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
+    if (crc == 0xb91a1636) myConfig.gramSize        = GRAM_2K;                  // Studio Vision games are best with 2K Expanded GRAM
     
+    if (crc == 0x59f5fa32) myConfig.load_options    = LOAD_WITH_TUTORVISION;    // Map Mazes is a Tutorvision game
+    if (crc == 0x714ecd51) myConfig.load_options    = LOAD_WITH_TUTORVISION;    // Shapes in Space is a Tutorvision game
+    if (crc == 0x63a87259) myConfig.load_options    = LOAD_WITH_TUTORVISION | 
+                                                      LOAD_WITH_JLP;            // Little Man Computer is a Tutorvision game with JLP    
     last_crc = crc;
 }
 

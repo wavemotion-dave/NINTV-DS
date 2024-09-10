@@ -124,6 +124,8 @@ To run in Tutorvision mode, you must select the X button when you select a game 
 * Adds addtional 16-bit System RAM from 0x360 to 0x4FF
 * Identifies as a STIC 1A for purposes of auto-detection by some programs (such as FW Diagnostics)
 
+Some games don't need Tutorvision Mode to run at their best - many of decle's offerings (Chippi-Plus and the Studio Vision games) only need the 2K GRAM expansion to look and play their best. You can enable the 2K GRAM expansion in the Configuration Options menu without the need for enabling the full Tutorvision mode.
+
 Missing / Known Issues :
 -----------------------
 * ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
@@ -159,8 +161,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.4 : 10-Sep-2024 by wavemotion-dave
+  * Full Tutorvision Mode supported. See Tutorvision section in this README for details.
+
 V5.3 : 07-Sep-2024 by wavemotion-dave
-  * Integrated 2KGRAM build into the main code. There is now one unified Nintellivision build. Use Configuration to select 2KGRAM (aka Tutorvision mode) for games that support it.
+  * Integrated 2KGRAM build into the main code. There is now one unified Nintellivision build. Use Configuration to select 2KGRAM (aka Half-Tutorvision mode) for games that support it.
 
 V5.2 : 22-Jun-2024 by wavemotion-dave
   * Improved MOB collision detection to fix GORF
