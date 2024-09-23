@@ -13,6 +13,8 @@
 #include "HandController.h"
 
 UINT8 ecs_key_pressed = 0;
+UINT8 ecs_shift_key   = 0;
+UINT8 ecs_ctrl_key    = 0;
 
 ECSKeyboard::ECSKeyboard(INT32 id)
 : InputConsumer(id),
@@ -29,8 +31,7 @@ ECSKeyboard::~ECSKeyboard()
 void ECSKeyboard::resetInputConsumer()
 {
     rowsOrColumnsToScan = 0;
-    for (UINT16 i = 0; i < 8; i++)
-        rowInputValues[i] = 0;
+    memset(rowInputValues, 0, sizeof(rowInputValues));
 }
 
 // $00FE |                         $00FF bits
@@ -48,91 +49,70 @@ void ECSKeyboard::evaluateInputs()
 {
     extern UINT8 bUseECS;
     
-    for (UINT16 i = 0; i < 8; i++)  rowInputValues[i] = 0x00;
+    memset(rowInputValues, 0, sizeof(rowInputValues));
     
-    if (ecs_key_pressed == 255)  // No mini-keyboard so just use dual-purpose the main keypad
+    // If a key on the ECS Keyboard was pressed...
+    switch (ecs_key_pressed)
     {
-        if (ds_key_input[0][0])  rowInputValues[5] |= 0x10;     // '1'
-        if (ds_key_input[0][1])  rowInputValues[4] |= 0x20;     // '2'
-        if (ds_key_input[0][2])  rowInputValues[4] |= 0x10;     // '3'
-        if (ds_key_input[0][3])  rowInputValues[3] |= 0x20;     // '4'
-        if (ds_key_input[0][4])  rowInputValues[3] |= 0x10;     // '5'
-        
-        if (bUseECS == 2)   // Special for Mind Strike which needs START to run... sigh...
-        {
-            if (ds_key_input[0][5])  rowInputValues[4] |= 0x04; // 'S'
-            if (ds_key_input[0][6])  rowInputValues[3] |= 0x40; // 'T'    
-            if (ds_key_input[0][7])  rowInputValues[5] |= 0x80; // 'A'
-            if (ds_key_input[0][8])  rowInputValues[3] |= 0x08; // 'R'
-        }
-        else
-        {
-            if (ds_key_input[0][5])  rowInputValues[2] |= 0x20; // '6'    
-            if (ds_key_input[0][6])  rowInputValues[2] |= 0x10; // '7'
-            if (ds_key_input[0][7])  rowInputValues[1] |= 0x20; // '8'
-            if (ds_key_input[0][8])  rowInputValues[1] |= 0x10; // '9'
-        }
-
-        if (ds_key_input[0][9])  rowInputValues[5] |= 0x01;     // SP
-        if (ds_key_input[0][10]) rowInputValues[2] |= 0x01;     // 'N'
-        if (ds_key_input[0][11]) rowInputValues[0] |= 0x40;     // CR
+        case (1) : rowInputValues[5] |= 0x10; break;    // '1'
+        case (2) : rowInputValues[4] |= 0x20; break;    // '2'
+        case (3) : rowInputValues[4] |= 0x10; break;    // '3'
+        case (4) : rowInputValues[3] |= 0x20; break;    // '4'
+        case (5) : rowInputValues[3] |= 0x10; break;    // '5'
+        case (6) : rowInputValues[2] |= 0x20; break;    // '6'    
+        case (7) : rowInputValues[2] |= 0x10; break;    // '7'
+        case (8) : rowInputValues[1] |= 0x20; break;    // '8'
+        case (9) : rowInputValues[1] |= 0x10; break;    // '9'
+        case (10): rowInputValues[0] |= 0x20; break;    // '0'
+        case (11): rowInputValues[5] |= 0x80; break;    // 'A'
+        case (12): rowInputValues[2] |= 0x02; break;    // 'B'            
+        case (13): rowInputValues[3] |= 0x02; break;    // 'C'
+        case (14): rowInputValues[4] |= 0x80; break;    // 'D'
+        case (15): rowInputValues[4] |= 0x40; break;    // 'E'
+        case (16): rowInputValues[3] |= 0x04; break;    // 'F'
+        case (17): rowInputValues[3] |= 0x80; break;    // 'G'            
+        case (18): rowInputValues[2] |= 0x04; break;    // 'H'
+        case (19): rowInputValues[1] |= 0x08; break;    // 'I'
+        case (20): rowInputValues[2] |= 0x80; break;    // 'J'
+        case (21): rowInputValues[1] |= 0x04; break;    // 'K'
+        case (22): rowInputValues[1] |= 0x80; break;    // 'L'
+        case (23): rowInputValues[1] |= 0x02; break;    // 'M'
+        case (24): rowInputValues[2] |= 0x01; break;    // 'N'
+        case (25): rowInputValues[1] |= 0x40; break;    // 'O'
+        case (26): rowInputValues[0] |= 0x08; break;    // 'P'
+        case (27): rowInputValues[5] |= 0x08; break;    // 'Q'
+        case (28): rowInputValues[3] |= 0x08; break;    // 'R'
+        case (29): rowInputValues[4] |= 0x04; break;    // 'S'
+        case (30): rowInputValues[3] |= 0x40; break;    // 'T'
+        case (31): rowInputValues[2] |= 0x40; break;    // 'U'
+        case (32): rowInputValues[3] |= 0x01; break;    // 'V'
+        case (33): rowInputValues[4] |= 0x08; break;    // 'W'
+        case (34): rowInputValues[4] |= 0x01; break;    // 'X'
+        case (35): rowInputValues[2] |= 0x08; break;    // 'Y'
+        case (36): rowInputValues[4] |= 0x02; break;    // 'Z'
+        case (37): rowInputValues[0] |= 0x01; break;    // LEFT
+        case (38): rowInputValues[5] |= 0x02; break;    // DOWN
+        case (39): rowInputValues[5] |= 0x04; break;    // UP 
+        case (40): rowInputValues[5] |= 0x20; break;    // RIGHT
+        case (41): rowInputValues[5] |= 0x01; break;    // SPACE
+        case (42): rowInputValues[0] |= 0x40; break;    // RETURN (CR)
+        case (43): rowInputValues[0] |= 0x10; break;    // ESC key
+        case (44): rowInputValues[0] |= 0x04; break;    // Semicolon
+        case (45): rowInputValues[1] |= 0x01; break;    // Comma
+        case (46): rowInputValues[0] |= 0x02; break;    // Period
     }
-    else
-    {
-        // If a key on the ECS Mini-Keyboard was pressed...
-        switch (ecs_key_pressed)
-        {
-            case (1) : rowInputValues[5] |= 0x10; break;    // '1'
-            case (2) : rowInputValues[4] |= 0x20; break;    // '2'
-            case (3) : rowInputValues[4] |= 0x10; break;    // '3'
-            case (4) : rowInputValues[3] |= 0x20; break;    // '4'
-            case (5) : rowInputValues[3] |= 0x10; break;    // '5'
-            case (6) : rowInputValues[2] |= 0x20; break;    // '6'    
-            case (7) : rowInputValues[2] |= 0x10; break;    // '7'
-            case (8) : rowInputValues[1] |= 0x20; break;    // '8'
-            case (9) : rowInputValues[1] |= 0x10; break;    // '9'
-            case (10): rowInputValues[0] |= 0x20; break;    // '0'
-            case (11): rowInputValues[5] |= 0x80; break;    // 'A'
-            case (12): rowInputValues[2] |= 0x02; break;    // 'B'            
-            case (13): rowInputValues[3] |= 0x02; break;    // 'C'
-            case (14): rowInputValues[4] |= 0x80; break;    // 'D'
-            case (15): rowInputValues[4] |= 0x40; break;    // 'E'
-            case (16): rowInputValues[3] |= 0x04; break;    // 'F'
-            case (17): rowInputValues[3] |= 0x80; break;    // 'G'            
-            case (18): rowInputValues[2] |= 0x04; break;    // 'H'
-            case (19): rowInputValues[1] |= 0x08; break;    // 'I'
-            case (20): rowInputValues[2] |= 0x80; break;    // 'J'
-            case (21): rowInputValues[1] |= 0x04; break;    // 'K'
-            case (22): rowInputValues[1] |= 0x80; break;    // 'L'
-            case (23): rowInputValues[1] |= 0x02; break;    // 'M'
-            case (24): rowInputValues[2] |= 0x01; break;    // 'N'
-            case (25): rowInputValues[1] |= 0x40; break;    // 'O'
-            case (26): rowInputValues[0] |= 0x08; break;    // 'P'
-            case (27): rowInputValues[5] |= 0x08; break;    // 'Q'
-            case (28): rowInputValues[3] |= 0x08; break;    // 'R'
-            case (29): rowInputValues[4] |= 0x04; break;    // 'S'
-            case (30): rowInputValues[3] |= 0x40; break;    // 'T'
-            case (31): rowInputValues[2] |= 0x40; break;    // 'U'
-            case (32): rowInputValues[3] |= 0x01; break;    // 'V'
-            case (33): rowInputValues[4] |= 0x08; break;    // 'W'
-            case (34): rowInputValues[4] |= 0x01; break;    // 'X'
-            case (35): rowInputValues[2] |= 0x08; break;    // 'Y'
-            case (36): rowInputValues[4] |= 0x02; break;    // 'Z'
-            case (37): rowInputValues[0] |= 0x01; break;    // LEFT
-            case (38): rowInputValues[5] |= 0x02; break;    // DOWN
-            case (39): rowInputValues[5] |= 0x04; break;    // UP 
-            case (40): rowInputValues[5] |= 0x20; break;    // RIGHT
-            case (41): rowInputValues[5] |= 0x01; break;    // SPACE
-            case (42): rowInputValues[0] |= 0x40; break;    // RETURN (CR)
-        }
-    }
+    
+    // Shift and Control are special modifier keys...
+    if (ecs_ctrl_key)  rowInputValues[5] |= 0x40;   // Ctrl key
+    if (ecs_shift_key) rowInputValues[6] |= 0x80;   // Shift key        
 }
+
 
 UINT16 ECSKeyboard::getInputValue()
 {
     UINT16 inputValue = 0;
     
-    if ((directionIO & 0xC0) == 0x40)  // Normal key scanning row/column
+    if ((directionIO & 0xC0) == 0x40)  // Normal key scanning row/column (Write on 0xE and read on 0xF)
     {
         UINT16 rowMask = 1;
         for (UINT16 row = 0; row < 8; row++)  
@@ -144,7 +124,7 @@ UINT16 ECSKeyboard::getInputValue()
             rowMask = (UINT16)(rowMask << 1);
         }
     }
-    else if ((directionIO & 0xC0) == 0x80)  // Transposed key scanning column/row
+    else if ((directionIO & 0xC0) == 0x80)  // Transposed key scanning column/row (Write on 0xF and read on 0xE)
     {
         UINT16 colMask = 1;
         for (UINT16 col = 0; col < 8; col++)  
@@ -158,7 +138,7 @@ UINT16 ECSKeyboard::getInputValue()
             }
             colMask = (UINT16)(colMask << 1);
         }
-    }
+    } // Either both ports configured for output (illegal) or input... good enough to return 0x00FF below
     
     return (UINT16)(0xFF ^ inputValue);
 }

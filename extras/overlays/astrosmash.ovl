@@ -27,6 +27,8 @@
     .ovl 255,  255,  255,  255,   //META_MENU     - UNUSED for Astrosmash
     .ovl 255,  255,  255,  255,   //META_SWAP     - UNUSED for Astrosmash
     .ovl 255,  255,  255,  255,   //META_MANUAL   - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //META_DISC     - UNUSED for Astrosmash
+    .ovl 255,  255,  255,  255,   //META_KEYBOARD - UNUSED for Astrosmash
 
     .tile 0x0041C010,0xF000003C,0xF001F001,0xAA095001,0x01F0FEAA,0x01F001F0,0x01F001F0,0x01E001F0
     .tile 0x13F0C720,0x20AA01F0,0x00271020,0xFF070005,0x04700520,0x28402DF0,0x01F001F0,0x1AF03F90

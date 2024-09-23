@@ -21,6 +21,7 @@
 #include "nintv-ds.h"
 #include "overlay.h"
 #include "config.h"
+#include "ECSKeyboard.h"
 #include "bgBottom.h"
 #include "bgBottom-ECS.h"
 #include "bgBottom-disc.h"
@@ -63,36 +64,36 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     { 10,    87,     10,    40},    // META_RESET
     { 10,    87,     41,    70},    // META_LOAD
     { 10,    87,     71,   100},    // META_CONFIG
-    { 10,    87,    101,   131},    // META_SCORE
+    {255,   255,    255,   255},    // META_SCORE
     {255,   255,    255,   255},    // META_QUIT
-    { 10,    87,    131,   160},    // META_STATE
-    { 10,    87,    161,   191},    // META_MENU
+    { 10,    87,    101,   131},    // META_STATE
+    { 10,    87,    131,   160},    // META_MENU
     {255,   255,    255,   255},    // META_SWAP
     {255,   255,    255,   255},    // META_MANUAL
-    {255,   255,    255,   255},    // META_STRETCH
-    {255,   255,    255,   255},    // META_GCONFIG        
+    { 50,     86,   161,   191},    // META_DISC
+    {  8,     49,   161,   191},    // META_KEYBOARD
 };
 
 // ----------------------------------------------------------------------------------------
-// This is the ECS overlay with reduced menu options...
+// This is the ECS overlay with no menu options...
 // ----------------------------------------------------------------------------------------
 struct Overlay_t ecsOverlay[OVL_MAX] =
 {
-    {120,   155,    30,     60},    // KEY_1
-    {158,   192,    30,     60},    // KEY_2
-    {195,   230,    30,     60},    // KEY_3
+    {255,   255,    255,   255},    // KEY_1
+    {255,   255,    255,   255},    // KEY_2
+    {255,   255,    255,   255},    // KEY_3
     
-    {120,   155,    65,     95},    // KEY_4
-    {158,   192,    65,     95},    // KEY_5
-    {195,   230,    65,     95},    // KEY_6
+    {255,   255,    255,   255},    // KEY_4
+    {255,   255,    255,   255},    // KEY_5
+    {255,   255,    255,   255},    // KEY_6
 
-    {120,   155,    101,   135},    // KEY_7
-    {158,   192,    101,   135},    // KEY_8
-    {195,   230,    101,   135},    // KEY_9
+    {255,   255,    255,   255},    // KEY_7
+    {255,   255,    255,   255},    // KEY_8
+    {255,   255,    255,   255},    // KEY_9
 
-    {120,   155,    140,   175},    // KEY_CLEAR
-    {158,   192,    140,   175},    // KEY_0
-    {195,   230,    140,   175},    // KEY_ENTER
+    {255,   255,    255,   255},    // KEY_CLEAR
+    {255,   255,    255,   255},    // KEY_0
+    {255,   255,    255,   255},    // KEY_ENTER
 
     {255,   255,    255,   255},    // KEY_FIRE
     {255,   255,    255,   255},    // KEY_L_ACT
@@ -104,15 +105,15 @@ struct Overlay_t ecsOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_SCORE
     {255,   255,    255,   255},    // META_QUIT
     {255,   255,    255,   255},    // META_STATE
-    { 55,   101,      2,    20},    // META_MENU
+    {255,   255,    255,   255},    // META_MENU
     {255,   255,    255,   255},    // META_SWAP
     {255,   255,    255,   255},    // META_MANUAL
-    {255,   255,    255,   255},    // META_STRETCH
-    {255,   255,    255,   255},    // META_GCONFIG        
+    {255,   255,    255,   255},    // META_DISC
+    {255,   255,    255,   255},    // META_KEYBOARD
 };
 
 // ----------------------------------------------------------------------------------------
-// This is the ECS overlay with reduced menu options...
+// This is the Disc overlay with no menu options...
 // ----------------------------------------------------------------------------------------
 struct Overlay_t discOverlay[OVL_MAX] =
 {
@@ -145,8 +146,8 @@ struct Overlay_t discOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_MENU
     {255,   255,    255,   255},    // META_SWAP
     {255,   255,    255,   255},    // META_MANUAL
-    {255,   255,    255,   255},    // META_STRETCH
-    {255,   255,    255,   255},    // META_GCONFIG        
+    {255,   255,    255,   255},    // META_DISC
+    {255,   255,    255,   255},    // META_KEYBOARD
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
@@ -350,14 +351,14 @@ void load_custom_overlay(bool bCustomGeneric)
 // This puts the overlay on the main screen. It can be one of the built-in 
 // overlays or it might be a custom overlay that will be rendered...
 // ---------------------------------------------------------------------------
-void show_overlay(u8 bShowDisc)
+void show_overlay(u8 bShowKeyboard, u8 bShowDisc)
 {
     // Assume default overlay... custom can change it below...
     memcpy(&myOverlay, &defaultOverlay, sizeof(myOverlay));
     
     swiWaitForVBlank();
     
-    if (myConfig.overlay == 1) // ECS mini keyboard overlay
+    if (bShowKeyboard) // ECS keyboard overlay
     {
       decompress(bgBottom_ECSTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_ECSMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -387,6 +388,12 @@ void show_overlay(u8 bShowDisc)
     REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
     
     swiWaitForVBlank();    
+    
+    if (bShowKeyboard) // ECS keyboard overlay
+    {
+        dsPrintValue(1,22,ecs_ctrl_key?1:0,ecs_ctrl_key ? (char*)"@": (char*)" ");
+        dsPrintValue(5,22,0,ecs_shift_key ? (char*)"@": (char*)" ");
+    }    
 }
 
 // End of Line

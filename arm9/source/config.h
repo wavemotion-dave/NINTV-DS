@@ -18,7 +18,7 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x000A
+#define CONFIG_VER  0x000B
 
 #define MAX_CONFIGS 625
 
@@ -28,7 +28,7 @@ struct Config_t
 {
     UINT32 game_crc;                 // CRC32 of the game itself
     UINT8  frame_skip;
-    UINT8  overlay;
+    UINT8  spare1;
     UINT8  key_A_map;
     UINT8  key_B_map;
     UINT8  key_X_map;

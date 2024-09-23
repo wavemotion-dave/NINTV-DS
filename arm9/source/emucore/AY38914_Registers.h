@@ -24,7 +24,7 @@ class AY38914_Registers : public RAM
         void reset();
         void poke(UINT16 location, UINT16 value);
         UINT16 peek(UINT16 location);
-        UINT16   psg_memory[0x0E];
+        UINT16 psg_memory[0x0E];
         
     private:
         AY38914_Registers(UINT16 address);

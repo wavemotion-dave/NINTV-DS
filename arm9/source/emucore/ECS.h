@@ -52,6 +52,7 @@ class ECS : public Peripheral
         ROM       bank1;
         ROM       bank2;
         RAM       ecsRAM;
+        RAM       uartRAM;
         AY38914   psg2;
         ROMBanker banker0;
         ROMBanker banker1;

@@ -164,6 +164,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.5 : 23-Sep-2024 by wavemotion-dave
+  * Improved ECS support with new full-screen ECS Keyboard and ability to switch between keypad controllers, disc and full keyboard.
+
 V5.4 : 10-Sep-2024 by wavemotion-dave
   * Full Tutorvision Mode supported. See Tutorvision section in this README for details.
 

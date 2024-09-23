@@ -106,6 +106,7 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             break;
 
         case 0x08:
+            psg_memory[location] = value;
             value = value & 0x00FF;
             ay38914->channel0.toneDisabled = !!(value & 0x0001);
             ay38914->channel1.toneDisabled = !!(value & 0x0002);
@@ -119,7 +120,6 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             ay38914->noiseIdle = ay38914->channel0.noiseDisabled &
                     ay38914->channel1.noiseDisabled &
                     ay38914->channel2.noiseDisabled;
-            psg_memory[location] = value;
             ay38914->psgIO0->setDirectionIO(value);
             ay38914->psgIO1->setDirectionIO(value);
             break;
@@ -168,11 +168,13 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
             break;
 
         case 0x0E:
-            ay38914->psgIO1->setOutputValue(value);
+            // Make sure we are configured for output...
+            if ((psg_memory[0x08] & 0x40)) ay38914->psgIO1->setOutputValue(value);
             break;
 
         case 0x0F:
-            ay38914->psgIO0->setOutputValue(value);
+            // Make sure we are configured for output...
+            if ((psg_memory[0x08] & 0x80)) ay38914->psgIO0->setOutputValue(value);
             break;
     }
 }

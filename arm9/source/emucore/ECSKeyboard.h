@@ -19,6 +19,8 @@
 // For the ECS Keybaord (if present)
 // -------------------------------------------------------------
 extern UINT8 ecs_key_pressed;
+extern UINT8 ecs_shift_key;
+extern UINT8 ecs_ctrl_key;
 
 class EmulationDirector;
 

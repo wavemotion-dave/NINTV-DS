@@ -44,27 +44,29 @@ struct Overlay_t
 #define OVL_BTN_L_ACT    13
 #define OVL_BTN_R_ACT    14
  
-#define OVL_META_RESET   15
-#define OVL_META_LOAD    16
-#define OVL_META_CONFIG  17
-#define OVL_META_SCORES  18
-#define OVL_META_QUIT    19
-#define OVL_META_STATE   20
-#define OVL_META_MENU    21
-#define OVL_META_SWITCH  22
-#define OVL_META_MANUAL  23
-#define OVL_META_DISC_UP 24
-#define OVL_META_DISC_DN 25
-#define OVL_META_SPEEDUP 26
-#define OVL_META_DISC    27
+#define OVL_META_RESET    15
+#define OVL_META_LOAD     16
+#define OVL_META_CONFIG   17
+#define OVL_META_SCORES   18
+#define OVL_META_QUIT     19
+#define OVL_META_STATE    20
+#define OVL_META_MENU     21
+#define OVL_META_SWITCH   22
+#define OVL_META_MANUAL   23
+#define OVL_META_DISC     24
+#define OVL_META_KEYBOARD 25
 
-#define OVL_META_STRETCH 28
-#define OVL_META_GCONFIG 29
-#define OVL_META_CHEATS  30
-#define OVL_META_EMUINFO 31
+// These are not likely mapped anywhere... keep them near the back end
+#define OVL_META_DISC_UP  26
+#define OVL_META_DISC_DN  27
+#define OVL_META_SPEEDUP  28
+#define OVL_META_STRETCH  29
+#define OVL_META_GCONFIG  30
+#define OVL_META_CHEATS   31
+#define OVL_META_EMUINFO  32
 
-#define OVL_MAX          32
-#define DISC_MAX         16
+#define OVL_MAX           33
+#define DISC_MAX          16
 
 
 // For the various controller types...
@@ -78,6 +80,6 @@ extern struct Overlay_t myOverlay[OVL_MAX];
 extern struct Overlay_t myDisc[DISC_MAX];
 
 extern void load_custom_overlay(void);
-extern void show_overlay(u8 bShowDisc);
+extern void show_overlay(u8 bShowKeyboard, u8 bShowDisc);
 
 #endif

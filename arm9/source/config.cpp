@@ -149,7 +149,7 @@ static void SetDefaultGameConfig(UINT32 crc)
 {
     myConfig.game_crc                       = 0x00000000;
     myConfig.frame_skip                     = myGlobalConfig.frame_skip;
-    myConfig.overlay                        = 0;
+    myConfig.spare1                         = 0;
     myConfig.key_A_map                      = OVL_BTN_FIRE;
     myConfig.key_B_map                      = OVL_BTN_FIRE;
     myConfig.key_X_map                      = OVL_BTN_R_ACT;
@@ -373,7 +373,7 @@ void FindAndLoadConfig(UINT32 crc)
         fclose(fp);
         
         // ----------------------------------------------------------------------------------------
-        // If we were config version 0x0009, we perform a one-time upgrade to version 0x000A
+        // If we were config version 0x0009, we perform a one-time upgrade to version 0x000B
         // and replace the default START key map to the OVL_META_DISC to swap in the disc overlay.
         // ----------------------------------------------------------------------------------------
         if (allConfigs.config_ver == 0x0009)    // One time upgrade
@@ -383,13 +383,33 @@ void FindAndLoadConfig(UINT32 crc)
             for (int slot=0; slot<MAX_CONFIGS; slot++)
             {
                 if (allConfigs.game_config[slot].key_START_map == OVL_KEY_ENTER) allConfigs.game_config[slot].key_START_map = OVL_META_DISC;
+                allConfigs.game_config[slot].spare1 = 0;
             }
             allConfigs.config_ver = CONFIG_VER;
             memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
             SaveConfig(0x00000000, FALSE);
             dsPrintValue(0,1,0, (char*)"              ");
         }
-        
+
+        // ----------------------------------------------------------------------------------------
+        // If we were config version 0x000A, we perform a one-time upgrade to version 0x000B
+        // and patch up OVL_META_DISC which moved from meta index 27 to its new home...
+        // ----------------------------------------------------------------------------------------
+        if (allConfigs.config_ver == 0x000A)    // One time upgrade
+        {
+            dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
+            allConfigs.global_config.key_START_map_default = OVL_META_DISC;
+            for (int slot=0; slot<MAX_CONFIGS; slot++)
+            {
+                if (allConfigs.game_config[slot].key_START_map == 27) allConfigs.game_config[slot].key_START_map = OVL_META_DISC;
+                allConfigs.game_config[slot].spare1 = 0;
+            }
+            allConfigs.config_ver = CONFIG_VER;
+            memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
+            SaveConfig(0x00000000, FALSE);
+            dsPrintValue(0,1,0, (char*)"              ");
+        }
+
         if (allConfigs.config_ver != CONFIG_VER)
         {
             dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
@@ -445,27 +465,26 @@ void FindAndLoadConfig(UINT32 crc)
 struct options_t
 {
     const char  *label;
-    const char  *option[28];
+    const char  *option[29];
     UINT8 *option_val;
     UINT8 option_max;
 };
 
-#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "DISC UP", "DISC DOWN", "SPEEDUP", "SHOW DISC"
+#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "SHOW DISC", "SHOW KBD", "DISC UP", "DISC DOWN", "SPEEDUP"
 
 const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
-        {"OVERLAY",     {"NORMAL", "ECS"},                                                                                                              &myConfig.overlay,          2},
-        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        28},
-        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        28},
-        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        28},
-        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        28},
-        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        28},
-        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        28},
-        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    28},
-        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   28},
-        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP so the array here is one shorter
+        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        29},
+        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        29},
+        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        29},
+        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        29},
+        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        29},
+        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        29},
+        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    29},
+        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   29},
+        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP, SHOW DISK or SHOW KEYBOARD so the array here is one shorter
         {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_XY_map,       26},
         {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_YB_map,       26},
         {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_BA_map,       26},
@@ -475,6 +494,7 @@ const struct options_t Option_Table[3][20] =
         {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH", "ULTIMATE"},                                                                                          &myConfig.sound_quality,    4},
         {"TGT SPEED",   {"60 FPS (100%)","66 FPS (110%)","72 FPS (120%)","78 FPS (130%)","84 FPS (140%)","90 FPS (150%)","54 FPS (90%)","MAX SPEED"},   &myConfig.target_fps,       8},
         {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myConfig.palette,          5},
+        {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                 &myConfig.key_click,        2},
         {NULL,          {"",            ""},                                                                                                            NULL,                       1},
     },
     
@@ -483,7 +503,6 @@ const struct options_t Option_Table[3][20] =
         {"BACKTAB",     {"NOT LATCHED", "LATCHED"},                                                                                                     &myConfig.bLatched,         2},
         {"GRAM SIZE",   {"512B (NORMAL)", "2K (EXPANDED)"},                                                                                             &myConfig.gramSize,         2},
         {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                       &myConfig.fudgeTiming,      5},
-        {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                 &myConfig.key_click,        2},
         {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                 &myConfig.bSkipBlanks,      2},
         {NULL,          {"",            ""},                                                                                                            NULL,                       1},
     },
@@ -497,8 +516,8 @@ const struct options_t Option_Table[3][20] =
         {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                 &myGlobalConfig.ovl_dir,                4},
         {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                   &myGlobalConfig.rom_dir,                3},
         {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
-        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  28},
-        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 28},
+        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  29},
+        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 29},
         {"DEF SOUND",   {"LOW", "MEDIUM", "HIGH"},                                                                                                      &myGlobalConfig.def_sound_quality,      3},
         {"DEF PALETTE", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
         {"DEF FRAMSKP", {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                               &myGlobalConfig.frame_skip,             3},

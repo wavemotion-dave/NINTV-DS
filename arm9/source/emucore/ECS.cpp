@@ -18,6 +18,7 @@ ECS::ECS()
 : Peripheral("Electronic Computer System", "ECS"),
   keyboard(2),
   ecsRAM(ECS_RAM_SIZE, ECS_RAM_LOCATION, 0xFFFF, 0xFFFF, 8),
+  uartRAM(4, 0x00E0, 0xFFFF, 0xFFFF, 8),
   psg2(0x00F0, &keyboard, &keyboard),
   bank0("ECS ROM #1", "ecs.bin", 0,     2, 0x1000, 0x2000),
   banker0(&bank0, 0x2FFF, 0xFFF0, 0x2A50, 0x000F, 1),
@@ -38,7 +39,8 @@ ECS::ECS()
     AddROM(&bank2);
     AddRAM(&banker2);
       
-    AddRAM(&ecsRAM);      
+    AddRAM(&ecsRAM);
+    AddRAM(&uartRAM);
 
 #ifdef DEBUG_ENABLE
     debug_psg2  = &psg2;

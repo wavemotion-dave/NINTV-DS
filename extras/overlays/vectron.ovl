@@ -25,6 +25,8 @@
     .ovl  100,   155,     0,     30,    // META_MENU (top center)
     .ovl  255,   255,    255,   255,    // META_SWAP
     .ovl  255,   255,    255,   255,    // META_MANUAL    
+    .ovl  255,   255,    255,   255,    // META_DISC
+    .ovl  255,   255,    255,   255,    // META_KEYBOARD
     
     .disc 255,   255,    255,   255,    // DISC_NORTH
     .disc 255,   255,    255,   255,    // DISC_NORTH_NORTH_EAST
