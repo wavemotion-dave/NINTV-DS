@@ -236,6 +236,8 @@ void load_custom_overlay(bool bCustomGeneric)
       char *token;
 
       memset(customTiles, 0x00, 0x10000);   // Clear the 64K of video memory to prep for custom tiles...
+      
+      memcpy(&myOverlay, &discOverlay, sizeof(myOverlay)); // Start with a blank overlay...
 
       do
       {
