@@ -36,6 +36,7 @@ FICA_INTV intvromlist[512];
 u16 countintv=0, ucFicAct=0;
 char szName[256];
 char szName2[256];
+extern char directory[];
 
 UINT8 load_options = 0x00;
 
@@ -184,15 +185,15 @@ void CheckFirstTimeLoad(void)
   }
 }
 
-void SearchForFile(char *szFoundName, UINT16 size, UINT32 crc32)
+void SearchForFile(char *directory, char *szFoundName, UINT16 size, UINT32 crc32)
 {
   // Look through all files in the current directory to see if we get a CRC32 match...
   DIR *pdir;
   struct dirent *pent;
 
   CheckFirstTimeLoad();
-    
-  pdir = opendir(".");
+   
+  pdir = opendir(directory);
 
   if (pdir) 
   {
@@ -201,13 +202,15 @@ void SearchForFile(char *szFoundName, UINT16 size, UINT32 crc32)
       if (pent->d_type != DT_DIR)
       {
         struct stat st;
-        stat(pent->d_name, &st);
+        strcpy(szName2, directory);
+        strcat(szName2, pent->d_name);
+        stat(szName2, &st);
         if (st.st_size == size)
         {
-            if (CRC32::getCrc(pent->d_name) == crc32)
+            if (CRC32::getCrc(szName2) == crc32)
             {
                 // Found it!!
-                strcpy(szFoundName, pent->d_name);
+                strcpy(szFoundName, szName2);
                 break;
             }
         }
@@ -223,46 +226,50 @@ void SearchForFile(char *szFoundName, UINT16 size, UINT32 crc32)
 // will only look at files that are exactly 8k in size.  This will still take a solid
 // second or two on the NDS - it's better if the user has the right filename to avoid this.
 // ---------------------------------------------------------------------------------------------
-void FindAndLoadExec(char *szFoundName)
+void FindAndLoadExec(char *directory, char *szFoundName)
 {
-    SearchForFile(szFoundName, 8192, 0xcbce86f7); // Look for the normal exec.bin 
+    SearchForFile(directory, szFoundName, 8192, 0xcbce86f7); // Look for the normal exec.bin 
 }
 
-
-void FindAndLoadTutorExec(char *szFoundName)
+void FindAndLoadTutorExec(char *directory, char *szFoundName)
 {
-    SearchForFile(szFoundName, 16384, 0x7558a4cf); // Look for the Tutorvision wbexec.bin 
+    SearchForFile(directory, szFoundName, 16384, 0x7558a4cf); // Look for the Tutorvision wbexec.bin 
 }
 
-void FindAndLoadGrom(char *szFoundName)
+void FindAndLoadGrom(char *directory, char *szFoundName)
 {
-    SearchForFile(szFoundName, 2048, 0x683a4158); // Look for the normal grom.bin
+    SearchForFile(directory, szFoundName, 2048, 0x683a4158); // Look for the normal grom.bin
 }
 
-void FindAndLoadTutorGrom(char *szFoundName)
+void FindAndLoadTutorGrom(char *directory, char *szFoundName)
 {
-    SearchForFile(szFoundName, 2048, 0x82736456); // Look for the Tutorvision wbgrom.bin 
+    SearchForFile(directory, szFoundName, 2048, 0x82736456); // Look for the Tutorvision wbgrom.bin 
 }
 
-void FindAndLoadIVoice(char *szFoundName)
+void FindAndLoadIVoice(char *directory, char *szFoundName)
 {
-    SearchForFile(szFoundName, 2048, 0x0de7579d); // Look for the Intellivioice ivoice.bin 
+    SearchForFile(directory, szFoundName, 2048, 0x0de7579d); // Look for the Intellivioice ivoice.bin 
+}
+
+void FindAndLoadECS(char *directory, char *szFoundName)
+{
+    SearchForFile(directory, szFoundName, (24*1024), 0xea790a06); // Look for the ecs.bin 
 }
 
 
 // ---------------------------------------------------------------------------------------------
 // Peripheral roms are basically our BIOS files... grom.bin, exec.bin and ivoice.bin
 // ---------------------------------------------------------------------------------------------
+CHAR nextFile[MAX_PATH];
 BOOL LoadPeripheralRoms(Peripheral* peripheral)
 {
     UINT16 count = peripheral->GetROMCount();
-    for (UINT16 i = 0; i < count; i++) {
+    for (UINT16 i = 0; i < count; i++) 
+    {
         ROM* r = peripheral->GetROM(i);
         if (r->isLoaded()) // If already loaded, we don't need to read the file again...
             continue;
 
-        CHAR nextFile[MAX_PATH];
-        
         if (myGlobalConfig.bios_dir == 1)        // In: /ROMS/BIOS
         {
             strcpy(nextFile, "/roms/bios/");
@@ -280,17 +287,20 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
             strcpy(nextFile, "./");              // In: Same DIR as ROM files
         }
 
+        strcpy(directory, nextFile);
         strcat(nextFile, r->getDefaultFileName());
         
         if (!r->load(nextFile, r->getDefaultFileOffset())) 
         {
-            if (strstr(nextFile, "wbgrom") != NULL) FindAndLoadTutorGrom(nextFile);
-            else if (strstr(nextFile, "grom") != NULL) FindAndLoadGrom(nextFile);
+            if (strstr(nextFile, "wbgrom") != NULL)     FindAndLoadTutorGrom(directory, nextFile);
+            else if (strstr(nextFile, "grom") != NULL)  FindAndLoadGrom(directory, nextFile);
             
-            if (strstr(nextFile, "wbexec") != NULL) FindAndLoadTutorExec(nextFile);
-            else if (strstr(nextFile, "exec") != NULL) FindAndLoadExec(nextFile);            
+            if (strstr(nextFile, "wbexec") != NULL)     FindAndLoadTutorExec(directory, nextFile);
+            else if (strstr(nextFile, "exec") != NULL)  FindAndLoadExec(directory, nextFile);            
             
-            if (strstr(nextFile, "ivoice") != NULL) FindAndLoadIVoice(nextFile);
+            if (strstr(nextFile, "ivoice") != NULL)     FindAndLoadIVoice(directory, nextFile);
+            
+            if (strstr(nextFile, "ecs") != NULL)        FindAndLoadECS(directory, nextFile);            
             
             if (!r->load(nextFile, r->getDefaultFileOffset()))
             {

@@ -161,8 +161,152 @@ unsigned int *customTiles = (unsigned int *) 0x06880000;          //60K of video
 unsigned short *customMap = (unsigned short *)0x0688F000;         // 4K of video memory for the map (generally about 2.5K)
 unsigned short customPal[512];
 
-char directory[128];
-char filename[128];
+char directory[192];
+char filename[192];
+
+
+// -----------------------------------------------------------------------
+// Map of game CRC to default Overlay file... this will help so that 
+// users don't need to rename every .rom file to match exactly the 
+// .ovl file. Most users just want to pick game, play game, enjoy game.
+// -----------------------------------------------------------------------
+struct MapRomToOvl_t
+{
+    UINT32      crc;
+    const char  *ovl_filename;
+};
+
+
+struct MapRomToOvl_t MapRomToOvl[] = 
+{
+    {0xA6E89A53 , "A Tale of Dragons and Swords.ovl"},
+    {0xA60E25FC , "ABPA Backgammon.ovl"},
+    {0xF8B1F2B7 , "AD&D Cloudy Mountain.ovl"},
+    {0x11C3BCFA , "AD&D Cloudy Mountain.ovl"},
+    {0x16C3B62F , "AD&D Treasure of Tarmin.ovl"},
+    {0x6746607B , "AD&D Treasure of Tarmin.ovl"},
+    {0x5A4CE519 , "AD&D Treasure of Tarmin.ovl"},
+    {0xBD731E3C , "AD&D Treasure of Tarmin.ovl"},
+    {0x2F9C93FC , "AD&D Treasure of Tarmin.ovl"},
+    {0x9BA5A798 , "Antarctic Tales.ovl"},
+    {0x5578C764 , "Astro Invaders.ovl"},
+    {0x00BE8BBA , "Astrosmash.ovl"},
+    {0xFAB2992C , "Astrosmash.ovl"},
+    {0x13FF363C , "Atlantis.ovl"},
+    {0xB35C1101 , "Auto Racing.ovl"},
+    {0x8AD19AB3 , "B-17 Bomber.ovl"},
+    {0xFC49B63E , "Bank Panic.ovl"},
+    {0x8B2727D9 , "BeachHead.ovl"},
+    {0xEAF650CC , "Beamrider.ovl"},
+    {0xC047D487 , "Beauty and the Beast.ovl"},
+    {0x32697B72 , "Bomb Squad.ovl"},
+    {0xF8E5398D , "Buck Rogers.ovl"},
+    {0x999CCEED , "Bump 'n' Jump.ovl"},
+    {0x43806375 , "Burger Time.ovl"},
+    {0xC92BAAE8 , "Burger Time.ovl"},
+    {0xFA492BBD , "Buzz Bombers.ovl"},
+    {0xFA492BBD , "Buzz Bombers.ovl"},
+    {0x2A1E0C1C , "Championship Tennis.ovl"},
+    {0x36E1D858 , "Checkers.ovl"},
+    {0x0BF464C6 , "Chip Shot - Super Pro Golf.ovl"},
+    {0x3289C8BA , "Commando.ovl"},
+    {0x060E2D82 , "D1K.ovl"},
+    {0x5E6A8CD8 , "Demon Attack.ovl"},
+    {0x13EE56F1 , "Diner.ovl"},
+    {0x84BEDCC1 , "Dracula.ovl"},
+    {0xC5182457 , "Dragon Quest.ovl"},
+    {0xAF8718A1 , "Dragonfire.ovl"},
+    {0x3B99B889 , "Dreadnaught Factor.ovl"},
+    {0x99f5783d , "Dreadnaught Factor.ovl"},
+    {0xB1BFA8B8 , "FinalRound.ovl"},
+    {0x3A8A4351 , "Fox Quest.ovl"},
+    {0x912E7C64 , "Frankenstien.ovl"},
+    {0xAC764495 , "GosubDigital.ovl"},
+    {0x4B8C5932 , "Happy Trails.ovl"},
+    {0x120b53a9 , "Happy Trails.ovl"},
+    {0xB5C7F25D , "Horse Racing.ovl"},
+    {0x94EA650B , "Hover Bovver.ovl"},
+    {0xFF83FF80 , "Hover Force.ovl"},
+    {0x4F3E3F69 , "Ice Trek.ovl"},
+    {0x5F2607E1 , "Infiltrator.ovl"},
+    {0xEE5F1BE2 , "Jetsons.ovl"},
+    {0x4422868E , "King of the Mountain.ovl"},
+    {0x87D95C72 , "King of the Mountain.ovl"},
+    {0x8C9819A2 , "Kool-Aid Man.ovl"},
+    {0x604611C0 , "Las Vegas Poker & Blackjack.ovl"},
+    {0xE00D1399 , "Lock-n-Chase.ovl"},
+    {0x5C7E9848 , "Lock-n-Chase.ovl"},
+    {0x6B6E80EE , "Loco-Motion.ovl"},
+    {0x80764301 , "Lode Runner.ovl"},
+    {0x573B9B6D , "Masters of the Universe - The Power of He-Man.ovl"},
+    {0xEB4383E0 , "Maxit.ovl"},
+    {0xE806AD91 , "Microsurgeon.ovl"},
+    {0x9D57498F , "Mind Strike.ovl"},
+    {0x598662F2 , "Mouse Trap.ovl"},
+    {0xE367E450 , "MrChess.ovl"},
+    {0x0753544F , "Ms Pac-Man.ovl"},
+    {0x7334CD44 , "Night Stalker.ovl"},
+    {0x36A7711B , "Operation Cloudfire.ovl"},
+    {0x169E3584 , "PBA Bowling.ovl"},
+    {0xFF87FAEC , "PGA Golf.ovl"},
+    {0xA21C31C3 , "Pac-Man.ovl"},
+    {0x6E4E8EB4 , "Pac-Man.ovl"},
+    {0x6084B48A , "Parsec.ovl"},
+    {0x1A7AAC88 , "Penguin Land.ovl"},
+    {0x9C75EFCC , "Pitfall!.ovl"},
+    {0x0CF06519 , "Poker Risque.ovl"},
+    {0x5AEF02C6 , "Rick Dynamite.ovl"},
+    {0x8910C37A , "River Raid.ovl"},
+    {0x95466AD3 , "River Raid.ovl"},
+    {0xDCF4B15D , "Royal Dealer.ovl"},
+    {0x8F959A6E , "SNAFU.ovl"},
+    {0x47AA7977 , "Safecracker.ovl"},
+    {0x6E0882E7 , "SameGame and Robots.ovl"},
+    {0x12BA58D1 , "SameGame and Robots.ovl"},
+    {0x20eb8b7c , "SameGame and Robots.ovl"},
+    {0xe9e3f60d , "Scooby Doo's Maze Chase.ovl"},
+    {0xBEF0B0C7 , "Scooby Doo's Maze Chase.ovl"},
+    {0x99AE29A9 , "Sea Battle.ovl"},
+    {0x2A4C761D , "Shark! Shark!.ovl"},
+    {0xd7b8208b , "Shark! Shark!.ovl"},
+    {0xFF7CB79E , "Sharp Shot.ovl"},
+    {0xF093E801 , "Skiing.ovl"},
+    {0x800B572F , "Slam Dunk - Super Pro Basketball.ovl"},
+    {0xE8B8EBA5 , "Space Armada.ovl"},
+    {0x1AAC64CA , "Space Bandits.ovl"},
+    {0xF95504E0 , "Space Battle.ovl"},
+    {0x39D3B895 , "Space Hawk.ovl"},
+    {0xCF39471A , "Space Panic.ovl"},
+    {0x3784DC52 , "Space Spartans.ovl"},
+    {0xB745C1CA , "Stadium Mud Buggies.ovl"},
+    {0x2DEACD15 , "Stampede.ovl"},
+    {0x72E11FCA , "Star Strike.ovl"},
+    {0x3D9949EA , "Sub Hunt.ovl"},
+    {0xbe4d7996 , "Super NFL Football (ECS).ovl"},
+    {0x15E88FCE , "Swords & Serpents.ovl"},
+    {0xD6F44FA5 , "TNT Cowboy.ovl"},
+    {0xCA447BBD , "TRON Deadly Discs.ovl"},
+    {0x07FB9435 , "TRON Solar Sailor.ovl"},
+    {0x03E9E62E , "Tennis.ovl"},
+    {0xB7923858 , "The Show Must Go On.ovl"},
+    {0xC1F1CA74 , "Thunder Castle.ovl"},
+    {0x67CA7C0A , "Thunder Castle.ovl"},
+    {0xD1D352A0 , "Tower of Doom.ovl"},
+    {0x734F3260 , "Truckin.ovl"},
+    {0x752FD927 , "USCF Chess.ovl"},
+    {0xF9E0789E , "Utopia.ovl"},
+    {0xC9624608 , "Vanguard.ovl"},
+    {0xA4A20354 , "Vectron.ovl"},
+    {0xF1ED7D27 , "White Water.ovl"},
+    {0x10D64E48 , "World Championship Baseball.ovl"},
+    {0xC2063C08 , "World Series Major League Baseball.ovl"},
+    {0x24B667B9 , "Worm Whomper.ovl"},
+    {0x740C9C49 , "X-Rally.ovl"},
+    {0x45119649 , "Yars Revenge.ovl"},
+    {0xC00CBA0D , "gorf.ovl"},
+    {0x00000000 , "generic.ovl"},
+};
+
 
 // -----------------------------------------------------------------------------------------------
 // Custom overlays are read in and must be in a very strict format. See the documenatation
@@ -181,7 +325,7 @@ void load_custom_overlay(bool bCustomGeneric)
     {
         strcpy(directory, "/roms/ovl/");
     }
-    else if (myGlobalConfig.ovl_dir == 2)   // In: /ROMS/INTY/OVL
+    else if (myGlobalConfig.ovl_dir == 2)   // In: /ROMS/INTV/OVL
     {
         strcpy(directory, "/roms/intv/ovl/");
     }
@@ -206,6 +350,22 @@ void load_custom_overlay(bool bCustomGeneric)
         if (fp != NULL) // If file found
         {
             bFound = 1;
+        }
+        else // Not found... try to find it using the RomToOvl[] table
+        {
+            UINT16 i=0;
+            while (MapRomToOvl[i].crc != 0x00000000)
+            {
+                if (MapRomToOvl[i].crc == currentRip->GetCRC())
+                {
+                    strcpy(filename, directory);
+                    strcat(filename, MapRomToOvl[i].ovl_filename);
+                    fp = fopen(filename, "rb");
+                    if (fp != NULL) bFound = 1;
+                    break;
+                }
+                i++;
+            }
         }
     }
 
