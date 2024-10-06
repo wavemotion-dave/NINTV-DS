@@ -93,7 +93,11 @@ Because the Intellivision had an innovative controller/keypad arrangement, you m
 
 Overlays :
 -----------------------
-Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. A large number of custom overlays are provided in **extras.zip** in the overlay-library folder here on the github site. You must name the .ovl file the same as the base filename of the ROM you are loading (e.g. if you have Astrosmash.int or Astrosmash.rom, you must name the overlay Astrosmash.ovl) - loading such a game would bring up the custom overlay automatically. If the custom overlay doesn't show, double check that the base filenames are exactly the same. By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
+Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. 
+A large number of custom overlays are provided in **extras.zip** in the overlay-library folder here on the github site. Nintellivision should automatically match up the game you are playing
+with the correct overlay. If that doesn't happen, you can also name the .ovl file the same as the base filename of the ROM you are loading (e.g. if you have Astrosmash.int or Astrosmash.rom, 
+you would name the overlay Astrosmash.ovl) - loading such a game would bring up the custom overlay automatically. If the custom overlay doesn't show, double check that the base filenames are 
+exactly the same. By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
 
 ![Standard Overlay](png/normalovl.png) ![Custom Overlay](png/customovl.png) ![Custom Overlay](png/customovl2.png)
 
@@ -164,6 +168,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.6 : 06-Oct-2024 by wavemotion-dave
+  * Massive overhaul to the way overlays are found and loaded. No longer do you need to have the overlays named the same as the game ROM file - the emulator should find the matching overlay 99% of the time (and yes, you can still force the issue by naming the .ovl the same as the base game .int/.bin/.rom file)
+  * If the system BIOS files are not found by name, a quick search is done by CRC32 to see if the emulator can load it.
+  * These improvements should go a long way to helping people get their Nintellivision system running quickly and with less fuss.  
+  
 V5.5 : 23-Sep-2024 by wavemotion-dave
   * Improved ECS support with new full-screen ECS Keyboard and ability to switch between keypad controllers, disc and full keyboard.
   * Version 5.5a with hotfix for custom overlays

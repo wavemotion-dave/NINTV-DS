@@ -58,12 +58,14 @@ UINT8 bMetaSpeedup      __attribute__((section(".dtcm"))) = false;
 UINT8 bShowDisc         __attribute__((section(".dtcm"))) = false;
 UINT8 bShowKeyboard     __attribute__((section(".dtcm"))) = false;
 
-UINT8 hud_x = 3;
-UINT8 hud_y = 0;
-
-UINT16 keypad_pressed = 0;
-
-UINT16 ecs_debounce_timer = 0;
+// --------------------------------------------------
+// A few variables that are not accessed frequently 
+// and don't need to be in fast memory...
+// --------------------------------------------------
+UINT8 hud_x                 = 3;
+UINT8 hud_y                 = 0;
+UINT16 keypad_pressed       = 0;
+UINT16 ecs_debounce_timer   = 0;
 
 // -------------------------------------------------------------
 // This one is accessed rather often so we'll put it in .dtcm
@@ -112,7 +114,11 @@ void reset_emu_frames(void)
     emu_frames=0;
 }
 
-
+// --------------------------------------------------------------------------
+// For when we are missing some key file like a BIOS file (exec, grom, etc)
+// and the emulator can go no further... user will have to power off (and
+// probably will contact me ... sigh!)
+// --------------------------------------------------------------------------
 void FatalError(const char *msg)
 {
     dsPrintValue(0,1,0,(char*)msg);
@@ -154,6 +160,9 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
   }
 }
 
+// ---------------------------------------------------------------------------------
+// An optimized version for when we are printing a number/FPS in the upper corner...
+// ---------------------------------------------------------------------------------
 void dsPrintFPS(char *pchStr)
 {
   u16 *pusEcran,*pusMap;
@@ -196,7 +205,7 @@ BOOL InitializeEmulator(void)
         return FALSE;
     }
 
-    //load peripheral roms
+    //load peripheral roms beyond the main BIOS files
     INT32 count = currentEmu->GetPeripheralCount();
     for (INT32 i = 0; i < count; i++) 
     {
