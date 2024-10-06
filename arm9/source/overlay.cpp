@@ -323,7 +323,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xd6495910 , "THIN",       "ICE",          "Thin Ice.ovl"},
     {0xC1F1CA74 , "THUNDER",    "CASTLE",       "Thunder Castle.ovl"},
     {0x67CA7C0A , "THUNDER",    "CASTLE",       "Thunder Castle.ovl"},
-    {0xFFFFFFFF , "MYSTIC",     "CASTLE",       "Thunder Castle.ovl"},
+    {0x67ca7c0a , "MYSTIC",     "CASTLE",       "Mystic Castle.ovl"},
     {0xD1D352A0 , "TOWER",      "DOOM",         "Tower of Doom.ovl"},
     {0x734F3260 , "TRUCKIN",    "TRUCKIN",      "Truckin.ovl"},
     {0x752FD927 , "USCF",       "CHESS",        "USCF Chess.ovl"},
