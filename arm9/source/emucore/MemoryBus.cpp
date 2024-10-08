@@ -326,7 +326,8 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
         writeableMemorySpace[location>>MEM_DIV][i]->poke(location, value);
     }
 
-    // For the lower RAM area... keep the "fast memory" updated
+    // For the lower RAM area or any JLP access... keep the "fast memory" updated
+    // JLP is unusual in that games can run code out of the JLP RAM so keeping the fast memory updated is required for games like Defender of the Crown.
     if (!(location & 0xF800))
     {
         *((UINT16 *)(0x06860000 | (location<<1))) = value;

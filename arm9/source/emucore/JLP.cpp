@@ -22,6 +22,8 @@
 
 extern Rip      *currentRip;
 
+UINT8 bFlashWritten = 0; 
+
 JLP::JLP()
 : RAM(JLP_RAM_SIZE, JLP_RAM_ADDRESS, 0xFFFF, 0xFFFF)
 {}
@@ -41,12 +43,19 @@ void JLP::reset()
     
     flash_read = 1;             // Force flash to read...
     flash_write_time = 0;       // And reset the time to write...
+    bFlashWritten = 0;          // To show the 'JLP FLASH' on screen
 }
 
 // If the JLP flash needs to be written, we write it to the backing file. We do it this way so that quick-succession writes
 // to the flash do not force a write to the backing file which is slow and wasteful... so we have a 2 second backing timer.
 void JLP::tick_one_second(void)
 {
+    if (bFlashWritten)
+    {
+        dsPrintValue(hud_x,hud_y,0,(char*)"         ");
+        bFlashWritten = 0;
+    }
+    
     if (flash_write_time > 0)
     {
         if (--flash_write_time == 0)
@@ -133,7 +142,7 @@ void JLP::WriteFlashFile(void)
         fwrite(jlp_flash, 1, JLP_FLASH_SIZE, fp);
         fclose(fp);
     }
-    dsPrintValue(hud_x,hud_y,0,(char*)"         ");
+    bFlashWritten = 1;
 }
 
 void JLP::ScheduleWriteFlashFile(void)
@@ -205,6 +214,8 @@ void JLP::poke(UINT16 location, UINT16 value)
     if ((location >= 0x8040))
     {
         jlp_ram[location & 0x1FFF] = value;
+        // And since we CAN execute out of JLP RAM, we must also keep the fast RAM cache up to date...
+        *((UINT16 *)(0x06860000 | (location<<1))) = value;
     }
     
     /* -------------------------------------------------------------------- */

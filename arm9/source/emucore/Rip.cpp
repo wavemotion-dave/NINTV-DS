@@ -393,9 +393,9 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                             if (*ptr == '$')
                             {
                                 ptr++;  
-                                UINT16 start_addr = strtoul(ptr, &ptr, 16);
+                                UINT32 start_addr = strtoul(ptr, &ptr, 16);
                                 while (*ptr == ' ' || *ptr == '\t' || *ptr == '-' || *ptr == '$') ptr++;
-                                UINT16 end_addr = strtoul(ptr, &ptr, 16);                            
+                                UINT32 end_addr = strtoul(ptr, &ptr, 16);                            
                                 while (*ptr == ' ' || *ptr == '\t' || *ptr == '=' || *ptr == '$') ptr++;
                                 UINT16 map_addr = strtoul(ptr, &ptr, 16);
                                 ROM *newROM = new ROM("Cartridge ROM", "", 0, sizeof(UINT16), (UINT16)((end_addr-start_addr) + 1), map_addr);
