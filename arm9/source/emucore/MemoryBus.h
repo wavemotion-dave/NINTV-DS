@@ -38,13 +38,6 @@ class MemoryBus
         inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] == 1) return readableMemorySpace[location>>MEM_DIV][0]->peek(location); else return peek_slow(location);}
         UINT16 peek_slow(UINT16 location);
         
-        // ------------------------------------------------------------------------------------------------
-        // Since PC fetched memory should be mostly static and 16-bits... we pre-load into fast_memory[] 
-        // for blazingly (relatively!) fast access... we are utilizing VRAM which is a bit faster than 
-        // main ram - especially when we don't hit the cache just right.
-        // ------------------------------------------------------------------------------------------------
-        inline UINT16 peek_pc(void) {return *((UINT16 *)(0x06860000 | (r[7]<<1)));}        
-        
         void poke(UINT16 location, UINT16 value);
         void poke_cheat(UINT16 location, UINT16 value);
 

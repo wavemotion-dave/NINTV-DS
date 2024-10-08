@@ -226,6 +226,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "D2K",        "D2K",          "D1K.ovl"},
     {0xFFFFFFFF , "DK",         "JR",           "DKJr.ovl"},
     {0xFFFFFFFF , "KONG",       "JR",           "DKJr.ovl"},
+    {0xba346dbd , "DEATH",      "RACE",         "Death Race.ovl"},
     {0xFFFFFFFF , "DEFENDER",   "CROWN",        "Defender of the Crown.ovl"},
     {0x5E6A8CD8 , "DEMON",      "ATTACK",       "Demon Attack.ovl"},
     {0x13EE56F1 , "DINER",      "DINER",        "Diner.ovl"},
