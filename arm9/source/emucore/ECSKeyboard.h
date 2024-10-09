@@ -44,7 +44,7 @@ class ECSKeyboard : public AY38914_InputOutput, public InputConsumer
          */
         void evaluateInputs();
         
-        UINT16 getInputValue();
+        UINT16 getInputValue(UINT8 port);
         void setOutputValue(UINT16 value);
         void setDirectionIO(UINT16 value);
 

@@ -169,12 +169,12 @@ ITCM_CODE void AY38914_Registers::poke(UINT16 location, UINT16 value)
 
         case 0x0E:
             // Make sure we are configured for output...
-            if ((psg_memory[0x08] & 0x40)) ay38914->psgIO1->setOutputValue(value);
+            ay38914->psgIO1->setOutputValue(value);
             break;
 
         case 0x0F:
             // Make sure we are configured for output...
-            if ((psg_memory[0x08] & 0x80)) ay38914->psgIO0->setOutputValue(value);
+            ay38914->psgIO0->setOutputValue(value);
             break;
     }
 }
@@ -184,9 +184,9 @@ ITCM_CODE UINT16 AY38914_Registers::peek(UINT16 location)
     location &= 0x0F;
     switch(location) {
         case 0x0E:
-            return ay38914->psgIO1->getInputValue();
+            return ay38914->psgIO1->getInputValue((UINT8)location);
         case 0x0F:
-            return ay38914->psgIO0->getInputValue();
+            return ay38914->psgIO0->getInputValue((UINT8)location);
         default:
             return psg_memory[location];
     }

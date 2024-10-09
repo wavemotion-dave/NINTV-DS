@@ -36,7 +36,7 @@ class HandController : public AY38914_InputOutput, public InputConsumer
         void evaluateInputs();
 
         void setOutputValue(UINT16 value);
-        inline UINT16 getInputValue() { return inputValue; }
+        inline UINT16 getInputValue(UINT8) { return inputValue; }
         void setDirectionIO(UINT16 value);
 
     private:

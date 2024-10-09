@@ -168,8 +168,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V5.6a : 08-Oct-2024 by wavemotion-dave
+V5.6c : 09-Oct-2024 by wavemotion-dave
   * Fix to allow JLP games to execute out of 16-bit RAM. Fixes Defender of the Crown.
+  * Fix ECS keyboard emulation to properly read back either port if configured for output (was causing FWDiagnostics to fail).
   * Improved UI display of 'JLP FLASH' so it shows a bit longer (but doesn't interfere with emulation speed)
   * Numerous new overlays added.
 

@@ -17,7 +17,7 @@
 class AY38914_InputOutput
 {
     public:
-        virtual UINT16 getInputValue() = 0;
+        virtual UINT16 getInputValue(UINT8) = 0;
         virtual void setOutputValue(UINT16 value) = 0;
         virtual void setDirectionIO(UINT16 value) = 0;
 };

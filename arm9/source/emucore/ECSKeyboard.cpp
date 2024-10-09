@@ -108,47 +108,58 @@ void ECSKeyboard::evaluateInputs()
 }
 
 
-UINT16 ECSKeyboard::getInputValue()
+UINT16 ECSKeyboard::getInputValue(UINT8 port)
 {
     UINT16 inputValue = 0;
     
-    if ((directionIO & 0xC0) == 0x40)  // Normal key scanning row/column (Write on 0xE and read on 0xF)
+    if (port == 0x0F)
     {
-        UINT16 rowMask = 1;
-        for (UINT16 row = 0; row < 8; row++)  
+        if (directionIO & 0x80) return rowsOrColumnsToScan; // Reading the output port... just return the last value written
+        if ((directionIO & 0xC0) == 0x40)  // Normal key scanning row/column (Write on 0xE and read on 0xF)
         {
-            if ((rowsOrColumnsToScan & rowMask) == 0) 
+            UINT16 rowMask = 1;
+            for (UINT16 row = 0; row < 8; row++)  
             {
-                inputValue |= rowInputValues[row];
-            }
-            rowMask = (UINT16)(rowMask << 1);
-        }
-    }
-    else if ((directionIO & 0xC0) == 0x80)  // Transposed key scanning column/row (Write on 0xF and read on 0xE)
-    {
-        UINT16 colMask = 1;
-        for (UINT16 col = 0; col < 8; col++)  
-        {
-            if ((rowsOrColumnsToScan & colMask) == 0) 
-            {
-                for (UINT16 i=0; i<8; i++)
+                if ((rowsOrColumnsToScan & rowMask) == 0) 
                 {
-                    if (rowInputValues[i] & (1<<col)) inputValue |= (1<<i);
+                    inputValue |= rowInputValues[row];
                 }
+                rowMask = (UINT16)(rowMask << 1);
             }
-            colMask = (UINT16)(colMask << 1);
         }
-    } // Either both ports configured for output (illegal) or input... good enough to return 0x00FF below
+        // else just fall through and return no input below...
+    }
+    else
+    if (port == 0x0E)
+    {
+        if (directionIO & 0x40) return rowsOrColumnsToScan; // Reading the output port... just return the last value written
+        if ((directionIO & 0xC0) == 0x80)  // Transposed key scanning column/row (Write on 0xF and read on 0xE)
+        {
+            UINT16 colMask = 1;
+            for (UINT16 col = 0; col < 8; col++)  
+            {
+                if ((rowsOrColumnsToScan & colMask) == 0) 
+                {
+                    for (UINT16 i=0; i<8; i++)
+                    {
+                        if (rowInputValues[i] & (1<<col)) inputValue |= (1<<i);
+                    }
+                }
+                colMask = (UINT16)(colMask << 1);
+            }
+        }
+        // else just fall through and return no input below...
+    }
     
     return (UINT16)(0xFF ^ inputValue);
 }
 
 void ECSKeyboard::setOutputValue(UINT16 value) 
 {
-    this->rowsOrColumnsToScan = value;
+    this->rowsOrColumnsToScan = value & 0xFF;
 }
 
 void ECSKeyboard::setDirectionIO(UINT16 value)
 {
-    this->directionIO = value;
+    this->directionIO = value & 0xFF;
 }
