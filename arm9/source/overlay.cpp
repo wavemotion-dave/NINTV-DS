@@ -248,6 +248,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x912E7C64 , "FRANKENSTIEN","FRANKENSTIEN","Frankenstien.ovl"},
     {0xD27495E9 , "FROGGER",    "FROGGER",      "Frogger.ovl"},
     {0x37222762 , "FROG",       "BOG",          "Frog Bog.ovl"},
+    {0x71c2c0bf , "GOONINUFF",  "GOONINUFF",    "Gooninuff.ovl"},
     {0xAC764495 , "GOSUB",      "GOSUB",        "GosubDigital.ovl"},
     {0x4B8C5932 , "HAPPY",      "TRAILS",       "Happy Trails.ovl"},
     {0x120b53a9 , "HAPPY",      "TRAILS",       "Happy Trails.ovl"},
