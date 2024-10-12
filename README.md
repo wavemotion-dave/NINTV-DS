@@ -168,11 +168,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V5.6c : 09-Oct-2024 by wavemotion-dave
+V5.7 : 12-Oct-2024 by wavemotion-dave
   * Fix to allow JLP games to execute out of 16-bit RAM. Fixes Defender of the Crown.
   * Fix ECS keyboard emulation to properly read back either port if configured for output (was causing FWDiagnostics to fail).
   * Improved UI display of 'JLP FLASH' so it shows a bit longer (but doesn't interfere with emulation speed)
-  * Numerous new overlays added.
+  * Numerous new overlays added and updated some older ones.
 
 V5.6 : 06-Oct-2024 by wavemotion-dave
   * Massive overhaul to the way overlays are found and loaded. No longer do you need to have the overlays named the same as the game ROM file - the emulator should find the matching overlay 99% of the time (and yes, you can still force the issue by naming the .ovl the same as the base game .int/.bin/.rom file)
