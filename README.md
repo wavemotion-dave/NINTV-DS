@@ -45,7 +45,7 @@ Technical Specs :
  * ECS emulated with the 2K of 8-bit RAM, Keyboard, extra sound channels, etc.
  * Intellivoice emulated for games that take advantage of voice enhancements.
  * Up to 8K of extra 8-bit RAM emulated for games like USFC Chess and Land Battle (note, the 2K of ECS 8-bit RAM comes out of this pool).
- * Up to 16K Words of extra 16-bit RAM emulated beyond dedicated 8K words of JLP RAM (so technically 24K Words of 16-bit RAM available to carts)
+ * Up to 24K Words of extra 16-bit RAM. With JLP enabled, the 8K of JLP RAM comes from this pool.
  * Paging on all segments of memory provided the full binary is 1024KB (bytes) or less.
 
 Loading Games :

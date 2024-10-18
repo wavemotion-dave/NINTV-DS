@@ -244,6 +244,8 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xAF8718A1 , "DRAGONFIRE", "DRAGONFIRE",   "Dragonfire.ovl"},
     {0x3B99B889 , "DREADNAUGHT","FACTOR",       "Dreadnaught Factor.ovl"},
     {0x99f5783d , "DREADNAUGHT","FACTOR",       "Dreadnaught Factor.ovl"},
+    {0x6DF61A9F , "KONG JR",    "COLECO",       "Donkey Kong.ovl"},
+    {0xC30F61C0 , "DONKEY KONG","COLECO",       "Donkey Kong.ovl"},
     {0x54A3FC11 , "ELECTRIC",   "MATH",         "Electric Company - Math Fun.ovl"},
     {0x291106bc , "FANTASY",    "2020",         "Fantasy.ovl"},
     {0xB1BFA8B8 , "FINAL",      "ROUND",        "FinalRound.ovl"},
@@ -262,6 +264,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x4F3E3F69 , "ICE",        "TREK",         "Ice Trek.ovl"},
     {0x5F2607E1 , "INFILTRATOR","INFILTRATOR",  "Infiltrator.ovl"},
     {0xFFFFFFFF , "INTELLIVANIA","INTELLIVANIA","Intellivania.ovl"},
+    {0xFFFFFFFF , "JAWCRUSHER", "JAWCRUSHER",   "Jawcrusher.ovl"},
     {0xEE5F1BE2 , "JETSONS",    "JETSONS",      "Jetsons.ovl"},
     {0x4422868E , "KING",       "MOUNTAIN",     "King of the Mountain.ovl"},
     {0x87D95C72 , "KING",       "MOUNTAIN",     "King of the Mountain.ovl"},
@@ -307,6 +310,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xD7C5849C , "PINBALL",    "PINBALL",      "Pinball.ovl"},
     {0x9C75EFCC , "PITFALL!",   "PITFALL!",     "Pitfall!.ovl"},
     {0x0CF06519 , "POKER",      "RISQUE",       "Poker Risque.ovl"},
+    {0x38e9ef48 , "PRINCESS",   "QUEST",        "Princess Quest.ovl"},
     {0xFFFFFFFF , "PUMPKIN",    "TRILOGY",      "Pumpkin Trilogy.ovl"},
     {0xD8C9856A,  "Q-BERT",     "Q-BERT",       "Q-Bert.ovl"},
     {0x5AEF02C6 , "RICK",       "DYNAMITE",     "Rick Dynamite.ovl"},
@@ -377,6 +381,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x740C9C49 , "X-RALLY",    "X-RALLY",      "X-Rally.ovl"},
     {0x45119649 , "YAR",        "REVENGE",      "Yars Revenge.ovl"},
     {0xC00CBA0D , "GORF",       "GORF",         "gorf.ovl"},
+    {0xFFFFFFFF , "ZOMBIE",     "MADNESS",      "Zombie Madness.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
