@@ -45,6 +45,9 @@ extern u8 bShowDisc;
 
 u8 bFavsOnlyMode = false;
 
+static UINT8 bFirstTimeLoad = true;
+
+
 // -------------------------------------------------------------------------------
 // Load the cart from a file on disk. We support .bin/.int (raw binary) and we 
 // also support .ROM (intellicart). The .bin file must have a matching CRC in
@@ -168,12 +171,10 @@ BOOL LoadCart(const CHAR* filename)
 // -----------------------------------------------------------------------
 void CheckFirstTimeLoad(void)
 {
-  static UINT8 bFirstTime = true;
-    
   // First time in we use the config setting to determine where we open files...
-  if (bFirstTime)
+  if (bFirstTimeLoad)
   {
-      bFirstTime = false;
+      bFirstTimeLoad = false;
       if (myGlobalConfig.rom_dir == 1)
       {
          chdir("/ROMS");
@@ -402,7 +403,6 @@ void clrFavorite(char *filename)
 // ----------------------------------------------------------------------------------------
 void intvFindFiles(void) 
 {
-  static UINT8 bFirstTime = true;
   DIR *pdir;
   struct dirent *pent;
 
@@ -410,9 +410,9 @@ void intvFindFiles(void)
   memset(intvromlist, 0x00, sizeof(intvromlist));
 
   // First time in we use the config setting to determine where we open files...
-  if (bFirstTime)
+  if (bFirstTimeLoad)
   {
-      bFirstTime = false;
+      bFirstTimeLoad = false;
       if (myGlobalConfig.rom_dir == 1)
       {
          chdir("/ROMS");

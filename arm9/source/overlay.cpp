@@ -309,6 +309,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x1A7AAC88 , "PENGUIN",    "LAND",         "Penguin Land.ovl"},
     {0xD7C5849C , "PINBALL",    "PINBALL",      "Pinball.ovl"},
     {0x9C75EFCC , "PITFALL!",   "PITFALL!",     "Pitfall!.ovl"},
+    {0xBB939881 , "POLE",       "POSITION",     "Pole Position.ovl"},
     {0x0CF06519 , "POKER",      "RISQUE",       "Poker Risque.ovl"},
     {0x38e9ef48 , "PRINCESS",   "QUEST",        "Princess Quest.ovl"},
     {0xFFFFFFFF , "PUMPKIN",    "TRILOGY",      "Pumpkin Trilogy.ovl"},
@@ -382,6 +383,10 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x45119649 , "YAR",        "REVENGE",      "Yars Revenge.ovl"},
     {0xC00CBA0D , "GORF",       "GORF",         "gorf.ovl"},
     {0xFFFFFFFF , "ZOMBIE",     "MADNESS",      "Zombie Madness.ovl"},
+    {0xFFFFFFFF , "STOP",       "EXPRESS",      "Stop the Express.ovl"},
+    {0x2711dcbe , "#@!^aZ",     "()##b-+",      "Maria.ovl"},
+    {0xFFFFFFFF , "FUBAR",      "FUBAR",        "FUBAR.ovl"},
+    {0xFFFFFFFF , "THUNDER",    "SOLDIER",      "Thunder Soldier.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
