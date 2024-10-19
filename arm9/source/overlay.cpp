@@ -387,6 +387,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "STOP",       "EXPRESS",      "Stop the Express.ovl"},
     {0x2711dcbe , "#@!^aZ",     "()##b-+",      "Maria.ovl"},
     {0xFFFFFFFF , "FUBAR",      "FUBAR",        "FUBAR.ovl"},
+    {0xFFFFFFFF , "JUNGLE",      "HUNT",        "Jungle Hunt.ovl"},
     {0xFFFFFFFF , "THUNDER",    "SOLDIER",      "Thunder Soldier.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
