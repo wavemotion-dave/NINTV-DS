@@ -226,6 +226,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x0BF464C6 , "CHIP",       "SHOT",         "Chip Shot - Super Pro Golf.ovl"},
     {0xFFFFFFFF , "CHRISTMAS",  "CAROL",        "Christmas Carol.ovl"},
     {0x3289C8BA , "COMMANDO",   "COMMANDO",     "Commando.ovl"},
+    {0x4B23A757 , "CONGO",      "BONGO",        "Congo Bongo.ovl"},
     {0xe8b99963 , "COPTER",     "COMMAND",      "Copter Command.ovl"},
     {0xFFFFFFFF , "COSMIC",     "AVENGER",      "Cosmic Avenger.ovl"},
     {0x060E2D82 , "D1K",        "D1K",          "D1K.ovl"},
