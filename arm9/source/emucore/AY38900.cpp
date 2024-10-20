@@ -1197,17 +1197,15 @@ ITCM_CODE void AY38900::determineMOBCollisions()
 {
     for (int i = 0; i < 7; i++) 
     {
-        // Technically there is nothing special about a Y location of zero (0) but at least one game (GORF) uses it to move the 
-        // object off-screen. This is a bit non-standard as one pixel is still visible (better would be to move the object to
-        // an X position of 0 or beyond 168) but we don't bother to check collisions when the object has just one pixel hanging
-        // on the screen - it's easier than having a more complex mob collision algorithm and fixes games like GORF.
-        if (mobs[i].xLocation == 0 || !mobs[i].flagCollisions || mobs[i].xLocation >= 167 || mobs[i].yLocation >= 104 || mobs[i].yLocation == 0)
+        // There is nothing special about a Y location of zero (0) but at least one game (GORF) uses it to move the 
+        // object off-screen. So we will need to do a bit more work in the mobsCollide() to handle this...
+        if (mobs[i].xLocation == 0 || !mobs[i].flagCollisions || mobs[i].xLocation >= 167 || mobs[i].yLocation >= 104)
             continue;
 
         //check MOB on MOB collisions
         for (int j = i+1; j < 8; j++) 
         {
-            if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation >= 167 || mobs[j].yLocation >= 104 || mobs[i].yLocation == 0)
+            if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation >= 167 || mobs[j].yLocation >= 104)
                 continue;
 
             if (mobsCollide(i, j)) {
@@ -1219,6 +1217,19 @@ ITCM_CODE void AY38900::determineMOBCollisions()
 }
 
 
+// ------------------------------------------------------------------------------
+// The MOB collisions are not up to jzintv standards mostly for speed purposes.
+// By the time we get here, we've already checked for the special MOB x-pos of
+// zero (0) and if the MOB is completely out of visible bounds - none of those
+// MOBs would produce collisions in real hardware. But there are also cases 
+// where the MOBs are partially off-screen... below we only really are checking
+// for MOBs that might be off the top of the screen and any pixels in that 
+// non-visible area will not produce collisions. This leaves off checks for
+// the bottom of screen and possibly off either side of the screen. I would 
+// even skip the off-top-screen check except that GORF does set the Y position
+// of the ship MOB to zero (0) when hit/exploding and if we don't mask off 
+// collisions off the top of the screen, we will get some false hits.
+// ------------------------------------------------------------------------------
 ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
 {
     MOBRect* r0 = mobs[mobNum0].getBounds();
@@ -1241,7 +1252,14 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
     for (int y = 0; y < overlappingHeight; y++) 
     {
         if (((mobBuffers[mobNum0][offsetYr0 + y] << offsetXr0) & (mobBuffers[mobNum1][offsetYr1 + y] << offsetXr1)) != 0)
-            return TRUE;
+        {
+            // -----------------------------------------------------------------------------------------------------
+            // Make sure the vertical area of this overlap is visible on screen ... otherwise no collision
+            // Since we've already determined a collision, we only need to check one of the MOB rectangles to see
+            // if it is off-screen as the other one would be likewise... In theory, we should check off bottom too.
+            // -----------------------------------------------------------------------------------------------------
+            if (r0->y + (offsetYr0 + y) >= 0) return TRUE;
+        }
     }
 
     return FALSE;

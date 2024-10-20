@@ -168,6 +168,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.7b : 20-Oct-2024 by wavemotion-dave
+  * Fix for game selection to revert to the proper directory (the last one you were in to select games).
+  * Fix for MOB collisions to not render for off-screen pixels which fixes the various Baseball Games (couldn't pick up ball in outfield).
+  * Many new and improved overlays.
+
 V5.7 : 12-Oct-2024 by wavemotion-dave
   * Fix to allow JLP games to execute out of 16-bit RAM. Fixes Defender of the Crown.
   * Fix ECS keyboard emulation to properly read back either port if configured for output (was causing FWDiagnostics to fail).
