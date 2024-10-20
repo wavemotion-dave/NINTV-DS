@@ -202,6 +202,11 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0x2a1e0c1c) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Buzz Bombers is best with Dual Action B
     if (crc == 0x2a1e0c1c) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Buzz Bombers is best with Dual Action B
     if (crc == 0xc047d487) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Beauty and the Beast is best with Dual Action B
+    
+    if (crc == 0x10D64E48) myConfig.controller_type = CONTROLLER_P2;            // MLB Baseball and Super Pro Baseball use the P2 controller
+    if (crc == 0xDAB36628) myConfig.controller_type = CONTROLLER_P2;            // MLB Baseball and Super Pro Baseball use the P2 controller
+    if (crc == 0x650fc1b4) myConfig.controller_type = CONTROLLER_P2;            // MLB Baseball and Super Pro Baseball use the P2 controller
+    
     if (crc == 0xc047d487) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Beauty and the Beast is best with Strict 4-way
     if (crc == 0xD1D352A0) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Tower of Doom is best with Strict 4-way
     if (crc == 0xD8C9856A) myConfig.dpad_config     = DPAD_DIAGONALS;           // Q-Bert is best with diagonal
