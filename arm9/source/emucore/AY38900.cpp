@@ -1258,7 +1258,7 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
             // Since we've already determined a collision, we only need to check one of the MOB rectangles to see
             // if it is off-screen as the other one would be likewise... In theory, we should check outside bottom too.
             // ---------------------------------------------------------------------------------------------------------
-            if ((r0->y + (offsetYr0 + y + verticalOffset)) >= 0) return TRUE;
+            if ((r0->y + ((offsetYr0/2) + (y/2) + verticalOffset)) >= 0) return TRUE;
         }
     }
 
