@@ -1253,12 +1253,11 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
     {
         if (((mobBuffers[mobNum0][offsetYr0 + y] << offsetXr0) & (mobBuffers[mobNum1][offsetYr1 + y] << offsetXr1)) != 0)
         {
-            // ---------------------------------------------------------------------------------------------------------
+            // -------------------------------------------------------------------------------------------------
             // Make sure the vertical area of this overlap is visible on screen ... otherwise no collision
-            // Since we've already determined a collision, we only need to check one of the MOB rectangles to see
-            // if it is off-screen as the other one would be likewise... In theory, we should check outside bottom too.
-            // ---------------------------------------------------------------------------------------------------------
-            if ((r0->y + ((offsetYr0/2) + (y/2) + verticalOffset)) >= 0) return TRUE;
+            // In theory, we should check outside the bottom of screen too but we're keeping in simple and fast.
+            // -------------------------------------------------------------------------------------------------
+            if ((startingY + (y/2) + verticalOffset) >= 0) return TRUE;
         }
     }
 
