@@ -391,6 +391,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x24B667B9 , "WORM",       "WHOMPER",      "Worm Whomper.ovl"},
     {0x740C9C49 , "X-RALLY",    "X-RALLY",      "X-Rally.ovl"},
     {0x45119649 , "YAR",        "REVENGE",      "Yars Revenge.ovl"},
+    {0x15C65DC5 , "ZAXXON",     "ZAXXON",       "Zaxxon.ovl"},
     {0xC00CBA0D , "GORF",       "GORF",         "gorf.ovl"},
     {0xFFFFFFFF , "ZOMBIE",     "MADNESS",      "Zombie Madness.ovl"},
     {0xFFFFFFFF , "STOP",       "EXPRESS",      "Stop the Express.ovl"},
