@@ -184,6 +184,7 @@ struct MapRomToOvl_t
 struct MapRomToOvl_t MapRomToOvl[] = 
 {
     {0xA6E89A53 , "DRAGONS",    "SWORDS",       "A Tale of Dragons and Swords.ovl"},
+    {0x5a144835 , "ADVENTURES", "TRON",         "Adventures of TRON.ovl"},
     {0xA60E25FC , "BACKGAMMON", "BACKGAMMON",   "ABPA Backgammon.ovl"},
     {0xFFFFFFFF , "GAMMON",     "GAMMON",       "ABPA Backgammon.ovl"},
     {0xF8B1F2B7 , "CLOUDY",     "MOUNTAIN",     "AD&D Cloudy Mountain.ovl"},
@@ -340,6 +341,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x20eb8b7c , "SAMEGAME",   "ROBOTS",       "SameGame and Robots.ovl"},
     {0xE0F0D3DA , "SEWER",      "SAM",          "Sewer Sam.ovl"},
     {0xBA68FF28 , "SLAP",       "HOCKEY",       "Slap Shot Hockey.ovl"},
+    {0x2B549528 , "SMURF",      "RESCUE",       "Smurf Rescue.ovl"},
     {0xAB5FD8BC , "SPACE",      "PATROL",       "Space Patrol.ovl"},
     {0x8F7D3069 , "SUPER",      "COBRA",        "Super Cobra.ovl"},
     {0x7C32C9B8 , "SUPER",      "COBRA",        "Super Cobra.ovl"},
