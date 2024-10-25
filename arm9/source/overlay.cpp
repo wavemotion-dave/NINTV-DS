@@ -281,6 +281,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x4422868E , "KING",       "MOUNTAIN",     "King of the Mountain.ovl"},
     {0x87D95C72 , "KING",       "MOUNTAIN",     "King of the Mountain.ovl"},
     {0xFFFFFFFF , "SPKOTM",     "SPKOTM",       "King of the Mountain.ovl"},    
+    {0x30e2819b , "KEYBOARD",   "FUN",          "Keyboard Fun.ovl"},
     {0x8C9819A2 , "KOOL",       "AID",          "Kool-Aid Man.ovl"},
     {0xFFFFFFFF , "CAVES",      "KROZ",         "Kroz.ovl"},    
     {0xA6840736 , "LADY",       "BUG",          "Lady Bug.ovl"},
@@ -431,6 +432,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "JUNGLE",     "HUNT",         "Jungle Hunt.ovl"},
     {0xFFFFFFFF , "THUNDER",    "SOLDIER",      "Thunder Soldier.ovl"},
     {0x2711dcbe , "#@!^aZ",     "()##b-+",      "Maria.ovl"},
+    {0x906989e2 , "HELI",       "HELI",         "HELI.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
