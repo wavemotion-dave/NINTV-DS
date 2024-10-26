@@ -183,6 +183,8 @@ struct MapRomToOvl_t
 
 struct MapRomToOvl_t MapRomToOvl[] = 
 {
+    {0xD7C78754 , "4-TRIS",     "4-TRIS",       "4-TRIS.ovl"},
+    {0xB91488E2 , "4TRIS",      "4TRIS",        "4-TRIS.ovl"},
     {0xA6E89A53 , "DRAGONS",    "SWORDS",       "A Tale of Dragons and Swords.ovl"},
     {0x5a144835 , "ADVENTURES", "TRON",         "Adventures of TRON.ovl"},
     {0xA60E25FC , "BACKGAMMON", "BACKGAMMON",   "ABPA Backgammon.ovl"},
@@ -337,6 +339,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xC51464E0 , "POPEYE",     "POPEYE",       "Popeye.ovl"},
     {0x38e9ef48 , "PRINCESS",   "QUEST",        "Princess Quest.ovl"},
     {0xFFFFFFFF , "PUMPKIN",    "TRILOGY",      "Pumpkin Trilogy.ovl"},
+    {0x3ed7e397 , "PUMPKIN",    "BAKERY",       "Pumpkin Bakery.ovl"},
     {0xD8C9856A , "Q-BERT",     "Q-BERT",       "Q-Bert.ovl"},
     {0xC7BB1B0E , "REVERSI",    "REVERSI",      "Reversi.ovl"},
     {0x5AEF02C6 , "RICK",       "DYNAMITE",     "Rick Dynamite.ovl"},
@@ -370,7 +373,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "SACRED",     "TRIBE",        "Sacred Tribe.ovl"},
     {0xFFFFFFFF , "SEA",        "VENTURE",      "Sea Venture.ovl"},
     {0xE8B8EBA5 , "SPACE",      "ARMADA",       "Space Armada.ovl"},
-    {0xFFFFFFFF , "SPACE",      "INVADERS",     "Space Armada.ovl"},
+    {0xFFFFFFFF , "SPACE",      "INVADERS",     "Space Invaders.ovl"},
     {0x1AAC64CA , "SPACE",      "BANDITS",      "Space Bandits.ovl"},
     {0xF95504E0 , "SPACE",      "BATTLE",       "Space Battle.ovl"},
     {0x39D3B895 , "SPACE",      "HAWK",         "Space Hawk.ovl"},
@@ -433,6 +436,9 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "THUNDER",    "SOLDIER",      "Thunder Soldier.ovl"},
     {0x2711dcbe , "#@!^aZ",     "()##b-+",      "Maria.ovl"},
     {0x906989e2 , "HELI",       "HELI",         "HELI.ovl"},
+    {0xFFFFFFFF , "KEYSTONE",   "KOPPS",        "Keystone Kopps.ovl"},
+    {0xFFFFFFFF , "MR",         "TURTLE",       "Mr Turtle.ovl"},
+    {0xFFFFFFFF , "QUEST",      "TIRES",        "BC Quest for Tires.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
