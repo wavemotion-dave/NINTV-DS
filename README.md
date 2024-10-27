@@ -168,6 +168,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.9 : 27-Oct-2024 by wavemotion-dave
+  * Overlay overload... more than 220 custom Nintellivision overlays in the extras.zip pack.
+  
 V5.8 : 20-Oct-2024 by wavemotion-dave
   * Fix for game selection to revert to the proper directory (the last one you were in to select games).
   * Fix for MOB collisions to not render for off-screen pixels which fixes the various Baseball Games (couldn't pick up ball in outfield).
