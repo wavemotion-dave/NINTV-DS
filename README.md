@@ -101,6 +101,13 @@ exactly the same. By default, overlay files (.ovl) go into the same directory as
 
 ![Standard Overlay](png/normalovl.png) ![Custom Overlay](png/customovl.png) ![Custom Overlay](png/customovl2.png)
 
+For those curious, here is the search order for overlays:
+* Same base name as the .rom or .bin or .int file. If you give the overlay the same base filename as the game binary, it will load (even if the overlay is wrong - i.e. you could rename Astromash.ovl to Aardvark.ovl and it will load that for Aardvark.rom)
+* Internal database of CRCs ... if the game is a well known good ROM dump, the internal CRC will be found and the right overlay should be loaded and shown. 
+* If neither of those produces a match, there is a loose match based on special keywords for each game. For example, any game that has 'Ninja' and 'Odyssey' anywhere in the title will load up the Ninja Odyssey.ovl overlay.
+* Lastly, if no overlay match is found... the default keypad is shown.
+
+
 Disc Overlay:
 -----------------------
 Built into the emulator is a full-disc overlay that maps to the 16-digital positions of a real Intellivision controller. It's not perfect - without the tactile feel of a real controller, it's not usable as a generic replacement for the D-Pad for smooth movement but it works great for games like Bowling or Golf where you need the discrete 16-digital position accuracy.  The DS START Button will toggle the disc overlay on/off (switching back to the normal overlay for the game).
