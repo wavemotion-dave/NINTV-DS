@@ -430,6 +430,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x10D64E48 , "CHAMPIONSHIP","BASEBALL",    "Baseball.ovl"},
     {0xDAB36628 , "MLB",        "BASEBALL",     "Baseball.ovl"},
     {0x650fc1b4 , "PRO",        "BASEBALL",     "Baseball.ovl"},
+    {0xFFFFFFFF , "HOME",       "RUN",          "Baseball.ovl"},
     {0x6EFA67B2 , "VENTURE",    "COLECO",       "Venture.ovl"},
     {0xFFFFFFFF , "WIZARD",     "OF WOR",       "Wizard of Wor.ovl"},
     {0x740C9C49 , "X-RALLY",    "X-RALLY",      "X-Rally.ovl"},
