@@ -471,25 +471,25 @@ void FindAndLoadConfig(UINT32 crc)
 struct options_t
 {
     const char  *label;
-    const char  *option[29];
+    const char  *option[30];
     UINT8 *option_val;
     UINT8 option_max;
 };
 
-#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "SHOW DISC", "SHOW KBD", "DISC UP", "DISC DOWN", "SPEEDUP"
+#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "SHOW DISC", "SHOW KBD", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
 
 const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
-        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        29},
-        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        29},
-        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        29},
-        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        29},
-        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        29},
-        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        29},
-        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    29},
-        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   29},
+        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        30},
+        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        30},
+        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        30},
+        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        30},
+        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        30},
+        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        30},
+        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    30},
+        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   30},
         {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP, SHOW DISK or SHOW KEYBOARD so the array here is one shorter
         {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_XY_map,       26},
         {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_YB_map,       26},
@@ -522,8 +522,8 @@ const struct options_t Option_Table[3][20] =
         {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                 &myGlobalConfig.ovl_dir,                4},
         {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                   &myGlobalConfig.rom_dir,                3},
         {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
-        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  29},
-        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 29},
+        {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  30},
+        {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 30},
         {"DEF SOUND",   {"LOW", "MEDIUM", "HIGH"},                                                                                                      &myGlobalConfig.def_sound_quality,      3},
         {"DEF PALETTE", {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myGlobalConfig.def_palette,            5},
         {"DEF FRAMSKP", {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                               &myGlobalConfig.frame_skip,             3},

@@ -60,12 +60,13 @@ struct Overlay_t
 #define OVL_META_DISC_UP  26
 #define OVL_META_DISC_DN  27
 #define OVL_META_SPEEDUP  28
-#define OVL_META_STRETCH  29
-#define OVL_META_GCONFIG  30
-#define OVL_META_CHEATS   31
-#define OVL_META_EMUINFO  32
+#define OVL_META_FASTLOAD 29
+#define OVL_META_STRETCH  30
+#define OVL_META_GCONFIG  31
+#define OVL_META_CHEATS   32
+#define OVL_META_EMUINFO  33
 
-#define OVL_MAX           33
+#define OVL_MAX           34
 #define DISC_MAX          16
 
 

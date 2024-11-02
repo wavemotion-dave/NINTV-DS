@@ -327,6 +327,13 @@ void show_slot_info(UINT8 slot)
     }
 }
 
+// Quick load from slot 1
+void quick_load(void)
+{
+    just_read_save_file();
+    state_restore(0);
+}
+
 // ------------------------------------------------------------------------
 // Show the save/restore menu and let the user pick an option (or exit).
 // ------------------------------------------------------------------------

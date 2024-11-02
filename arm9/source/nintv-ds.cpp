@@ -704,6 +704,13 @@ void ds_handle_meta(int meta_key)
             bShowKeyboard ^= 1;
             show_overlay(bShowKeyboard, bShowDisc);
             break;
+        
+        case OVL_META_FASTLOAD:
+            {
+                void quick_load(void);
+                quick_load();
+            }
+            break;
     }
 }
 
