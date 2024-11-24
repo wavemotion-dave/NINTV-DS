@@ -454,6 +454,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xd6f7b4d0 , "OH",         "MUMMY",        "Oh Mummy!.ovl"},
     {0x7fd5d202 , "DEATH",      "STRIKE",       "Death Star Strike.ovl"},
     {0x8ae91ade , "ISTAR",      "ISTAR",        "istar.ovl"},
+    {0xa1b83fdb , "ONION",      "ONION",        "Onion.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
