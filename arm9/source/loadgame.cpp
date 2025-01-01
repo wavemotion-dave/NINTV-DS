@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -32,8 +32,9 @@
 // -------------------------------------------------------------
 // We support up to 512 files per directory. More than enough.
 // -------------------------------------------------------------
-FICA_INTV intvromlist[512];
-u16 countintv=0, ucFicAct=0;
+FICA_INTV intvromlist[MAX_ROMS];
+u16 countintv=0;
+static u16 ucFicAct=0;
 char szName[256];
 char szName2[256];
 extern char directory[];
@@ -63,7 +64,10 @@ BOOL LoadCart(const CHAR* filename)
     
     bIsFatalError = false;
     bGameLoaded = FALSE;
-    bShowDisc = false; // Normal overlay to start
+    bShowDisc = false;  // Normal overlay to start
+    multi_ovls = 0;     // And assume non-multi-overlay
+    multi_ovl_idx = 0;  // if the .ovl file indicates we are multi, this will get used to pull in alternate overlay graphics
+    bmulti_LR = 0;      // Not a L/R multi-overlay
     
     // Clear out the debug array with every new game loaded
     memset(debug, 0x00, DEBUG_SIZE * (sizeof(UINT32)));
@@ -430,7 +434,7 @@ void intvFindFiles(void)
     while (((pent=readdir(pdir))!=NULL)) 
     {
       strcpy(szName2,pent->d_name);
-      szName2[127] = NULL;
+      szName2[MAX_PATH-1] = NULL;
       if (pent->d_type == DT_DIR)
       {
         if (!( (szName2[0] == '.') && (strlen(szName2) == 1))) 

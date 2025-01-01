@@ -29,6 +29,7 @@
     .ovl    255,   255,    255,   255,    // META_MANUAL
     .ovl     50,     86,   161,   191,    // META_DISC
     .ovl      8,     49,   161,   191,    // META_KEYBOARD    
+    .ovl    255,   255,    255,   255,    // META_SWAPOVL
     
 
 	.tile 0x00B8C010,0xF000003C,0xF001F001,0x73095001,0x01F0F273,0x01F001F0,0xCD1A0950,0x80310110

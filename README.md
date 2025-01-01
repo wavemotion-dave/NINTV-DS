@@ -147,7 +147,7 @@ Missing / Known Issues :
 
 License :
 -----------------------
-Copyright © 2021-2024 Dave Bernazzani (wavemotion-dave)
+Copyright © 2021-2025 Dave Bernazzani (wavemotion-dave)
 
 Copying and distribution of this emulator, its source code and associated 
 readme files, with or without modification, are permitted in any medium without 
@@ -175,6 +175,12 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.0 : 01-Jan-2024 by wavemotion-dave
+  * Multi-overlays now supported for games like Mr. BASIC Meets Bits 'n Bytes, Inty BASIC Showcase collections, etc.
+  * Left/Right overlays now supported for games like Chess or Lode Runner.
+  * Ability to pick a different overlay for the game being played.
+  * A batch of new overlays to finally get the original 125 done!
+
 V5.9 : 27-Oct-2024 by wavemotion-dave
   * Overlay overload... more than 220 custom Nintellivision overlays in the extras.zip pack.
   

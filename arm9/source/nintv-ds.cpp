@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -64,6 +64,9 @@ UINT8 bShowKeyboard     __attribute__((section(".dtcm"))) = false;
 // --------------------------------------------------
 UINT8 hud_x                 = 3;
 UINT8 hud_y                 = 0;
+UINT8 multi_ovls            = 0;
+UINT8 multi_ovl_idx         = 0;
+UINT8 bmulti_LR             = 0;
 UINT16 keypad_pressed       = 0;
 UINT16 ecs_debounce_timer   = 0;
 
@@ -344,6 +347,32 @@ void HandleScreenStretch(void)
     }
 }
 
+
+extern u8 *fake_heap_end;   // current heap start
+extern u8 *fake_heap_start;   // current heap end
+
+u8* getHeapStart() {
+   return fake_heap_start;
+}
+
+u8* getHeapEnd() {
+   return (u8*)sbrk(0);
+}
+
+u8* getHeapLimit() {
+   return fake_heap_end;
+}
+
+int getMemUsed() { // returns the amount of used memory in bytes
+   struct mallinfo mi = mallinfo();
+   return mi.uordblks;
+}
+
+int getMemFree() { // returns the amount of free memory in bytes
+   struct mallinfo mi = mallinfo();
+   return mi.fordblks + (getHeapLimit() - getHeapEnd());
+}
+
 // -------------------------------------------------------------------------
 // Show some information about the game/emulator on the bottom LCD screen.
 // -------------------------------------------------------------------------
@@ -367,7 +396,7 @@ void dsShowEmuInfo(void)
         sprintf(tmpStr, "ECS Enabled:   %s   ",     (bUseECS    ? "YES":"NO"));          dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Tutorvision:   %s   ",     (bUseTutorvision ? "YES":"NO"));     dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "Total Frames:  %-9u ",     global_frames);                      dsPrintValue(0, idx++, 0, tmpStr);
-        sprintf(tmpStr, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, tmpStr);        
+        sprintf(tmpStr, "Memory Free:   %-9d ",     getMemFree());                       dsPrintValue(0, idx++, 0, tmpStr);        
         sprintf(tmpStr, "RAM Indexes:   %d / %d / %d", fast_ram16_idx, slow_ram16_idx, slow_ram8_idx);  dsPrintValue(0, idx++, 0, tmpStr);        
         sprintf(tmpStr, "MEMS MAPPED:   %-9d ",     currentEmu->memoryBus.getMemCount());dsPrintValue(0, idx++, 0, tmpStr);    
         sprintf(tmpStr, "RIP ROM Count: %-9d ",     currentRip->GetROMCount());          dsPrintValue(0, idx++, 0, tmpStr);        
@@ -380,7 +409,7 @@ void dsShowEmuInfo(void)
     {
         sprintf(tmpStr, "Build Date:    %s",        __DATE__);                           dsPrintValue(0, idx++, 0, tmpStr);
         sprintf(tmpStr, "CPU Mode:      %s",        isDSiMode() ? "DSI 134MHz 16MB":"DS 67MHz 4 MB");  dsPrintValue(0, idx++, 0, tmpStr);
-        sprintf(tmpStr, "Memory Used:   %-9d ",     getMemUsed());                       dsPrintValue(0, idx++, 0, tmpStr);        
+        sprintf(tmpStr, "Memory Used:   %-9d ",     getMemFree());                       dsPrintValue(0, idx++, 0, tmpStr);        
         sprintf(tmpStr, "NO GAME IS LOADED!");                                           dsPrintValue(0, idx++, 0, tmpStr);        
     }
 
@@ -402,7 +431,7 @@ void dsShowEmuInfo(void)
 // so we now just store all the extra goodies in this menu... By default the SELECT
 // button will bring this up.
 // -------------------------------------------------------------------------------------
-#define MAIN_MENU_ITEMS 14
+#define MAIN_MENU_ITEMS 15
 const char *main_menu[MAIN_MENU_ITEMS] = 
 {
     "RESET EMULATOR",  
@@ -417,6 +446,7 @@ const char *main_menu[MAIN_MENU_ITEMS] =
     "SCREEN STRETCH",
     "SHOW DISC",
     "SHOW KEYBOARD",
+    "PICK OVERLAY",
     "QUIT EMULATOR",  
     "EXIT THIS MENU",  
 };
@@ -430,7 +460,7 @@ int menu_entry(void)
     dsShowBannerScreen();
     swiWaitForVBlank();
     dsPrintValue(8,3,0, (char*)"MAIN MENU");
-    dsPrintValue(4,20,0, (char*)"PRESS UP/DOWN AND A=SELECT");
+    dsPrintValue(4,22,0, (char*)"PRESS UP/DOWN AND A=SELECT");
 
     for (int i=0; i<MAIN_MENU_ITEMS; i++)
     {
@@ -502,9 +532,12 @@ int menu_entry(void)
                         return OVL_META_KEYBOARD;
                         break;                        
                     case 12:
-                        return OVL_META_QUIT;
+                        return OVL_META_PICKOVL;
                         break;
                     case 13:
+                        return OVL_META_QUIT;
+                        break;
+                    case 14:
                         bDone=1;
                         break;
                 }
@@ -704,6 +737,19 @@ void ds_handle_meta(int meta_key)
             bShowKeyboard ^= 1;
             show_overlay(bShowKeyboard, bShowDisc);
             break;
+            
+        case OVL_META_SWAPOVL:
+            swap_overlay();
+            break;
+            
+        case OVL_META_PICKOVL:
+            if (pick_overlay()) // Let user select a new overlay... if they did we swap it in now
+            {
+                bShowDisc = 0;
+                bShowKeyboard = 0;
+                show_overlay(bShowKeyboard, bShowDisc);
+            }
+            break;
         
         case OVL_META_FASTLOAD:
             {
@@ -819,6 +865,15 @@ UINT8 poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
             WAITVBL;
         }       
         WAITVBL;
+    }
+    // SWAP OVERLAY (for multi-overlay games)
+    else if (touch.px > myOverlay[OVL_META_SWAPOVL].x1  && touch.px < myOverlay[OVL_META_SWAPOVL].x2 && touch.py > myOverlay[OVL_META_SWAPOVL].y1 && touch.py < myOverlay[OVL_META_SWAPOVL].y2) 
+    {
+        ds_handle_meta(OVL_META_SWAPOVL);
+        while (keysCurrent() & KEY_TOUCH)   // Wait for release
+        {           
+            WAITVBL;
+        }       
     }
 
     // ---------------------------------------------------------------------------------------------------------

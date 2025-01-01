@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -33,12 +33,6 @@
 #include "printf.h"
 
 INT32 debug[DEBUG_SIZE] __attribute__((section(".dtcm")))  = {0};
-
-int getMemUsed(void)      // returns the amount of used memory in bytes
-{
-    struct mallinfo mi = mallinfo();
-    return mi.uordblks;
-}
 
 #ifdef DEBUG_ENABLE
 

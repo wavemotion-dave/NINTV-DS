@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -207,6 +207,10 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0xDAB36628) myConfig.controller_type = CONTROLLER_P2;            // MLB Baseball and Super Pro Baseball use the P2 controller
     if (crc == 0x650fc1b4) myConfig.controller_type = CONTROLLER_P2;            // MLB Baseball and Super Pro Baseball use the P2 controller
     if (crc == 0x275F3512) myConfig.controller_type = CONTROLLER_P2;            // Turbo uses the P2 controller
+    
+    if (crc == 0x15E88FCE) myConfig.key_START_map = OVL_META_SWITCH;            // Swords and Serpents wants to map the START button to swap controllers
+    if (crc == 0xB35C1101) myConfig.key_START_map = OVL_META_SWITCH;            // Auto Racing wants to map the START button to swap controllers
+    if (crc == 0x515E1D7E) myConfig.key_START_map = OVL_META_SWITCH;            // Body Slam - Super Pro Wrestling wants to map the START button to swap controllers
     
     if (crc == 0xc047d487) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Beauty and the Beast is best with Strict 4-way
     if (crc == 0xD1D352A0) myConfig.dpad_config     = DPAD_STRICT_4WAY;         // Tower of Doom is best with Strict 4-way
@@ -476,7 +480,7 @@ struct options_t
     UINT8 option_max;
 };
 
-#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH", "MANUAL", "SHOW DISC", "SHOW KBD", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
+#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH L/R", "MANUAL", "SHOW DISC", "SHOW KBD", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
 
 const struct options_t Option_Table[3][20] =
 {

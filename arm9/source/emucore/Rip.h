@@ -61,6 +61,14 @@ public:
         return this->filename;
     }
 
+    void SetOverlayName(const CHAR* fname) {
+        strncpy(this->overlayname, fname, sizeof(this->overlayname));
+    }
+    
+    const CHAR* GetOverlayName() {
+        return this->overlayname;
+    }
+
     UINT32 GetCRC() { return this->crc; }
     UINT32 GetSize() { return this->mySize; }
     JLP *JLP16Bit;
@@ -71,8 +79,12 @@ private:
     void AddPeripheralUsage(const CHAR* periphName, PeripheralCompatibility usage);
     static Rip* LoadBinCfg(const CHAR* cfgFile, UINT32 crc, size_t size);
 
+    // Set the filename and default overlay name for this game...
     void SetFileName(const CHAR* fname) {
         strncpy(this->filename, fname, sizeof(this->filename));
+        strcat(this->overlayname, this->filename);
+        this->overlayname[strlen(this->overlayname)-4] = 0;
+        strcat(this->overlayname, ".ovl");
     }
 
     UINT32 targetSystemID;
@@ -82,6 +94,7 @@ private:
     PeripheralCompatibility peripheralUsages[MAX_PERIPHERALS];
     UINT32 peripheralCount;
     CHAR filename[MAX_PATH];
+    CHAR overlayname[MAX_PATH];
     UINT32 mySize;
     UINT32 crc;
 };

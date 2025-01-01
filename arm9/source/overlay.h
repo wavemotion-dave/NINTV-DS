@@ -55,18 +55,20 @@ struct Overlay_t
 #define OVL_META_MANUAL   23
 #define OVL_META_DISC     24
 #define OVL_META_KEYBOARD 25
+#define OVL_META_SWAPOVL  26    // Used for multi-overlay games (Triple Challenge, Mr BASIC, etc)
 
 // These are not likely mapped anywhere... keep them near the back end
-#define OVL_META_DISC_UP  26
-#define OVL_META_DISC_DN  27
-#define OVL_META_SPEEDUP  28
-#define OVL_META_FASTLOAD 29
-#define OVL_META_STRETCH  30
-#define OVL_META_GCONFIG  31
-#define OVL_META_CHEATS   32
-#define OVL_META_EMUINFO  33
+#define OVL_META_DISC_UP  27
+#define OVL_META_DISC_DN  28
+#define OVL_META_SPEEDUP  29
+#define OVL_META_FASTLOAD 30
+#define OVL_META_STRETCH  31
+#define OVL_META_GCONFIG  32
+#define OVL_META_CHEATS   33
+#define OVL_META_EMUINFO  34
+#define OVL_META_PICKOVL  35    // Let the user pick any .ovl file
 
-#define OVL_MAX           34
+#define OVL_MAX           36
 #define DISC_MAX          16
 
 
@@ -82,5 +84,7 @@ extern struct Overlay_t myDisc[DISC_MAX];
 
 extern void load_custom_overlay(void);
 extern void show_overlay(u8 bShowKeyboard, u8 bShowDisc);
+extern u8   pick_overlay(void);
+extern void swap_overlay(void);
 
 #endif

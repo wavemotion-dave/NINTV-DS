@@ -1,10 +1,10 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -30,13 +30,23 @@
 #include "bgTop.h"
 #include "Emulator.h"
 #include "Rip.h"
+#include "loadgame.h"
+#include "printf.h"
 
 // ------------------------------------------------
-// Reuse the char buffer from the game load... 
+// Reuse the char buffer from the game load...
 // we wouldn't need to use this at the same time.
 // ------------------------------------------------
 extern char szName[];
 extern Rip *currentRip;
+
+char tile_str[16];
+char map_str[16];
+char pal_str[16];
+char ovl_str[16];
+char disc_str[16];
+char hudx_str[16];
+char hudy_str[16];
 
 // ----------------------------------------------------------------------------------------
 // This is the default overlay that matches the main non-custom overlay bottom screen.
@@ -46,7 +56,7 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {120,   155,    30,     60},    // KEY_1
     {158,   192,    30,     60},    // KEY_2
     {195,   230,    30,     60},    // KEY_3
-    
+
     {120,   155,    65,     95},    // KEY_4
     {158,   192,    65,     95},    // KEY_5
     {195,   230,    65,     95},    // KEY_6
@@ -62,7 +72,7 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_FIRE
     {255,   255,    255,   255},    // KEY_L_ACT
     {255,   255,    255,   255},    // KEY_R_ACT
-    
+
     { 10,    87,     10,    40},    // META_RESET
     { 10,    87,     41,    70},    // META_LOAD
     { 10,    87,     71,   100},    // META_CONFIG
@@ -74,6 +84,7 @@ struct Overlay_t defaultOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_MANUAL
     { 50,     86,   161,   191},    // META_DISC
     {  8,     49,   161,   191},    // META_KEYBOARD
+    {255,   255,    255,   255},    // META_SWAPOVL
 };
 
 // ----------------------------------------------------------------------------------------
@@ -84,7 +95,7 @@ struct Overlay_t ecsOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_1
     {255,   255,    255,   255},    // KEY_2
     {255,   255,    255,   255},    // KEY_3
-    
+
     {255,   255,    255,   255},    // KEY_4
     {255,   255,    255,   255},    // KEY_5
     {255,   255,    255,   255},    // KEY_6
@@ -100,7 +111,7 @@ struct Overlay_t ecsOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_FIRE
     {255,   255,    255,   255},    // KEY_L_ACT
     {255,   255,    255,   255},    // KEY_R_ACT
-    
+
     {255,   255,    255,   255},    // META_RESET
     {255,   255,    255,   255},    // META_LOAD
     {255,   255,    255,   255},    // META_CONFIG
@@ -112,6 +123,7 @@ struct Overlay_t ecsOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_MANUAL
     {255,   255,    255,   255},    // META_DISC
     {255,   255,    255,   255},    // META_KEYBOARD
+    {255,   255,    255,   255},    // META_SWAPOVL
 };
 
 // ----------------------------------------------------------------------------------------
@@ -122,7 +134,7 @@ struct Overlay_t discOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_1
     {255,   255,    255,   255},    // KEY_2
     {255,   255,    255,   255},    // KEY_3
-    
+
     {255,   255,    255,   255},    // KEY_4
     {255,   255,    255,   255},    // KEY_5
     {255,   255,    255,   255},    // KEY_6
@@ -138,7 +150,7 @@ struct Overlay_t discOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // KEY_FIRE
     {255,   255,    255,   255},    // KEY_L_ACT
     {255,   255,    255,   255},    // KEY_R_ACT
-    
+
     {255,   255,    255,   255},    // META_RESET
     {255,   255,    255,   255},    // META_LOAD
     {255,   255,    255,   255},    // META_CONFIG
@@ -150,6 +162,7 @@ struct Overlay_t discOverlay[OVL_MAX] =
     {255,   255,    255,   255},    // META_MANUAL
     {255,   255,    255,   255},    // META_DISC
     {255,   255,    255,   255},    // META_KEYBOARD
+    {255,   255,    255,   255},    // META_SWAPOVL
 };
 
 struct Overlay_t myOverlay[OVL_MAX];
@@ -163,13 +176,13 @@ unsigned int *customTiles = (unsigned int *) 0x06880000;          //60K of video
 unsigned short *customMap = (unsigned short *)0x0688F000;         // 4K of video memory for the map (generally about 2.5K)
 unsigned short customPal[512];
 
-char directory[192];
-char filename[192];
+char directory[192];    // Overlay directory
+char filename[192];     // Overlay filename
 
 
 // -----------------------------------------------------------------------
-// Map of game CRC to default Overlay file... this will help so that 
-// users don't need to rename every .rom file to match exactly the 
+// Map of game CRC to default Overlay file... this will help so that
+// users don't need to rename every .rom file to match exactly the
 // .ovl file. Most users just want to pick game, play game, enjoy game.
 // -----------------------------------------------------------------------
 struct MapRomToOvl_t
@@ -181,8 +194,9 @@ struct MapRomToOvl_t
 };
 
 
-struct MapRomToOvl_t MapRomToOvl[] = 
+struct MapRomToOvl_t MapRomToOvl[] =
 {
+    {0x9415dad4 , "2048",       "2048",         "2048.ovl"},
     {0xD7C78754 , "4-TRIS",     "4-TRIS",       "4-TRIS.ovl"},
     {0xB91488E2 , "4TRIS",      "4TRIS",        "4-TRIS.ovl"},
     {0xA6E89A53 , "DRAGONS",    "SWORDS",       "A Tale of Dragons and Swords.ovl"},
@@ -198,8 +212,8 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x2F9C93FC , "TREASURE",   "TARMIN",       "AD&D Treasure of Tarmin.ovl"},
     {0x2F9C93FC , "MINOTAUR",   "MINOTAUR",     "AD&D Treasure of Tarmin.ovl"},
     {0x9BA5A798 , "ANTARCTIC",  "TALES",        "Antarctic Tales.ovl"},
-    {0xc4f83541 , "ANTHROPOMOR","FORCE",        "Anthropomorphic Force.ovl"},    
-    {0x6F91FBC1 , "ARMOR",      "BATTLE",       "Armor Battle.ovl"},    
+    {0xc4f83541 , "ANTHROPOMOR","FORCE",        "Anthropomorphic Force.ovl"},
+    {0x6F91FBC1 , "ARMOR",      "BATTLE",       "Armor Battle.ovl"},
     {0x5578C764 , "ASTRO",      "INVADERS",     "Astro Invaders.ovl"},
     {0xFFFFFFFF , "ASTROSMASH", "SUPER",        "Astrosmash-SuperPro.ovl"},
     {0xFFFFFFFF , "ASTROSMASH", "COMPETITION",  "Astrosmash-SuperPro.ovl"},
@@ -212,15 +226,16 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x8B2727D9 , "BEACHHEAD",  "BEACHHEAD",    "BeachHead.ovl"},
     {0xEAF650CC , "BEAMRIDER",  "BEAMRIDER",    "Beamrider.ovl"},
     {0xC047D487 , "BEAUTY",     "BEAST",        "Beauty and the Beast.ovl"},
-    {0xFFFFFFFF , "BEAST",      "SP",           "BeautyBeast - SP.ovl"}, 
-    {0xB03F739B , "BLOCKADE",   "RUNNER",       "Blockade Runner.ovl"},   
+    {0xFFFFFFFF , "BEAST",      "SP",           "BeautyBeast - SP.ovl"},
+    {0xB03F739B , "BLOCKADE",   "RUNNER",       "Blockade Runner.ovl"},
+    {0x515E1D7E , "BODY",       "SLAM",         "Body Slam - Super Pro Wrestling.ovl"},
     {0x32697B72 , "BOMB",       "SQUAD",        "Bomb Squad.ovl"},
     {0xAB87C16F , "BOXING",     "BOXING",       "Boxing.ovl"},
     {0xF8E5398D , "BUCK",       "ROGERS",       "Buck Rogers.ovl"},
     {0x999CCEED , "BUMP",       "JUMP",         "Bump 'n' Jump.ovl"},
     {0x43806375 , "BURGER",     "TIME",         "Burger Time.ovl"},
     {0xC92BAAE8 , "BURGER",     "TIME",         "Burger Time.ovl"},
-    {0xFFFFFFFF , "BURGRTM",    "BURGRTM",      "Burger Time.ovl"},    
+    {0xFFFFFFFF , "BURGRTM",    "BURGRTM",      "Burger Time.ovl"},
     {0xFFFFFFFF , "SUPER",      "CHEF",         "Burger Time.ovl"},
     {0xFFFFFFFF , "MASTER",     "CHEF",         "Burger Time.ovl"},
     {0xFA492BBD , "BUZZ",       "BOMBERS",      "Buzz Bombers.ovl"},
@@ -284,16 +299,16 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xc412dcde , "JUMPKING",   "JUNIOR",       "Jumpking Junior.ovl"},
     {0x4422868E , "KING",       "MOUNTAIN",     "King of the Mountain.ovl"},
     {0x87D95C72 , "KING",       "MOUNTAIN",     "King of the Mountain.ovl"},
-    {0xFFFFFFFF , "SPKOTM",     "SPKOTM",       "King of the Mountain.ovl"},    
+    {0xFFFFFFFF , "SPKOTM",     "SPKOTM",       "King of the Mountain.ovl"},
     {0x30e2819b , "KEYBOARD",   "FUN",          "Keyboard Fun.ovl"},
     {0x8C9819A2 , "KOOL",       "AID",          "Kool-Aid Man.ovl"},
-    {0xFFFFFFFF , "CAVES",      "KROZ",         "Kroz.ovl"},    
+    {0xFFFFFFFF , "CAVES",      "KROZ",         "Kroz.ovl"},
     {0xA6840736 , "LADY",       "BUG",          "Lady Bug.ovl"},
     {0x604611C0 , "POKER",      "BLACKJACK",    "Las Vegas Poker & Blackjack.ovl"},
     {0x48D74D3C , "VEGAS",      "ROULETTE",     "Las Vegas Roulette.ovl"},
     {0xd2d1ad9e , "LASER",      "SHARKS",       "Laser Sharks.ovl"},
     {0x632F6ADF , "LEARNING",   "FUN II",       "Learning Fun II.ovl"},
-    {0x2C5FD5FA , "LEARNING",   "FUN I",        "Learning Fun I.ovl"},    
+    {0x2C5FD5FA , "LEARNING",   "FUN I",        "Learning Fun I.ovl"},
     {0xE00D1399 , "LOCK",       "CHASE",        "Lock-n-Chase.ovl"},
     {0x5C7E9848 , "LOCK",       "CHASE",        "Lock-n-Chase.ovl"},
     {0x6B6E80EE , "LOCO",       "MOTION"        "Loco-Motion.ovl"},
@@ -301,25 +316,29 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x573B9B6D , "MASTERS",    "UNIVERSE",     "Masters of the Universe - The Power of He-Man.ovl"},
     {0xEB4383E0 , "MAXIT",      "MAXIT",        "Maxit.ovl"},
     {0x7A558CF5 , "MAZE",       "TRON",         "Maze-A-Tron.ovl"},
+    {0xFF68AA22,  "MELODY",     "BLASTER",      "Melody Blaster.ovl"},
     {0xE806AD91 , "MICRO",      "SURGEON",      "Microsurgeon.ovl"},
     {0x9D57498F , "MIND",       "STRIKE",       "Mind Strike.ovl"},
     {0xec2e2320 , "MISSILE",    "DOMINATION",   "Missile Domination.ovl"},
-    {0x11FB9974 , "MISSION",    "X",            "Mission X.ovl"},    
-    {0xb229d5c7 , "MOON",       "BLAST",        "Moon Blast.ovl"}, 
+    {0x11FB9974 , "MISSION",    "X",            "Mission X.ovl"},
+    {0xb229d5c7 , "MOON",       "BLAST",        "Moon Blast.ovl"},
     {0x5F6E1AF6 , "MOTOCROSS",  "MOTOCROSS",    "Motocross.ovl"},
     {0x598662F2 , "MOUSE",      "TRAP",         "Mouse Trap.ovl"},
     {0xE367E450 , "MR",         "CHESS",        "MrChess.ovl"},
     {0xDBAB54CA , "NASL",       "SOCCER",       "NASL Soccer.ovl"},
     {0x09dc0db2 , "NINJA",      "ODYSSEY",      "Ninja Odyssey.ovl"},
     {0x4B91CF16 , "NFL",        "FOOTBALL",     "NFL Football.ovl"},
+    {0x76564A13 , "NHL",        "HOCKEY",       "NHL Hockey.ovl"},
     {0x613e109b , "JR",         "PAC",          "Jr Pac-Man.ovl"},
+    {0xBEF0B0C7 , "MR",         "BASIC",        "MrBASIC.ovl"},
     {0x0753544F , "MS",         "PAC",          "Ms Pac-Man.ovl"},
     {0x7334CD44 , "NIGHT",      "STALKER",      "Night Stalker.ovl"},
-    {0xFFFFFFFF , "MSTALKER",   "MSTALKER",     "Night Stalker.ovl"}, 
+    {0x6B5EA9C4 , "MOUNTAIN",   "MADNESS",      "Mountain Madness - Super Pro Skiing.ovl"},
+    {0xFFFFFFFF , "MSTALKER",   "MSTALKER",     "Night Stalker.ovl"},
     {0x5EE2CC2A , "NOVA",       "BLAST",        "Nova Blast.ovl"},
-    {0xFFFFFFFF , "OLD",        "SCHOOL",       "Old School.ovl"}, 
-    {0xFFFFFFFF , "OLD",        "SKOOL",        "Old School.ovl"}, 
-    {0xFFFFFFFF , "OMEGA",      "RACE",         "Omega Race.ovl"},    
+    {0xFFFFFFFF , "OLD",        "SCHOOL",       "Old School.ovl"},
+    {0xFFFFFFFF , "OLD",        "SKOOL",        "Old School.ovl"},
+    {0xFFFFFFFF , "OMEGA",      "RACE",         "Omega Race.ovl"},
     {0x36A7711B , "OPERATION",  "CLOUDFIRE",    "Operation Cloudfire.ovl"},
     {0xFFFFFFFF , "OREGON",     "BOUND",        "Oregon Bound.ovl"},
     {0xFFFFFFFF , "OREGON",     "TRAIL",        "Oregon Bound.ovl"},
@@ -365,7 +384,6 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x8F7D3069 , "SUPER",      "COBRA",        "Super Cobra.ovl"},
     {0x7C32C9B8 , "SUPER",      "COBRA",        "Super Cobra.ovl"},
     {0xe9e3f60d , "MAZE",       "CHASE",        "Scooby Doo's Maze Chase.ovl"},
-    {0xBEF0B0C7 , "MAZE",       "CHASE",        "Scooby Doo's Maze Chase.ovl"},
     {0xFFFFFFFF , "SCOOBY",     "DOO",          "Scooby Doo's Maze Chase.ovl"},
     {0x99AE29A9 , "SEA",        "BATTLE",       "Sea Battle.ovl"},
     {0x2A4C761D , "SHARK!",     "SHARK!",       "Shark! Shark!.ovl"},
@@ -373,8 +391,8 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "SHARK SHARK","SHARK SHARK",  "Shark! Shark!.ovl"},
     {0xFF7CB79E , "SHARP",      "SHOT",         "Sharp Shot.ovl"},
     {0xF093E801 , "US",         "SKIING",       "Skiing.ovl"},
-    {0x0e6198a5 , "GADHLAN",    "THUR",         "Gadhlan Thur.ovl"},    
-    {0xFFFFFFFF , "GRAIL",      "GODS",         "Grail of the Gods.ovl"},    
+    {0x0e6198a5 , "GADHLAN",    "THUR",         "Gadhlan Thur.ovl"},
+    {0xFFFFFFFF , "GRAIL",      "GODS",         "Grail of the Gods.ovl"},
     {0xFFFFFFFF , "SACRED",     "TRIBE",        "Sacred Tribe.ovl"},
     {0xFFFFFFFF , "SEA",        "VENTURE",      "Sea Venture.ovl"},
     {0xE8B8EBA5 , "SPACE",      "ARMADA",       "Space Armada.ovl"},
@@ -398,11 +416,13 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xD6F44FA5 , "TNT",        "COWBOY",       "TNT Cowboy.ovl"},
     {0xCA447BBD , "DEADLY",     "DISCS",        "TRON Deadly Discs.ovl"},
     {0xFFFFFFFF , "DEADLIER",   "DISCS",        "TRON Deadly Discs.ovl"},
+    {0xFFFFFFFF , "DEADLY",     "DOGS",         "Deadly Dogs.ovl"},
     {0x07FB9435 , "SOLAR",      "SAILOR",       "TRON Solar Sailor.ovl"},
     {0xbb759a58 , "SOLAR",      "SAILER",       "TRON Solar Sailor.ovl"},
     {0xFFFFFFFF , "TRON",       "SOLAR",        "TRON Solar Sailor.ovl"},
     {0x4c963cb2 , "TENNIS2",    "TENNIS2",      "Super Pro Tennis.ovl"},
-    {0x4c963cb2 , "SUPER",      "TENNIS",       "Super Pro Tennis.ovl"},    
+    {0x4c963cb2 , "SUPER",      "TENNIS",       "Super Pro Tennis.ovl"},
+    {0x16BFB8EB , "SUPER",      "DECATHLON",    "Super Pro Decathlon.ovl"},
     {0x03E9E62E , "TENNIS",     "TENNIS",       "Tennis.ovl"},
     {0xB7923858 , "SHOW",       "MUST",         "The Show Must Go On.ovl"},
     {0xF3DF94E0 , "THIN",       "ICE",          "Thin Ice.ovl"},
@@ -414,7 +434,8 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x67ca7c0a , "MYSTIC",     "CASTLE",       "Mystic Castle.ovl"},
     {0xD1D352A0 , "TOWER",      "DOOM",         "Tower of Doom.ovl"},
     {0x734F3260 , "TRUCKIN",    "TRUCKIN",      "Truckin.ovl"},
-    {0x1AC989E2 , "TRIPLE",     "ACTION",       "Triple Action.ovl"},        
+    {0x1AC989E2 , "TRIPLE",     "ACTION",       "Triple Action.ovl"},
+    {0x095638c0 , "TRIPLE",     "CHALLENGE",    "Triple Challenge.ovl"},
     {0x6FA698B3 , "TUTANKHAM",  "TUTANKHAM",    "Tutankham.ovl"},
     {0x275F3512 , "TURBO",      "COLECO",       "Turbo.ovl"},
     {0x752FD927 , "USCF",       "CHESS",        "USCF Chess.ovl"},
@@ -455,21 +476,19 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0x7fd5d202 , "DEATH",      "STRIKE",       "Death Star Strike.ovl"},
     {0x8ae91ade , "ISTAR",      "ISTAR",        "istar.ovl"},
     {0xa1b83fdb , "ONION",      "ONION",        "Onion.ovl"},
+    {0x3ccc255f , "SHOWCASE",   "VOL 1",        "Inty-BASIC-Showcase1.ovl"},
+    {0xde8eac39 , "SHOWCASE",   "VOL 2",        "Inty-BASIC-Showcase2.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
 
-// -----------------------------------------------------------------------------------------------
-// Custom overlays are read in and must be in a very strict format. See the documenatation
-// for custom overlays for details on the format this must be in. We could probably use a
-// bit more error checking here... but we expect customer overlay designers to know what's up.
-// -----------------------------------------------------------------------------------------------
-void load_custom_overlay(bool bCustomGeneric)
+// --------------------------------------------------------------------------------------
+// Get the directory in which the .ovl files are located... this is set in Global Config
+// --------------------------------------------------------------------------------------
+void get_ovl_directory(void)
 {
-    FILE *fp = NULL;
-    
     // -------------------------------------------------------
-    // Read the associated .ovl file and parse it... Start by 
+    // Read the associated .ovl file and parse it... Start by
     // getting the root folder where overlays are stored...
     // -------------------------------------------------------
     if (myGlobalConfig.ovl_dir == 1)        // In: /ROMS/OVL
@@ -488,68 +507,105 @@ void load_custom_overlay(bool bCustomGeneric)
     {
         strcpy(directory, "./");              // In: Same DIR as ROM files
     }
+}
+
+// -----------------------------------------------------------------------------------------------
+// Custom overlays are read in and must be in a very strict format. See the documentation
+// for custom overlays for details on the format this must be in. We could probably use a
+// bit more error checking here... but we expect customer overlay designers to know what's up.
+// -----------------------------------------------------------------------------------------------
+void load_custom_overlay(bool bCustomGeneric)
+{
+    FILE *fp = NULL;
+
+    get_ovl_directory();
+    
+    // Is this a multi-overlay? If so, we setup for special handling
+    if (multi_ovl_idx)
+    {
+        sprintf(tile_str, ".til%d", multi_ovl_idx);
+        sprintf(map_str,  ".ma%d",  multi_ovl_idx);
+        sprintf(pal_str,  ".pa%d",  multi_ovl_idx);
+        sprintf(ovl_str,  ".ov%d",  multi_ovl_idx);
+        sprintf(disc_str, ".dis%d", multi_ovl_idx);
+        sprintf(hudx_str, ".hu%dx", multi_ovl_idx);
+        sprintf(hudy_str, ".hu%dy", multi_ovl_idx);
+    }
+    else
+    {
+        strcpy(tile_str, ".tile");
+        strcpy(map_str,  ".map");
+        strcpy(pal_str,  ".pal");
+        strcpy(ovl_str,  ".ovl");
+        strcpy(disc_str, ".disc");
+        strcpy(hudx_str, ".hudx");
+        strcpy(hudy_str, ".hudy");
+    }
     
     u8 bFound = 0;
     // If we have a game (RIP) loaded, try to find a matching overlay
     if (currentRip != NULL)
     {
-        strcpy(filename, directory);
-        strcat(filename, currentRip->GetFileName());
-        filename[strlen(filename)-4] = 0;
-        strcat(filename, ".ovl");
-        fp = fopen(filename, "rb");
-        if (fp != NULL) // If file found
+        // If user picked the special 'Generic Overlay' we force the generic overlay to be used instead...
+        if (strcmp(currentRip->GetOverlayName(), "--Generic Overlay--") != 0)
         {
-            bFound = 1;
-        }
-        else // Not found... try to find it using the RomToOvl[] table
-        {
-            UINT16 i=0;
-            while (MapRomToOvl[i].crc != 0x00000000)
+            strcpy(filename, directory);
+            strcat(filename, currentRip->GetOverlayName());
+            fp = fopen(filename, "rb");
+            if (fp != NULL) // If file found
             {
-                if (MapRomToOvl[i].crc == currentRip->GetCRC())
-                {
-                    strcpy(filename, directory);
-                    strcat(filename, MapRomToOvl[i].ovl_filename);
-                    fp = fopen(filename, "rb");
-                    if (fp != NULL) bFound = 1;
-                    break;
-                }
-                i++;
+                bFound = 1;
             }
-            
-            // If still not found after searching for CRC32... try fuzzy name search...
-            if (!bFound)
+            else // Not found... try to find it using the RomToOvl[] table
             {
                 UINT16 i=0;
                 while (MapRomToOvl[i].crc != 0x00000000)
                 {
-                    // It has to match both string searches to be valid... Uppercase for the compare...
-                    strcpy(szName, currentRip->GetFileName());
-                    for (int j=0; j<strlen(szName); j++) szName[j] = toupper(szName[j]);
-                    
-                    if ((strstr(szName, MapRomToOvl[i].search1) != NULL) && (strstr(szName, MapRomToOvl[i].search2) != NULL))
+                    if (MapRomToOvl[i].crc == currentRip->GetCRC())
                     {
                         strcpy(filename, directory);
                         strcat(filename, MapRomToOvl[i].ovl_filename);
                         fp = fopen(filename, "rb");
-                        if (fp != NULL) bFound = 1;
+                        if (fp != NULL) {bFound = 1;}
                         break;
                     }
                     i++;
+                }
+
+                // If still not found after searching for CRC32... try fuzzy name search...
+                if (!bFound)
+                {
+                    UINT16 i=0;
+                    while (MapRomToOvl[i].crc != 0x00000000)
+                    {
+                        // It has to match both string searches to be valid... Uppercase for the compare...
+                        strcpy(szName, currentRip->GetFileName());
+                        for (int j=0; j<strlen(szName); j++) szName[j] = toupper(szName[j]);
+
+                        if ((strstr(szName, MapRomToOvl[i].search1) != NULL) && (strstr(szName, MapRomToOvl[i].search2) != NULL))
+                        {
+                            strcpy(filename, directory);
+                            strcat(filename, MapRomToOvl[i].ovl_filename);
+                            fp = fopen(filename, "rb");
+                            if (fp != NULL) {bFound = 1;}
+                            break;
+                        }
+                        i++;
+                    }
                 }
             }
         }
     }
 
+    
     if (bFound == 0)
     {
         strcpy(filename, directory);
-        strcat(filename, "generic.ovl");   
+        strcat(filename, "generic.ovl");
         fp = fopen(filename, "rb");
-    }    
-    
-    // Default these to unused... 
+    }
+
+    // Default these to unused...
     bUseDiscOverlay = false;
     for (UINT8 i=0; i < DISC_MAX; i++)
     {
@@ -558,7 +614,7 @@ void load_custom_overlay(bool bCustomGeneric)
         myDisc[i].y1 = 255;
         myDisc[i].y2 = 255;
     }
-    
+
     if (fp != NULL)     // If overlay found, parse it and use it...
     {
       UINT8 ov_idx = 0;
@@ -569,63 +625,82 @@ void load_custom_overlay(bool bCustomGeneric)
       char *token;
 
       memset(customTiles, 0x00, 0x10000);   // Clear the 64K of video memory to prep for custom tiles...
-      
       memcpy(&myOverlay, &discOverlay, sizeof(myOverlay)); // Start with a blank overlay...
 
       do
       {
+        // Get one line of the .ovl file and try to parse it...
         fgets(szName, 255, fp);
+        
         // Handle Overlay Line
-        if (strstr(szName, ".ovl") != NULL)
+        if (strstr(szName, ovl_str) != NULL)
         {
             if (ov_idx < OVL_MAX)
             {
-                char *ptr = strstr(szName, ".ovl");
+                char *ptr = strstr(szName, ovl_str);
                 ptr += 5;
                 myOverlay[ov_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myOverlay[ov_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myOverlay[ov_idx].y1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myOverlay[ov_idx].y2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
-                ov_idx++;                
+                ov_idx++;
             }
         }
 
         // Handle Disc Line
-        if (strstr(szName, ".disc") != NULL)
+        if (strstr(szName, disc_str) != NULL)
         {
             bUseDiscOverlay = true;
             if (disc_idx < DISC_MAX)
             {
-                char *ptr = strstr(szName, ".disc");
+                char *ptr = strstr(szName, disc_str);
                 ptr += 6;
                 myDisc[disc_idx].x1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myDisc[disc_idx].x2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myDisc[disc_idx].y1 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
                 myDisc[disc_idx].y2 = strtoul(ptr, &ptr, 10); while (*ptr == ',' || *ptr == ' ') ptr++;
-                disc_idx++;                
+                disc_idx++;
             }
         }
-          
+
         // Handle HUD_x Line
-        if (strstr(szName, ".hudx") != NULL)
+        if (strstr(szName, hudx_str) != NULL)
         {
-            char *ptr = strstr(szName, ".hudx");
+            char *ptr = strstr(szName, hudx_str);
             ptr += 6;
             hud_x = strtoul(ptr, &ptr, 10);
-        }          
+        }
 
         // Handle HUD_y Line
-        if (strstr(szName, ".hudy") != NULL)
+        if (strstr(szName, hudy_str) != NULL)
         {
-            char *ptr = strstr(szName, ".hudy");
+            char *ptr = strstr(szName, hudy_str);
             ptr += 6;
             hud_y = strtoul(ptr, &ptr, 10);
-        }          
-          
-        // Handle Tile Line
-        if (strstr(szName, ".tile") != NULL)
+        }
+        
+        // Handle MULTI Line
+        if (strstr(szName, ".multi") != NULL)
         {
-            char *ptr = strstr(szName, ".tile");
+            char *ptr = strstr(szName, ".multi");
+            ptr += 7;
+            if (strstr(ptr, "LR") != NULL)
+            {
+                multi_ovls = 2;
+                bmulti_LR = 1;
+            }
+            else
+            {
+                bmulti_LR = 0;
+                multi_ovls = strtoul(ptr, &ptr, 10);
+                if (multi_ovls > 8) multi_ovls = 8; // Limit to something reasonable...
+            }
+        }
+        
+        // Handle Tile Line
+        if (strstr(szName, tile_str) != NULL)
+        {
+            char *ptr = strstr(szName, tile_str);
             ptr += 6;
             customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customTiles[tiles_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -638,9 +713,9 @@ void load_custom_overlay(bool bCustomGeneric)
         }
 
         // Handle Map Line
-        if (strstr(szName, ".map") != NULL)
+        if (strstr(szName, map_str) != NULL)
         {
-            char *ptr = strstr(szName, ".map");
+            char *ptr = strstr(szName, map_str);
             ptr += 4;
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -650,12 +725,12 @@ void load_custom_overlay(bool bCustomGeneric)
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customMap[map_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-        }              
+        }
 
         // Handle Palette Line
-        if (strstr(szName, ".pal") != NULL)
+        if (strstr(szName, pal_str) != NULL)
         {
-            char *ptr = strstr(szName, ".pal");
+            char *ptr = strstr(szName, pal_str);
             ptr += 4;
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
@@ -665,7 +740,7 @@ void load_custom_overlay(bool bCustomGeneric)
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
             customPal[pal_idx++] = strtoul(ptr, &ptr, 16); while (*ptr == ',' || *ptr == ' ') ptr++;
-        }              
+        }
       } while (!feof(fp));
       fclose(fp);
 
@@ -678,27 +753,27 @@ void load_custom_overlay(bool bCustomGeneric)
       decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
-    }    
+    }
 }
 
 
 // ---------------------------------------------------------------------------
-// This puts the overlay on the main screen. It can be one of the built-in 
+// This puts the overlay on the main screen. It can be one of the built-in
 // overlays or it might be a custom overlay that will be rendered...
 // ---------------------------------------------------------------------------
 void show_overlay(u8 bShowKeyboard, u8 bShowDisc)
 {
     // Assume default overlay... custom can change it below...
     memcpy(&myOverlay, &defaultOverlay, sizeof(myOverlay));
-    
+
     swiWaitForVBlank();
-    
+
     if (bShowKeyboard) // ECS keyboard overlay
     {
       decompress(bgBottom_ECSTiles, bgGetGfxPtr(bg0b), LZ77Vram);
       decompress(bgBottom_ECSMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
       dmaCopy((void *) bgBottom_ECSPal,(u16*) BG_PALETTE_SUB,256*2);
-      // ECS Overlay...  
+      // ECS Overlay...
       memcpy(&myOverlay, &ecsOverlay, sizeof(myOverlay));
     }
     else    // Default Overlay... which might be custom!!
@@ -708,27 +783,360 @@ void show_overlay(u8 bShowKeyboard, u8 bShowDisc)
             decompress(bgBottom_discTiles, bgGetGfxPtr(bg0b), LZ77Vram);
             decompress(bgBottom_discMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
             dmaCopy((void *) bgBottom_discPal,(u16*) BG_PALETTE_SUB,256*2);
-            // Disc Overlay...  
+            // Disc Overlay...
             memcpy(&myOverlay, &discOverlay, sizeof(myOverlay));
         }
         else
         {
-            load_custom_overlay(true);  // This will try to load nintv-ds.ovl or else default to the generic background
+            load_custom_overlay(true);  // This will try to load the correct overlay for this game or else default to the generic keyboard overlay
         }
     }
-    
+
     unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
     dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
 
     REG_BLDCNT=0; REG_BLDCNT_SUB=0; REG_BLDY=0; REG_BLDY_SUB=0;
-    
-    swiWaitForVBlank();    
-    
+
+    swiWaitForVBlank();
+
     if (bShowKeyboard) // ECS keyboard overlay
     {
         dsPrintValue(1,22,ecs_ctrl_key?1:0,ecs_ctrl_key ? (char*)"@": (char*)" ");
         dsPrintValue(5,22,0,ecs_shift_key ? (char*)"@": (char*)" ");
-    }    
+    }
+}
+
+// --------------------------------------------------------------------------
+// Allow the user to pick an overlay file for the current game. This overlay
+// will override the normal overlay for the game until a new game is loaded.
+// --------------------------------------------------------------------------
+FICA_INTV overlayfiles[MAX_ROMS];
+u16 countovls=0;
+static u16 ucFicAct=0;
+extern char szName[];
+extern char szName2[];
+char originalPath[MAX_PATH];
+
+// ----------------------------------------------------------------------------------------
+// Find all .bin, .int and .rom files in the current directory (or, if this is the first
+// time we are loading up files, use the global configuration to determine what directory
+// we should be starting in... after the first time we just load up the current directory).
+// ----------------------------------------------------------------------------------------
+void ovlFindFiles(void)
+{
+  DIR *pdir;
+  struct dirent *pent;
+
+  countovls = 0;
+  memset(overlayfiles, 0x00, sizeof(overlayfiles));
+  
+  strcpy(overlayfiles[countovls++].filename, "--Generic Overlay--");
+
+  get_ovl_directory();          // Find the overlay directory from global config selection
+  pdir = opendir(directory);    // We only allow selection of overlays from the overlay directory...
+
+  if (pdir)
+  {
+    while (((pent=readdir(pdir))!=NULL))
+    {
+        strcpy(szName2,pent->d_name);
+        szName2[MAX_PATH-1] = NULL;
+        if (strlen(szName2)>4)
+        {
+          if ( (strcasecmp(strrchr(szName2, '.'), ".ovl") == 0) )
+          {
+            overlayfiles[countovls].directory = false;
+            strcpy(overlayfiles[countovls].filename,szName2);
+            countovls++;
+          }
+        }
+    }
+    closedir(pdir);
+  }
+
+  // ----------------------------------------------
+  // If we found any files, go sort the list...
+  // ----------------------------------------------
+  if (countovls)
+  {
+    extern int intvFilescmp (const void *c1, const void *c2);
+    qsort(overlayfiles, countovls, sizeof (FICA_INTV), intvFilescmp);
+  }
+}
+
+// --------------------------------------------------------------------------
+// Display the files - up to 18 in a page. This is carried over from the
+// oldest emulators I've worked on and there is some bug in here where
+// it occasionally gets out of sync... it's minor enough to not be an
+// issue but at some point this routine should be re-written...
+// --------------------------------------------------------------------------
+void OvlDisplayFiles(unsigned int NoDebGame,u32 ucSel)
+{
+  unsigned short ucBcl,ucGame;
+
+  // Display all games if possible
+  unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
+  dmaFillWords(dmaVal | (dmaVal<<16),(void*) (bgGetMapPtr(bg1b)),32*24*2);
+  sprintf(szName,"%04d/%04d %s",(int)(1+ucSel+NoDebGame),countovls, "OVERLAYS");
+  dsPrintValue(16-strlen(szName)/2,2,0,szName);
+  dsPrintValue(31,4,0,(char *) (NoDebGame>0 ? "<" : " "));
+  dsPrintValue(31,20,0,(char *) (NoDebGame+14<countovls ? ">" : " "));
+
+  dsPrintValue(4,23,0,(char*)"A=PICK OVERLAY, B=BACK");
+
+  for (ucBcl=0;ucBcl<17; ucBcl++)
+  {
+    ucGame= ucBcl+NoDebGame;
+    if (ucGame < countovls)
+    {
+      strcpy(szName,overlayfiles[ucGame].filename);
+      szName[29]='\0';
+      if (overlayfiles[ucGame].directory)
+      {
+        szName[27]='\0';
+        sprintf(szName2,"[%s]",szName);
+        dsPrintValue(0,4+ucBcl,(ucSel == ucBcl ? 1 :  0),szName2);
+      }
+      else
+      {
+          if (overlayfiles[ucGame].favorite)
+          {
+             dsPrintValue(0,4+ucBcl,0, (char*)"@");
+          }
+          dsPrintValue(1,4+ucBcl,(ucSel == ucBcl ? 1 : 0),szName);
+      }
+    }
+  }
+}
+
+
+u8 pick_overlay(void)
+{
+    u8 bDone=false, bRet=false;
+    u16 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,ovlSelected= 0, firstOvlDisplay=0,nbRomPerPage, uNbRSPage;
+    u16 uLenFic=0, ucFlip=0, ucFlop=0;
+
+    getcwd(originalPath, MAX_PATH); // Save where we started from... we will restore on the way out
+
+    // Find and display all of the .ovl files in a directory
+    ovlFindFiles();
+
+    nbRomPerPage = (countovls>=17 ? 17 : countovls);
+    uNbRSPage = (countovls>=5 ? 5 : countovls);
+
+    if (ucFicAct>countovls-nbRomPerPage)
+    {
+        firstOvlDisplay=countovls-nbRomPerPage;
+        ovlSelected=ucFicAct-countovls+nbRomPerPage;
+    }
+    else
+    {
+        firstOvlDisplay=ucFicAct;
+        ovlSelected=0;
+    }
+    OvlDisplayFiles(firstOvlDisplay,ovlSelected);
+
+    // -----------------------------------------------------
+    // Until the user selects a file or exits the menu...
+    // -----------------------------------------------------
+    while (!bDone)
+    {
+        if (keysCurrent() & KEY_UP)
+        {
+          if (!ucHaut)
+          {
+            ucFicAct = (ucFicAct>0 ? ucFicAct-1 : countovls-1);
+            if (ovlSelected>uNbRSPage) { ovlSelected -= 1; }
+            else {
+              if (firstOvlDisplay>0) { firstOvlDisplay -= 1; }
+              else {
+                if (ovlSelected>0) { ovlSelected -= 1; }
+                else {
+                  firstOvlDisplay=countovls-nbRomPerPage;
+                  ovlSelected=nbRomPerPage-1;
+                }
+              }
+            }
+            ucHaut=0x01;
+            OvlDisplayFiles(firstOvlDisplay,ovlSelected);
+          }
+          else {
+
+            ucHaut++;
+            if (ucHaut>10) ucHaut=0;
+          }
+          uLenFic=0; ucFlip=0; ucFlop=0;
+        }
+        else
+        {
+          ucHaut = 0;
+        }
+        if (keysCurrent() & KEY_DOWN)
+        {
+          if (!ucBas) {
+            ucFicAct = (ucFicAct< countovls-1 ? ucFicAct+1 : 0);
+            if (ovlSelected<uNbRSPage-1) { ovlSelected += 1; }
+            else {
+              if (firstOvlDisplay<countovls-nbRomPerPage) { firstOvlDisplay += 1; }
+              else {
+                if (ovlSelected<nbRomPerPage-1) { ovlSelected += 1; }
+                else {
+                  firstOvlDisplay=0;
+                  ovlSelected=0;
+                }
+              }
+            }
+            ucBas=0x01;
+            OvlDisplayFiles(firstOvlDisplay,ovlSelected);
+          }
+          else
+          {
+            ucBas++;
+            if (ucBas>10) ucBas=0;
+          }
+          uLenFic=0; ucFlip=0; ucFlop=0;
+        }
+        else {
+          ucBas = 0;
+        }
+
+        // -------------------------------------------------------------
+        // Left and Right on the D-Pad will scroll 1 page at a time...
+        // -------------------------------------------------------------
+        if (keysCurrent() & KEY_RIGHT)
+        {
+          if (!ucSBas)
+          {
+            ucFicAct = (ucFicAct< countovls-nbRomPerPage ? ucFicAct+nbRomPerPage : countovls-nbRomPerPage);
+            if (firstOvlDisplay<countovls-nbRomPerPage) { firstOvlDisplay += nbRomPerPage; }
+            else { firstOvlDisplay = countovls-nbRomPerPage; }
+            if (ucFicAct == countovls-nbRomPerPage) ovlSelected = 0;
+            ucSBas=0x01;
+            OvlDisplayFiles(firstOvlDisplay,ovlSelected);
+          }
+          else
+          {
+            ucSBas++;
+            if (ucSBas>10) ucSBas=0;
+          }
+          uLenFic=0; ucFlip=0; ucFlop=0;
+        }
+        else {ucSBas = 0;}
+
+        // -------------------------------------------------------------
+        // Left and Right on the D-Pad will scroll 1 page at a time...
+        // -------------------------------------------------------------
+        if (keysCurrent() & KEY_LEFT)
+        {
+          if (!ucSHaut)
+          {
+            ucFicAct = (ucFicAct> nbRomPerPage ? ucFicAct-nbRomPerPage : 0);
+            if (firstOvlDisplay>nbRomPerPage) { firstOvlDisplay -= nbRomPerPage; }
+            else { firstOvlDisplay = 0; }
+            if (ucFicAct == 0) ovlSelected = 0;
+            if (ovlSelected > ucFicAct) ovlSelected = ucFicAct;
+            ucSHaut=0x01;
+            OvlDisplayFiles(firstOvlDisplay,ovlSelected);
+          }
+          else
+          {
+            ucSHaut++;
+            if (ucSHaut>10) ucSHaut=0;
+          }
+          uLenFic=0; ucFlip=0; ucFlop=0;
+        }
+        else {
+          ucSHaut = 0;
+        }
+
+        // -------------------------------------------------------------------------
+        // They B key will exit out of the ROM selection without picking a new game
+        // -------------------------------------------------------------------------
+        if ( keysCurrent() & KEY_B )
+        {
+          bDone=true;
+          while (keysCurrent() & KEY_B);
+        }
+
+        // ------------------------------------------------------------
+        // The DS 'A' key will pick the overlay and try to load it...
+        // ------------------------------------------------------------
+        if (keysCurrent() & KEY_A)
+        {
+            // If the user picked an actual .ovl filename... use it!!
+            if (!overlayfiles[ucFicAct].directory)
+            {
+                currentRip->SetOverlayName(overlayfiles[ucFicAct].filename);
+                bDone = 1;
+            }
+            else // It's a directory - switch into it
+            {
+                chdir(overlayfiles[ucFicAct].filename);
+                ovlFindFiles();
+                ucFicAct = 0;
+                nbRomPerPage = (countovls>=16 ? 16 : countovls);
+                uNbRSPage = (countovls>=5 ? 5 : countovls);
+                if (ucFicAct>countovls-nbRomPerPage)
+                {
+                    firstOvlDisplay=countovls-nbRomPerPage;
+                    ovlSelected=ucFicAct-countovls+nbRomPerPage;
+                }
+                else
+                {
+                    firstOvlDisplay=ucFicAct;
+                    ovlSelected=0;
+                }
+                OvlDisplayFiles(firstOvlDisplay,ovlSelected);
+                while (keysCurrent() & KEY_A);
+            }
+        }
+
+        // --------------------------------------------
+        // If the filename is too long... scroll it.
+        // --------------------------------------------
+        if (strlen(overlayfiles[ucFicAct].filename) > 29)
+        {
+            if (++ucFlip >= 15)
+            {
+                ucFlip = 0;
+                if ((++uLenFic+29)>strlen(overlayfiles[ucFicAct].filename))
+                {
+                    if (++ucFlop >= 15) {uLenFic=0;ucFlop = 0;}
+                    else uLenFic--;
+                }
+                strncpy(szName,overlayfiles[ucFicAct].filename+uLenFic,29);
+                szName[29] = '\0';
+                dsPrintValue(1,4+ovlSelected,1,szName);
+            }
+        }
+        swiWaitForVBlank();
+    }
+
+    // ----------------------------------------------------------------------
+    // We are going back to the main emulation now - restore bottom screen.
+    // ----------------------------------------------------------------------
+    chdir(originalPath);
+    dsShowScreenMain(false, false);
+
+    return 1; // Tell the caller to load the new overlay (even if it's just the old overlay)
+}
+
+// -------------------------------------------------------------------------------
+// Does this overlay support multiple images/maps?  If so, this is a multi-overlay
+// and  we can move to the next overlay image - this will re-read the .ovl file 
+// and load up the right graphics and key-map hotspots... woot!
+// -------------------------------------------------------------------------------
+void swap_overlay(void)
+{
+    if (multi_ovls > 1)
+    {
+        multi_ovl_idx = (multi_ovl_idx + 1) % multi_ovls;
+        if (bmulti_LR)
+        {
+            myConfig.controller_type = multi_ovl_idx;
+        }        
+        load_custom_overlay(true);  // This will try to load the correct overlay for this game or else default to the generic keyboard overlay    
+    }
 }
 
 // End of Line

@@ -15,9 +15,11 @@
 #include <nds.h>
 #include "types.h"
 
+#define MAX_ROMS    512
+
 typedef struct FICtoLoad 
 {
-    char   filename[126];
+    char   filename[MAX_PATH];
     UINT8  directory;
     UINT8  favorite;
 } FICA_INTV;

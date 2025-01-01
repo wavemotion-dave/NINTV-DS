@@ -96,7 +96,7 @@ typedef struct
 #endif
 
 #ifndef MAX_PATH
-#define MAX_PATH 256
+#define MAX_PATH 167
 #endif
 
 #ifdef __cplusplus

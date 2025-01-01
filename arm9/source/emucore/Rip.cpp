@@ -92,6 +92,7 @@ Rip::Rip(UINT32 systemID)
   crc(0)
 {
     memset(filename, 0, sizeof(filename));
+    memset(overlayname, 0, sizeof(overlayname));
     JLP16Bit = NULL;
 }
 
@@ -157,7 +158,7 @@ void ForceLoadOptions(UINT32 crc)
     }
 }
 
-char cfgFilename[128];
+char cfgFilename[MAX_PATH];
 Rip* Rip::LoadBin(const CHAR* filename)
 {
     // Create the path to the .cfg file (which may or may not exist...)
