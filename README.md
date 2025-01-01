@@ -175,7 +175,7 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V6.0 : 01-Jan-2024 by wavemotion-dave
+V6.0 : 01-Jan-2025 by wavemotion-dave
   * Multi-overlays now supported for games like Mr. BASIC Meets Bits 'n Bytes, Inty BASIC Showcase collections, etc.
   * Left/Right overlays now supported for games like Chess or Lode Runner.
   * Ability to pick a different overlay for the game being played.
