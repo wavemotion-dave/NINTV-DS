@@ -106,6 +106,10 @@ For those curious, here is the search order for overlays:
 * Internal database of CRCs ... if the game is a well known good ROM dump, the internal CRC will be found and the right overlay should be loaded and shown. 
 * If neither of those produces a match, there is a loose match based on special keywords for each game. For example, any game that has 'Ninja' and 'Odyssey' anywhere in the title will load up the Ninja Odyssey.ovl overlay.
 * Lastly, if no overlay match is found... the default keypad is shown.
+ 
+Starting with version 6.0, multi-overlays are supported. For games like Triple Challenge, World Series Baseball, Melody Blaster, MR. BASIC - Bits 'n Bytes, etc. there is more than one overlay packaged with the game. These can now be handled by Nintellivision - for any game that has a multi-overlay, just press the swap-icon on the overlay to shift in the next overlay graphic
+
+![Swap Icon](png/swap-icon.png)
 
 
 Disc Overlay:
