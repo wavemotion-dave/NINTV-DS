@@ -176,8 +176,8 @@ Credits :
 History :
 --------------------------------------------------------------------------------
 V6.0 : 01-Jan-2025 by wavemotion-dave
-  * Multi-overlays now supported for games like Mr. BASIC Meets Bits 'n Bytes, Inty BASIC Showcase collections, etc.
-  * Left/Right overlays now supported for games like Chess, Lode Runner or World Series Baseball.
+  * Multi-overlays now supported for games like Mr. BASIC Meets Bits 'n Bytes, Lode Runner, Inty BASIC Showcase collections, etc.
+  * Left/Right overlays now supported for games like Chess, Melody Blaster or World Series Baseball.
   * Ability to pick a different overlay for the game being played (use MENU and then 'PICK OVERLAY').
   * A batch of new overlays to finally get the original 125 done!
 
