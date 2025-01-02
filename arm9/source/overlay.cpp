@@ -230,6 +230,7 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xB03F739B , "BLOCKADE",   "RUNNER",       "Blockade Runner.ovl"},
     {0x515E1D7E , "BODY",       "SLAM",         "Body Slam - Super Pro Wrestling.ovl"},
     {0x32697B72 , "BOMB",       "SQUAD",        "Bomb Squad.ovl"},
+    {0xFFFFFFFF , "ROCK",       "SOCK",         "Rock-Em-Sock-Em.ovl"}, // Keep before Boxing
     {0xAB87C16F , "BOXING",     "BOXING",       "Boxing.ovl"},
     {0xF8E5398D , "BUCK",       "ROGERS",       "Buck Rogers.ovl"},
     {0x999CCEED , "BUMP",       "JUMP",         "Bump 'n' Jump.ovl"},
@@ -478,6 +479,9 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xa1b83fdb , "ONION",      "ONION",        "Onion.ovl"},
     {0x3ccc255f , "SHOWCASE",   "VOL 1",        "Inty-BASIC-Showcase1.ovl"},
     {0xde8eac39 , "SHOWCASE",   "VOL 2",        "Inty-BASIC-Showcase2.ovl"},
+    {0xFFFFFFFF , "MINER",      "2049",         "Miner 2049er.ovl"},
+    {0xFFFFFFFF , "MINEHUNT",   "MINEHUNT",     "Minehunter.ovl"},
+    {0xFFFFFFFF , "BEAT-EM",    "EAT-EM",       "Beat-Em-Eat-Em.ovl"},
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 
