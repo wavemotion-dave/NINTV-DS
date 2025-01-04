@@ -27,6 +27,7 @@
 #include "bgBottom.h"
 #include "bgBottom-ECS.h"
 #include "bgBottom-disc.h"
+#include "inty-synth.h"
 #include "bgTop.h"
 #include "Emulator.h"
 #include "Rip.h"
@@ -550,6 +551,11 @@ void load_custom_overlay(bool bCustomGeneric)
     // If we have a game (RIP) loaded, try to find a matching overlay
     if (currentRip != NULL)
     {
+        if (currentRip->GetCRC() == 0xFF68AA22) // Melody Blaster is the only game to want the Music Synth keyboard
+        {
+            bShowSynthesizer = 1;
+        }
+        
         // If user picked the special 'Generic Overlay' we force the generic overlay to be used instead...
         if (strcmp(currentRip->GetOverlayName(), "--Generic Overlay--") != 0)
         {
@@ -774,11 +780,20 @@ void show_overlay(u8 bShowKeyboard, u8 bShowDisc)
 
     if (bShowKeyboard) // ECS keyboard overlay
     {
-      decompress(bgBottom_ECSTiles, bgGetGfxPtr(bg0b), LZ77Vram);
-      decompress(bgBottom_ECSMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
-      dmaCopy((void *) bgBottom_ECSPal,(u16*) BG_PALETTE_SUB,256*2);
-      // ECS Overlay...
-      memcpy(&myOverlay, &ecsOverlay, sizeof(myOverlay));
+        if (bShowSynthesizer)
+        {
+            decompress(inty_synthTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+            decompress(inty_synthMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+            dmaCopy((void *) inty_synthPal,(u16*) BG_PALETTE_SUB,256*2);
+        }
+        else
+        {
+            decompress(bgBottom_ECSTiles, bgGetGfxPtr(bg0b), LZ77Vram);
+            decompress(bgBottom_ECSMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
+            dmaCopy((void *) bgBottom_ECSPal,(u16*) BG_PALETTE_SUB,256*2);
+        }
+        // ECS Overlay...
+        memcpy(&myOverlay, &ecsOverlay, sizeof(myOverlay));
     }
     else    // Default Overlay... which might be custom!!
     {
@@ -805,8 +820,11 @@ void show_overlay(u8 bShowKeyboard, u8 bShowDisc)
 
     if (bShowKeyboard) // ECS keyboard overlay
     {
-        dsPrintValue(1,22,ecs_ctrl_key?1:0,ecs_ctrl_key ? (char*)"@": (char*)" ");
-        dsPrintValue(5,22,0,ecs_shift_key ? (char*)"@": (char*)" ");
+        if (!bShowSynthesizer)
+        {
+            dsPrintValue(1,22,ecs_ctrl_key?1:0,ecs_ctrl_key ? (char*)"@": (char*)" ");
+            dsPrintValue(5,22,0,ecs_shift_key ? (char*)"@": (char*)" ");
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -43,7 +43,15 @@ void ECSKeyboard::resetInputConsumer()
 //   3   | v,      c,      f,      r,      5,      4,      t,      g
 //   4   | x,      z,      s,      w,      3,      2,      e,      d
 //   5   | space,  down,   up,     q,      1,      right,  ctl,    a
-//   6   | [n/a],  [n/a],  [n/a],  [n/a],  [n/a],  [n/a],  [n/a],  shift  
+//   6   | [n/a],  [n/a],  [n/a],  [n/a],  [n/a],  [n/a],  [n/a],  shift
+
+// The music synth is much simpler... the lowest key on the synthesizer
+// is left arrow (row 0, lowest bit). The highest key on the synth is
+// row 6, lowest bit. This gives a total of 49 keys. Our emulation only
+// handles a subset of these notes in the middle of the keyboard and
+// we map the virtual synth overlay to the corresponding ECS keyboard
+// key for simplicity. There isn't much software that uses the music
+// synth - the only commercial game was Melody Blaster.
   
 void ECSKeyboard::evaluateInputs()
 {
@@ -108,6 +116,12 @@ void ECSKeyboard::evaluateInputs()
 }
 
 
+// -------------------------------------------------------------------------------------------------
+// There are two ways to read the keyboard from software... it can be read in normal key scanning
+// fashion (row/column... write on 0xE and read on 0xF) or it can be 'transposed' which is done
+// as column/row (write on 0xF and read on 0xE). Sometimes clever software will do both kinds of
+// reads to try and eliminate key ghosting... we handle both flavors below to ensure compatibility.
+// -------------------------------------------------------------------------------------------------
 UINT16 ECSKeyboard::getInputValue(UINT8 port)
 {
     UINT16 inputValue = 0;

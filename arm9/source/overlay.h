@@ -78,6 +78,7 @@ struct Overlay_t
 #define CONTROLLER_DUAL_ACTION_A    2
 #define CONTROLLER_DUAL_ACTION_B    3
 
+extern UINT8 bShowSynthesizer;
 
 extern struct Overlay_t myOverlay[OVL_MAX];
 extern struct Overlay_t myDisc[DISC_MAX];
