@@ -33,6 +33,7 @@ Features :
  * Numerous button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
  * ECS support for ECS games including sound-enhanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
+ * ECS keyboard and Intellivision Music Synthesizer are emulated with built-in overlays to mimic their behavior.
  * Tutorvision mode is supported which brings in the WBEXEC (REX) revised executive ROM as well as extra GRAM and main 16-bit RAM memory.
  * Extra 2K GRAM (aka half-Tutorvision mode) is supported on a per-game basis. Select 2K GRAM in the second page of Configuration for any game (reload game for it to take effect).
 
@@ -110,6 +111,12 @@ For those curious, here is the search order for overlays:
 Starting with version 6.0, multi-overlays are supported. For games like Triple Challenge, World Series Baseball, Melody Blaster, MR. BASIC - Bits 'n Bytes, etc. there is more than one overlay packaged with the game. These can now be handled by Nintellivision - for any game that has a multi-overlay, just press the swap-icon on the overlay to shift in the next overlay graphic
 
 ![Swap Icon](png/swap-icon.png)
+
+ECS Keyboard and Music Synthesizer :
+-----------------------
+Nintellivision offers up a virtual ECS Keyboard and the Music Synthesizer for games that need it (Melody Blaster being the only commercial game to support the Synth). Pressing the keyboard icon will bring up the keyboard... and pressing the Musical Note icon will toggle in the Music Synth.
+
+![ECS Keyboard](png/ecs-keyboard.png) ![Music Synth](png/music-synth.png)
 
 
 Disc Overlay:
