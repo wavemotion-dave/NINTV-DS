@@ -186,6 +186,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.1 : 04-Mar-2025 by wavemotion-dave
+  * Updated for newest custom overlays for latest homebrews.
+
 V6.0 : 01-Jan-2025 by wavemotion-dave
   * Multi-overlays now supported for games like Mr. BASIC Meets Bits 'n Bytes, Lode Runner, Inty BASIC Showcase collections, etc.
   * Left/Right overlays now supported for games like Chess, Melody Blaster or World Series Baseball.
