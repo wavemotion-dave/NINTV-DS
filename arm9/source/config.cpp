@@ -475,26 +475,28 @@ void FindAndLoadConfig(UINT32 crc)
 struct options_t
 {
     const char  *label;
-    const char  *option[30];
+    const char  *option[31];
     UINT8 *option_val;
     UINT8 option_max;
 };
 
-#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0", "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE", "MENU", "SWITCH L/R", "MANUAL", "SHOW DISC", "SHOW KBD", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
+#define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0",\
+                        "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE",\
+                        "MENU", "SWITCH L/R", "MANUAL", "SHOW DISC", "SHOW KBD", "SWAP OVL", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
 
 const struct options_t Option_Table[3][20] =
 {
     // Page 1 options
     {
-        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        30},
-        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        30},
-        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        30},
-        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        30},
-        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        30},
-        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        30},
-        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    30},
-        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   30},
-        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_AX_map,       26}, // These can't be mapped to SPEEDUP, SHOW DISK or SHOW KEYBOARD so the array here is one shorter
+        {"A BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_A_map,        31},
+        {"B BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_B_map,        31},
+        {"X BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_X_map,        31},
+        {"Y BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_Y_map,        31},
+        {"L BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_L_map,        31},
+        {"R BUTTON",    {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_R_map,        31},
+        {"START BTN",   {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_START_map,    31},
+        {"SELECT BTN",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_SELECT_map,   31},
+        {"A+X BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_AX_map,       26}, // These can't be mapped to DISC UP/DN or later meta keys
         {"X+Y BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_XY_map,       26},
         {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_YB_map,       26},
         {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_BA_map,       26},
