@@ -44,10 +44,7 @@ UINT8 load_options = 0x00;
 extern Rip *currentRip;
 extern u8 bShowDisc;
 
-u8 bFavsOnlyMode = false;
-
 static UINT8 bFirstTimeLoad = true;
-
 
 // -------------------------------------------------------------------------------
 // Load the cart from a file on disk. We support .bin/.int (raw binary) and we 
@@ -323,7 +320,7 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 // ---------------------------------------------------------------------------------------------
 void dsDisplayLoadInstructions(void)
 {
-  dsPrintValue(1,22,0,(char*)"SEL=MARK, STA=SAVEFAV, L/R=FAVS");
+  dsPrintValue(1,22,0,(char*)"     SELECT=TOGGLE FAVORITE    ");
   dsPrintValue(1,23,0,(char*)"A=LOAD, X=LOAD OPTIONS, B=BACK ");
 }
 
@@ -347,56 +344,96 @@ int intvFilescmp (const void *c1, const void *c2)
   return strcasecmp (p1->filename, p2->filename);    
 }
 
-// ----------------------------------------------------------------------------------------------
-// Determine if this game is one of our 'favs'. We do a hash crc32 on the title of the game
-// which is much faster than trying to get CRCs of the actual files in a directory (too slow).
-// ----------------------------------------------------------------------------------------------
-bool isFavorite(char *filename)
-{
-    for (UINT8 i=0; i<64; i++)
-    {
-        if (myGlobalConfig.favorites[i] != 0x00000000)
-        {
-            if (myGlobalConfig.favorites[i] == CRC32::getCrc((UINT8* )filename, strlen(filename)))
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
+#define MAX_FAVS  1024
 
-// ----------------------------------------------------------------------------------------
-// Set the current filename as a favorite. We use the CRC32 of the filename as the hash.
-// ----------------------------------------------------------------------------------------
-void setFavorite(char *filename)
-{    
-    for (UINT8 i=0; i<64; i++)
+typedef struct
+{
+  u32   name_hash;  // Repurpose the lower bit for love vs like
+} Favorites_t;
+
+Favorites_t myFavs[MAX_FAVS]; // Total of 4K of space with 32 bit hash
+
+// --------------------------------------------------------------
+// Provide an array of filename hashes to store game "Favorites"
+// --------------------------------------------------------------
+void LoadFavorites(void)
+{
+    memset(myFavs, 0x00, sizeof(myFavs));
+    FILE *fp = fopen("/data/NINTV-DS.fav", "rb");
+    if (fp)
     {
-        if (myGlobalConfig.favorites[i] == 0x00000000)
-        {
-            myGlobalConfig.favorites[i] = CRC32::getCrc((UINT8* )filename, strlen(filename));
-            break;
-        }
+        fread(&myFavs, sizeof(myFavs), 1, fp);
+        fclose(fp);
     }
 }
 
-
-// ----------------------------------------------------------------------------------------
-// Clear the current filename as a favorite. We use the CRC32 of the filename as the hash.
-// ----------------------------------------------------------------------------------------
-void clrFavorite(char *filename)
+void SaveFavorites(void)
 {
-    for (UINT8 i=0; i<64; i++)
+    // --------------------------------------------------
+    // Now save the favorites file out to the SD card...
+    // --------------------------------------------------
+    DIR* dir = opendir("/data");
+    if (dir)
     {
-        if (myGlobalConfig.favorites[i] != 0x00000000)
+        closedir(dir);  // directory exists.
+    }
+    else
+    {
+        mkdir("/data", 0777);   // Doesn't exist - make it...
+    }
+
+    FILE *fp = fopen("/data/NINTV-DS.fav", "wb");
+    if (fp)
+    {
+        fwrite(&myFavs, sizeof(myFavs), 1, fp);
+        fclose(fp);
+    }
+}
+
+u8 IsFavorite(char *name)
+{
+    u32 filename_crc32 = CRC32::getCrc((u8 *)name, strlen(name));
+
+    for (int i=0; i<MAX_FAVS; i++)
+    {
+        if ((myFavs[i].name_hash & 0xFFFFFFFE) == (filename_crc32 & 0xFFFFFFFE)) return (1 + (myFavs[i].name_hash&1));
+    }
+    return 0;
+}
+
+void ToggleFavorite(char *name)
+{
+    int firstZero = 0;
+    u32 filename_crc32 = CRC32::getCrc((u8 *)name, strlen(name));
+
+    for (int i=0; i<MAX_FAVS; i++)
+    {
+        // We use the lower bit of the filename hash (CRC32) as the flag for 'like' vs 'love'
+        // Basically there are 3 states:
+        //    - No hash found... not a favorite
+        //    - Hash found with lower bit 0... Love
+        //    - Hash found with lower bit 1... Like
+        if ((myFavs[i].name_hash & 0xFFFFFFFE) == (filename_crc32 & 0xFFFFFFFE))
         {
-            if (myGlobalConfig.favorites[i] == CRC32::getCrc((UINT8* )filename, strlen(filename)))
+            if ((myFavs[i].name_hash & 1) == 0)
             {
-                myGlobalConfig.favorites[i] = 0x00000000;
+                myFavs[i].name_hash |= 1;
+                return;
+            }
+            else
+            {
+                myFavs[i].name_hash = 0x00000000;
+                return;
             }
         }
+
+        if (myFavs[i].name_hash == 0x00000000)
+        {
+            if (!firstZero) firstZero = i;
+        }
     }
+
+    myFavs[firstZero].name_hash = (filename_crc32 & 0xFFFFFFFE);
 }
 
 
@@ -474,11 +511,6 @@ void intvFindFiles(void)
                (strcasecmp(strrchr(szName2, '.'), ".bin") == 0) ||
                (strcasecmp(strrchr(szName2, '.'), ".rom") == 0) )
           {
-            intvromlist[countintv].favorite = isFavorite(szName2);
-            if (bFavsOnlyMode && !intvromlist[countintv].favorite) 
-            {
-                continue;
-            }
             intvromlist[countintv].directory = false;
             strcpy(intvromlist[countintv].filename,szName2);
             countintv++;
@@ -511,7 +543,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   // Display all games if possible
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) (bgGetMapPtr(bg1b)),32*24*2);
-  sprintf(szName,"%04d/%04d %s",(int)(1+ucSel+NoDebGame),countintv, (bFavsOnlyMode ? "FAVS":"GAMES"));
+  sprintf(szName,"%04d/%04d %s",(int)(1+ucSel+NoDebGame),countintv, "GAMES");
   dsPrintValue(16-strlen(szName)/2,2,0,szName);
   dsPrintValue(31,4,0,(char *) (NoDebGame>0 ? "<" : " "));
   dsPrintValue(31,20,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
@@ -533,9 +565,13 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
       }
       else
       {
-          if (intvromlist[ucGame].favorite)
+          if (IsFavorite(intvromlist[ucGame].filename))
           {
-             dsPrintValue(0,4+ucBcl,0, (char*)"@");
+            dsPrintValue(0,4+ucBcl,(IsFavorite(intvromlist[ucGame].filename) == 1) ? 1:0,(char*)"@");
+          }
+          else
+          {
+            dsPrintValue(0,4+ucBcl,0,(char*)" ");
           }
           dsPrintValue(1,4+ucBcl,(ucSel == ucBcl ? 1 : 0),szName);
       }
@@ -749,30 +785,6 @@ unsigned int dsWaitForRom(char *chosen_filename)
       ucSHaut = 0;
     }
     
-    // --------------------------------------------------------------------
-    // L/R Shoulder Buttons will toggle between all games and just favs...
-    // --------------------------------------------------------------------
-    if (keysCurrent() & (KEY_L | KEY_R))
-    {
-        bFavsOnlyMode = !bFavsOnlyMode;
-        intvFindFiles();
-        ucFicAct = 0;
-        nbRomPerPage = (countintv>=16 ? 16 : countintv);
-        uNbRSPage = (countintv>=5 ? 5 : countintv);
-        if (ucFicAct>countintv-nbRomPerPage) {
-          firstRomDisplay=countintv-nbRomPerPage;
-          romSelected=ucFicAct-countintv+nbRomPerPage;
-        }
-        else {
-          firstRomDisplay=ucFicAct;
-          romSelected=0;
-        }
-        dsDisplayFiles(firstRomDisplay,romSelected);
-        while (keysCurrent() & (KEY_L | KEY_R))
-            ;
-        WAITVBL;
-    }
-
     // -------------------------------------------------------------------------
     // They B key will exit out of the ROM selection without picking a new game
     // -------------------------------------------------------------------------
@@ -789,26 +801,14 @@ unsigned int dsWaitForRom(char *chosen_filename)
     {
         if (!intvromlist[ucFicAct].directory)
         {
-            if (intvromlist[ucFicAct].favorite)
-                clrFavorite(intvromlist[ucFicAct].filename);
-            else
-                setFavorite(intvromlist[ucFicAct].filename);
-            intvromlist[ucFicAct].favorite = isFavorite(intvromlist[ucFicAct].filename);
+            ToggleFavorite(intvromlist[ucFicAct].filename);
             dsDisplayFiles(firstRomDisplay,romSelected);
-            while (keysCurrent() & KEY_SELECT);
+            SaveFavorites();
+            while (keysCurrent() & KEY_SELECT)
+            {
+                WAITVBL;
+            }
         }
-    }
-
-    // --------------------------------------------------------------------------
-    // Since the user can select favorites, we also allow saving those out here.
-    // --------------------------------------------------------------------------
-    if ( keysCurrent() & KEY_START )
-    {
-        dsPrintValue(0,23,0, (char*)"     SAVING CONFIGURATION       ");
-        SaveConfig(0x00000000, FALSE);
-        WAITVBL;WAITVBL;WAITVBL;
-        dsDisplayLoadInstructions();
-        while (keysCurrent() & KEY_START);
     }
       
     // -------------------------------------------------------------------

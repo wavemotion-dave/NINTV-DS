@@ -66,9 +66,8 @@ static void SetDefaultGlobalConfig(void)
     memset(myGlobalConfig.grom_bios_filename,   0x00, 256);
     memset(myGlobalConfig.ivoice_bios_filename, 0x00, 256);
     
-    memset(myGlobalConfig.favorites,            0x00, 256);
-    
-    for (int i=0; i<64; i++)
+    // 128 x 32-bit values for reserved use
+    for (int i=0; i<128; i++)
     {
         myGlobalConfig.reserved32[i] = 0;
     }

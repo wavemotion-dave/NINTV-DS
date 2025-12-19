@@ -78,8 +78,7 @@ struct GlobalConfig_t
     char   exec_bios_filename[256];     // Not used yet... maybe for the future
     char   grom_bios_filename[256];     // Not used yet... maybe for the future
     char   ivoice_bios_filename[256];   // Not used yet... maybe for the future
-    UINT32 favorites[64];
-    UINT32 reserved32[64];              // Not used yet... maybe for the future
+    UINT32 reserved32[128];             // Not used yet... maybe for the future
     UINT8  bios_dir;
     UINT8  save_dir;
     UINT8  ovl_dir;

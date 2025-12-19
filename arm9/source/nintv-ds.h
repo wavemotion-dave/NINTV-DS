@@ -64,5 +64,6 @@ extern void dsShowScreenMain(bool bFull, bool bPlayJingle);
 extern void ApplyOptions(void);
 extern void dsShowBannerScreen(void);
 extern void reset_emu_frames(void);
+extern void LoadFavorites(void);
 
 #endif

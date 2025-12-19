@@ -63,6 +63,9 @@ int main(int argc, char **argv)
 
   // Init the high-score tables...
   highscore_init();
+  
+  // Load the current Favorites
+  LoadFavorites();
     
   // Handle command line argument... mostly for TWL++
   if (argc > 1) 
