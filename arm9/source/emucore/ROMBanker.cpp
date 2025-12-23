@@ -1,15 +1,15 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
 
-#include <nds.h> 
+#include <nds.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -30,7 +30,7 @@ ROMBanker::ROMBanker(ROM* r, UINT16 address, UINT16 tm, UINT16 t, UINT16 mm, UIN
   match(m)
 {
     // Keep track of ROM bankers
-    gBankerIsMappedHere[address>>12][m] = 1;      
+    gBankerIsMappedHere[address>>12][m] = 1;
     pokeCount = 0;
 }
 
@@ -38,17 +38,17 @@ void ROMBanker::reset()
 {
     rom->SetEnabled(match == 0);
     memset(gLastBankers, 0x00, sizeof(gLastBankers));
-    pokeCount = 0;    
+    pokeCount = 0;
 }
 
 // ----------------------------------------------------------------------------------------------
 // From intvnut on AtariAge:
-// Each 4K segment in memory can have up to 16 different 4K ROM pages mapped to it. 
-// After "reset", all switched segments much switch to page 0. To switch pages within 
+// Each 4K segment in memory can have up to 16 different 4K ROM pages mapped to it.
+// After "reset", all switched segments much switch to page 0. To switch pages within
 // a given 4K segment, write the value $xA5y to location $xFFF, where 'x' is the upper
-// 4 bits of the range you want to switch, and 'y' is the page number to switch to. 
-// This will switch the ROM in segment $x000 - $xFFF to page 'y'. 
-// If there's no ROM mapped to that page within that segment, then to the Intellivision, 
+// 4 bits of the range you want to switch, and 'y' is the page number to switch to.
+// This will switch the ROM in segment $x000 - $xFFF to page 'y'.
+// If there's no ROM mapped to that page within that segment, then to the Intellivision,
 // it will look like there's no ROM there.
 // ----------------------------------------------------------------------------------------------
 ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
@@ -64,10 +64,12 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
                 UINT32 *ptr = (UINT32 *)rom->peek_image_address();
                 UINT32 *dest = (UINT32 *) &fast_memory[(address&0xF000) + (rom->getReadAddress() & 0xFFF)];
-                
-                for (int i=(address&0xF000) + (rom->getReadAddress() & 0xFFF); i<=((address&0xF000)|0xFFF); i+=2)
+
+                for (int i=0; i<256; i++)
                 {
-                    *dest++ = *ptr++;   // Do this 32-bits at a time for a very slight speed improvement on moving the memory
+                    // Partially unroll loop for a tiny speedup and 32-bits at a time for max speed
+                    *dest++ = *ptr++;  *dest++ = *ptr++; *dest++ = *ptr++; *dest++ = *ptr++;
+                    *dest++ = *ptr++;  *dest++ = *ptr++; *dest++ = *ptr++; *dest++ = *ptr++;
                 }
             }
             else if (gBankerIsMappedHere[address>>12][value&0xF] == 0)   // Nothing is here... nothing will be swapped in... We need to check the main memory as there may be an unswapped bank in there...
@@ -79,7 +81,7 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
                 }
             }
         }
-        
+
         gLastBankers[(address&0xF000)>>12] = value;
     }
 }

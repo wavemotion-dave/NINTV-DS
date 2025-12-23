@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -25,9 +25,9 @@
 // amount of NDS CPU so we try to make this as efficient as possible. Lots of ITCM and DTCM
 // memory usage here to squeeze out the best performance...
 // ----------------------------------------------------------------------------------------------
-UINT16 audio_mixer_buffer[256]  __attribute__((section(".dtcm"))) = {0};
-UINT16 currentSampleIdx16       __attribute__((section(".dtcm"))) = 0;
-UINT32 commonClocksPerTick      __attribute__((section(".dtcm"))) = 0;
+UINT16 audio_mixer_buffer[SOUND_SIZE]   __attribute__((section(".dtcm"))) = {0};
+UINT8  currentSampleIdx                 __attribute__((section(".dtcm"))) = 0;
+UINT32 commonClocksPerTick              __attribute__((section(".dtcm"))) = 0;
 
 extern UINT64 lcm(UINT64, UINT64);
 
@@ -153,8 +153,7 @@ ITCM_CODE INT32 AudioMixer::tick(INT32 minimum)
     
     if (totalSample > 0x7FFF) totalSample = 0x7FFF;  // With Intellivoice or ECS extra sound channels, there are 2 or 3 audio producers... so we need to clip/cap the sound
     
-    audio_mixer_buffer[currentSampleIdx16++] = totalSample;
-    if (currentSampleIdx16 == SOUND_SIZE) currentSampleIdx16=0;
+    audio_mixer_buffer[currentSampleIdx++] = totalSample;  // currentSampleIdx is 8-bit and will wrap at 256 word boundary
    
     return minimum;
 }

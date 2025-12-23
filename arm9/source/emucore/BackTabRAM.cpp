@@ -1,10 +1,10 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -20,6 +20,8 @@
 UINT16  bt_image[BACKTAB_SIZE]             __attribute__((section(".dtcm")));
 UINT16  bt_imageLatched[BACKTAB_SIZE]      __attribute__((section(".dtcm")));
 UINT8   dirtyBytes[BACKTAB_SIZE]           __attribute__((section(".dtcm")));
+UINT8   dirtyBytesLatched[BACKTAB_SIZE]    __attribute__((section(".dtcm")));
+UINT8   colorAdvanceBitsDirty              __attribute__((section(".dtcm")));
 
 BackTabRAM::BackTabRAM()
 : RAM(BACKTAB_SIZE, BACKTAB_LOCATION, 0xFFFF, 0xFFFF)
@@ -43,16 +45,16 @@ void BackTabRAM::reset()
 // -------------------------------------------------------------------------------------
 ITCM_CODE void BackTabRAM::poke(UINT16 location, UINT16 value)
 {
-    location -= BACKTAB_LOCATION;
-
-    if (bt_image[location] == value)
+    if (bt_image[location & (BACKTAB_LOCATION-1)] == value)
         return;
 
-    if ((bt_image[location] & 0x2000) != (value & 0x2000))
+    UINT16 loc = location & (BACKTAB_LOCATION-1);
+
+    if ((bt_image[loc] & 0x2000) != (value & 0x2000))
         colorAdvanceBitsDirty = TRUE;
 
-    bt_image[location] = value;
-    dirtyBytes[location] = TRUE;
+    bt_image[loc] = value;
+    dirtyBytes[loc] = TRUE;
 }
 
 void BackTabRAM::poke_cheat(UINT16 location, UINT16 value)
@@ -61,27 +63,63 @@ void BackTabRAM::poke_cheat(UINT16 location, UINT16 value)
 }
 
 
-ITCM_CODE void BackTabRAM::markClean() 
+ITCM_CODE void BackTabRAM::markClean()
 {
-    for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
-        dirtyBytes[i] = FALSE;
+    UINT32 *dest = (UINT32*)dirtyBytes;
+
+    // Unroll loop for a tiny speedup
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+
     colorAdvanceBitsDirty = FALSE;
 }
 
 
 ITCM_CODE void BackTabRAM::LatchRow(UINT8 row)
 {
-    for (int i=(row*20); i<((row+1)*20); i++) 
-    {
-        bt_imageLatched[i] = bt_image[i];
-        dirtyBytesLatched[i] = dirtyBytes[i];
-    }
+    UINT32 *source = (UINT32*)&bt_image[(row*20)];
+    UINT32 *dest = (UINT32*)&bt_imageLatched[(row*20)];
+
+    // Unroll loop for a tiny speedup
+    *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++;
+    *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++;
+
+    memcpy(&dirtyBytesLatched[(row*20)], &dirtyBytes[row*20], 20);
 }
 
-ITCM_CODE void BackTabRAM::markCleanLatched() 
+
+ITCM_CODE void BackTabRAM::markCleanLatched()
 {
-    for (UINT16 i = 0; i < BACKTAB_SIZE; i++)
-        dirtyBytesLatched[i] = FALSE;
+    UINT32 *dest = (UINT32*)dirtyBytesLatched;
+
+    // Unroll loop for a tiny speedup
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+    *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0; *dest++ = 0;
+
     colorAdvanceBitsDirty = FALSE;
 }
 
@@ -94,7 +132,7 @@ void BackTabRAM::getState(BackTabRAMState *state)
 {
     for (int i=0; i<BACKTAB_SIZE; i++) state->image[i] = bt_image[i];
     for (int i=0; i<BACKTAB_SIZE; i++) state->dirtyBytes[i] = dirtyBytes[i];
-    
+
     state->dirtyRAM = dirtyRAM;
     state->colorAdvanceBitsDirty = colorAdvanceBitsDirty;
 }
@@ -103,7 +141,7 @@ void BackTabRAM::setState(BackTabRAMState *state)
 {
     for (int i=0; i<BACKTAB_SIZE; i++)  bt_image[i]   = bt_imageLatched[i]   = state->image[i];
     for (int i=0; i<BACKTAB_SIZE; i++)  dirtyBytes[i] = dirtyBytesLatched[i] = state->dirtyBytes[i];
-    
+
     // Just force the redraw...
     dirtyRAM = TRUE;
     colorAdvanceBitsDirty = TRUE;

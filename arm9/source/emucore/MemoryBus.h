@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -35,7 +35,7 @@ class MemoryBus
 
         void reset();
 
-        inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] == 1) return readableMemorySpace[location>>MEM_DIV][0]->peek(location); else return peek_slow(location);}
+        inline UINT16 peek(UINT16 location) {if (((UINT16 *) 0x06820000)[location] & 0x8000) return readableMemorySpace[location>>MEM_DIV][0]->peek(location); else return peek_slow(location);}
         UINT16 peek_slow(UINT16 location);
         
         void poke(UINT16 location, UINT16 value);

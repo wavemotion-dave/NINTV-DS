@@ -43,6 +43,9 @@
 #include "keyclick_wav.h"
 #include "screenshot.h"
 
+extern volatile int ds_vblank_count;
+
+
 // --------------------------------------------------------
 // A set of boolean values so we know what to load and 
 // how to load it. Put them in fast memory for tiny boost.
@@ -117,6 +120,7 @@ void reset_emu_frames(void)
     TIMER0_DATA=0;
     TIMER0_CR=TIMER_ENABLE | TIMER_DIV_1024;
     emu_frames=0;
+    ds_vblank_count = 0;
 }
 
 // --------------------------------------------------------------------------
@@ -247,7 +251,7 @@ BOOL InitializeEmulator(void)
     
     //hook the audio and video up to the currentEmulator
     currentEmu->InitVideo(videoBus,currentEmu->GetVideoWidth(),currentEmu->GetVideoHeight());
-    currentEmu->InitAudio(audioMixer, mySoundFrequency);
+    currentEmu->InitAudio(audioMixer, SOUND_FREQUENCY);
     
     // Clear the audio mixer...
     audioMixer->resetProcessor();
@@ -1103,7 +1107,16 @@ UINT8 poll_touch_screen(UINT16 ctrl_disc, UINT16 ctrl_keys, UINT16 ctrl_side)
 // -------------------------------------------------------------------------------------------------
 UINT8 breather = 0;
 
-ITCM_CODE void pollInputs(void)
+// ----------------------------------------------------------------------------
+// Slide-n-Glide D-pad keeps moving in the last known direction for a few more
+// frames to help make those hairpin turns up and off ladders much easier...
+// ----------------------------------------------------------------------------
+u8 slide_n_glide_key_up = 0;
+u8 slide_n_glide_key_down = 0;
+u8 slide_n_glide_key_left = 0;
+u8 slide_n_glide_key_right = 0;
+
+void pollInputs(void)
 {
     UINT16 ctrl_disc, ctrl_keys, ctrl_side;
     unsigned short keys_pressed = keysCurrent();
@@ -1260,6 +1273,53 @@ ITCM_CODE void pollInputs(void)
                 ds_disc_input[ctrl_disc][12] = 1;
                 breather = 4;
             }
+        }
+        else if (myConfig.dpad_config == DPAD_SLIDE_GLIDE)  // Slide-n-Glide
+        {
+            if (keys_pressed & KEY_UP)
+            {
+                slide_n_glide_key_up    = 12;
+                slide_n_glide_key_down  = 0;
+            }
+            if (keys_pressed & KEY_DOWN)
+            {
+                slide_n_glide_key_down  = 12;
+                slide_n_glide_key_up    = 0;
+            }
+            if (keys_pressed & KEY_LEFT)
+            {
+                slide_n_glide_key_left  = 12;
+                slide_n_glide_key_right = 0;
+            }
+            if (keys_pressed & KEY_RIGHT)
+            {
+                slide_n_glide_key_right = 12;
+                slide_n_glide_key_left  = 0;
+            }
+
+            if (slide_n_glide_key_up)
+            {
+                slide_n_glide_key_up--;
+                ds_disc_input[ctrl_disc][0]  = 1;
+            }
+
+            if (slide_n_glide_key_down)
+            {
+                slide_n_glide_key_down--;
+                ds_disc_input[ctrl_disc][8]  = 1;
+            }
+
+            if (slide_n_glide_key_left)
+            {
+                slide_n_glide_key_left--;
+                ds_disc_input[ctrl_disc][12]  = 1;
+            }
+
+            if (slide_n_glide_key_right)
+            {
+                slide_n_glide_key_right--;
+                ds_disc_input[ctrl_disc][4]  = 1;
+            }                    
         }
     
         // -------------------------------------------------------------------------------------
@@ -1450,6 +1510,13 @@ ITCM_CODE void pollInputs(void)
             else
                 ds_key_input[ctrl_keys][myConfig.key_SELECT_map]  = 1;
         }
+    }
+    else
+    {
+        if (slide_n_glide_key_up)    slide_n_glide_key_up--;
+        if (slide_n_glide_key_down)  slide_n_glide_key_down--;
+        if (slide_n_glide_key_left)  slide_n_glide_key_left--;
+        if (slide_n_glide_key_right) slide_n_glide_key_right--;
     }
     
     last_pressed = keys_pressed;
@@ -1695,11 +1762,36 @@ ITCM_CODE void Run(char *initial_file)
             }
         }
     
-        // Time 1 frame...
+        // Poll the input on the DS and map to Intellivision
+        pollInputs();
+
+        if (bInitEmulator)  // If the inputs told us we loaded a new file... cleanup and start over...
+        {
+            InitializeEmulator();
+            bInitEmulator = false;
+            continue;
+        }        
+
+
+        if (bGameLoaded && !bIsFatalError)
+        {
+            //run the emulation
+            currentEmu->Run();
+        }
+    
+        // Time 1 frame before we render the output...
         if (!bMetaSpeedup)
         {
-            while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*(emu_frames+1)))
-                ;
+            if (myConfig.target_fps) // If the target is something other than 60Hz, use the timer...
+            {
+                while(TIMER0_DATA < (target_frame_timing[myConfig.target_fps]*(emu_frames+1)))
+                    ;
+            }
+            else // For 60Hz we can use the DS LCD True Sync! The DS LCD VSYNC is our anchor to time frames - provides for tear-free experience.
+            {
+                while(ds_vblank_count < (emu_frames+1))
+                    ;
+            }
         }
 
         // Have we processed target (default 60) frames... start over...
@@ -1708,22 +1800,9 @@ ITCM_CODE void Run(char *initial_file)
             reset_emu_frames();
         }       
         
-        //poll the input
-        pollInputs();
-        
-        if (bInitEmulator)  // If the inputs told us we loaded a new file... cleanup and start over...
-        {
-            InitializeEmulator();
-            bInitEmulator = false;
-            continue;
-        }        
-
         if (bGameLoaded && !bIsFatalError)
         {
-            //run the emulation
-            currentEmu->Run();
-
-            // render the output
+            // render the output to the DS screen
             currentEmu->Render();
         }
         
@@ -1779,7 +1858,7 @@ void dsMainLoop(char *initial_file)
     videoBus = new VideoBusDS();
     audioMixer = new AudioMixerDS();
     
-    FindAndLoadConfig(CRC32::getCrc(initial_file));
+    FindAndLoadConfig(CRC32::getCrc(initial_file), (char*)initial_file);
     
     dsShowScreenMain(true, (initial_file ? false:true));    // Don't play the jingle if we are loading a file directly for play
     

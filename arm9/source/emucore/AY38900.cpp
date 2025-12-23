@@ -1,10 +1,10 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -66,17 +66,14 @@ UINT8 backgroundBuffer[160*96] __attribute__ ((aligned (4)));
 UINT16 global_frames        __attribute__((section(".dtcm"))) = 0;
 UINT16 mobBuffers[8][128]   __attribute__((section(".dtcm")));
 
-UINT8 fgcolor               __attribute__((section(".dtcm"))) = 0;
-UINT8 bgcolor               __attribute__((section(".dtcm"))) = 0;
-
-// Movable objects
+// Movable objects - place in FAST memory
 MOB mobs[8] __attribute__((section(".dtcm")));
 
 
 UINT32 __attribute__ ((aligned (4))) __attribute__((section(".dtcm"))) color_repeat_table[]  = {
-        0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,  
-        0x08080808,  0x09090909,  0x0A0A0A0A,  0x0B0B0B0B,  0x0C0C0C0C,  0x0D0D0D0D,  0x0E0E0E0E,  0x0F0F0F0F,  
-        0x10101010,  0x11111111,  0x12121212,  0x13131313,  0x14141414,  0x15151515,  0x16161616,  0x17171717,  
+        0x00000000,  0x01010101,  0x02020202,  0x03030303,  0x04040404,  0x05050505,  0x06060606,  0x07070707,
+        0x08080808,  0x09090909,  0x0A0A0A0A,  0x0B0B0B0B,  0x0C0C0C0C,  0x0D0D0D0D,  0x0E0E0E0E,  0x0F0F0F0F,
+        0x10101010,  0x11111111,  0x12121212,  0x13131313,  0x14141414,  0x15151515,  0x16161616,  0x17171717,
         0x18181818,  0x19191919,  0x1A1A1A1A,  0x1B1B1B1B,  0x1C1C1C1C,  0x1D1D1D1D,  0x1E1E1E1E,  0x1F1F1F1F
 };
 
@@ -165,14 +162,14 @@ void AY38900::resetProcessor()
     colorStackMode         = FALSE;
     colorModeChanged       = TRUE;
     colorStackChanged      = TRUE;
-    
+
     bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
     //local register data
     borderColor = 0;
     blockLeft = blockTop = FALSE;
     horizontalOffset = verticalOffset = 0;
-    
+
     global_frames = 0;
 }
 
@@ -186,7 +183,7 @@ ITCM_CODE void AY38900::setGraphicsBusVisible(BOOL visible) {
 ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
     INT32 totalTicks = 0;
     do {
-        switch (mode) 
+        switch (mode)
         {
         //start of vertical blank
         case MODE_VBLANK:
@@ -205,7 +202,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bCP1610_PIN_IN_BUSRQ = TRUE;
 
             //kick the irq line
-            bCP1610_PIN_IN_INTRM = FALSE;                
+            bCP1610_PIN_IN_INTRM = FALSE;
             bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
             totalTicks += TICK_LENGTH_VBLANK;
@@ -219,7 +216,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
             bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             //if the display is not enabled, skip the rest of the modes
             if (!displayEnabled) {
-                if (previousDisplayEnabled) 
+                if (previousDisplayEnabled)
                 {
                     if (myConfig.bSkipBlanks == 0)
                     {
@@ -349,7 +346,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_4:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));               
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(4);
@@ -379,7 +376,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_5:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -389,7 +386,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_6:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(6);
@@ -399,7 +396,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_6:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -409,7 +406,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_7:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(7);
@@ -419,7 +416,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_7:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -429,7 +426,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_8:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(8);
@@ -439,7 +436,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_8:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -449,7 +446,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_9:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(9);
@@ -459,7 +456,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_9:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -469,7 +466,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_10:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(10);
@@ -479,7 +476,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_10:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             bCP1610_PIN_OUT_BUSAK = TRUE;
             totalTicks += TICK_LENGTH_RENDER_ROW;
             if (totalTicks >= minimum) {
@@ -489,7 +486,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_FETCH_ROW_11:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_FETCH_ROW;
             if (totalTicks >= minimum) {
                 if (myConfig.bLatched) backtab.LatchRow(11);
@@ -499,7 +496,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
 
         case MODE_RENDER_ROW_11:
             bCP1610_PIN_IN_BUSRQ = TRUE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
 
             //this mode could be cut off in tick length if the vertical
             //offset is greater than 1
@@ -525,7 +522,7 @@ ITCM_CODE INT32 AY38900::tick(INT32 minimum) {
         case MODE_FETCH_ROW_12:
         default:
             bCP1610_PIN_IN_BUSRQ = FALSE;
-            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));    
+            bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
             totalTicks += TICK_LENGTH_SCANLINE;
             mode = MODE_VBLANK;
             break;
@@ -550,7 +547,7 @@ ITCM_CODE void AY38900::renderFrame()
         mobs[i].collisionRegister = 0;
     determineMOBCollisions();
     markClean();
-    
+
     // -------------------------------------------------------------------------------------
     // If we are skipping frames, we can skip rendering the pixels to the staging area...
     // -------------------------------------------------------------------------------------
@@ -560,7 +557,7 @@ ITCM_CODE void AY38900::renderFrame()
         copyBackgroundBufferToStagingArea();
     }
     copyMOBsToStagingArea();
-    
+
     for (int i = 0; i < 8; i++)
         stic_memory[0x18+i] |= mobs[i].collisionRegister;
 }
@@ -570,7 +567,7 @@ ITCM_CODE void AY38900::render()
     // the video bus handles the actual rendering.
 }
 
-ITCM_CODE void AY38900::markClean() 
+ITCM_CODE void AY38900::markClean()
 {
     //everything has been rendered and is now clean
     colorStackChanged = FALSE;
@@ -590,8 +587,8 @@ ITCM_CODE void AY38900::renderBorders()
     if (blockTop) {
         //move the image up 4 pixels and block the top and bottom 4 rows with the border
         UINT32 borderColor32 = color_repeat_table[borderColor];
-        
-        for (UINT8 y = 0; y < 8; y++) 
+
+        for (UINT8 y = 0; y < 8; y++)
         {
             UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
             UINT32* buffer1 = buffer0 + (184*PIXEL_BUFFER_ROW_SIZE/4);
@@ -605,7 +602,7 @@ ITCM_CODE void AY38900::renderBorders()
         //block the top rows of pixels depending on the amount of vertical offset
         UINT8 numRows = (UINT8)(verticalOffset<<1);
         UINT32 borderColor32 = color_repeat_table[borderColor];
-        for (UINT8 y = 0; y < numRows; y++) 
+        for (UINT8 y = 0; y < numRows; y++)
         {
             UINT32* buffer0 = ((UINT32*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE/4);
             for (UINT8 x = 0; x < 160/4; x++)
@@ -626,7 +623,7 @@ ITCM_CODE void AY38900::renderBorders()
     }
     else if (horizontalOffset != 0) {
         //block the left columns of pixels depending on the amount of horizontal offset
-        for (UINT8 y = 0; y < 192; y++) { 
+        for (UINT8 y = 0; y < 192; y++) {
             UINT8* buffer0 = ((UINT8*)pixelBuffer) + (y*PIXEL_BUFFER_ROW_SIZE);
             for (UINT8 x = 0; x < horizontalOffset; x++) {
                 *buffer0++ = borderColor;
@@ -644,20 +641,20 @@ ITCM_CODE void AY38900::renderMOBs()
         //to be re-rendered into its buffer
         if (!mobs[i].shapeChanged && mobs[i].isGrom)
             continue;
-        
+
         //start at this memory location
         UINT16 card = mobs[i].cardNumber;
         // If we are double Y, the STIC requires the card be on an even boundary. Without this we get glitches in the ape climbing in D1K/D2K
         if (mobs[i].doubleYResolution) card &= 0xFE;
-        
+
         // ------------------------------------------------------------------------------------
-        // In Color Stack Mode, the MOB location can index any of the full GROM / GRAM tiles.  
+        // In Color Stack Mode, the MOB location can index any of the full GROM / GRAM tiles.
         // In FG/BG mode, it can only index the first 64 tiles of GROM or GRAM. This is all
-        // according to the STIC documentation: 
+        // according to the STIC documentation:
         //
-        //    Bits 9 and 10 of the attribute register (bits 7 and 6 of the card #) 
-        //    are ignored when the bitmap comes from GRAM, or when the display is 
-        //    in Foreground/Background mode. (This means that only 128 of the 320 
+        //    Bits 9 and 10 of the attribute register (bits 7 and 6 of the card #)
+        //    are ignored when the bitmap comes from GRAM, or when the display is
+        //    in Foreground/Background mode. (This means that only 128 of the 320
         //    pictures are available when the display is in FGBG mode. GROM cards
         //    #64 - #255 are unavailable in FGBG mode.)
         // ------------------------------------------------------------------------------------
@@ -686,7 +683,7 @@ ITCM_CODE void AY38900::renderMOBs()
         int nextLine = 0;
         if (mobs[i].verticalMirror)
             nextLine = (pixelHeight * (mobs[i].doubleYResolution ? 15 : 7));
-        for (UINT16 j = firstMemoryLocation; j < lastMemoryLocation; j++) 
+        for (UINT16 j = firstMemoryLocation; j < lastMemoryLocation; j++)
         {
             UINT16 nextData;
 
@@ -717,7 +714,7 @@ ITCM_CODE void AY38900::renderMOBs()
 }
 
 // -------------------------------------------------------------------
-// Render the entire Intellivision background according to what mode 
+// Render the entire Intellivision background according to what mode
 // we are in (FG/BG vs ColorStack) and whether we are doing the more
 // complicated latched backtab (uses a bit more emulation CPU power
 // but is more accurate).
@@ -748,7 +745,7 @@ ITCM_CODE void AY38900::renderBackground()
 void AY38900::renderForegroundBackgroundModeForced()
 {
     //iterate through all the cards in the backtab
-    for (UINT8 i = 0; i < 240; i++) 
+    for (UINT8 i = 0; i < 240; i++)
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_direct(i);
@@ -757,22 +754,24 @@ void AY38900::renderForegroundBackgroundModeForced()
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
-        bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+        UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+        UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
         Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
         UINT16 address = memory->getReadAddress()+memoryLocation;
         UINT8 nextx = (i%20) * 8;
         UINT8 nexty = (i/20) * 8;
         for (UINT16 j = 0; j < 8; j++)
-            renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+        {
+            renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+        }
     }
 }
 
 ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 {
     //iterate through all the cards in the backtab
-    for (UINT8 i = 0; i < 240; i++) 
+    for (UINT8 i = 0; i < 240; i++)
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_direct(i);
@@ -781,17 +780,19 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (backtab.isDirtyDirect(i) || (isGram && dirtyCards[memoryLocation>>3])) 
+        if (backtab.isDirtyDirect(i) || (isGram && dirtyCards[memoryLocation>>3]))
         {
-            fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
-            bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+            UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+            UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
             Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
             for (UINT16 j = 0; j < 8; j++)
-                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+            {
+                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+            }
         }
     }
 }
@@ -799,7 +800,7 @@ ITCM_CODE void AY38900::renderForegroundBackgroundMode()
 ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
 {
     //iterate through all the cards in the backtab
-    for (UINT8 i = 0; i < 240; i++) 
+    for (UINT8 i = 0; i < 240; i++)
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
@@ -808,17 +809,19 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
 
         //render this card only if this card has changed or if the card points to GRAM
         //and one of the eight bytes in gram that make up this card have changed
-        if (backtab.isDirtyLatched(i) || (isGram && dirtyCards[memoryLocation>>3])) 
+        if (backtab.isDirtyLatched(i) || (isGram && dirtyCards[memoryLocation>>3]))
         {
-            fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
-            bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+            UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+            UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
             Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
             UINT16 address = memory->getReadAddress()+memoryLocation;
             UINT8 nextx = (i%20) * 8;
             UINT8 nexty = (i/20) * 8;
             for (UINT16 j = 0; j < 8; j++)
-                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+            {
+                renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+            }
         }
     }
 }
@@ -826,22 +829,24 @@ ITCM_CODE void AY38900::renderForegroundBackgroundModeLatched()
 void AY38900::renderForegroundBackgroundModeLatchedForced()
 {
     //iterate through all the cards in the backtab
-    for (UINT8 i = 0; i < 240; i++) 
+    for (UINT8 i = 0; i < 240; i++)
     {
         //get the next card to render
         UINT16 nextCard = backtab.peek_latched(i);
         UINT16 isGram = nextCard & 0x0800;
         UINT16 memoryLocation = nextCard & 0x01F8; // Can only index 64 tiles max in FG/BG mode
 
-        fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
-        bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
+        UINT8 fgcolor = (UINT8)((nextCard & 0x0007) | FOREGROUND_BIT);
+        UINT8 bgcolor = (UINT8)(((nextCard & 0x2000) >> 11) | ((nextCard & 0x1600) >> 9));
 
         Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
         UINT16 address = memory->getReadAddress()+memoryLocation;
         UINT8 nextx = (i%20) * 8;
         UINT8 nexty = (i/20) * 8;
         for (UINT16 j = 0; j < 8; j++)
-            renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+        {
+            renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+        }
     }
 }
 
@@ -853,19 +858,19 @@ ITCM_CODE void AY38900::renderColorStackMode()
     //must be rendered
     BOOL renderAll = backtab.areColorAdvanceBitsDirty() ||
         colorStackChanged || colorModeChanged;
-    
+
     UINT8 nextx = 0;
     UINT8 nexty = 0;
-    bgcolor = (UINT8)stic_memory[0x28 + csPtr];
+    UINT8 bgcolor = (UINT8)stic_memory[0x28 + csPtr];
     //iterate through all the cards in the backtab
-    for (UINT8 h = 0; h < 240; h++) 
+    for (UINT8 h = 0; h < 240; h++)
     {
         UINT16 nextCard = backtab.peek_direct(h);
 
         //colored squares mode
-        if ((nextCard & 0x1800) == 0x1000) 
+        if ((nextCard & 0x1800) == 0x1000)
         {
-            if (renderAll || backtab.isDirtyDirect(h)) 
+            if (renderAll || backtab.isDirtyDirect(h))
             {
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
@@ -879,25 +884,27 @@ ITCM_CODE void AY38900::renderColorStackMode()
             }
         }
         //color stack mode
-        else 
+        else
         {
             //advance the color pointer, if necessary
-            if (nextCard & 0x2000) 
+            if (nextCard & 0x2000)
             {
-                csPtr = (csPtr+1) & 0x03; 
+                csPtr = (csPtr+1) & 0x03;
                 bgcolor = (UINT8)stic_memory[0x28 + csPtr];
             }
 
             UINT16 isGram = (nextCard & 0x0800);
             UINT16 memoryLocation = (isGram ? (nextCard & GRAM_COL_STACK_MASK) : (nextCard & 0x07F8)); // Can index all 256 tiles max in Color Stack mode
 
-            if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation))) 
+            if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation)))
             {
-                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);                
+                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
                 Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
                 UINT16 address = memory->getReadAddress()+memoryLocation;
                 for (UINT16 j = 0; j < 8; j++)
-                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+                {
+                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                }
             }
         }
         nextx += 8;
@@ -916,19 +923,19 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
     //must be rendered
     BOOL renderAll = backtab.areColorAdvanceBitsDirty() ||
         colorStackChanged || colorModeChanged;
-    
+
     UINT8 nextx = 0;
     UINT8 nexty = 0;
-    bgcolor = (UINT8)stic_memory[0x28 + csPtr];
+    UINT8 bgcolor = (UINT8)stic_memory[0x28 + csPtr];
     //iterate through all the cards in the backtab
-    for (UINT8 h = 0; h < 240; h++) 
+    for (UINT8 h = 0; h < 240; h++)
     {
         UINT16 nextCard = backtab.peek_latched(h); //backtab.peek_direct(h);
 
         //colored squares mode
-        if ((nextCard & 0x1800) == 0x1000) 
+        if ((nextCard & 0x1800) == 0x1000)
         {
-            if (renderAll || backtab.isDirtyDirect(h)) 
+            if (renderAll || backtab.isDirtyDirect(h))
             {
                 UINT8 color0 = (UINT8)(nextCard & 0x0007);
                 UINT8 color1 = (UINT8)((nextCard & 0x0038) >> 3);
@@ -943,25 +950,27 @@ ITCM_CODE void AY38900::renderColorStackModeLatched()
             }
         }
         //color stack mode
-        else 
+        else
         {
             //advance the color pointer, if necessary
-            if (nextCard & 0x2000) 
+            if (nextCard & 0x2000)
             {
-                csPtr = (csPtr+1) & 0x03; 
+                csPtr = (csPtr+1) & 0x03;
                 bgcolor = (UINT8)stic_memory[0x28 + csPtr];
             }
 
             UINT16 isGram = (nextCard & 0x0800);
             UINT16 memoryLocation = (isGram ? (nextCard & GRAM_COL_STACK_MASK) : (nextCard & 0x07F8)); // Can index all 256 tiles max in Color Stack mode
 
-            if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation))) 
+            if (renderAll || backtab.isDirtyDirect(h) || (isGram && gram->isCardDirty(memoryLocation)))
             {
-                fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);                
+                UINT8 fgcolor = (UINT8)(((nextCard & 0x1000) >> 9) | (nextCard & 0x0007) | FOREGROUND_BIT);
                 Memory* memory = (isGram ? (Memory*)gram : (Memory*)grom);
                 UINT16 address = memory->getReadAddress()+memoryLocation;
                 for (UINT16 j = 0; j < 8; j++)
-                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j);
+                {
+                    renderLine((UINT8)memory->peek(address+j), nextx, nexty+j, fgcolor, bgcolor);
+                }
             }
         }
         nextx += 8;
@@ -983,19 +992,23 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
             int sourceHeightY = blockTop ? 88 : 96;
             int nextSourcePixel = (blockLeft ? (8) : 0) + ((blockTop ? (8) : 0) * 160);
 
-            for (int y = 0; y < sourceHeightY; y++) 
+            for (int y = 0; y < sourceHeightY; y++)
             {
                 UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
                 nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
                 if (blockTop) nextPixelStore0 += (PIXEL_BUFFER_ROW_SIZE*8);
                 if (blockLeft) nextPixelStore0 += 4;
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-                
+
                 UINT32* np0 = (UINT32 *)nextPixelStore0;
                 UINT32* np1 = (UINT32 *)nextPixelStore1;
                 UINT32* backColor = (UINT32*)(&backgroundBuffer[nextSourcePixel]);
-                for (int x = 0; x < (sourceWidthX>>2); x++) 
+                for (int x = 0; x < (sourceWidthX>>3); x++)
                 {
+                    // Partial un-roll for a tiny speedup
+                    *np0++ = *backColor;
+                    *np1++ = *backColor++;
+
                     *np0++ = *backColor;
                     *np1++ = *backColor++;
                 }
@@ -1009,8 +1022,8 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
             short int myHoriz = (blockLeft ? (8 - horizontalOffset) : 0);
             short int myVert  = (blockTop  ? (8 - verticalOffset)   : 0);
             short int nextSourcePixel = myHoriz + (myVert * 160);
-            
-            for (int y = 0; y < sourceHeightY; y++) 
+
+            for (int y = 0; y < sourceHeightY; y++)
             {
                 UINT8* nextPixelStore0 = (UINT8*)pixelBuffer;
                 nextPixelStore0 += (y*PIXEL_BUFFER_ROW_SIZE*2);
@@ -1022,19 +1035,19 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                 else if (horizontalOffset) nextPixelStore0 += horizontalOffset;
 
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
-                
+
                 if (!((nextSourcePixel | (u32)nextPixelStore0) & 3))  // We're on a 32-bit boundary
                 {
-                    // At this point, everything is 32-bit aligned so  we can blast 32-bits at a time...
+                    // At this point, everything is 32-bit aligned so we can blast 32-bits at a time...
                     UINT32 *backColor = (UINT32*) &backgroundBuffer[nextSourcePixel];
                     UINT32 *pix0 = (UINT32*) nextPixelStore0;
                     UINT32 *pix1 = (UINT32*) nextPixelStore1;
 
-                    for (int x = 0; x < (sourceWidthX>>2); x++) 
+                    for (int x = 0; x < (sourceWidthX>>2); x++)
                     {
                         *pix0++ = *backColor;
                         *pix1++ = *backColor++;
-                    }                
+                    }
                 }
                 else
                 {
@@ -1044,17 +1057,17 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                         *nextPixelStore0++ = backgroundBuffer[nextSourcePixel];
                         *nextPixelStore1++ = backgroundBuffer[nextSourcePixel];
                     }
-                    
-                    // At this point, everything is 16-bit aligned so  we can blast 16-bits at a time...
+
+                    // At this point, everything is 16-bit aligned so we can blast 16-bits at a time...
                     UINT16 *backColor = (UINT16*) &backgroundBuffer[nextSourcePixel&0xFFFE];
                     UINT16 *pix0 = (UINT16*) nextPixelStore0;
                     UINT16 *pix1 = (UINT16*) nextPixelStore1;
 
-                    for (int x = 0; x < (sourceWidthX>>1); x++) 
+                    for (int x = 0; x < (sourceWidthX>>1); x++)
                     {
                         *pix0++ = *backColor;
                         *pix1++ = *backColor++;
-                    }                
+                    }
                 }
 
                 nextSourcePixel += 160;
@@ -1065,12 +1078,17 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
     {
         // This is the fastest of them all... no offsets and no borders so everything will be a multiple of 4...
         UINT32* backColor = (UINT32*)(&backgroundBuffer[0]);
-        for (int y = 0; y < 96; y++) 
+        for (int y = 0; y < 96; y++)
         {
             UINT32* nextPixelStore0 = (UINT32*)(&pixelBuffer[y*PIXEL_BUFFER_ROW_SIZE*2]);
             UINT32* nextPixelStore1 = nextPixelStore0 + (PIXEL_BUFFER_ROW_SIZE/4);
-            for (int x = 0; x < PIXEL_BUFFER_ROW_SIZE/4; x++) 
+
+            for (int x = 0; x < PIXEL_BUFFER_ROW_SIZE>>3; x++)
             {
+                // Partial un-roll for a tiny speedup
+                *nextPixelStore0++ = *backColor;
+                *nextPixelStore1++ = *backColor++;
+
                 *nextPixelStore0++ = *backColor;
                 *nextPixelStore1++ = *backColor++;
             }
@@ -1081,13 +1099,13 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 //copy the offscreen mob buffers to the staging area
 ITCM_CODE void AY38900::copyMOBsToStagingArea()
 {
-    for (INT8 i = 7; i >= 0; i--) 
+    for (INT8 i = 7; i >= 0; i--)
     {
-        // A mob X location of zero is special and is not rendered. A Y location of zero is not special. 
+        // A mob X location of zero is special and is not rendered. A Y location of zero is not special.
         // But we do also check the out of bounds X (167) and Y (104) and don't bother to render offscreen MOBs.
         if (mobs[i].xLocation == 0 || mobs[i].xLocation >= 167 || (!mobs[i].flagCollisions && !mobs[i].isVisible) || mobs[i].yLocation >= 104)
             continue;
-        
+
         BOOL borderCollision = FALSE;
         BOOL foregroundCollision = FALSE;
 
@@ -1097,12 +1115,12 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
 
         INT16 leftX = (INT16)(r->x + horizontalOffset);
         INT16 nextY = (INT16)((r->y + verticalOffset) << 1);
-        for (UINT8 y = 0; y < mobPixelHeight; y++) 
+        for (UINT8 y = 0; y < mobPixelHeight; y++)
         {
             if (mobBuffers[i][y])
             {
                 UINT16 idx = (r->x+0)+ ((r->y+(y/2))*160);
-                for (UINT8 x = 0; x < r->width; x++) 
+                for (UINT8 x = 0; x < r->width; x++)
                 {
                     //if this mob pixel is not on, then our life has no meaning
                     if ((mobBuffers[i][y] & (0x8000 >> x)) == 0)
@@ -1119,13 +1137,13 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
 
                     //check for foreground collision
                     UINT8 currentPixel = backgroundBuffer[idx+x];
-                    if ((currentPixel & FOREGROUND_BIT) != 0) 
+                    if ((currentPixel & FOREGROUND_BIT) != 0)
                     {
                         foregroundCollision = TRUE;
                         if (mobs[i].behindForeground)
                             continue;
                     }
-                    if (mobs[i].isVisible) 
+                    if (mobs[i].isVisible)
                     {
                         UINT8* nextPixel = (UINT8*)pixelBuffer;
                         nextPixel += leftX - (blockLeft ? 4 : 0) + x;
@@ -1147,7 +1165,10 @@ ITCM_CODE void AY38900::copyMOBsToStagingArea()
     }
 }
 
-inline void AY38900::renderLine(UINT8 nextbyte, int x, int y)
+// ------------------------------------------------------------------------------------------------------
+// Force this inline - we don't want the overhead and a bit of code bloat will not offset the speed gain
+// ------------------------------------------------------------------------------------------------------
+inline __attribute__((always_inline)) void AY38900::renderLine(UINT8 nextbyte, int x, int y, UINT8 fgcolor, UINT8 bgcolor)
 {
     if (nextbyte && (nextbyte != 0xFF))
     {
@@ -1172,7 +1193,7 @@ inline void AY38900::renderLine(UINT8 nextbyte, int x, int y)
 }
 
 ITCM_CODE void AY38900::renderColoredSquares(int x, int y, UINT8 color0, UINT8 color1,
-    UINT8 color2, UINT8 color3) 
+    UINT8 color2, UINT8 color3)
 {
     int topLeftPixel = x + (y*160);
     int topRightPixel = topLeftPixel+4;
@@ -1183,7 +1204,7 @@ ITCM_CODE void AY38900::renderColoredSquares(int x, int y, UINT8 color0, UINT8 c
     UINT8 *ptr1 = &backgroundBuffer[topRightPixel];
     UINT8 *ptr2 = &backgroundBuffer[bottomLeftPixel];
     UINT8 *ptr3 = &backgroundBuffer[bottomRightPixel];
-    for (UINT8 w = 0; w < 4; w++) 
+    for (UINT8 w = 0; w < 4; w++)
     {
         *ptr0++ = color0; *ptr0++ = color0; *ptr0++ = color0; *ptr0++ = color0;
         *ptr1++ = color1; *ptr1++ = color1; *ptr1++ = color1; *ptr1++ = color1;
@@ -1195,15 +1216,15 @@ ITCM_CODE void AY38900::renderColoredSquares(int x, int y, UINT8 color0, UINT8 c
 
 ITCM_CODE void AY38900::determineMOBCollisions()
 {
-    for (int i = 0; i < 7; i++) 
+    for (int i = 0; i < 7; i++)
     {
-        // There is nothing special about a Y location of zero (0) but at least one game (GORF) uses it to move the 
+        // There is nothing special about a Y location of zero (0) but at least one game (GORF) uses it to move the
         // object off-screen. So we will need to do a bit more work in the mobsCollide() to handle this...
         if (mobs[i].xLocation == 0 || !mobs[i].flagCollisions || mobs[i].xLocation >= 167 || mobs[i].yLocation >= 104)
             continue;
 
         //check MOB on MOB collisions
-        for (int j = i+1; j < 8; j++) 
+        for (int j = i+1; j < 8; j++)
         {
             if (mobs[j].xLocation == 0 || !mobs[j].flagCollisions  || mobs[j].xLocation >= 167 || mobs[j].yLocation >= 104)
                 continue;
@@ -1221,13 +1242,13 @@ ITCM_CODE void AY38900::determineMOBCollisions()
 // The MOB collisions are not up to jzintv standards mostly for speed purposes.
 // By the time we get here, we've already checked for the special MOB x-pos of
 // zero (0) and if the MOB is completely out of visible bounds - none of those
-// MOBs would produce collisions in real hardware. But there are also cases 
+// MOBs would produce collisions in real hardware. But there are also cases
 // where the MOBs are partially off-screen... below we only really are checking
-// for MOBs that might be off the top of the screen and any pixels in that 
+// for MOBs that might be off the top of the screen and any pixels in that
 // non-visible area will not produce collisions. This leaves off checks for
-// the bottom of screen and possibly off either side of the screen. I would 
+// the bottom of screen and possibly off either side of the screen. I would
 // even skip the off-top-screen check except that GORF does set the Y position
-// of the ship MOB to zero (0) when hit/exploding and if we don't mask off 
+// of the ship MOB to zero (0) when hit/exploding and if we don't mask off
 // collisions off the top of the screen, we will get some false hits.
 // ------------------------------------------------------------------------------
 ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
@@ -1249,7 +1270,7 @@ ITCM_CODE BOOL AY38900::mobsCollide(int mobNum0, int mobNum1)
     int overlappingHeight = (MIN(r0->y + r0->height, r1->y + r1->height) - startingY) * 2;
 
     //iterate over the intersecting bits to see if any touch
-    for (int y = 0; y < overlappingHeight; y++) 
+    for (int y = 0; y < overlappingHeight; y++)
     {
         if (((mobBuffers[mobNum0][offsetYr0 + y] << offsetXr0) & (mobBuffers[mobNum1][offsetYr1 + y] << offsetXr1)) != 0)
         {
@@ -1282,7 +1303,7 @@ void AY38900::getState(AY38900State *state)
     state->horizontalOffset = this->horizontalOffset;
     state->verticalOffset = this->verticalOffset;
 
-    for (int i = 0; i < 8; i++) 
+    for (int i = 0; i < 8; i++)
     {
         mobs[i].getState(&state->mobs[i]);
     }
@@ -1305,11 +1326,11 @@ void AY38900::setState(AY38900State *state)
     this->horizontalOffset = state->horizontalOffset;
     this->verticalOffset = state->verticalOffset;
 
-    for (int i = 0; i < 8; i++) 
+    for (int i = 0; i < 8; i++)
     {
         mobs[i].setState(&state->mobs[i]);
     }
-    
+
     // Force the screen to redraw
     this->colorModeChanged = TRUE;
     this->colorStackChanged = TRUE;

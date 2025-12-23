@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated
 // readme files, with or without modification, are permitted in any medium without
@@ -144,7 +144,7 @@ void MemoryBus::addMemory(Memory* m)
             UINT16 nextEnd = nextAddress + readSize - 1;
 
             for (UINT32 k = nextAddress; k <= nextEnd; k++) {
-                UINT16 memCount = readableMemoryCounts[k];
+                UINT16 memCount = readableMemoryCounts[k] & 0x7fff;
                 if (memCount >= MAX_READ_OVERLAPPED_MEMORIES)
                 {
                     FatalError("ERROR MAX READABLE MEM OVERLAP");
@@ -152,6 +152,14 @@ void MemoryBus::addMemory(Memory* m)
                 }
                 readableMemorySpace[k>>MEM_DIV][memCount] = m;
                 readableMemoryCounts[k]++;
+                if (readableMemoryCounts[k] == 1) // Count of 1 is special, set high bit to improved memory bus peek() check
+                {
+                    readableMemoryCounts[k] |= 0x8000;
+                }
+                else
+                {
+                    readableMemoryCounts[k] &= 0x7fff;
+                }
             }
         }
     }
@@ -226,7 +234,7 @@ void MemoryBus::removeMemory(Memory* m)
 
             for (UINT32 k = nextAddress; k <= nextEnd; k++) 
             {
-                UINT16 memCount = readableMemoryCounts[k];
+                UINT16 memCount = readableMemoryCounts[k] & 0x7fff;
                 for (UINT16 n = 0; n < memCount; n++) 
                 {
                     if (readableMemorySpace[k>>MEM_DIV][n] == m) 
@@ -240,6 +248,14 @@ void MemoryBus::removeMemory(Memory* m)
                     }
                 }
                readableMemoryCounts[k]--;
+               if (readableMemoryCounts[k] == 1) // Count of 1 is special, set high bit to improved memory bus peek() check
+               {
+                   readableMemoryCounts[k] |= 0x8000;
+               }
+               else
+               {
+                   readableMemoryCounts[k] &= 0x7fff;
+               }
             }
         }
     }
@@ -304,7 +320,7 @@ void MemoryBus::removeAll()
 // ------------------------------------------------------------------------------------------------------
 ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
 {
-    UINT16 numMemories = readableMemoryCounts[location];
+    UINT16 numMemories = readableMemoryCounts[location] & 0x7fff;
 
     UINT16 value = 0xFFFF;
     for (UINT16 i = 0; i < numMemories; i++)
@@ -319,7 +335,7 @@ ITCM_CODE UINT16 MemoryBus::peek_slow(UINT16 location)
 // ---------------------------------------------------------------------------------------
 ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
 {
-    UINT8 numMemories = writeableMemoryCounts[location];
+    UINT16 numMemories = writeableMemoryCounts[location];
 
     for (UINT16 i = 0; i < numMemories; i++)
     {
@@ -342,7 +358,7 @@ ITCM_CODE void MemoryBus::poke(UINT16 location, UINT16 value)
 // ---------------------------------------------------------------------------------------
 void MemoryBus::poke_cheat(UINT16 location, UINT16 value)
 {
-    UINT8 numMemories = readableMemoryCounts[location];
+    UINT16 numMemories = readableMemoryCounts[location] & 0x7fff;
 
     for (UINT16 i = 0; i < numMemories; i++)
     {

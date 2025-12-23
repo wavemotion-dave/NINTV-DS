@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -17,10 +17,10 @@ UINT8     gram_image[GRAM_SIZE]         __attribute__((section(".dtcm")));
 UINT8     dirtyCards[GRAM_SIZE>>3]      __attribute__((section(".dtcm")));
 UINT8     dirtyRAM                      __attribute__((section(".dtcm")));
 
-// ------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------
 // These are not defines so that we can adjust based on whether the 2K GRAM (aka Tutorvision mode) is
-// enabled. This is 1% slower emulation but provides for the ability to have an upgraded GRAM emulation.
-// ------------------------------------------------------------------------------------------------------
+// enabled. This is 1-2% slower emulation but provides for the ability to have an upgraded GRAM emulation.
+// --------------------------------------------------------------------------------------------------------
 UINT16 GRAM_MASK            __attribute__((section(".dtcm"))) = 0x01FF;  // Allows indexing the 512 or 2K bytes of GRAM
 UINT16 GRAM_COL_STACK_MASK  __attribute__((section(".dtcm"))) = 0x01F8;  // Allows for indexing 64 / 256 tiles in Color Stack mode
 UINT16 GRAM_CARD_MOB_MASK   __attribute__((section(".dtcm"))) =   0x3F;  // Allows for indexing 64 / 256 tiles for MOBs in Color Stack mode
@@ -58,6 +58,7 @@ ITCM_CODE void GRAM::poke(UINT16 location, UINT16 value)
     if (!enabled) return;
     location &= GRAM_MASK;
     
+    if (gram_image[location] == (UINT8)value) return;  // Don't set dirty bits below if not changed
     gram_image[location] = (UINT8)value;
     dirtyCards[location>>3] = TRUE;
     dirtyRAM = TRUE;

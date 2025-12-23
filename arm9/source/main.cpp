@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -21,17 +21,19 @@
 // ------------------------------------------------------------------------
 // If we are being passed a file on the command line - we store it here.
 // ------------------------------------------------------------------------
-char file[64];
+char file[128];
 
 UINT32 MAX_ROM_FILE_SIZE = 0;
 
 UINT8 *bin_image_buf = NULL;
 UINT16 *bin_image_buf16 = NULL;
 
-// --------------------------------------------------------
-// DSi default is 15KHz but we reduce this for DS mode...
-// --------------------------------------------------------
-UINT16 __attribute__((section(".dtcm"))) mySoundFrequency = 15360;
+volatile int ds_vblank_count __attribute__((section(".dtcm"))) = 0;
+ITCM_CODE void irqVBlank(void)
+{
+    ds_vblank_count++; // This is our key to DS 'True Sync' at 60Hz.
+}
+
 
 int main(int argc, char **argv) 
 {
@@ -49,7 +51,6 @@ int main(int argc, char **argv)
     
   srand(time(0));
   
-  mySoundFrequency              = 14040;            // Reasonably good quality and divides evenly into our CPU and Audio Processor clocks
   MAX_ROM_FILE_SIZE             = (1024 * 1024);    // Simply massive... Covers everything known to mankind.
     
   bin_image_buf = new UINT8[MAX_ROM_FILE_SIZE];
@@ -57,6 +58,15 @@ int main(int argc, char **argv)
     
   // Init Timer
   dsInitTimer();
+  
+  // ----------------------------------------------------------------
+  // Trigger DS vblank somewhat near the bottom of the display 
+  // rendering - we will use this trigger to start our copy from
+  // the pixelBuffer[] to the LCD for a reasonably tear-free output.
+  // ----------------------------------------------------------------
+  SetYtrigger(180);
+  irqSet(IRQ_VCOUNT, irqVBlank);
+  irqEnable(IRQ_VCOUNT);  
     
   // Setup the main screen handling
   dsInitScreenMain();

@@ -186,6 +186,14 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.2 : ??-Dec-2025 by wavemotion-dave
+  * New 60Hz True-Sync technology to match DS LCD refresh with emulated frame output to provide for a largely tear-free display.
+  * New 'Favorites' system to mark any game file as 'Like' (yellow heart) or 'Love' (red heart) - press SELECT on ROM select screen.
+  * CP1610 and related Video optimization to provide almost 5% speed-bost to help with older DS hardware emulation.
+  * Slide-n-Glide now available in D-PAD options on a per-game basis. Makes climbing ladders a bit easier in some games.
+  * Refactored highscore code to free up 64K of RAM for future use.
+  * Updated for newest custom overlays for latest homebrews.
+
 V6.1 : 04-Mar-2025 by wavemotion-dave
   * Updated for newest custom overlays for latest homebrews.
 

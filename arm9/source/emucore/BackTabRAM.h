@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -20,6 +20,8 @@
 extern UINT16  bt_image[BACKTAB_SIZE];
 extern UINT16  bt_imageLatched[BACKTAB_SIZE];
 extern UINT8   dirtyBytes[BACKTAB_SIZE];
+extern UINT8   dirtyBytesLatched[BACKTAB_SIZE];
+extern UINT8   colorAdvanceBitsDirty;
 
 TYPEDEF_STRUCT_PACK(_BackTabRAMState
 {
@@ -35,13 +37,13 @@ class BackTabRAM : public RAM
         BackTabRAM();
         void reset();
 
-        inline UINT16 peek(UINT16 location) {return bt_image[location-BACKTAB_LOCATION];}
+        inline UINT16 peek(UINT16 location) {return bt_image[location&(BACKTAB_LOCATION-1)];}
         void poke(UINT16 location, UINT16 value);
         void poke_cheat(UINT16 location, UINT16 value);
         inline UINT16 peek_direct(UINT16 offset) { return bt_image[offset]; }
 
         inline BOOL areColorAdvanceBitsDirty() {return colorAdvanceBitsDirty;}
-        inline BOOL isDirty(UINT16 location) {return dirtyBytes[location-BACKTAB_LOCATION];}
+        inline BOOL isDirty(UINT16 location) {return dirtyBytes[location&(BACKTAB_LOCATION-1)];}
         inline BOOL isDirtyDirect(UINT16 location) {return dirtyBytes[location];}
         void markClean();
 
@@ -55,8 +57,6 @@ class BackTabRAM : public RAM
 
     private:
         UINT8        dirtyRAM;
-        UINT8        colorAdvanceBitsDirty;
-        UINT8        dirtyBytesLatched[BACKTAB_SIZE];
 };
 
 #endif

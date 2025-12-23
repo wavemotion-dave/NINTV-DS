@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -113,7 +113,7 @@ private:
     void renderColorStackModeLatched();
     void copyBackgroundBufferToStagingArea();
     void copyMOBsToStagingArea();
-    void renderLine(UINT8 nextByte, INT32 x, INT32 y);
+    void renderLine(UINT8 nextByte, INT32 x, INT32 y, UINT8 fg, UINT8 bg);
     void renderColoredSquares(INT32 x, INT32 y, UINT8 color0, UINT8 color1, UINT8 color2, UINT8 color3);
     void determineMOBCollisions();
     BOOL mobsCollide(INT32 mobNum0, INT32 mobNum1);

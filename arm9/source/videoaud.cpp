@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -25,20 +25,17 @@
 // ---------------------------------------------------------------------------
 UINT32 audio_arm7_xfer_buffer __attribute__ ((aligned (4))) = 0;
 UINT32* aptr                  __attribute__((section(".dtcm"))) = (UINT32*) (&audio_arm7_xfer_buffer + 0xA000000/4);
-UINT16 myCurrentSampleIdx16   __attribute__((section(".dtcm"))) = 0;
-
+UINT8 myCurrentSampleIdx      __attribute__((section(".dtcm"))) = 0;
 
 ITCM_CODE void VsoundHandler(void)
 {
-  UINT16 sample[2];
-  // If there is a fresh sample...
-  if (myCurrentSampleIdx16 != currentSampleIdx16)
-  {
-      sample[0] = audio_mixer_buffer[myCurrentSampleIdx16++]; 
-      sample[1] = sample[0];
-      *aptr = *((UINT32*)&sample);
-      if (myCurrentSampleIdx16 == SOUND_SIZE) myCurrentSampleIdx16=0;
-  }
+    UINT16 sample[2];
+    // If there is a fresh sample...
+    if (myCurrentSampleIdx != currentSampleIdx)
+    {
+        sample[0] = sample[1] = audio_mixer_buffer[myCurrentSampleIdx++]; 
+        *aptr = *((UINT32*)&sample);
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -59,6 +56,7 @@ void audioRampDown(void)
     }
 }
 
+
 // -----------------------------------------------------------------------------------------------------------------
 // This starts the sound engine... the ARM7 is told about the 1-sample buffer and runs at 2x the normal processing
 // frequency so that it samples fast enough that no sounds are dropped (Nyquist would have something to say here).
@@ -67,7 +65,7 @@ void audioRampDown(void)
 void dsInstallSoundEmuFIFO(void)
 {
     // Clear out the sound buffers...
-    currentSampleIdx16 = 0;
+    currentSampleIdx = 0;
     
     // -----------------------------------------------------------------------------
     // We are going to move out the memory access to the non-cached mirros since
@@ -92,11 +90,11 @@ void dsInstallSoundEmuFIFO(void)
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to stop...
 
     *aptr = 0x00000000;
-    memset(audio_mixer_buffer, 0x00, 256 * sizeof(UINT16));
+    memset(audio_mixer_buffer, 0x00, SOUND_SIZE * sizeof(UINT16));
     
     FifoMessage msg;
     msg.SoundPlay.data = &audio_arm7_xfer_buffer;
-    msg.SoundPlay.freq = mySoundFrequency*2;
+    msg.SoundPlay.freq = SOUND_FREQUENCY*2;
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -109,19 +107,16 @@ void dsInstallSoundEmuFIFO(void)
     swiWaitForVBlank();swiWaitForVBlank();    // Wait 2 vertical blanks... that's enough for the ARM7 to start chugging...
 
     // Now setup to feed the audio mixer buffer into the ARM7 core via shared memory
-    UINT16 tFreq = mySoundFrequency;
+    UINT16 tFreq = SOUND_FREQUENCY;
     if (target_frames[myConfig.target_fps] != 999)  // If not running MAX, adjust sound to match speed emulator is running at.
     {
-        tFreq = (UINT16)(((UINT32)mySoundFrequency * (UINT32)target_frames[myConfig.target_fps]) / (UINT32)60) + 2;
+        tFreq = (UINT16)(((UINT32)SOUND_FREQUENCY * (UINT32)target_frames[myConfig.target_fps]) / (UINT32)60);
     }
     TIMER2_DATA = TIMER_FREQ(tFreq);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;
     irqSet(IRQ_TIMER2, VsoundHandler);
     irqEnable(IRQ_TIMER2);
 }
-
-
-
 
 
 // ------------------------------------------------------------------
@@ -368,13 +363,13 @@ ITCM_CODE void VideoBusDS::render()
     frames_per_sec_calc++;
     global_frames++;
     VideoBus::render();
-
+    
     // ------------------------------------------------------
     // Check if we are skipping rendering this frame...
     // ------------------------------------------------------
     if (renderz[myConfig.frame_skip][global_frames&3])
     {
-        UINT8 chan = 0;
+        UINT8 chan = 2;
         UINT32 *ds_video=(UINT32*)0x06000000;
         UINT32 *source_video = (UINT32*)pixelBuffer;
 
@@ -384,7 +379,7 @@ ITCM_CODE void VideoBusDS::render()
             dmaCopyWordsAsynch (chan, source_video, ds_video, 160);
             source_video += 40;
             ds_video += 64;
-            chan++; chan = 2+(chan&1);  // Use channels 2 and 3 for the copy...
+            chan ^= 1;   // Switch from channel 2 to 3 and back again
         }    
     }
 }

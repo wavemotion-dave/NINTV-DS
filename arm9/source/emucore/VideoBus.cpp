@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -14,6 +14,8 @@
 #include <string.h>
 #include "VideoBus.h"
 
+static UINT8 myPixelBuffer[160*192];
+
 VideoBus::VideoBus()
   : pixelBuffer(NULL),
     pixelBufferSize(0),
@@ -26,10 +28,6 @@ VideoBus::VideoBus()
 
 VideoBus::~VideoBus()
 {
-    if (pixelBuffer) {
-        delete[] pixelBuffer;
-    }
-
     for (UINT32 i = 0; i < videoProducerCount; i++)
         videoProducers[i]->setPixelBuffer(NULL, 0);
 }
@@ -69,11 +67,9 @@ void VideoBus::init(UINT32 width, UINT32 height)
     pixelBufferHeight = height;
     pixelBufferRowSize = width * sizeof(UINT8);
     pixelBufferSize = width * height * sizeof(UINT8);
-    pixelBuffer = new UINT8[width * height];
+    pixelBuffer = myPixelBuffer;
 
-    if ( pixelBuffer ) {
-        memset(pixelBuffer, 0, pixelBufferSize);
-    }
+    memset(pixelBuffer, 0, pixelBufferSize);
 
     for (UINT32 i = 0; i < videoProducerCount; i++)
         videoProducers[i]->setPixelBuffer(pixelBuffer, pixelBufferRowSize);
@@ -89,14 +85,14 @@ ITCM_CODE void VideoBus::render()
 
 void VideoBus::release()
 {
-    if (pixelBuffer) {
+    if (pixelBuffer) 
+    {
         for (UINT32 i = 0; i < videoProducerCount; i++)
             videoProducers[i]->setPixelBuffer(NULL, 0);
 
         pixelBufferWidth = 0;
         pixelBufferHeight = 0;
         pixelBufferSize = 0;
-        delete[] pixelBuffer;
         pixelBuffer = NULL;
     }
 }

@@ -70,7 +70,7 @@ BOOL LoadCart(const CHAR* filename)
     memset(debug, 0x00, DEBUG_SIZE * (sizeof(UINT32)));
     
     // Load up the configuration based on the CRC32 of the game. Do this early since we need some of those properties to load the RIP
-    FindAndLoadConfig(CRC32::getCrc(filename));
+    FindAndLoadConfig(CRC32::getCrc(filename), (char*)filename);
     
     // ----------------------------------------------------------------------
     // Set the RAM Bankers for page-flipping all back to zero on a new load

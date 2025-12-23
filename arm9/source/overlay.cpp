@@ -498,6 +498,10 @@ struct MapRomToOvl_t MapRomToOvl[] =
     {0xFFFFFFFF , "MINEHUNT",   "MINEHUNT",     "Minehunter.ovl"},
     {0xe08f0192 , "BEAT-EM",    "EAT-EM",       "Beat-Em-Eat-Em.ovl"},
     {0x832bb760 , "UNLUCKY",    "PONY",         "Unlucky Pony.ovl"},
+    {0xFFFFFFFF , "DESERT",     "BUS",          "Desert Bus.ovl"},
+    {0xFFFFFFFF , "PAULISTA",   "PAULISTA",     "Paulista Avenue Redux.ovl"},
+    {0xFFFFFFFF , "MONTEZUMA",  "REVEMGE",      "Montezuma.ovl"},
+    {0xFFFFFFFF , "ROAD",       "FIGHTER",      "Road Fighter.ovl"},    
     {0x00000000 , "xxx",        "zzz",          "generic.ovl"},
 };
 

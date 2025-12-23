@@ -36,6 +36,12 @@
 #define HS_OPT_SORTTIME  0x0002
 #define HS_OPT_SORTASCII 0x0003
 
+#define HS_FILE     "/data/NINTV-DS.hi"
+
+u32 hs_file_offset = 0;     // So we know where to write-back the highscore entry
+u8  header_dirty_flag = 0;  // So we know if we should write the header (initials changed)
+
+
 #pragma pack(1)     // Keep things tight...
 
 // ---------------------------------------------------------
@@ -60,21 +66,14 @@ struct highscore_t
     char    notes[21];
     uint16  options;
     struct score_t scores[10];
-};
+} highscore;
 
-// -----------------------------------------------------------------------------------
-// We save up to 300 games worth of scores. We also have a spot for default initials 
-// so we can re-use the last initials for the last high-score entered. Saves time 
-// for most people who are always the ones using their DS system.
-// -----------------------------------------------------------------------------------
-struct highscore_full_t
+
+struct highscore_header_t
 {
     uint16 version;
     char   last_initials[4];
-    struct highscore_t highscore_table[MAX_HS_GAMES];
-    uint32 checksum;
-} highscores;
-
+} highscore_header;
 
 // -----------------------------------------------------
 // A single score entry and high-score line to edit...
@@ -82,57 +81,27 @@ struct highscore_full_t
 struct score_t score_entry;
 char hs_line[33];
 
-
-// ------------------------------------------------------------------------------------
-// Run through the entire highscores data and get a checksum. Mostly to make sure
-// that it hasn't been tampered with or corrupted on disk.
-// ------------------------------------------------------------------------------------
-uint32 highscore_checksum(void)
-{
-    char *ptr = (char *)&highscores;
-    uint32 sum = 0;
-    
-    for (int i=0; i<(int)sizeof(highscores) - 4; i++)
-    {
-           sum = *ptr++;
-    }
-    return sum;
-}
-
-
 // ------------------------------------------------------------------------------
 // Read the high score file, if it exists. If it doesn't exist or if the file
 // is not the right version and/or is corrupt (crc check), reset to defaults.
 // ------------------------------------------------------------------------------
 void highscore_init(void) 
 {
-    bool create_defaults = 0;
+    u8 create_defaults = 0;
     FILE *fp;
     
-    strcpy(highscores.last_initials, "   ");
+    strcpy(highscore_header.last_initials, "   ");
     
-    // --------------------------------------------------------------
-    // See if the NINTV-DS high score file exists... if so, read it!
-    // --------------------------------------------------------------
-    fp = fopen("/data/NINTV-DS.hi", "rb");
+    // -----------------------------------------------------
+    // See if the high score file exists... if so, read it!
+    // -----------------------------------------------------
+    fp = fopen(HS_FILE, "rb");
     if (fp != NULL)
     {
-        fread(&highscores, sizeof(highscores), 1, fp);
+        fread(&highscore_header, sizeof(highscore_header), 1, fp);
         fclose(fp);
         
-        // --------------------------------------------
-        // If the high score version is wrong or if 
-        // the checksum is wrong, reset to defaults
-        // --------------------------------------------
-        if (highscores.version == 0x0002)
-        {
-            highscore_save();   // Just convert to V3
-        }
-        else
-        {
-            if (highscores.version != HS_VERSION) create_defaults = 1;
-            if (highscore_checksum() != highscores.checksum) create_defaults = 1;
-        }
+        if (highscore_header.version != HS_VERSION) create_defaults = 1;
     }
     else
     {
@@ -141,27 +110,46 @@ void highscore_init(void)
     
     if (create_defaults)  // Doesn't exist yet or is invalid... create defaults and save it...
     {
-        strcpy(highscores.last_initials, "   ");
+        DIR* dir = opendir("/data");
+        if (dir)
+        {
+            closedir(dir);  // Directory exists... close it out and move on.
+        }
+        else
+        {
+            mkdir("/data", 0777);   // Otherwise create the directory...
+        }
+        
+        highscore_header.version = HS_VERSION;
+        strcpy(highscore_header.last_initials, "   ");
+        
+        highscore.crc, 0x00000000;
+        strcpy(highscore.notes, "                    ");
+        highscore.options = 0x0000;
+        for (int j=0; j<10; j++)
+        {
+            strcpy(highscore.scores[j].score, "000000");
+            strcpy(highscore.scores[j].initials, "   ");
+            strcpy(highscore.scores[j].reserved, "     ");                
+            highscore.scores[j].year = 0;
+            highscore.scores[j].month = 0;
+            highscore.scores[j].day = 0;
+        }
+        
+        // Write the above blank record out to all slots...
+        
+        FILE *fp = fopen(HS_FILE, "wb");
+        
+        fwrite(&highscore_header, sizeof(highscore_header), 1, fp);
         
         for (int i=0; i<MAX_HS_GAMES; i++)
         {
-            highscores.highscore_table[i].crc = 0x00000000;
-            strcpy(highscores.highscore_table[i].notes, "                    ");
-            highscores.highscore_table[i].options = 0x0000;
-            for (int j=0; j<10; j++)
-            {
-                strcpy(highscores.highscore_table[i].scores[j].score, "000000");
-                strcpy(highscores.highscore_table[i].scores[j].initials, "   ");
-                strcpy(highscores.highscore_table[i].scores[j].reserved, "     ");                
-                highscores.highscore_table[i].scores[j].year = 0;
-                highscores.highscore_table[i].scores[j].month = 0;
-                highscores.highscore_table[i].scores[j].day = 0;
-            }
+            fwrite(&highscore, sizeof(highscore), 1, fp);
         }
-        highscore_save();
+        
+        fclose(fp);        
     }
 }
-
 
 // ------------------------------------------------------------------------------------
 // Save the high score file to disc. This gets saved in the /data directory and this
@@ -169,36 +157,16 @@ void highscore_init(void)
 // ------------------------------------------------------------------------------------
 void highscore_save(void) 
 {
-    FILE *fp;
-
-    DIR* dir = opendir("/data");
-    if (dir)
+    FILE *fp = fopen(HS_FILE, "rb+");   // Open for read/write
+    if (header_dirty_flag)
     {
-        closedir(dir);  // Directory exists... close it out and move on.
+        highscore_header.version = HS_VERSION;
+        header_dirty_flag = 0;
+        fwrite(&highscore_header, sizeof(highscore_header), 1, fp);
     }
-    else
-    {
-        mkdir("/data", 0777);   // Otherwise create the directory...
-    }
-    
-    // --------------------------------------------------------
-    // Set our current highscore file version and checksum...
-    // --------------------------------------------------------
-    highscores.version = HS_VERSION;
-    highscores.checksum = highscore_checksum();
-
-    // -------------------------------------------------------
-    // Open file in binary mode... overwrite if it exists...
-    // -------------------------------------------------------
-    fp = fopen("/data/NINTV-DS.hi", "wb+");
-    if (fp != NULL)
-    {
-        // -----------------------------------------
-        // And write the whole shebang!
-        // -----------------------------------------
-        fwrite(&highscores, sizeof(highscores), 1, fp);
-        fclose(fp);
-    }
+    fseek(fp, hs_file_offset, SEEK_SET);
+    fwrite(&highscore, sizeof(highscore), 1, fp);
+    fclose(fp);
 }
 
 
@@ -229,35 +197,35 @@ void highscore_showoptions(uint16 options)
 // -----------------------------------------------------
 // Show the 10 scores for this game... 
 // -----------------------------------------------------
-void show_scores(short foundIdx, bool bShowLegend)
+void show_scores(bool bShowLegend)
 {
-    dsPrintValue(3,3,0, (char*)highscores.highscore_table[foundIdx].notes);
+    dsPrintValue(3,3,0, (char*)highscore.notes);
     for (int i=0; i<10; i++)
     {
-        if ((highscores.highscore_table[foundIdx].options & HS_OPT_SORTMASK) == HS_OPT_SORTTIME)
+        if ((highscore.options & HS_OPT_SORTMASK) == HS_OPT_SORTTIME)
         {
-            sprintf(hs_line, "%04d-%02d-%02d   %-3s   %c%c:%c%c.%c%c", highscores.highscore_table[foundIdx].scores[i].year, highscores.highscore_table[foundIdx].scores[i].month,highscores.highscore_table[foundIdx].scores[i].day, 
-                                                             highscores.highscore_table[foundIdx].scores[i].initials, highscores.highscore_table[foundIdx].scores[i].score[0], highscores.highscore_table[foundIdx].scores[i].score[1],
-                                                             highscores.highscore_table[foundIdx].scores[i].score[2], highscores.highscore_table[foundIdx].scores[i].score[3], highscores.highscore_table[foundIdx].scores[i].score[4],
-                                                             highscores.highscore_table[foundIdx].scores[i].score[5]);
+            sprintf(hs_line, "%04d-%02d-%02d   %-3s   %c%c:%c%c.%c%c", highscore.scores[i].year, highscore.scores[i].month,highscore.scores[i].day, 
+                                                             highscore.scores[i].initials, highscore.scores[i].score[0], highscore.scores[i].score[1],
+                                                             highscore.scores[i].score[2], highscore.scores[i].score[3], highscore.scores[i].score[4],
+                                                             highscore.scores[i].score[5]);
         }
         else
         {
-            sprintf(hs_line, "%04d-%02d-%02d   %-3s   %-6s  ", highscores.highscore_table[foundIdx].scores[i].year, highscores.highscore_table[foundIdx].scores[i].month,highscores.highscore_table[foundIdx].scores[i].day, 
-                                                               highscores.highscore_table[foundIdx].scores[i].initials, highscores.highscore_table[foundIdx].scores[i].score);
+            sprintf(hs_line, "%04d-%02d-%02d   %-3s   %-6s  ", highscore.scores[i].year, highscore.scores[i].month,highscore.scores[i].day, 
+                                                               highscore.scores[i].initials, highscore.scores[i].score);
         }
         dsPrintValue(3,4+i, 0, hs_line);
     }
     
     if (bShowLegend)
     {
-        dsPrintValue(3,14,0, (char*)"                             ");
         dsPrintValue(3,17,0, (char*)"PRESS X FOR NEW HI SCORE     ");
         dsPrintValue(3,18,0, (char*)"PRESS Y FOR NOTES/OPTIONS    ");
         dsPrintValue(3,19,0, (char*)"PRESS B TO EXIT              ");
         dsPrintValue(3,20,0, (char*)"SCORES AUTO SORT AFTER ENTRY ");
+        dsPrintValue(3,14,0, (char*)"                             ");
     }
-    highscore_showoptions(highscores.highscore_table[foundIdx].options);
+    highscore_showoptions(highscore.options);
 }
 
 // -------------------------------------------------------------------------------
@@ -267,58 +235,58 @@ void show_scores(short foundIdx, bool bShowLegend)
 // -------------------------------------------------------------------------------
 char cmp1[21];
 char cmp2[21];
-void highscore_sort(short foundIdx)
+void highscore_sort(void)
 {
     // Bubblesort!!
     for (int i=0; i<9; i++)
     {
         for (int j=0; j<9; j++)
         {
-            if (((highscores.highscore_table[foundIdx].options & HS_OPT_SORTMASK) == HS_OPT_SORTLOW) || ((highscores.highscore_table[foundIdx].options & HS_OPT_SORTMASK) == HS_OPT_SORTTIME))
+            if (((highscore.options & HS_OPT_SORTMASK) == HS_OPT_SORTLOW) || ((highscore.options & HS_OPT_SORTMASK) == HS_OPT_SORTTIME))
             {
-                if (strcmp(highscores.highscore_table[foundIdx].scores[j+1].score, "000000") == 0)
+                if (strcmp(highscore.scores[j+1].score, "000000") == 0)
                      strcpy(cmp1, "999999");
                 else 
-                    strcpy(cmp1, highscores.highscore_table[foundIdx].scores[j+1].score);
-                if (strcmp(highscores.highscore_table[foundIdx].scores[j].score, "000000") == 0)
+                    strcpy(cmp1, highscore.scores[j+1].score);
+                if (strcmp(highscore.scores[j].score, "000000") == 0)
                      strcpy(cmp2, "999999");
                 else 
-                    strcpy(cmp2, highscores.highscore_table[foundIdx].scores[j].score);
+                    strcpy(cmp2, highscore.scores[j].score);
                 if (strcmp(cmp1, cmp2) < 0)
                 {
                     // Swap...
-                    memcpy(&score_entry, &highscores.highscore_table[foundIdx].scores[j], sizeof(score_entry));
-                    memcpy(&highscores.highscore_table[foundIdx].scores[j], &highscores.highscore_table[foundIdx].scores[j+1], sizeof(score_entry));
-                    memcpy(&highscores.highscore_table[foundIdx].scores[j+1], &score_entry, sizeof(score_entry));
+                    memcpy(&score_entry, &highscore.scores[j], sizeof(score_entry));
+                    memcpy(&highscore.scores[j], &highscore.scores[j+1], sizeof(score_entry));
+                    memcpy(&highscore.scores[j+1], &score_entry, sizeof(score_entry));
                 }
             }
-            else if ((highscores.highscore_table[foundIdx].options & HS_OPT_SORTMASK) == HS_OPT_SORTASCII)
+            else if ((highscore.options & HS_OPT_SORTMASK) == HS_OPT_SORTASCII)
             {
-                if (strcmp(highscores.highscore_table[foundIdx].scores[j+1].score, "000000") == 0)
+                if (strcmp(highscore.scores[j+1].score, "000000") == 0)
                      strcpy(cmp1, "------");
                 else 
-                    strcpy(cmp1, highscores.highscore_table[foundIdx].scores[j+1].score);
-                if (strcmp(highscores.highscore_table[foundIdx].scores[j].score, "000000") == 0)
+                    strcpy(cmp1, highscore.scores[j+1].score);
+                if (strcmp(highscore.scores[j].score, "000000") == 0)
                      strcpy(cmp2, "------");
                 else 
-                    strcpy(cmp2, highscores.highscore_table[foundIdx].scores[j].score);
+                    strcpy(cmp2, highscore.scores[j].score);
                 
                 if (strcmp(cmp1, cmp2) > 0)
                 {
                     // Swap...
-                    memcpy(&score_entry, &highscores.highscore_table[foundIdx].scores[j], sizeof(score_entry));
-                    memcpy(&highscores.highscore_table[foundIdx].scores[j], &highscores.highscore_table[foundIdx].scores[j+1], sizeof(score_entry));
-                    memcpy(&highscores.highscore_table[foundIdx].scores[j+1], &score_entry, sizeof(score_entry));
+                    memcpy(&score_entry, &highscore.scores[j], sizeof(score_entry));
+                    memcpy(&highscore.scores[j], &highscore.scores[j+1], sizeof(score_entry));
+                    memcpy(&highscore.scores[j+1], &score_entry, sizeof(score_entry));
                 }
             }
             else
             {
-                if (strcmp(highscores.highscore_table[foundIdx].scores[j+1].score, highscores.highscore_table[foundIdx].scores[j].score) > 0)
+                if (strcmp(highscore.scores[j+1].score, highscore.scores[j].score) > 0)
                 {
                     // Swap...
-                    memcpy(&score_entry, &highscores.highscore_table[foundIdx].scores[j], sizeof(score_entry));
-                    memcpy(&highscores.highscore_table[foundIdx].scores[j], &highscores.highscore_table[foundIdx].scores[j+1], sizeof(score_entry));
-                    memcpy(&highscores.highscore_table[foundIdx].scores[j+1], &score_entry, sizeof(score_entry));
+                    memcpy(&score_entry, &highscore.scores[j], sizeof(score_entry));
+                    memcpy(&highscore.scores[j], &highscore.scores[j+1], sizeof(score_entry));
+                    memcpy(&highscore.scores[j+1], &score_entry, sizeof(score_entry));
                 }
             }
         }
@@ -331,7 +299,7 @@ void highscore_sort(short foundIdx)
 // keys and show the new score on the screen. This is old-school up/down to
 // "dial-in" the score by moving from digit to digit. Much like the Arcade.
 // -------------------------------------------------------------------------
-void highscore_entry(short foundIdx, UINT32 crc)
+void highscore_entry(UINT32 crc)
 {
     char bEntryDone = 0;
     char blink=0;
@@ -346,7 +314,7 @@ void highscore_entry(short foundIdx, UINT32 crc)
     dsPrintValue(3,20,0, (char*)"                            ");
 
     strcpy(score_entry.score, "000000");
-    strcpy(score_entry.initials, highscores.last_initials);
+    strcpy(score_entry.initials, highscore_header.last_initials);
     score_entry.year  = timeStruct->tm_year +1900;
     score_entry.month = timeStruct->tm_mon+1;
     score_entry.day   = timeStruct->tm_mday;
@@ -357,10 +325,15 @@ void highscore_entry(short foundIdx, UINT32 crc)
 
         if (keysCurrent() & KEY_START) 
         {
-            strcpy(highscores.last_initials, score_entry.initials);
-            memcpy(&highscores.highscore_table[foundIdx].scores[9], &score_entry, sizeof(score_entry));
-            highscores.highscore_table[foundIdx].crc = crc;
-            highscore_sort(foundIdx);
+            // If last initials changed... force it to write on next save
+            if (strcmp(highscore_header.last_initials, score_entry.initials) != 0)
+            {
+                strcpy(highscore_header.last_initials, score_entry.initials);
+                header_dirty_flag = 1;
+            }
+            memcpy(&highscore.scores[9], &score_entry, sizeof(score_entry));
+            highscore.crc = crc;
+            highscore_sort();
             highscore_save();
             bEntryDone=1;
         }
@@ -393,7 +366,7 @@ void highscore_entry(short foundIdx, UINT32 crc)
                 }
                 else    // This is the score...
                 {
-                    if ((highscores.highscore_table[foundIdx].options & HS_OPT_SORTMASK) == HS_OPT_SORTASCII)
+                    if ((highscore.options & HS_OPT_SORTMASK) == HS_OPT_SORTASCII)
                     {
                         if (score_entry.score[entry_idx-3] == ' ')
                             score_entry.score[entry_idx-3] = 'A';
@@ -425,7 +398,7 @@ void highscore_entry(short foundIdx, UINT32 crc)
                 }
                 else   // This is the score...
                 {
-                    if ((highscores.highscore_table[foundIdx].options & HS_OPT_SORTMASK) == HS_OPT_SORTASCII)
+                    if ((highscore.options & HS_OPT_SORTMASK) == HS_OPT_SORTASCII)
                     {
                         if (score_entry.score[entry_idx-3] == ' ')
                             score_entry.score[entry_idx-3] = '9';
@@ -461,29 +434,29 @@ void highscore_entry(short foundIdx, UINT32 crc)
         dsPrintValue(3,14, 0, (char*)hs_line);
     }
     
-    show_scores(foundIdx, true);
+    show_scores(true);
 }
 
 // ----------------------------------------------------------------
 // Let the user enter options and notes for the current game...
 // ----------------------------------------------------------------
-void highscore_options(short foundIdx, UINT32 crc)
+void highscore_options(UINT32 crc)
 {
     uint16 options = 0x0000;
-    char notes[21];
+    static char notes[21];
     char bEntryDone = 0;
     char blink=0;
     unsigned short entry_idx=0;
     char dampen=0;
     
-    dsPrintValue(3,14,0, (char*)"NOTE: ");
     dsPrintValue(3,17,0, (char*)"UP/DN/LEFT/RIGHT ENTER NOTES");
     dsPrintValue(3,18,0, (char*)"X=TOGGLE SORT, L+R=CLR SCORE");
     dsPrintValue(3,19,0, (char*)"PRESS START TO SAVE OPTIONS ");
     dsPrintValue(3,20,0, (char*)"PRESS SELECT TO CANCEL      ");
+    dsPrintValue(3,14,0, (char*)"NOTE: ");
 
-    strcpy(notes, highscores.highscore_table[foundIdx].notes);
-    options = highscores.highscore_table[foundIdx].options;
+    strcpy(notes, highscore.notes);
+    options = highscore.options;
     
     while (!bEntryDone)
     {
@@ -492,10 +465,10 @@ void highscore_options(short foundIdx, UINT32 crc)
 
         if (keysCurrent() & KEY_START) 
         {
-            strcpy(highscores.highscore_table[foundIdx].notes, notes);
-            highscores.highscore_table[foundIdx].options = options;
-            highscores.highscore_table[foundIdx].crc = crc;
-            highscore_sort(foundIdx);
+            strcpy(highscore.notes, notes);
+            highscore.options = options;
+            highscore.crc = crc;
+            highscore_sort();
             highscore_save();
             bEntryDone=1;
         }
@@ -569,20 +542,19 @@ void highscore_options(short foundIdx, UINT32 crc)
             // Clear the entire game of scores... 
             if ((keysCurrent() & KEY_L) && (keysCurrent() & KEY_R))
             {
-                highscores.highscore_table[foundIdx].crc = 0x00000000;
-                highscores.highscore_table[foundIdx].options = 0x0000;
-                strcpy(highscores.highscore_table[foundIdx].notes, "                    ");
+                highscore.options = 0x0000;
+                strcpy(highscore.notes, "                    ");
                 strcpy(notes, "                    ");                
                 for (int j=0; j<10; j++)
                 {
-                    strcpy(highscores.highscore_table[foundIdx].scores[j].score, "000000");
-                    strcpy(highscores.highscore_table[foundIdx].scores[j].initials, "   ");
-                    strcpy(highscores.highscore_table[foundIdx].scores[j].reserved, "    ");
-                    highscores.highscore_table[foundIdx].scores[j].year = 0;
-                    highscores.highscore_table[foundIdx].scores[j].month = 0;
-                    highscores.highscore_table[foundIdx].scores[j].day = 0;
+                    strcpy(highscore.scores[j].score, "000000");
+                    strcpy(highscore.scores[j].initials, "   ");
+                    strcpy(highscore.scores[j].reserved, "    ");
+                    highscore.scores[j].year = 0;
+                    highscore.scores[j].month = 0;
+                    highscore.scores[j].day = 0;
                 }
-                show_scores(foundIdx, false);
+                show_scores(false);
                 highscore_save();                    
             }            
         }
@@ -599,7 +571,7 @@ void highscore_options(short foundIdx, UINT32 crc)
         dsPrintValue(9,14, 0, (char*)hs_line);
     }
     
-    show_scores(foundIdx, true);
+    show_scores(true);
 }
 
 // ------------------------------------------------------------------------
@@ -617,41 +589,36 @@ void highscore_display(UINT32 crc)
     dsShowBannerScreen();
     swiWaitForVBlank();
 
-    // ---------------------------------------------------------------------------------
-    // Check if the current CRC32 is in our High Score database...
-    // ---------------------------------------------------------------------------------
+    FILE *fp = fopen(HS_FILE, "rb");
+    
+    fread(&highscore_header, sizeof(highscore_header), 1, fp);
+    hs_file_offset = sizeof(highscore_header);
+    
     for (int i=0; i<MAX_HS_GAMES; i++)
     {
-        if (firstBlank == -1)
+        fread(&highscore, sizeof(highscore), 1, fp);
+        if (highscore.crc == crc)
         {
-            if ((highscores.highscore_table[i].crc) == 0)
-            {
-                firstBlank = i;
-            }
+            break;  // Found the game CRC - use this slot
         }
+        if (highscore.crc == 0x00000000)
+        {
+            break;  // First blank entry can be used
+        }
+        
+        hs_file_offset += sizeof(highscore); // Tells us where to write this entry back to the high score file
+    }
+    fclose(fp);    
 
-        if (highscores.highscore_table[i].crc == crc)
-        {
-            foundIdx = i;
-            break;
-        }
-    }
-    
-    if (foundIdx == -1)
-    {
-        foundIdx = firstBlank;   
-    }
-    
-    show_scores(foundIdx, true);
+    show_scores(true);
 
     while (!bDone)
     {
         if (keysCurrent() & KEY_A) bDone=1;
         if (keysCurrent() & KEY_B) bDone=1;
-        if (keysCurrent() & KEY_X) highscore_entry(foundIdx, crc);
-        if (keysCurrent() & KEY_Y) highscore_options(foundIdx, crc);
-    }    
+        if (keysCurrent() & KEY_X) highscore_entry(crc);
+        if (keysCurrent() & KEY_Y) highscore_options(crc);
+    }
 }
-
 
 // End of file

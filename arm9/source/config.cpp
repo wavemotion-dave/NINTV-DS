@@ -14,6 +14,7 @@
 #include <fat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "nintv-ds.h"
 #include "savestate.h"
@@ -27,6 +28,8 @@
 #include "overlay.h"
 #include "loadgame.h"
 #include "printf.h"
+
+extern "C" char *strcasestr(const char *haystack, const char *needle);
 
 // -------------------------------------------------------------------------
 // Configuration structures - we keep configuration at two levels:
@@ -144,7 +147,7 @@ static void SetDefaultGlobalConfig(void)
 // Set one game-specific default. We track 
 // this in the myConfig global data struct.
 // --------------------------------------------
-static void SetDefaultGameConfig(UINT32 crc)
+static void SetDefaultGameConfig(UINT32 crc, char *filename)
 {
     myConfig.game_crc                       = 0x00000000;
     myConfig.frame_skip                     = myGlobalConfig.frame_skip;
@@ -195,6 +198,8 @@ static void SetDefaultGameConfig(UINT32 crc)
     // -----------------------------------------------------------------------------------------
     if (crc == 0x2DEACD15) myConfig.bLatched        = true;                     // Stampede must have latched backtab access
     if (crc == 0x573B9B6D) myConfig.bLatched        = true;                     // Masters of the Universe must have latched backtab access
+    if (crc == 0x09dc0db2) myConfig.bLatched        = true;                     // Ninja Odyssey must have latched backtab access
+    
     if (crc == 0x5F6E1AF6) myConfig.fudgeTiming     = 2;                        // Motocross needs some fudge timing to run... known race condition...
     if (crc == 0xfab2992c) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Astrosmash is best with Dual Action B
     if (crc == 0xd0f83698) myConfig.controller_type = CONTROLLER_DUAL_ACTION_B; // Astrosmash (competition) is best with Dual Action B
@@ -235,6 +240,15 @@ static void SetDefaultGameConfig(UINT32 crc)
     if (crc == 0x714ecd51) myConfig.load_options    = LOAD_WITH_TUTORVISION;    // Shapes in Space is a Tutorvision game
     if (crc == 0x63a87259) myConfig.load_options    = LOAD_WITH_TUTORVISION | 
                                                       LOAD_WITH_JLP;            // Little Man Computer is a Tutorvision game with JLP    
+    
+    // --------------------------------------------------------------------------------------
+    // A few games we do a fuzzy name search to ensure we get the default options correct...
+    // --------------------------------------------------------------------------------------
+    if ((strcasestr(filename, "NINJA") != NULL) && (strcasestr(filename, "ODYSSEY") != NULL))
+    {
+        myConfig.bLatched = true;
+    }
+   
     last_crc = crc;
 }
 
@@ -368,56 +382,18 @@ void SaveConfig(UINT32 crc, bool bShow)
 // Find the NINTV-DS.DAT file and load it... if it doesn't exist, then
 // default values will be used for the entire configuration database...
 // -------------------------------------------------------------------------
-void FindAndLoadConfig(UINT32 crc)
+void FindAndLoadConfig(UINT32 crc, char *filename)
 {
     FILE *fp;
 
     last_crc = crc;
     bConfigWasFound = FALSE;
-    SetDefaultGameConfig(crc);
+    SetDefaultGameConfig(crc, filename);
     fp = fopen("/data/NINTV-DS.DAT", "rb");
     if (fp != NULL)
     {
         fread(&allConfigs, sizeof(allConfigs), 1, fp);
         fclose(fp);
-        
-        // ----------------------------------------------------------------------------------------
-        // If we were config version 0x0009, we perform a one-time upgrade to version 0x000B
-        // and replace the default START key map to the OVL_META_DISC to swap in the disc overlay.
-        // ----------------------------------------------------------------------------------------
-        if (allConfigs.config_ver == 0x0009)    // One time upgrade
-        {
-            dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
-            allConfigs.global_config.key_START_map_default = OVL_META_DISC;
-            for (int slot=0; slot<MAX_CONFIGS; slot++)
-            {
-                if (allConfigs.game_config[slot].key_START_map == OVL_KEY_ENTER) allConfigs.game_config[slot].key_START_map = OVL_META_DISC;
-                allConfigs.game_config[slot].spare1 = 0;
-            }
-            allConfigs.config_ver = CONFIG_VER;
-            memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
-            SaveConfig(0x00000000, FALSE);
-            dsPrintValue(0,1,0, (char*)"              ");
-        }
-
-        // ----------------------------------------------------------------------------------------
-        // If we were config version 0x000A, we perform a one-time upgrade to version 0x000B
-        // and patch up OVL_META_DISC which moved from meta index 27 to its new home...
-        // ----------------------------------------------------------------------------------------
-        if (allConfigs.config_ver == 0x000A)    // One time upgrade
-        {
-            dsPrintValue(0,1,0, (char*)"PLEASE WAIT...");
-            allConfigs.global_config.key_START_map_default = OVL_META_DISC;
-            for (int slot=0; slot<MAX_CONFIGS; slot++)
-            {
-                if (allConfigs.game_config[slot].key_START_map == 27) allConfigs.game_config[slot].key_START_map = OVL_META_DISC;
-                allConfigs.game_config[slot].spare1 = 0;
-            }
-            allConfigs.config_ver = CONFIG_VER;
-            memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
-            SaveConfig(0x00000000, FALSE);
-            dsPrintValue(0,1,0, (char*)"              ");
-        }
 
         if (allConfigs.config_ver != CONFIG_VER)
         {
@@ -425,7 +401,7 @@ void FindAndLoadConfig(UINT32 crc)
             memset(&allConfigs, 0x00, sizeof(allConfigs));
             allConfigs.config_ver = CONFIG_VER;
             SetDefaultGlobalConfig();
-            SetDefaultGameConfig(crc);
+            SetDefaultGameConfig(crc, filename);
             SaveConfig(0x00000000, FALSE);
             dsPrintValue(0,1,0, (char*)"              ");
         }
@@ -455,7 +431,7 @@ void FindAndLoadConfig(UINT32 crc)
         memset(&allConfigs, 0x00, sizeof(allConfigs));
         allConfigs.config_ver = CONFIG_VER;
         SetDefaultGlobalConfig();
-        SetDefaultGameConfig(crc);
+        SetDefaultGameConfig(crc, filename);
         SaveConfig(0x00000000, FALSE);
         dsPrintValue(0,1,0, (char*)"              ");
     }
@@ -500,7 +476,7 @@ const struct options_t Option_Table[3][20] =
         {"Y+B BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_YB_map,       26},
         {"B+A BUTTON",  {KEY_MAP_OPTIONS},                                                                                                              &myConfig.key_BA_map,       26},
         {"CONTROLLER",  {"LEFT/PLAYER1", "RIGHT/PLAYER2", "DUAL-ACTION A", "DUAL-ACTION B"},                                                            &myConfig.controller_type,  4},
-        {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY"},                                                       &myConfig.dpad_config,      5},
+        {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY", "SLIDE-N-GLIDE"},                                      &myConfig.dpad_config,      6},
         {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                               &myConfig.frame_skip,       3},
         {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH", "ULTIMATE"},                                                                                          &myConfig.sound_quality,    4},
         {"TGT SPEED",   {"60 FPS (100%)","66 FPS (110%)","72 FPS (120%)","78 FPS (130%)","84 FPS (140%)","90 FPS (150%)","54 FPS (90%)","MAX SPEED"},   &myConfig.target_fps,       8},

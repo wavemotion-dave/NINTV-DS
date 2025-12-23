@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -114,6 +114,7 @@ struct AllConfig_t
 #define DPAD_REV_UP_DOWN        2
 #define DPAD_DIAGONALS          3
 #define DPAD_STRICT_4WAY        4
+#define DPAD_SLIDE_GLIDE        5
 
 #define GRAM_512B               0
 #define GRAM_2K                 1
@@ -122,7 +123,7 @@ extern struct Config_t       myConfig;
 extern struct GlobalConfig_t myGlobalConfig;
 extern struct AllConfig_t    allConfigs;
 
-extern void FindAndLoadConfig(UINT32 crc);
+extern void FindAndLoadConfig(UINT32 crc, char *filename);
 extern void dsChooseOptions(void);
 extern void SaveConfig(UINT32 crc, bool bShow);
 
