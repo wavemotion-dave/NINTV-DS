@@ -25,11 +25,11 @@ Features :
 ----------
  * All known games run at full speed, full framerate and with the best sound quality on a DSi or above  (the DSi has 2X the CPU and 4X the memory of the normal DS handhelds).
  * Almost every game runs at full speed on the older DS-LITE and DS-PHAT hardware with a slight reduction in sound quality.
- * Custom Overlay Support. See the 'extras' folder for details.
- * Manual/Instruction Support. See the 'extras' folder for an example.
+ * Custom Overlay Support. See the 'extras.zip' file on github for details.
+ * Manual/Instruction Support. See the 'extras' folder on github for an example.
  * Save Sate support (3 save slots per game).
  * High Scores for up to 10 scores per game with various sorting options.
- * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder and place in /data directory)
+ * Cheat / Hack support using NINTV-DS.cht (see 'extras' folder on github and place in /data directory)
  * Numerous button / controller mapping options. Dual-Controller support (run and shoot at the same time).
  * JLP support for accelerated functions (multiply/divide), extra RAM and flash memory. If not auto-detected, when loading a game use the X button to load with options.
  * ECS support for ECS games including sound-enhanced games like Space Patrol. If not auto-detected, when loading a game use the X button to load with options.
@@ -95,7 +95,7 @@ Because the Intellivision had an innovative controller/keypad arrangement, you m
 Overlays :
 -----------------------
 Nintellivision contains a default standard overlay that mimics a real Intellivision controller along with some common menu items. Each game can also have a custom overlay which is user-defined. 
-A large number of custom overlays are provided in **extras.zip** in the overlay-library folder here on the github site. Nintellivision should automatically match up the game you are playing
+A large number of custom overlays are provided in **extras.zip** here on the github site. Nintellivision should automatically match up the game you are playing
 with the correct overlay. If that doesn't happen, you can also name the .ovl file the same as the base filename of the ROM you are loading (e.g. if you have Astrosmash.int or Astrosmash.rom, 
 you would name the overlay Astrosmash.ovl) - loading such a game would bring up the custom overlay automatically. If the custom overlay doesn't show, double check that the base filenames are 
 exactly the same. By default, overlay files (.ovl) go into the same directory as the game ROMs but you can override this in Global Configuration.
@@ -186,7 +186,7 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V6.2 : ??-Dec-2025 by wavemotion-dave
+V6.2 : 23-Dec-2025 by wavemotion-dave
   * New 60Hz True-Sync technology to match DS LCD refresh with emulated frame output to provide for a largely tear-free display.
   * New 'Favorites' system to mark any game file as 'Like' (yellow heart) or 'Love' (red heart) - press SELECT on ROM select screen.
   * CP1610 and related Video optimization to provide almost 5% speed-bost to help with older DS hardware emulation.

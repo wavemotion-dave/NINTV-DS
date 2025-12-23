@@ -238,6 +238,7 @@ static void SetDefaultGameConfig(UINT32 crc, char *filename)
     
     if (crc == 0x59f5fa32) myConfig.load_options    = LOAD_WITH_TUTORVISION;    // Map Mazes is a Tutorvision game
     if (crc == 0x714ecd51) myConfig.load_options    = LOAD_WITH_TUTORVISION;    // Shapes in Space is a Tutorvision game
+    if (crc == 0x10bbdb07) myConfig.load_options    = LOAD_WITH_TUTORVISION;    // Geo Graphics a Tutorvision game
     if (crc == 0x63a87259) myConfig.load_options    = LOAD_WITH_TUTORVISION | 
                                                       LOAD_WITH_JLP;            // Little Man Computer is a Tutorvision game with JLP    
     
@@ -246,7 +247,12 @@ static void SetDefaultGameConfig(UINT32 crc, char *filename)
     // --------------------------------------------------------------------------------------
     if ((strcasestr(filename, "NINJA") != NULL) && (strcasestr(filename, "ODYSSEY") != NULL))
     {
-        myConfig.bLatched = true;
+        myConfig.bLatched = true; // Ninja Odyssey wants backtab latched
+    }
+
+    if ((strcasestr(filename, "TIME") != NULL) && (strcasestr(filename, "TRIP") != NULL))
+    {
+        myConfig.load_options    = LOAD_WITH_TUTORVISION;   // Time Trip is a Tutorvision Game (no public dump available yet for CRC check)
     }
    
     last_crc = crc;
@@ -313,7 +319,7 @@ static void ToggleXYABasDirections(void)
 
 // ---------------------------------------------------------------------------
 // Write out the NINTV-DS.DAT configuration file to capture the settings for
-// each game.  This one file contains global settings + 300 game settings.
+// each game.  This one file contains global settings + 625 game settings.
 // ---------------------------------------------------------------------------
 void SaveConfig(UINT32 crc, bool bShow)
 {
