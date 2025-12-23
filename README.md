@@ -186,7 +186,7 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V6.2 : ??-Dec-2025 by wavemotion-dave
+V6.23-Dec-2025 by wavemotion-dave
   * New 60Hz True-Sync technology to match DS LCD refresh with emulated frame output to provide for a largely tear-free display.
   * New 'Favorites' system to mark any game file as 'Like' (yellow heart) or 'Love' (red heart) - press SELECT on ROM select screen.
   * CP1610 and related Video optimization to provide almost 5% speed-bost to help with older DS hardware emulation.
