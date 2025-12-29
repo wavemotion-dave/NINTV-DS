@@ -485,7 +485,7 @@ const struct options_t Option_Table[3][20] =
         {"D-PAD",       {"NORMAL", "SWAP LEFT/RGT", "SWAP UP/DOWN", "DIAGONALS", "STRICT 4-WAY", "SLIDE-N-GLIDE"},                                      &myConfig.dpad_config,      6},
         {"FRAMESKIP",   {"OFF", "ON (ODD)", "ON (EVEN)"},                                                                                               &myConfig.frame_skip,       3},
         {"SOUND QUAL",  {"LOW", "MEDIUM", "HIGH", "ULTIMATE"},                                                                                          &myConfig.sound_quality,    4},
-        {"TGT SPEED",   {"60 FPS (100%)","66 FPS (110%)","72 FPS (120%)","78 FPS (130%)","84 FPS (140%)","90 FPS (150%)","54 FPS (90%)","MAX SPEED"},   &myConfig.target_fps,       8},
+        {"GAME SPEED",  {"60 FPS (100%)","66 FPS (110%)","72 FPS (120%)","78 FPS (130%)","84 FPS (140%)","90 FPS (150%)","54 FPS (90%)","MAX SPEED"},   &myConfig.target_fps,       8},
         {"PALETTE",     {"ORIGINAL", "MUTED", "BRIGHT", "PAL", "CUSTOM"},                                                                               &myConfig.palette,          5},
         {"KEYBD CLICK", {"NO" , "YES"},                                                                                                                 &myConfig.key_click,        2},
         {NULL,          {"",            ""},                                                                                                            NULL,                       1},

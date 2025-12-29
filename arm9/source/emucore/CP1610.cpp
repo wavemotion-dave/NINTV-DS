@@ -3393,7 +3393,7 @@ ITCM_CODE UINT16 CP1610::JSRE(UINT16 registerNum, UINT16 target) {
     return 12;
 }
 
-ITCM_CODE UINT16 CP1610::JD(UINT16 target) {
+UINT16 CP1610::JD(UINT16 target) {
     I = FALSE;
     bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
     r[7] = target;
@@ -3403,7 +3403,7 @@ ITCM_CODE UINT16 CP1610::JD(UINT16 target) {
     return 12;
 }
 
-ITCM_CODE UINT16 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
+UINT16 CP1610::JSRD(UINT16 registerNum, UINT16 target) {
     I = FALSE;
     bHandleInterrupts = (!bCP1610_PIN_IN_BUSRQ || (I && !bCP1610_PIN_IN_INTRM));
     r[registerNum] = r[7]+3;

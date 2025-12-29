@@ -22,6 +22,7 @@ UINT16  bt_imageLatched[BACKTAB_SIZE]      __attribute__((section(".dtcm")));
 UINT8   dirtyBytes[BACKTAB_SIZE]           __attribute__((section(".dtcm")));
 UINT8   dirtyBytesLatched[BACKTAB_SIZE]    __attribute__((section(".dtcm")));
 UINT8   colorAdvanceBitsDirty              __attribute__((section(".dtcm")));
+UINT8   bRowAltered[BACKTAB_SIZE/20]       __attribute__((section(".dtcm")));
 
 BackTabRAM::BackTabRAM()
 : RAM(BACKTAB_SIZE, BACKTAB_LOCATION, 0xFFFF, 0xFFFF)
@@ -36,6 +37,7 @@ void BackTabRAM::reset()
         dirtyBytes[i] = TRUE;
         bt_imageLatched[i] = 0;
         dirtyBytesLatched[i] = TRUE;
+        bRowAltered[i/20] = 0;
     }
 }
 
@@ -55,6 +57,7 @@ ITCM_CODE void BackTabRAM::poke(UINT16 location, UINT16 value)
 
     bt_image[loc] = value;
     dirtyBytes[loc] = TRUE;
+    bRowAltered[loc/20] = TRUE;
 }
 
 void BackTabRAM::poke_cheat(UINT16 location, UINT16 value)
@@ -89,14 +92,24 @@ ITCM_CODE void BackTabRAM::markClean()
 
 ITCM_CODE void BackTabRAM::LatchRow(UINT8 row)
 {
-    UINT32 *source = (UINT32*)&bt_image[(row*20)];
-    UINT32 *dest = (UINT32*)&bt_imageLatched[(row*20)];
+    // ----------------------------------------------------------------------------
+    // Check if any one of the cards in this row has been changed since the last
+    // latch and if so, latch the entire row. Some games depend on this - Stampede
+    // and Masters of the Universe will show graphical glitches if not latched.
+    // ----------------------------------------------------------------------------
+    if (bRowAltered[row])
+    {
+        UINT32 *source = (UINT32*)&bt_image[(row*20)];
+        UINT32 *dest = (UINT32*)&bt_imageLatched[(row*20)];
 
-    // Unroll loop for a tiny speedup
-    *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++;
-    *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++;
+        // Unroll loop for a tiny speedup
+        *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++;
+        *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++; *dest++ = *source++;
 
-    memcpy(&dirtyBytesLatched[(row*20)], &dirtyBytes[row*20], 20);
+        memcpy(&dirtyBytesLatched[(row*20)], &dirtyBytes[row*20], 20);
+        
+        bRowAltered[row] = FALSE; // No need to re-latch this row until one of the cards changes via poke()
+    }
 }
 
 

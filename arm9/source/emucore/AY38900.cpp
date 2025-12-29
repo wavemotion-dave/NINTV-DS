@@ -724,9 +724,13 @@ ITCM_CODE void AY38900::renderBackground()
     if (colorStackMode)
     {
         if (myConfig.bLatched)
+        {
             renderColorStackModeLatched();
+        }
         else
+        {
             renderColorStackMode();
+        }
     }
     else
     {
@@ -990,7 +994,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
         {
             int sourceWidthX = blockLeft ? 152 : 160;
             int sourceHeightY = blockTop ? 88 : 96;
-            int nextSourcePixel = (blockLeft ? (8) : 0) + ((blockTop ? (8) : 0) * 160);
+            int nextSourcePixel = (blockLeft ? 8 : 0) + ((blockTop ? 8 : 0) * 160);
 
             for (int y = 0; y < sourceHeightY; y++)
             {
@@ -1036,30 +1040,10 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 
                 UINT8* nextPixelStore1 = nextPixelStore0 + PIXEL_BUFFER_ROW_SIZE;
 
-                if (!((nextSourcePixel | (u32)nextPixelStore0) & 3))  // We're on a 32-bit boundary
+                if (!((nextSourcePixel | (u32)nextPixelStore0) & 1))  // We're on a 16-bit boundary
                 {
                     // At this point, everything is 32-bit aligned so we can blast 32-bits at a time...
-                    UINT32 *backColor = (UINT32*) &backgroundBuffer[nextSourcePixel];
-                    UINT32 *pix0 = (UINT32*) nextPixelStore0;
-                    UINT32 *pix1 = (UINT32*) nextPixelStore1;
-
-                    for (int x = 0; x < (sourceWidthX>>2); x++)
-                    {
-                        *pix0++ = *backColor;
-                        *pix1++ = *backColor++;
-                    }
-                }
-                else
-                {
-                    // If we're on an odd byte, just do one pixel to get is on an even 16-bit boundary
-                    if ((u32)nextPixelStore0 & 1)
-                    {
-                        *nextPixelStore0++ = backgroundBuffer[nextSourcePixel];
-                        *nextPixelStore1++ = backgroundBuffer[nextSourcePixel];
-                    }
-
-                    // At this point, everything is 16-bit aligned so we can blast 16-bits at a time...
-                    UINT16 *backColor = (UINT16*) &backgroundBuffer[nextSourcePixel&0xFFFE];
+                    UINT16 *backColor = (UINT16*) &backgroundBuffer[nextSourcePixel];
                     UINT16 *pix0 = (UINT16*) nextPixelStore0;
                     UINT16 *pix1 = (UINT16*) nextPixelStore1;
 
@@ -1069,7 +1053,28 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                         *pix1++ = *backColor++;
                     }
                 }
-
+                else  // No alignment... Must do this the 'hard' way...
+                {
+                    UINT8 *backColor = (UINT8*) &backgroundBuffer[nextSourcePixel];
+                    UINT8 *pix0 = (UINT8*) nextPixelStore0;
+                    UINT8 *pix1 = (UINT8*) nextPixelStore1;
+                    if ((u32)pix0 & 1)
+                    {
+                        *pix0++ = *backColor;   // Now we are on a 16-bit boundary
+                        *pix1++ = *backColor++; // Now we are on a 16-bit boundary
+                    }
+                    
+                    UINT16 *pix0a = (UINT16*) pix0;
+                    UINT16 *pix1a = (UINT16*) pix1;
+                    for (int x = 0; x < (sourceWidthX>>1); x++)
+                    {
+                        UINT16 bk16 = (*backColor++);
+                        bk16 |= (*backColor++) << 8;
+                        *pix0a++ = bk16;
+                        *pix1a++ = bk16;
+                    }
+                }
+                
                 nextSourcePixel += 160;
             }
         }
@@ -1172,16 +1177,9 @@ inline __attribute__((always_inline)) void AY38900::renderLine(UINT8 nextbyte, i
 {
     if (nextbyte && (nextbyte != 0xFF))
     {
-        UINT8* nextTargetPixel = backgroundBuffer + x + (y*160);
-        *nextTargetPixel++ = (nextbyte & 0x80) ? fgcolor : bgcolor;
-        *nextTargetPixel++ = (nextbyte & 0x40) ? fgcolor : bgcolor;
-        *nextTargetPixel++ = (nextbyte & 0x20) ? fgcolor : bgcolor;
-        *nextTargetPixel++ = (nextbyte & 0x10) ? fgcolor : bgcolor;
-
-        *nextTargetPixel++ = (nextbyte & 0x08) ? fgcolor : bgcolor;
-        *nextTargetPixel++ = (nextbyte & 0x04) ? fgcolor : bgcolor;
-        *nextTargetPixel++ = (nextbyte & 0x02) ? fgcolor : bgcolor;
-        *nextTargetPixel   = (nextbyte & 0x01) ? fgcolor : bgcolor;
+        UINT32* nextTargetPixel = (UINT32*)(backgroundBuffer + x + (y*160));
+        *nextTargetPixel++ = (((nextbyte & 0x80) ? fgcolor : bgcolor) << 0) | (((nextbyte & 0x40) ? fgcolor : bgcolor) << 8) | (((nextbyte & 0x20) ? fgcolor : bgcolor) << 16) | (((nextbyte & 0x10) ? fgcolor : bgcolor) << 24);
+        *nextTargetPixel   = (((nextbyte & 0x08) ? fgcolor : bgcolor) << 0) | (((nextbyte & 0x04) ? fgcolor : bgcolor) << 8) | (((nextbyte & 0x02) ? fgcolor : bgcolor) << 16) | (((nextbyte & 0x01) ? fgcolor : bgcolor) << 24);
     }
     else
     {

@@ -86,7 +86,7 @@ UINT8 b_dsi_mode __attribute__((section(".dtcm"))) = true;
 // want to run the game at 120% speed to get faster gameplay in the same time.
 // ------------------------------------------------------------------------------
 UINT16 target_frames[]         __attribute__((section(".dtcm"))) = {60,  66,   72,  78,  84,  90,  54, 999};
-UINT32 target_frame_timing[]   __attribute__((section(".dtcm"))) = {546, 496, 454, 420, 390, 364,  600,  0};
+UINT16 target_frame_timing[]   __attribute__((section(".dtcm"))) = {546, 496, 454, 420, 390, 364,  600,  0};
 
 // ---------------------------------------------------------------------------------
 // Here are the main classes for the emulator, the RIP (game rom), video bus, etc.
@@ -1325,7 +1325,7 @@ void pollInputs(void)
         // -------------------------------------------------------------------------------------
         // Now handle the main DS keys... these can be re-mapped to any Intellivision function
         // -------------------------------------------------------------------------------------
-        if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R))
+        if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R) && (keys_pressed & KEY_Y))
         {
             dsPrintValue(hud_x+2,hud_y,0,(char*)"SNAP");
             screenshot();

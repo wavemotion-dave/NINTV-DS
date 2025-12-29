@@ -457,10 +457,12 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                                     bUseJLP = ((zeros == 1) && (nonzeros == 0)) ? 0:1; // If the line was "= 0", we keep JLP disabled
                                 }
                             }
+                            
                             if (strstr(ptr, "voice"))
                             {
                                 bUseIVoice = 1;
                             }
+                            
                             if (strstr(ptr, "ecs"))
                             {
                                 if (strstr(ptr, "0")) bUseECS = 0;
