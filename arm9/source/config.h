@@ -18,7 +18,7 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x000B
+#define CONFIG_VER  0x000C
 
 #define MAX_CONFIGS 625
 
@@ -54,7 +54,7 @@ struct Config_t
     UINT8  key_click;
     UINT8  bSkipBlanks;
     UINT8  gramSize;
-    UINT8  spare6;
+    UINT8  lcd_jitter;
     UINT8  spare7;
     UINT8  spare8;
     UINT8  spare9;

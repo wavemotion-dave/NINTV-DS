@@ -103,7 +103,7 @@ AudioMixer           *audioMixer __attribute__((section(".dtcm"))) = NULL;
 UINT16 emu_frames                __attribute__((section(".dtcm"))) = 0;
 UINT16 frames_per_sec_calc       __attribute__((section(".dtcm"))) = 0;
 UINT8  oneSecTick                __attribute__((section(".dtcm"))) = FALSE;
-bool bIsFatalError               __attribute__((section(".dtcm"))) = false;
+UINT8  bIsFatalError             __attribute__((section(".dtcm"))) = FALSE;
 
 // -------------------------------------------------------------
 // Background screen buffer indexes for the DS video engine...
@@ -131,7 +131,7 @@ void reset_emu_frames(void)
 void FatalError(const char *msg)
 {
     dsPrintValue(0,1,0,(char*)msg);
-    bIsFatalError = true;
+    bIsFatalError = TRUE;
     WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
 }
 

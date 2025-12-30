@@ -1042,7 +1042,7 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
 
                 if (!((nextSourcePixel | (u32)nextPixelStore0) & 1))  // We're on a 16-bit boundary
                 {
-                    // At this point, everything is 32-bit aligned so we can blast 32-bits at a time...
+                    // At this point, everything is 16-bit aligned so we can blast 16-bits at a time...
                     UINT16 *backColor = (UINT16*) &backgroundBuffer[nextSourcePixel];
                     UINT16 *pix0 = (UINT16*) nextPixelStore0;
                     UINT16 *pix1 = (UINT16*) nextPixelStore1;
@@ -1068,6 +1068,10 @@ ITCM_CODE void AY38900::copyBackgroundBufferToStagingArea()
                     UINT16 *pix1a = (UINT16*) pix1;
                     for (int x = 0; x < (sourceWidthX>>1); x++)
                     {
+                        // -----------------------------------------------------------------------------
+                        // Experimentally, cobbling together 16-bits of background color and blasting 
+                        // it out has proven to be the fastest we can do... until a better idea strikes.
+                        // -----------------------------------------------------------------------------
                         UINT16 bk16 = (*backColor++);
                         bk16 |= (*backColor++) << 8;
                         *pix0a++ = bk16;

@@ -133,7 +133,7 @@ The DS-Lite/Phat will run many of the classic games without any frameskip but fo
 
 Settings you should probably not touch :
 -----------------------
-* Backtab Latched is normally disabled. There are two known games (Stampede and Masters of the Universe) that need this to display properly. Most games do not change the backtab while the screen is rendering but to gain speed, these two games do just that. Setting this to TRUE chews up significant DS CPU time - but is a more accurate rendering.  If you encounter a future game where the images on screen appear to "jump" or "jitter" - try turing this to TRUE, Save your settings and reload the game.
+* Backtab Latched is normally disabled (lower accuracy) for the older DS hardware and normally enabled (higher accuracy) for DSi or above. There are three known games (Stampede, Masters of the Universe and Ninja Odyssey) that need this to display properly. Most games do not change the backtab while the screen is rendering but to gain speed, these two games do just that. Setting this to TRUE chews up significant DS CPU time - but is a more accurate rendering.  If you encounter a future game where the images on screen appear to "jump" or "jitter" - try turing this to TRUE, Save your settings and reload the game.
 * Fudge Timing is needed for the original version of Mattel Motocross which is running right at the edge of proper timing... some non NTSC systems had problems running that game back in the day. The cycle emulation on Nintellivision is pretty close but not perfect - so the fudge timing is used make it so Motocross runs properly. It's unlikely you would ever need to change this but I put it in to future-proof the emulator in there is another game discovered with borderline timing chartacteristics.
 * Skip Blanks is needed for B-17 bomber as it should not blank the display when it's not active. The timing in Nintellivision is not perfect and without this set to TRUE, B-17 bomber will "flash" and it's a bit jarring. I don't know of any other games that need this setting but I've included it just in case.
 
@@ -186,6 +186,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.3 : ??-Dec-2025 by wavemotion-dave
+  * Fix for horizontal scroll bug that caused a bit of blurring when moving left/right in some games. Fixes Ninja Odyssey health bar.
+  * Improved backtab latched handling - the DSi and above now utilizes backtab latching by default for improved emulation accuracy.
+  * Refactored memory to free up another 160K of memory for future use.
+
 V6.2 : 23-Dec-2025 by wavemotion-dave
   * New 60Hz True-Sync technology to match DS LCD refresh with emulated frame output to provide for a largely tear-free display.
   * New 'Favorites' system to mark any game file as 'Like' (yellow heart) or 'Love' (red heart) - press SELECT on ROM select screen.

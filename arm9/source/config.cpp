@@ -172,12 +172,12 @@ static void SetDefaultGameConfig(UINT32 crc, char *filename)
     myConfig.palette                        = myGlobalConfig.def_palette;
     myConfig.stretch_x                      = ((160 / 256) << 8) | (160 % 256);
     myConfig.offset_x                       = 0;
-    myConfig.bLatched                       = 0;
+    myConfig.bLatched                       = (isDSiMode() ? 1:0);
     myConfig.fudgeTiming                    = 0;
     myConfig.key_click                      = 0;
     myConfig.bSkipBlanks                    = 0;
     myConfig.gramSize                       = GRAM_512B;    // Normal 512 bytes
-    myConfig.spare6                         = 0;
+    myConfig.lcd_jitter                     = 0;
     myConfig.spare7                         = 0;
     myConfig.spare8                         = 0;
     myConfig.spare9                         = 0;
@@ -253,6 +253,11 @@ static void SetDefaultGameConfig(UINT32 crc, char *filename)
     if ((strcasestr(filename, "TIME") != NULL) && (strcasestr(filename, "TRIP") != NULL))
     {
         myConfig.load_options    = LOAD_WITH_TUTORVISION;   // Time Trip is a Tutorvision Game (no public dump available yet for CRC check)
+    }
+
+    if ((strcasestr(filename, "TRON") != NULL) && (strcasestr(filename, "MAZE") != NULL))
+    {
+        myConfig.lcd_jitter = 1; // Maze-a-Tron with all the vertical lined circuits needs a bit of LCD jitter to look less jarring when scrolling
     }
    
     last_crc = crc;
@@ -400,6 +405,21 @@ void FindAndLoadConfig(UINT32 crc, char *filename)
     {
         fread(&allConfigs, sizeof(allConfigs), 1, fp);
         fclose(fp);
+        
+        // One-time upgrade from previous config version...
+        if (allConfigs.config_ver == 0x000B) // Previous Version - upgrade
+        {
+            for (int slot=0; slot<MAX_CONFIGS; slot++)
+            {
+                if (allConfigs.game_config[slot].game_crc != 0x00000000)
+                {
+                    allConfigs.game_config[slot].bLatched = (isDSiMode() ? 1:0); // For the faster DSi hardware, we latch the backtab for higher accuracy
+                }
+            }
+            allConfigs.config_ver = CONFIG_VER;
+            memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));
+            SaveConfig(0x00000000, FALSE);
+        }
 
         if (allConfigs.config_ver != CONFIG_VER)
         {
@@ -414,7 +434,7 @@ void FindAndLoadConfig(UINT32 crc, char *filename)
         else
         {
             // Now copy out the global config 
-            memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));        
+            memcpy(&myGlobalConfig, &allConfigs.global_config, sizeof(struct GlobalConfig_t));
         }
         
         if (crc != 0xFFFFFFFF)
@@ -463,7 +483,7 @@ struct options_t
 
 #define KEY_MAP_OPTIONS "KEY-1", "KEY-2", "KEY-3", "KEY-4", "KEY-5", "KEY-6", "KEY-7", "KEY-8", "KEY-9", "KEY-CLR", "KEY-0",\
                         "KEY-ENT", "FIRE", "L-ACT", "R-ACT", "RESET", "LOAD", "CONFIG", "SCORES", "QUIT", "STATE",\
-                        "MENU", "SWITCH L/R", "MANUAL", "SHOW DISC", "SHOW KBD", "SWAP OVL", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
+                        "MENU", "SWAP P1/P2", "MANUAL", "SHOW DISC", "SHOW KBD", "SWAP OVL", "DISC UP", "DISC DOWN", "SPEEDUP", "FASTLOAD SLOT 1"
 
 const struct options_t Option_Table[3][20] =
 {
@@ -497,6 +517,8 @@ const struct options_t Option_Table[3][20] =
         {"GRAM SIZE",   {"512B (NORMAL)", "2K (EXPANDED)"},                                                                                             &myConfig.gramSize,         2},
         {"CPU FUDGE",   {"NONE", "LOW", "MEDIUM", "HIGH", "MAX"},                                                                                       &myConfig.fudgeTiming,      5},
         {"SKIP BLANKS", {"NO" , "YES"},                                                                                                                 &myConfig.bSkipBlanks,      2},
+        {"LCD JITTER",  {"NO" , "YES"},                                                                                                                 &myConfig.lcd_jitter,       2},
+        
         {NULL,          {"",            ""},                                                                                                            NULL,                       1},
     },
     

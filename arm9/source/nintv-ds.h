@@ -47,7 +47,7 @@ extern UINT16 global_frames;
 
 extern UINT16 target_frames[];
 
-extern bool bIsFatalError;
+extern UINT8 bIsFatalError;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 

@@ -334,7 +334,7 @@ UINT8 renderz[4][4] __attribute__((section(".dtcm")))  =
     {1,1,1,1},      // Frameskip Off
     {1,0,1,0},      // Frameskip Odd
     {0,1,0,1},      // Frameskip Even
-    {1,0,0,0}       // Frameskip Agressive
+    {1,0,0,0}       // Frameskip Agressive (no longer used)
 };
 
 VideoBusDS::VideoBusDS()  { }
@@ -369,17 +369,20 @@ ITCM_CODE void VideoBusDS::render()
     // ------------------------------------------------------
     if (renderz[myConfig.frame_skip][global_frames&3])
     {
-        UINT8 chan = 2;
         UINT32 *ds_video=(UINT32*)0x06000000;
         UINT32 *source_video = (UINT32*)pixelBuffer;
 
-        for (int j=0; j<192; j++)
+        for (int j=0; j<96; j++)
         {
-            while (dmaBusy(chan)) asm("nop");
-            dmaCopyWordsAsynch (chan, source_video, ds_video, 160);
+            while (dmaBusy(2)) asm("nop");
+            
+            dmaCopyWordsAsynch (2, source_video, ds_video, 160);
             source_video += 40;
             ds_video += 64;
-            chan ^= 1;   // Switch from channel 2 to 3 and back again
+
+            dmaCopyWordsAsynch (3, source_video, ds_video, 160);
+            source_video += 40;
+            ds_video += 64;
         }    
     }
 }

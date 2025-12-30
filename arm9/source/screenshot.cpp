@@ -44,14 +44,22 @@ void write32(void *address, u32 value) {
     *fourth = (value >> 24) & 0xff;
 }
 
-u8 screenshot_buffer[100*1024];
-u8 save_buffer[64*1024];
-
+// --------------------------------------------------------------------
+// For the Screenshot, we use the back end of the large BIN/ROM buffer
+// which is highly likely not utilized. However, if we end up having
+// an Intellivision game that is close to 1MB in size, things will
+// end badly here... still, it's not worth allocating separate memory
+// for a screenshot which almost never happens.
+// --------------------------------------------------------------------
 bool screenshotbmp(const char* filename) {
     FILE *file = fopen(filename, "wb");
 
     if(!file)
         return false;
+
+    extern u8 *bin_image_buf;
+    u8 *screenshot_buffer = bin_image_buf + (924*1024); // 100K size
+    u8 *save_buffer = bin_image_buf + (860*1024);       // 64K size
 
     // Save the VRAM_B area...
     u16 *src = (u16*)0x06820000;

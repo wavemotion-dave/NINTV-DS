@@ -17,6 +17,7 @@
 #include "nintv-ds.h"
 #include "highscore.h"
 #include "Memory.h"
+#include "config.h"
 
 // ------------------------------------------------------------------------
 // If we are being passed a file on the command line - we store it here.
@@ -29,11 +30,30 @@ UINT8 *bin_image_buf = NULL;
 UINT16 *bin_image_buf16 = NULL;
 
 volatile int ds_vblank_count __attribute__((section(".dtcm"))) = 0;
-ITCM_CODE void irqVBlank(void)
+ITCM_CODE void irqVCount(void)
 {
     ds_vblank_count++; // This is our key to DS 'True Sync' at 60Hz.
 }
 
+// ---------------------------------------------------------------------------------------
+// Due to the 160 resolution of the Intellivision being mapped onto the 256 pixel DS LCD,
+// we see artifacts of some 'pixles' being thicker than others. As a trick, we can shift 
+// the underlying LCD rendering slightly to blur this and trick the eye into seeing more
+// uniform sized pixels. It's not perfect, but helps for games like Maze-a-TRON.
+// ---------------------------------------------------------------------------------------
+static u8 sIndex     __attribute__((section(".dtcm"))) = 0;
+static u8 jitter[4]  __attribute__((section(".dtcm"))) = {0x00, 0x40, 0x00, 0x40};
+ITCM_CODE void irqVBlank(void)
+{
+    if (myConfig.lcd_jitter)
+    {
+        REG_BG3X = ((myConfig.offset_x) << 8) + jitter[sIndex++ & 0x03];
+    }
+    else 
+    {
+        REG_BG3X = ((myConfig.offset_x) << 8);
+    }
+}
 
 int main(int argc, char **argv) 
 {
@@ -48,9 +68,7 @@ int main(int argc, char **argv)
       iprintf("Unable to initialize libfat!\n");
       return -1;
   }
-    
-  srand(time(0));
-  
+
   MAX_ROM_FILE_SIZE             = (1024 * 1024);    // Simply massive... Covers everything known to mankind.
     
   bin_image_buf = new UINT8[MAX_ROM_FILE_SIZE];
@@ -65,8 +83,10 @@ int main(int argc, char **argv)
   // the pixelBuffer[] to the LCD for a reasonably tear-free output.
   // ----------------------------------------------------------------
   SetYtrigger(180);
-  irqSet(IRQ_VCOUNT, irqVBlank);
+  irqSet(IRQ_VCOUNT, irqVCount);
   irqEnable(IRQ_VCOUNT);  
+  irqSet(IRQ_VBLANK, irqVBlank);
+  irqEnable(IRQ_VBLANK);  
     
   // Setup the main screen handling
   dsInitScreenMain();
@@ -76,6 +96,9 @@ int main(int argc, char **argv)
   
   // Load the current Favorites
   LoadFavorites();
+
+  // Ensure random numbers are reasonably random
+  srand(time(0));
     
   // Handle command line argument... mostly for TWL++
   if (argc > 1) 
