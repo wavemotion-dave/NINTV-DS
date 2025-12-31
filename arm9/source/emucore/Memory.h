@@ -19,7 +19,7 @@
 #define MAX_COMPONENTS       4
 #define MAX_RAM_ROM_SEGMENTS 128
 
-extern UINT32 MAX_ROM_FILE_SIZE;
+#define MAX_ROM_FILE_SIZE    (1024*1024)    // 1MB max
 
 class Memory
 {

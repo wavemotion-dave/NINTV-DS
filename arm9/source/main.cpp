@@ -22,12 +22,13 @@
 // ------------------------------------------------------------------------
 // If we are being passed a file on the command line - we store it here.
 // ------------------------------------------------------------------------
-char file[128];
+static char file[160];
 
-UINT32 MAX_ROM_FILE_SIZE = 0;
-
-UINT8 *bin_image_buf = NULL;
-UINT16 *bin_image_buf16 = NULL;
+// ---------------------------------------------------------------------------
+// Pre-allocate the big ROM buffer - this is large enough to handle any size
+// game ROM that we might encounter... plus a bit more for future-proofing.
+// ---------------------------------------------------------------------------
+UINT8 CartBuffer[MAX_ROM_FILE_SIZE];
 
 volatile int ds_vblank_count __attribute__((section(".dtcm"))) = 0;
 ITCM_CODE void irqVCount(void)
@@ -69,11 +70,6 @@ int main(int argc, char **argv)
       return -1;
   }
 
-  MAX_ROM_FILE_SIZE             = (1024 * 1024);    // Simply massive... Covers everything known to mankind.
-    
-  bin_image_buf = new UINT8[MAX_ROM_FILE_SIZE];
-  bin_image_buf16 = (UINT16*)bin_image_buf;
-    
   // Init Timer
   dsInitTimer();
   

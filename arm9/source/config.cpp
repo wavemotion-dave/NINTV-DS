@@ -259,7 +259,38 @@ static void SetDefaultGameConfig(UINT32 crc, char *filename)
     {
         myConfig.lcd_jitter = 1; // Maze-a-Tron with all the vertical lined circuits needs a bit of LCD jitter to look less jarring when scrolling
     }
+
+    if ((strcasestr(filename, "THIO") != NULL))
+    {
+        myConfig.bLatched = 0;      // Thio's Odissey WIP glitches with backtab latching (happens on JZINTV as well)
+    }
    
+    if ((strcasestr(filename, "STAR") != NULL) && (strcasestr(filename, "MERCENARY") != NULL))
+    {
+        myConfig.load_options    = LOAD_WITH_IVOICE | LOAD_WITH_JLP; // Not ECS... not needed and slows down too much
+    }
+
+    if ((strcasestr(filename, "ROBOT") != NULL) && (strcasestr(filename, "ARMY") != NULL))
+    {
+        myConfig.load_options    = LOAD_WITH_IVOICE | LOAD_WITH_JLP; // Not ECS... not needed and slows down too much
+    }
+
+    if ((strcasestr(filename, "A-F") != NULL) || (strcasestr(filename, "ANTHROPOMORPHIC") != NULL))
+    {
+        myConfig.load_options    = LOAD_WITH_IVOICE | LOAD_WITH_JLP; // Not ECS... not needed and slows down too much
+    }
+
+    if ((strcasestr(filename, "STEAMROLLER") != NULL) || (strcasestr(filename, "STEAM ROLLER") != NULL))
+    {
+        myConfig.load_options    = LOAD_WITH_IVOICE | LOAD_WITH_JLP; // Not ECS... not needed and slows down too much
+    }
+
+    if ((strcasestr(filename, "BOVVER") != NULL))
+    {
+        myConfig.load_options    = LOAD_WITH_IVOICE | LOAD_WITH_JLP; // Not ECS... not needed and slows down too much
+    }
+
+
     last_crc = crc;
 }
 
@@ -409,11 +440,14 @@ void FindAndLoadConfig(UINT32 crc, char *filename)
         // One-time upgrade from previous config version...
         if (allConfigs.config_ver == 0x000B) // Previous Version - upgrade
         {
-            for (int slot=0; slot<MAX_CONFIGS; slot++)
+            if (isDSiMode())
             {
-                if (allConfigs.game_config[slot].game_crc != 0x00000000)
+                for (int slot=0; slot<MAX_CONFIGS; slot++)
                 {
-                    allConfigs.game_config[slot].bLatched = (isDSiMode() ? 1:0); // For the faster DSi hardware, we latch the backtab for higher accuracy
+                    if (allConfigs.game_config[slot].game_crc != 0x00000000)
+                    {
+                        allConfigs.game_config[slot].bLatched = 1; // For the faster DSi hardware, we latch the backtab for higher accuracy
+                    }
                 }
             }
             allConfigs.config_ver = CONFIG_VER;

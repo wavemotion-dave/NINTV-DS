@@ -57,9 +57,9 @@ bool screenshotbmp(const char* filename) {
     if(!file)
         return false;
 
-    extern u8 *bin_image_buf;
-    u8 *screenshot_buffer = bin_image_buf + (924*1024); // 100K size
-    u8 *save_buffer = bin_image_buf + (860*1024);       // 64K size
+    extern u8 *CartBuffer;
+    u8 *screenshot_buffer = CartBuffer + (924*1024); // 100K size
+    u8 *save_buffer = CartBuffer + (860*1024);       // 64K size
 
     // Save the VRAM_B area...
     u16 *src = (u16*)0x06820000;

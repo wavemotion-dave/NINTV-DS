@@ -1,10 +1,10 @@
 // =====================================================================================
 // Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -51,7 +51,7 @@ const struct Database_t database[] =
     {0xC047D487, "Beauty and the Beast (Imagic 1982)",          0,  0,  0,  1,  {{DB_ROM16, 0x4800, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x44519F2D, "Biplanes (Matel 1979)",                       0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xB03F739B, "Blockade Runner (Interphase 1983)",           0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0xA63AA3D8, "Blow Out (Mattel 1983)",                      0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},    
+    {0xA63AA3D8, "Blow Out (Mattel 1983)",                      0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x515E1D7E, "Body Slam Super Pro Wrestling (Mattel 1988)", 0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x32697B72, "Bomb Squad (Mattel 1982)",                    1,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x18E08520, "Bouncing Pixels (JRMZ 1999)",                 0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x0202},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -83,7 +83,7 @@ const struct Database_t database[] =
     {0x84BEDCC1, "Dracula (Imagic 1982)",                       0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xAF8718A1, "Dragonfire (Imagic 1982)",                    0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x3B99B889, "Dreadnaught Factor (Activision 1983)",        0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0x99f5783d, "Dreadnaught Factor [a1] (Activision 1983)",   0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},    
+    {0x99f5783d, "Dreadnaught Factor [a1] (Activision 1983)",   0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x20ACE89D, "Easter Eggs (Matel 1981)",                    0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x54A3FC11, "Electric Company - Math Fun (CTW 1978)",      0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xC9EAACAB, "Electric Company - Word Fun (CTW 1980)",      0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -164,7 +164,7 @@ const struct Database_t database[] =
     {0x47AA7977, "Safecracker (Imagic 1983)",                   0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x6E0882E7, "SameGame and Robots (IntelligentVision 2005)",1,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x12BA58D1, "SameGame and Robots (IntelligentVision 2005)",1,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0x20eb8b7c, "SameGame and Robots (IntelligentVision 2014)",1,  0,  0,  0,  {{DB_ROM16, 0x4800, 0x2800},   {DB_ROM16, 0x8800, 0x3000},   {DB_ROM16, 0xC800, 0x3800},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},    
+    {0x20eb8b7c, "SameGame and Robots (IntelligentVision 2014)",1,  0,  0,  0,  {{DB_ROM16, 0x4800, 0x2800},   {DB_ROM16, 0x8800, 0x3000},   {DB_ROM16, 0xC800, 0x3800},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xE221808C, "Santa's Helper (Matel 1983)",                 0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xe9e3f60d, "Scooby Doo's Maze Chase:Mattel (Matel 1983)", 0,  0,  1,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xBEF0B0C7, "Scooby Doo's Maze Chase:Mattel (Matel 1983)", 0,  0,  1,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -205,7 +205,7 @@ const struct Database_t database[] =
     {0xD43FD410, "Tetris (Joseph Zbiciak 2000)",                0,  0,  0,  0,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xF3DF94E0, "Thin Ice (Matel 1983)",                       0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x975AE6DF, "Thin Ice (Matel 1983)",                       0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x0000, 0x0000},   {DB_ROM16, 0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
-    {0xd6495910, "Thin Ice (Matel 1983) Prototype",             0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},   
+    {0xd6495910, "Thin Ice (Matel 1983) Prototype",             0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xC1F1CA74, "Thunder Castle (Matel 1982)",                 0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
     {0xD1D352A0, "Tower of Doom (INTV 1986)",                   0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x2000},   {DB_ROM16, 0x9000, 0x2000},   {DB_ROM16, 0xD000, 0x1000},   {DB_ROM16, 0xF000, 0x1000},   {DB_NONE,  0x0000, 0x0000}}},
     {0x1AC989E2, "Triple Action (Matel 1981)",                  0,  0,  0,  1,  {{DB_ROM16, 0x5000, 0x1000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000},   {DB_NONE,  0x0000, 0x0000}}},
@@ -256,29 +256,29 @@ const struct Database_t database[] =
 // ------------------------------------------------------------------------------------------------------------------------
 const struct SpecialRomDatabase_t rom_database[] =
 {                                                           // IV  JLP  ECS
-    {0xef662b2b, "Grail of the Gods (JLP)",                     0,  1,  0},    
-    {0xec2e2320, "Missile Domination (JLP + IV)",               1,  1,  0},    
-    {0x5d6ac5a9, "Super Pixel Bros (JLP)",                      0,  1,  0},    
-    {0xd63c8ad0, "JLP Test (JLP)",                              0,  1,  0},        
-    {0xf0c5f311, "DK Jr (JLP)",                                 0,  1,  0},    
-    {0x613e109b, "Jr Pac-Man (JLP)",                            0,  1,  0},    
-    {0xc412dcde, "Jumpking Junior (JLP)",                       0,  1,  0},    
-    {0xd3f14a9d, "Fantasy Puzzle (JLP)",                        0,  1,  0},    
-    
+    {0xef662b2b, "Grail of the Gods (JLP)",                     0,  1,  0},
+    {0xec2e2320, "Missile Domination (JLP + IV)",               1,  1,  0},
+    {0x5d6ac5a9, "Super Pixel Bros (JLP)",                      0,  1,  0},
+    {0xd63c8ad0, "JLP Test (JLP)",                              0,  1,  0},
+    {0xf0c5f311, "DK Jr (JLP)",                                 0,  1,  0},
+    {0x613e109b, "Jr Pac-Man (JLP)",                            0,  1,  0},
+    {0xc412dcde, "Jumpking Junior (JLP)",                       0,  1,  0},
+    {0xd3f14a9d, "Fantasy Puzzle (JLP)",                        0,  1,  0},
+
     {0x69adbba6, "FW Diagnostics (IVoice)",                     1,  0,  0},
     {0x99e7b4fc, "Goatnom (IVoice)",                            1,  0,  0},
     {0x53bc0939, "Killer Bees (IVoice)",                        1,  0,  0},
     {0xbb759a58, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},
-    {0x074ce00c, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},    
+    {0x074ce00c, "Tron Solar Sailor Revisited (IVoice)",        1,  0,  0},
     {0x239bd45e, "Same Game and Robots (IVoice)",               1,  0,  0},
-    
+
     // intydave's hacks for the "No ECS keyboard"
     {0x9555dc00, "Jetsons_Way_With_Words (Controller)",         0,  0,  1},
     {0x1be6fc51, "MindStrike.rom (Controller)",                 0,  0,  1},
     {0xceb02406, "Scooby_Doo.rom (Controller)",                 0,  0,  1},
     {0xbbe412bf, "Super_NFL.rom (Controller)",                  0,  0,  1},
     {0xb07e407e, "Super_Series_Baseball.rom (Controller)",      1,  0,  1},
-    
+
     {0x8ddd534e, "FreeCont (ECS)",                              0,  0,  1},
     {0x00000000, "xxxxxxxxxxxxxxxxxxxxxxx",                     0,  0,  0}
 };
@@ -314,7 +314,7 @@ const struct SpecialRomDatabase_t *FindRomDatabaseEntry(UINT32 crc)
         }
         idx++;
     }
-    return NULL;   
+    return NULL;
 }
 
 // End of Line

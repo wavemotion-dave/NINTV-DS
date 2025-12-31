@@ -33,8 +33,7 @@ UINT8 tag_compatibility[8] = {0};
 
 UINT8 bGenericLoad = false;
 
-extern UINT8 *bin_image_buf;
-extern UINT16 *bin_image_buf16;
+extern UINT8 CartBuffer[];
 
 /* ======================================================================== */
 /*  CRC16_TBL    -- Lookup table used for the CRC-16 code.                  */
@@ -186,11 +185,11 @@ Rip* Rip::LoadBin(const CHAR* filename)
     }
     
     // Read the file into our memory buffer - we can process it from there...
-    fread(bin_image_buf, size, 1, file);
+    fread(CartBuffer, size, 1, file);
     fclose(file);
     
     //determine the crc of the designated file
-    UINT32 crc = CRC32::getCrc(bin_image_buf, size);
+    UINT32 crc = CRC32::getCrc(CartBuffer, size);
     
     // ----------------------------------------------------------------
     // Now go and try and load all the memory regions based on either 
@@ -203,7 +202,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
         return NULL;
     }
     
-    //parse the file bin_image_buf[] into the rip
+    //parse the file CartBuffer[] into the rip
     UINT32 offset = 0;
     UINT16 romCount = rip->GetROMCount();
     for (UINT16 i = 0; i < romCount; i++) 
@@ -221,7 +220,7 @@ Rip* Rip::LoadBin(const CHAR* filename)
             return NULL;
         }
         ROM* nextRom = rip->GetROM(i);
-        nextRom->load(bin_image_buf+offset);
+        nextRom->load(CartBuffer+offset);
         offset += nextRom->getByteWidth() * nextRom->getReadSize();
     }
 
@@ -461,12 +460,15 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                             if (strstr(ptr, "voice"))
                             {
                                 bUseIVoice = 1;
+                                if (bUseECS) bUseECS=0;  // Ignore ECS directive if IVoice is being used (can be overridden but highly unlikely and chews up excess emulation CPU)
                             }
                             
                             if (strstr(ptr, "ecs"))
                             {
                                 if (strstr(ptr, "0")) bUseECS = 0;
                                 else bUseECS = (isDSiMode() ? 1 : 0);  // For the DS-Lite/Phat, we ignore this directive that is so often set even when there is no advantage to using it (and it chews up CPU). User can still override.
+                                
+                                if (bUseIVoice) bUseECS=0; // Ignore ECS directive if IVoice is being used (can be overridden but highly unlikely and chews up excess emulation CPU)
                             }
                         }
                         
@@ -558,7 +560,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
         UINT16 size = (UINT16)((end-start)+1);
 
         //finally, transfer the ROM image to our binary buffer
-        UINT16* romImage = (UINT16*)bin_image_buf16;
+        UINT16* romImage = (UINT16*)CartBuffer;
         int j;
         for (j = 0; j < size; j++)
         {
