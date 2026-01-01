@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -39,7 +39,7 @@ UINT16 bitMasks[16] __attribute__((section(".dtcm"))) = {
         0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF,
         0x01FF, 0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF };
 
-INT16 qtbl[256] __attribute__((section(".dtcm"))) = {
+INT16 qtbl[256] = {
     0,      511,    510,    509,    508,    507,    506,    505,
     504,    503,    502,    501,    500,    499,    498,    497,
     496,    495,    494,    493,    492,    491,    490,    489,

@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -19,6 +19,8 @@
 #include "../debugger.h"
 #include "../savestate.h"
 
+AY38914  __attribute__((section(".dtcm")))   psg(0x01F0);
+
 /**
  * Initializes all of the basic hardware included in the Intellivision
  * Master Component as well as the Intellivoice peripheral.
@@ -28,7 +30,6 @@ Intellivision::Intellivision()
     : Emulator("Intellivision"),
       player1Controller(0, "Hand Controller #1"),
       player2Controller(1, "Hand Controller #2"),
-      psg(0x01F0, &player1Controller, &player2Controller),
       RAM8bit(RAM8BIT_SIZE, RAM8BIT_LOCATION, 0xFFFF, 0xFFFF, 8),
       RAM16bit(RAM16BIT_SIZE, RAM16BIT_LOCATION, 0xFFFF, 0xFFFF, 16),
       execROM("Executive ROM", "exec.bin", 0, 2, 0x1000, 0x1000),
@@ -42,6 +43,8 @@ Intellivision::Intellivision()
     // define the video pixel dimensions
     videoWidth = 160;
     videoHeight = 192;
+    
+    psg.init(0x01F0, &player1Controller, &player2Controller),
 
     //add the player one hand controller
     AddInputConsumer(&player1Controller);

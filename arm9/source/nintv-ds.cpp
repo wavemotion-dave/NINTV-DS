@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -1122,8 +1122,13 @@ void pollInputs(void)
     unsigned short keys_pressed = keysCurrent();
     static short last_pressed = -1;
 
-    for (int i=0; i<15; i++) {ds_key_input[0][i] = 0; ds_key_input[1][i] = 0;}
-    for (int i=0; i<16; i++) {ds_disc_input[0][i] = 0; ds_disc_input[1][i] = 0;}
+    UINT32 *ptr = (UINT32 *)ds_key_input; // This array is 32 bytes 
+    *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000;
+    *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000;
+    
+    ptr = (UINT32 *)ds_disc_input; // This array is 32 bytes 
+    *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000;
+    *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000; *ptr++ = 0x00000000;
     
     // Assume NO speedup unless that specific META key is held down...
     bMetaSpeedup = false;
@@ -1322,9 +1327,9 @@ void pollInputs(void)
             }                    
         }
     
-        // -------------------------------------------------------------------------------------
-        // Now handle the main DS keys... these can be re-mapped to any Intellivision function
-        // -------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------
+        // Now handle the mapping of main DS keys... these can be re-mapped to any Intellivision function
+        // ------------------------------------------------------------------------------------------------
         if ((keys_pressed & KEY_L) && (keys_pressed & KEY_R) && (keys_pressed & KEY_Y))
         {
             dsPrintValue(hud_x+2,hud_y,0,(char*)"SNAP");
@@ -1394,8 +1399,8 @@ void pollInputs(void)
             {
                 if (myConfig.key_A_map >= OVL_META_RESET)
                 {
-                    if (myConfig.key_A_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                    else if (myConfig.key_A_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    if (myConfig.key_A_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                    else if (myConfig.key_A_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                     else if (myConfig.key_A_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                     else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_A_map);
                 }
@@ -1409,8 +1414,8 @@ void pollInputs(void)
             {
                 if (myConfig.key_B_map >= OVL_META_RESET)
                 {
-                    if (myConfig.key_B_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                    else if (myConfig.key_B_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    if (myConfig.key_B_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                    else if (myConfig.key_B_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                     else if (myConfig.key_B_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                     else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_B_map);
                 }
@@ -1424,8 +1429,8 @@ void pollInputs(void)
             {
                 if (myConfig.key_X_map >= OVL_META_RESET)
                 {
-                    if (myConfig.key_X_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                    else if (myConfig.key_X_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    if (myConfig.key_X_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                    else if (myConfig.key_X_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                     else if (myConfig.key_X_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                     else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_X_map);
                 }
@@ -1439,8 +1444,8 @@ void pollInputs(void)
             {
                 if (myConfig.key_Y_map >= OVL_META_RESET)
                 {
-                    if (myConfig.key_Y_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                    else if (myConfig.key_Y_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                    if (myConfig.key_Y_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                    else if (myConfig.key_Y_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                     else if (myConfig.key_Y_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                     else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_Y_map);
                 }
@@ -1455,8 +1460,8 @@ void pollInputs(void)
         {
             if (myConfig.key_L_map >= OVL_META_RESET)
             {
-                if (myConfig.key_L_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_L_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                if (myConfig.key_L_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                else if (myConfig.key_L_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                 else if (myConfig.key_L_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_L_map);
             }
@@ -1470,8 +1475,8 @@ void pollInputs(void)
         {
             if (myConfig.key_R_map >= OVL_META_RESET)
             {
-                if (myConfig.key_R_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_R_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                if (myConfig.key_R_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                else if (myConfig.key_R_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                 else if (myConfig.key_R_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_R_map);
             }
@@ -1485,8 +1490,8 @@ void pollInputs(void)
         {
             if (myConfig.key_START_map >= OVL_META_RESET)
             {
-                if (myConfig.key_START_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_START_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                if (myConfig.key_START_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                else if (myConfig.key_START_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                 else if (myConfig.key_START_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_START_map);
             }
@@ -1500,8 +1505,8 @@ void pollInputs(void)
         {
             if (myConfig.key_SELECT_map >= OVL_META_RESET)
             {
-                if (myConfig.key_SELECT_map == OVL_META_DISC_UP)        ds_disc_input[ctrl_disc][0]  = 1;
-                else if (myConfig.key_SELECT_map == OVL_META_DISC_DN)   ds_disc_input[ctrl_disc][8]  = 1;
+                if (myConfig.key_SELECT_map == OVL_META_DISC_UP)        {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][2]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][14] = 1; else ds_disc_input[ctrl_disc][0]  = 1;}
+                else if (myConfig.key_SELECT_map == OVL_META_DISC_DN)   {if (keys_pressed & KEY_RIGHT)     ds_disc_input[ctrl_disc][6]  = 1; else if (keys_pressed & KEY_LEFT) ds_disc_input[ctrl_disc][10] = 1; else ds_disc_input[ctrl_disc][8]  = 1;}
                 else if (myConfig.key_SELECT_map == OVL_META_SPEEDUP)   bMetaSpeedup = true;
                 else if (last_pressed != keys_pressed) ds_handle_meta(myConfig.key_SELECT_map);
             }

@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -31,6 +31,8 @@ TYPEDEF_STRUCT_PACK( _ECSState
 
 class Intellivision;
 
+extern AY38914   psg2;
+
 class ECS : public Peripheral
 {
     friend class Intellivision;
@@ -53,7 +55,6 @@ class ECS : public Peripheral
         ROM       bank2;
         RAM       ecsRAM;
         RAM       uartRAM;
-        AY38914   psg2;
         ROMBanker banker0;
         ROMBanker banker1;
         ROMBanker banker2;

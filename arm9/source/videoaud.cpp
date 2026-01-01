@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -165,7 +165,7 @@ const UINT32 pal_gamePalette[32] =
 
 UINT32 default_Palette[32] = 
 {
-    // Optmized
+    // Optimized
     0x000000,  0x002DFF,  0xFF3D10,  0xC8D271,
     0x386B3F,  0x00A756,  0xFAEA50,  0xFFFFFF,
     0x9B9DA1,  0x24B8FF,  0xFFB41F,  0x3D5A02,
@@ -179,7 +179,7 @@ UINT32 default_Palette[32] =
 
 UINT32 custom_Palette[32] = 
 {
-    // Optmized
+    // Optimized
     0x000000,  0x002DFF,  0xFF3D10,  0xC8D271,
     0x386B3F,  0x00A756,  0xFAEA50,  0xFFFFFF,
     0x9B9DA1,  0x24B8FF,  0xFFB41F,  0x3D5A02,
@@ -329,12 +329,11 @@ void AudioMixerDS::flushAudio()
 // Our main frameskip boolean table... a 1 in this table means
 // that we will render the full display on that frame.
 // ---------------------------------------------------------------
-UINT8 renderz[4][4] __attribute__((section(".dtcm")))  = 
+UINT8 renderz[3][4] __attribute__((section(".dtcm")))  = 
 {
     {1,1,1,1},      // Frameskip Off
     {1,0,1,0},      // Frameskip Odd
-    {0,1,0,1},      // Frameskip Even
-    {1,0,0,0}       // Frameskip Agressive (no longer used)
+    {0,1,0,1}       // Frameskip Even
 };
 
 VideoBusDS::VideoBusDS()  { }

@@ -27,6 +27,8 @@
     .ovl  255,   255,    255,   255,    // META_MANUAL    
     .ovl  255,   255,    255,   255,    // META_DISC
     .ovl  255,   255,    255,   255,    // META_KEYBOARD
+    .ovl  255,   255,    255,   255,    // META_SWAPOVL
+   
     
     .disc 255,   255,    255,   255,    // DISC_NORTH
     .disc 255,   255,    255,   255,    // DISC_NORTH_NORTH_EAST

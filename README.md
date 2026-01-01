@@ -158,7 +158,7 @@ Missing / Known Issues :
 
 License :
 -----------------------
-Copyright © 2021-2025 Dave Bernazzani (wavemotion-dave)
+Copyright © 2021-2026 Dave Bernazzani (wavemotion-dave)
 
 Copying and distribution of this emulator, its source code and associated 
 readme files, with or without modification, are permitted in any medium without 
@@ -180,16 +180,20 @@ Credits :
 * Thanks to Stephen-J for help with many custom overlays.
 * Thanks to Eisengrim, SeanD and ScottC for additional support for custom overlays.
 * Thanks to ts-x for help with the Intellivision manuals and numerous custom overlays.
+* Thanks to Luc, Rev and William for their blessing in having Nintellivision overlays created.
 * And special thanks to Joseph Zbiciak (jzintv fame) for detailed descriptions of all the ins and outs of Intellivision hardware so that better emulation is possible!
 
 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V6.3 : ??-Dec-2025 by wavemotion-dave
+V6.3 : 01-Jan-2026 by wavemotion-dave
   * Fix for horizontal scroll bug that caused a bit of blurring when moving left/right in some games. Fixes Ninja Odyssey health bar.
   * Improved backtab latched handling - the DSi and above now utilizes backtab latching by default for improved emulation accuracy.
+  * Fixed mapping DS keys to DISC UP/DOWN such that you can move left/right and press the DS button to JUMP (previously it would ignore the left/right if you pressed a DS button that mapped to DISC UP/DOWN).
   * Refactored memory to free up another 160K of memory for future use.
+  * Improved PSG handling to move the structs into ARM fast memory for a slight boost in performance.
+  * Lots of minor database cleanup under the hood so more games and homebrews work properly without additional configuration needed.
 
 V6.2 : 23-Dec-2025 by wavemotion-dave
   * New 60Hz True-Sync technology to match DS LCD refresh with emulated frame output to provide for a largely tear-free display.

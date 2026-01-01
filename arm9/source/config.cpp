@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -589,9 +589,6 @@ void ApplyOptions(void)
     extern INT32 clockDivisor, clocksPerSample;
     static UINT32 sound_divs[] = {15, 12, 8, 4};
     clockDivisor = sound_divs[myConfig.sound_quality];
-    
-    if ((last_crc == 0xC2063C08) && (!isDSiMode())) // World Series Major League Baseball on DS-Lite/Phat needs a bit more help... lower sound quality a bit
-        clockDivisor = 24;    
     
     clocksPerSample = clockDivisor<<4;
 

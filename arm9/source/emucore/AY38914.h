@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2021-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, its source code and associated
 // readme files, with or without modification, are permitted in any medium without
@@ -66,8 +66,8 @@ class AY38914 : public Processor, public AudioProducer
     friend class AY38914_Registers;
 
     public:
-        AY38914(UINT16 location, AY38914_InputOutput* io0,
-                AY38914_InputOutput* io1);
+        AY38914(UINT16 location);
+        void init(UINT16 location, AY38914_InputOutput* io0, AY38914_InputOutput* io1);
         void resetProcessor();
         INT32 getClockSpeed();
         INT32 getClocksPerSample();
