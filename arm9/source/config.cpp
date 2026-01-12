@@ -130,7 +130,7 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.erase_saves              = 0;
     myGlobalConfig.key_START_map_default    = OVL_META_DISC;
     myGlobalConfig.key_SELECT_map_default   = OVL_META_MENU;
-    myGlobalConfig.def_sound_quality        = (isDSiMode() ? 2:0);
+    myGlobalConfig.def_sound_quality        = (isDSiMode() ? 2:0); // HIGH SQ for DSi, LOW for older DS-Lite
     myGlobalConfig.def_palette              = 0;
     myGlobalConfig.brightness               = 0;
     myGlobalConfig.menu_color               = 1;
@@ -587,7 +587,7 @@ void ApplyOptions(void)
 {
     // Change the sound div if needed... affects sound quality and speed 
     extern INT32 clockDivisor, clocksPerSample;
-    static UINT32 sound_divs[] = {15, 12, 8, 4};
+    static UINT32 sound_divs[] = {15, 12, 8, 6}; // LOW, MEDIUM, HIGH and ULTIMATE
     clockDivisor = sound_divs[myConfig.sound_quality];
     
     clocksPerSample = clockDivisor<<4;

@@ -296,7 +296,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
     {
         if (db_entry->bDSliteNoFrameSkip & 2) 
         {
-            if (myConfig.sound_quality == 0) myConfig.sound_quality = 1;  // boost from GOOD to GREAT
+            if (myConfig.sound_quality == 0) myConfig.sound_quality = 1;  // boost from LOW to MEDIUM
         }
         ApplyOptions();
     }

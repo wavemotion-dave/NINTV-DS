@@ -4182,7 +4182,7 @@ ITCM_CODE UINT16 CP1610::SUB(UINT16 address, UINT16 registerNum) {
     return 10;
 }
 
-ITCM_CODE UINT16 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
+UINT16 CP1610::SUB_ind(UINT16 registerWithAddress, UINT16 registerToReceive) {
     r[7]++;
     interruptible = TRUE;
 

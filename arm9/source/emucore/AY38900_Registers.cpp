@@ -47,8 +47,11 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
         return;
 
     //incomplete decoding on writes
-    location &= 0x3F;
-
+    location &= 0x7F;
+    
+    // Don't allow writes to the GROM window above 0x40
+    if (location >= 0x40) return;
+    
     switch(location) {
         case 0x00:
         case 0x01:
@@ -116,10 +119,11 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
             value &= (~(1 << (location & 0x07))) & 0x03FF;
             break;
         case 0x20:
+            value = 0x3FFF;
             ay38900->displayEnabled = TRUE;
             break;
         case 0x21:
-            value = 0;
+            value = 0x3FFF;
             if (ay38900->colorStackMode) {
                 ay38900->colorStackMode = FALSE;
                 ay38900->colorModeChanged = TRUE;
@@ -133,27 +137,40 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
             ay38900->colorStackChanged = TRUE;
             break;
         case 0x2C:
-            value &= 0x000F;
-            ay38900->borderColor = (UINT8)value;
+            if (value != 0xFFFF)
+            {
+                value &= 0x000F;
+                ay38900->borderColor = (UINT8)value;
+            }
             break;
         case 0x30:
-            value &= 0x0007;
-            ay38900->horizontalOffset = value;
+            if (value != 0xFFFF)
+            {
+                value &= 0x0007;
+                ay38900->horizontalOffset = value;
+            }
             break;
         case 0x31:
-            value &= 0x0007;
-            ay38900->verticalOffset = value;
+            if (value != 0xFFFF)
+            {
+                value &= 0x0007;
+                ay38900->verticalOffset = value;
+            }
             break;
         case 0x32:
-            value &= 0x0003;
-            ay38900->blockLeft = (value & 0x0001) != 0;
-            ay38900->blockTop = (value & 0x0002) != 0;
+            if (value != 0xFFFF)
+            {
+                value &= 0x0003;
+                ay38900->blockLeft = (value & 0x0001) != 0;
+                ay38900->blockTop = (value & 0x0002) != 0;
+            }
             break;
         default:  //  0x22 - 0x27
             value = 0;
             break;
     }
-    stic_memory[location] = value;
+
+    if (value != 0xFFFF) stic_memory[location] = value;
 }
 
 ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
@@ -161,6 +178,7 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
     if (!enabled)
         return location&0x3FFF;
     
+    // Incomplete decode
     location &= 0x3F;
 
     switch (location) {
@@ -193,7 +211,7 @@ ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
             //collision register bits $3C00 are always on
             return 0x3C00 | stic_memory[location];
         case 0x20:
-            return 0;
+            return stic_memory[location];
         case 0x21:
             if (location == 0x0021 && !ay38900->colorStackMode) {
                 ay38900->colorStackMode = TRUE;
