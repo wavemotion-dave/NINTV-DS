@@ -153,7 +153,8 @@ Some games don't need Tutorvision Mode to run at their best - many of decle's of
 
 Missing / Known Issues :
 -----------------------
-* ECS support is partial - there is no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
+* ECS support has no UART / Cassette handling but all other ECS features are present (page flipping, keyboard, extra 8-bit RAM and the extra PSG sound channels).
+* The STIC emulation will render the 160th pixel (a real STIC will blank that pixel).
 * Intellivision emulation is NTSC only - no PAL support.
 
 License :
@@ -187,6 +188,11 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.3a : 12-Jan-2026 by wavemotion-dave
+  * Minor improvement for STIC register handling for improved accuracy.
+  * Fix for Screen Snapshot (L+R+Y).
+  * Slight tweaks to a few older overlays.
+
 V6.3 : 01-Jan-2026 by wavemotion-dave
   * Fix for horizontal scroll bug that caused a bit of blurring when moving left/right in some games. Fixes Ninja Odyssey health bar.
   * Improved backtab latched handling - the DSi and above now utilizes backtab latching by default for improved emulation accuracy.
