@@ -7,19 +7,19 @@ NINTV-DS (aka Nintellivision) is an Intellivision console emulator running on th
 Install :
 ----------
 To make this work, place NINTV-DS.NDS on your flashcart or SD card which you can launch.
-You must supply the BIOS files:
+You must supply the BIOS files - at a minimum you need the system files grom.bin and exec.bin but for maximum compatibility with all games, seek out all of these:
 
-* grom.bin
-* exec.bin
-* ivoice.bin (Optional for Intellivoice games)
-* ecs.bin (Optional for ECS games)
-* wbexec.bin (Optional for full Tutorvision mode)
-* wbgrom.bin (Optional for full Tutorvision mode)
+* grom.bin (2K with CRC32 of 0x683a4158)
+* exec.bin (8K with CRC32 of 0xcbce86f7)
+* ivoice.bin (Optional for Intellivoice games - 2K with CRC32 of 0x0de7579d)
+* ecs.bin (Optional for ECS games - 24K with CRC32 of 0xea790a06)
+* wbexec.bin (Optional for full Tutorvision mode - 16K with CRC32 of 0x7558a4cf)
+* wbgrom.bin (Optional for full Tutorvision mode - 2K with CRC32 of 0x82736456)
 
 These can go in one of four places:  same directory as your ROMS, /roms/bios (recommended) or /roms/intv/bios or /data/bios (you can change the default location using the Global Configuration once you load the emulator).
 
-The GROM and EXEC binaries are property of whomever currently holds the Intellivision rights and you will have to find and install them yourself.
-Don't ask. If you own Intellivision Lives, you likely have both files already somewhere in your house. 
+The BIOS binaries are property of whomever currently holds the Intellivision rights and you will have to find and install them yourself.
+Don't ask. If you own Intellivision Lives, you likely have at least the grom.bin and exec.bin files already somewhere in your house. 
 
 Features :
 ----------
