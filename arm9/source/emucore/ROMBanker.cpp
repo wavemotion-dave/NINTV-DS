@@ -63,9 +63,12 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             {
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
                 UINT32 *ptr = (UINT32 *)rom->peek_image_address();
+                
                 UINT32 *dest = (UINT32 *) &fast_memory[(address&0xF000) + (rom->getReadAddress() & 0xFFF)];
 
-                for (int i=0; i<256; i++)
+                // Paddle Party has odd paging of a 2K bank at $4800 (virtually all other page-switching games use 4K banks)
+                int blocks = (rom->getReadAddress() & 0x800) ? 128:256;
+                for (int i=0; i<blocks; i++)
                 {
                     // Partially unroll loop for a tiny speedup and 32-bits at a time for max speed
                     *dest++ = *ptr++;  *dest++ = *ptr++; *dest++ = *ptr++; *dest++ = *ptr++;
@@ -75,7 +78,7 @@ ITCM_CODE void ROMBanker::poke(UINT16 address, UINT16 value)
             else if (gBankerIsMappedHere[address>>12][value&0xF] == 0)   // Nothing is here... nothing will be swapped in... We need to check the main memory as there may be an unswapped bank in there...
             {
                 UINT16 *fast_memory = (UINT16 *)0x06860000;
-                for (int i=(address&0xF000)  + (rom->getReadAddress() & 0xFFF); i<=((address&0xF000)|0xFFF); i++)
+                for (int i=(address&0xF000)  + (rom->getReadAddress() & 0xFFF); i<=((address&0xF000)|((rom->getReadAddress() & 0x800) ? 0x7FF:0xFFF)); i++)
                 {
                     fast_memory[i] = currentEmu->memoryBus.peek_slow(i);
                 }

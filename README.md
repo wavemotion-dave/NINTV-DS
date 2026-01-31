@@ -188,7 +188,8 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V6.3a : 12-Jan-2026 by wavemotion-dave
+V6.3b : 30-Jan-2026 by wavemotion-dave
+  * Fix for Paddle Party which does a half-bank page at $4800.
   * Minor improvement for STIC register handling for improved accuracy.
   * Fix for Screen Snapshot (L+R+Y).
   * Slight tweaks to a few older overlays.
