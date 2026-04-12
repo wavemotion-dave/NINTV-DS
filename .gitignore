@@ -1,0 +1,8 @@
+
+arm7/build/
+
+arm9/build/
+
+*.elf
+
+one-off-not-version-controlled/
