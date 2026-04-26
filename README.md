@@ -1,8 +1,10 @@
 # NINTV-DS
 NINTV-DS (aka Nintellivision) is an Intellivision console emulator running on the DS/DSi.
 
-
 ![Nintellivision Logo](png/nintellivision.png)
+
+Nintellivision is free to download and use... but if you have found anything I've done to
+be useful, buy me a virtual coffee here:  https://ko-fi.com/wavemotiondave
 
 Install :
 ----------
