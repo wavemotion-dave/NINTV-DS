@@ -1,6 +1,6 @@
 // ----------------------------------------------------------
 // NINTV-DS Global Manual File v1.0
-// Last updated 3-Dec-2021
+// Last updated 07-June-2026
 // Place this file with your roms or in wherever
 // your config says your .man files should be.
 //
@@ -2256,6 +2256,424 @@ may reach 1,000,000 a total of
 255 times - for a possible score
 of 255,999,900. GOOD LUCK!!!
 
+
+//==============================
+// CHRISTMAS CAROL
+//==============================
+$5CCF8B59
+CHRISTMAS CAROL
+(c)2012 James Pujals/Left Turn
+Only, LLC
+
+'Twas the night before Christ-
+mas... While Santa and his elves
+were busy getting ready for
+their most important night of
+the year, an Evil Snowman broke
+into Santa's Workshop and stole
+some of the presents! With no
+time to lose, Santa has sent one
+of his most trusted and
+resourceful elves, Carol Green-
+leaf, to confront the fiend and
+bring back the stolen gifts.
+
+Meanwhile, the Evil Snowman has
+hidden the loot deep in the
+Frozen Ice-Cube Caverns, nestled
+away in the Himalayan mountains.
+The caves are haunted by the
+legendary Ghost Of Christmas
+Presents, who is very fond of
+wrapped packages and will not
+easily part from his newly
+acquired treasure.
+
+As Carol, you must explore the
+dark and frozen caverns to
+retrieve all the presents before
+the Evil Snowman returns, and
+without attracting too much
+attention from the Ghost Of
+Christmas Presents. You are on a
+mission. The children of the
+world are counting on you...
+Can you save Christmas?
+
+CONTROLS:
+---------
+DISC - Guide Carol
+ENTER - Begin Game
+CLEAR - Practice Any Stage
+
+OBJECTIVE:
+----------
+Guide Carol through the maze-
+like caverns to pick up all the
+Christmas presents while avoid-
+ing her enemies. Along the way,
+pick up candy and magical snow-
+flakes that award you additional
+points and help you on your
+adventure.
+
+STARTING THE GAME:
+------------------
+At the title screen, press the
+button labeled START on your
+controller to begin Carol's
+adventure. Her adventure spans
+several stages, each set in a
+different cavern where she must
+collect all the presents to save
+Christmas. If Carol succeeds,
+she will earn a higher rank
+among Santa's Elite Elf Squad.
+
+To practice a particular stage,
+press the button labeled
+PRACTICE at the title screen.
+
+PLAYING THE GAME:
+-----------------
+The Evil Snowman has hidden the
+presents throughout the Frozen
+Ice-Cube Caverns. Each new
+cavern Carol encounters is
+trickier and more challenging
+than the one before it. Whether
+through carefully honed skills
+or by keen strategy, it is up to
+you to guide Carol successfully
+through.
+
+ICE-CUBE CAVERNS -- Acquaint
+yourself with the cavern at the
+start of each level. You have a
+brief moment to examine its
+layout, as well as where the
+Snowman has stashed the presents
+before everything sets in motion.
+Carol must collect all eight
+presents before she can proceed
+to the next challenge, deeper in
+the Frozen Ice-Cube Caverns.
+
+EXPLORING THE CAVERNS:
+----------------------
+Use the DISC to guide Carol
+through each cavern while avoid-
+ing her enemies. Carol only
+walks in straight lines, and
+will keep moving in the same
+direction until she hits an ob-
+stacle or you direct her other-
+wise. Tap the DISC up, down,
+left or right and Carol will try
+walking in that direction.
+
+To quickly get from one side of
+the cavern to the other, guide
+Carol to one of the tunnels at
+the left and right edges of the
+cave. These magical tunnels
+whisk Carol from one side of the
+cavern to the other instantly.
+In some caverns, this may be the
+only way Carol can reach all the
+presents!
+
+PICKING UP ITEMS -- In addition
+to presents, Carol will auto-
+matically pick up all the candy
+and magical snowflakes you guide
+her to. The more items Carol
+collects, the better your score.
+Be careful though, because Carol
+slows down a little while
+picking something up!
+
+CAROL'S ADVENTURE:
+------------------
+To save Christmas, you must
+guide Carol through all eight
+stages of her journey. Carol's
+adventure concludes once she
+collects all the presents the
+Evil Snowman hid in the Frozen
+Ice-Cube Caverns.
+
+Carol reaches a new stage of her
+adventure every two levels. Each
+stage introduces a new cave for
+Carol to explore. Each new stage
+of the adventure opens with a
+short scene telling its story.
+Some scenes introduce new char-
+acters, while others recount
+amusing moments along her trek.
+Press the START button if you
+would rather get straight to
+adventuring.
+
+SAVING CHRISTMAS -- The final
+stage of Carol's adventure will
+require extra effort. This cave
+is nestled deep in the Himalayas
+and contains new surprises. If
+you guide Carol this far, Santa
+will give you one extra chance
+to master its unique challenges.
+
+Once Carol finishes this last
+stage, congratulations! With
+your help, Carol has saved
+Christmas from the Evil Snowman!
+Her work is not done, however.
+The Evil Snowman gets trickier
+every year, and Santa will once
+again ask Carol to save
+Christmas when he strikes again.
+
+THE ADVENTURE CONTINUES:
+------------------------
+SANTA'S ELITE ELF SQUAD -- Carol
+Greenleaf begins her adventure
+as a novice among Santa's Elite
+Elf Squad. When Carol success-
+fully saves Christmas, she earns
+a higher rank among her fellow
+elves. Santa will send her to
+face bigger challenges the next
+time he asks her to save Christ-
+mas. The Elite Elf Squad has
+four ranks: Novice, Helper,
+Ranger and Master. Can you guide
+Carol to the top of the Elite?
+
+BACK TO THE NORTH POLE -- If the
+Evil Snowman catches Carol, he
+freezes her, stopping her adven-
+ture right in its tracks. Santa
+then has to use his magic to
+thaw her back out again! Santa
+will always thaw Carol back out,
+but will only give her so many
+chances to complete her mission.
+The game displays the number of
+chances you have left in the
+upper left corner of the screen.
+
+Carol will work tirelessly to
+save Christmas for as long as
+Santa asks her to. Santa will
+whisk her home to safety, though,
+if she gets frozen too many
+times. When that happens, the
+game is over. Once the game
+ends, tap the DISC or any button
+on your controller to return to
+the title screen.
+
+PRACTICING FOR THE ADVENTURE:
+-----------------------------
+Carol's adventure is a difficult
+one and you may not make it
+without some practice. You can
+practice specific stages of her
+journey at various difficulty
+levels to hone your skills.
+
+NAVIGATING THE MENU -- Use the
+DISC to select the stage to
+practice and the rank you wish
+to practice at. Press left or
+right to select a stage. Press
+up or down to select the rank.
+Remember: Higher rank elves take
+on greater challenges! Press the
+button labeled START to practice
+the cavern. You cannot practice
+the final stage of Carol's jour-
+ney. Carol can only reach there
+by adventuring through the other
+caverns.
+
+MEET THE CHARACTERS:
+--------------------
+Carol Greenleaf -- Smart,
+ resourceful, and with beautiful
+ golden hair, Christmas Carol is
+ highly regarded around the
+ North Pole. Her sharp skills
+ and sagacity have quickly risen
+ her through the ranks of
+ Santa's Elite Elf Squad.
+
+The Ghost Of Christmas Presents-
+ Likes to roam around his cave
+ tending his parcels. He's hard
+ of hearing and won't notice
+ Carol rummaging around. However,
+ he is very keen on protecting
+ his presents, and may be
+ alerted if someone tries to
+ take them.
+
+The Evil Snowman -- The Evil
+ Snowman is busy plotting his
+ next caper, so Carol has not
+ much to worry for the moment.
+ However, she would be wise to
+ not spend too much time looking
+ around, for the Evil Snowman
+ may return at any time. Heed
+ the Snowman's howl, for it
+ warns you of his impending
+ attack!
+
+T.O.M.Bot 3k a.k.a.The Bad Toy--
+ The Toy Of Mischief 3000, or
+ T.O.M.Bot 3k, can be found in
+ most little boy's Christmas
+ Lists this year. However, don't
+ be fooled by its cute and mild
+ demeanor, this toy is designed
+ for mischief, to the chagrin of
+ mothers everywhere! This one is
+ especially naughty, for the
+ Evil Snowman has reprogrammed
+ it to aid his foul deeds.
+
+KNOW THE ITEMS:
+---------------
+Ice Cube -- What can be said
+ about an ice cube? It's made of
+ water, and it is very cold and
+ hard. Ice cubes grow naturally
+ to form the walls of the Frozen
+ Ice-Cube Caverns, and give them
+ their distinct structure and
+ appearance.
+
+Christmas Present -- There are
+ eight of these presents scat-
+ tered around each cave, and
+ Carol will not leave a cave
+ before retrieving every single
+ one of them. Picking up a
+ parcel will alert the Ghost to
+ Carol's presence. But don't
+ fret, he is known to be absent-
+ minded and will soon forget
+ what happened, and resume his
+ stroll around the place.
+
+Bon-Bon Candy -- Being an elf,
+ Carol loves candy, and will eat
+ as much of it as she can find.
+ The Ghost left some of his own
+ Halloween loot lying around the
+ floor of his caves. But be
+ careful, Carol has a tendency
+ to slow down while eating candy
+ on the run!
+
+Magical Snowflake -- Deep within
+ the Frozen Ice-Cube Caverns,
+ there are some very peculiar
+ snowflakes enchanted with the
+ magic of yore. It is said that
+ eating a magical snowflake
+ stuns the feebleminded and
+ dulls the senses of everyone
+ around you. Carol will be wise
+ to respect the magic of these
+ snowflakes and only use them
+ when absolutely necessary.
+
+SCORING:
+--------
+Candy                      1 pt
+Magical Snowflake          3 pts
+Christmas Present          5 pts
+Perfect Level Bonus  10x Multplr
+
+Your score increases as Carol
+collects items in the Frozen
+Ice-Cube Caverns. You earn an
+additional Perfect Level Bonus
+if Carol collects all the items
+in a level without getting
+frozen. This bonus increases as
+you complete more stages.
+
+The playing field only displays
+four digits of your score. As
+your score increases above 9,999
+points, its color changes based
+on how many total points you
+have earned:
+
+Green                0 -   9,999
+Yellow          10,000 -  19,000
+Orange          20,000 -  29,000
+Red             30,000 -  39,000
+Purple          40,000 -  49,000
+Pink            50,000 -  59,000
+White           60,000 -  69,000
+Grey            70,000 -  79,000
+Peach           80,000 -  89,000
+Light Green     90,000 -  99,000
+Dark Green     100,000 - 109,000
+Brown          110,000 - 119,000
+Blue           120,000 - 129,000
+Purple         130,000 - 139,000
+Turqoise       140,000 - 149,000
+
+If you earn enough points, Santa
+will award Carol with an addi-
+tional chance to save Christmas.
+Carol gets her first additional
+chance at 300 points, and her
+second at 750 points. Santa
+awards additional chances at
+progressively wider intervals.
+
+TIPS AND TRICKS:
+----------------
+1. Magical snowflakes stun the
+Ghost and confuse the Snowman.
+Use them strategically.
+
+2. The Ghost won't hurt Carol,
+but he will take presents back
+if given the chance. Watch out!
+
+3. Avoid the Evil Snowman at all
+costs. He freezes Carol in her
+tracks, requiring Santa's help.
+
+4. Carol zig-zags faster than
+anyone. Use her nimbleness to
+wriggle away from enemies and to
+throw them off her trail.
+
+5. The Ghost's attention wanders
+almost as much as he does. Try
+to pick up presents when he's
+distracted.
+
+6. The Snowman's howl warns you
+that he is about to enter the
+cave. Make sure to move away
+from the side tunnels quickly,
+so as not to get in his way.
+
+7. Magical snowflakes have a
+tendency to re-generate when you
+need them the most.
+
 //==============================
 // D2K ARCADE
 //==============================
@@ -2689,6 +3107,296 @@ direction, forcing them down
 ladders and away from you!
 
 //==============================
+// DEFENDER
+//==============================
+$d8f99aa2
+DEFENDER
+(c)1983 ATARI, INC.
+
+MISSION: DEFENDER
+-----------------
+Aliens from a distant solar
+system are swarming over the
+planet Humanis. They're kid-
+napping Humanoids and mutating
+them into a permanent part of
+the alien force. Their mission
+is to transform all the
+Humanoids before destroying the
+entire planet. First, they
+infest the planet with Landers
+which close in on the planet,
+abducting the Humanoids. Then
+the attack intensifies. Baiters,
+Swarmers, and Bombers terrorize
+the skies. And then, when you
+least expect it, a deadly Pod
+collides with your Spaceship,
+and blasts you to pieces.
+
+CONTROLS:
+---------
+DISC - Move Defender
+LOWER SIDE BUTTONS - Missiles
+TOP SIDE BUTTONS - Smart bomb
+ANY KEYPAD BUTTON - Hyperspace
+
+Press DISC to begin game.
+
+YOUR MISSION:
+-------------
+As Captain of the Spaceship
+Defender, your mission is to
+destroy the alien force and save
+the Humanoids. Your speed and
+skill have earned you this
+heroic mission. When Humanoids
+are abducted, you'll have to
+destroy the Lander and catch the
+falling Humanoids before return-
+ing them to the planet below.
+
+DEFENSE STRATEGY:
+-----------------
+The Spaceship Defender has full-
+range scanning equipment which
+enables you to employ seek-and-
+destroy tactics. Defender dis-
+charges fatal missile fire at
+the push of a button. You also
+have two escape options for a
+last resort course of action:
+hyperspace and smart bombs.
+Report immediately for this
+dangerous mission!
+
+GAME PLAY:
+----------
+As Captain of the Spaceship
+Defender, your mission is to
+destroy the aliens before all of
+the Humanoids are transformed to
+Mutants. You score points for
+each alien you destroy and for
+each Humanoid you save. Try not
+to shoot your Humanoids; they
+are worth a bonus at the end of
+each alien attack wave.
+
+Each game begins with three
+Defender lives and three smart
+bombs. When Defender collides
+with an alien, or is hit by an
+alien mine, it explodes. If it's
+the last life, the game ends. If
+any lives remain, another
+Defender ship appears on the
+scene. The number of lives
+remaining and smart bombs
+remaining is displayed at the
+upper portion of the screen.
+
+The aliens attack in waves; each
+wave becomes increasingly more
+difficult. When Defender
+destroys all the aliens in the
+first wave, another wave of
+aliens moves in. The longer that
+Defender survives, the harder
+the alien attacks become. At the
+end of each wave, the wave
+number and bonus points earned
+flash on the screen.
+
+The alien force is made up of
+six different types of ships:
+Landers, Bombers, Swarmers,
+Baiters, Mutants, and Pods.
+Landers are the first to appear.
+They search the planet for
+Humanoids to kidnap and mutate.
+Bombers lay mines to trap you.
+You cannot shoot mines, so it's
+best to avoid them. Swarmers are
+housed in Pods. Several Swarmers
+are released each time a Pod is
+destroyed. They track you very
+closely, so kill them the
+instant they appear. Baiters
+usually appear near the end of a
+wave. They're large, they shoot
+fast and they move faster than
+Defender. A mutant is a trans-
+formed Humanoid. Mutants are
+very dangerous; use all your
+energy to destroy them. If the
+Landers transform all the Human-
+oids into Mutants, the entire
+planet explodes. The most deadly
+alien of all is the mother ship,
+also known as a Pod. When
+destroyed, it releases five or
+six Swarmers.
+
+YOUR DEFENSE:
+-------------
+Defender fires missiles to blast
+the alien ships. But when things
+look real bad, Defender can use
+either a smart bomb or hyper-
+space. You have three smart
+bombs which blow up every alien
+in sight. With every 10,000
+points, you earn another smart
+bomb and another Defender life.
+When you use a smart bomb, you
+earn points for every alien it
+destroys on the screen.
+
+Hyperspace enables Defender to
+disappear, warp through time and
+space and reappear somewhere on
+the screen. Hyperspace can be
+tricky and dangerous. Sometimes
+invisible space matter can blow
+up your spaceship.
+
+USING THE SCANNER:
+------------------
+Your scanner is located at the
+top right corner of the screen.
+It works like a radar screen to
+reflect alien attacks in your
+viewing screen and at long range
+distances. The scanner provides
+the following important
+information:
+
+1. How many aliens are approach-
+   ing, the type of alien, and
+   what their positions are.
+2. Where the Humanoids are being
+   abducted by Landers.
+ 
+Each blip on the scanner repre-
+sents an object in the game.
+Your playing area is bracketed
+by short lines in the center of
+the scanner. Get into the habit
+of monitoring the scanner to
+destroy the aliens and defend
+the Humanoids.
+
+RESCUING HUMANOIDS:
+-------------------
+Here's where the heroics come
+in. Your mission is to destroy
+the aliens while you protect the
+Humanoids. At the end of each
+wave you score 100 bonus points
+for every Humanoid survivor,
+multiplied by the number of the
+wave (up to a maximum of 500
+bonus points).
+
+All the Humanoids are stranded
+helplessly on the planet at the
+bottom of the screen. You are
+their only hope for survival.
+When a humanoid is being
+abducted by a Lander, you'll
+hear their cry for help. Go to
+their rescue immediately. The
+scanner is the fastest way to
+spot their position.
+
+There are two techniques for
+rescuing a Humanoid:
+
+1. Destroy the Lander and let
+   the Humanoid fall back to the
+   planet. 
+2. Destroy the Lander, catch the
+   Humanoid, and carry them back
+   to the planet. 
+
+Letting the Humanoid fall to the
+planet is only effective if they
+are close enough to land safely.
+Catching a Humanoid in midair is
+more difficult and is worth more
+points. To catch a Humanoid,
+shoot the Lander and maneuver
+Defender to touch the Humanoid,
+then bring him back to the
+planet. If you succeed, you earn
+1,000 points plus 150 points for
+destroying the Lander. If you
+catch the Humanoid but don't
+return them, you earn 500 points
+plus the 150 points for destroy-
+ing the Lander. You may carry
+any number of Humanoids at a
+time. If you are carrying
+Humanoids at the end of a wave,
+they count as survivors.
+
+MUTANT TAKEOVER:
+----------------
+If Defender does not succeed in
+protecting a Humanoid, a Lander
+will carry the Humanoid up into
+space and transform them into a
+Mutant. Mutants then return to
+attack the planet. If all of the
+Humanoids become Mutants, the
+planet will explode. You can
+continue playing to score points.
+If you continue to survive past
+the next four waves, all Human-
+oids will be reincarnated, and
+the planet will be rebuilt.
+
+SCORING:
+--------
+Your score appears at the top
+left side of the screen. Lives
+remaining and smart bombs
+remaining are displayed next to
+the score. At the end of each
+wave, your bonus points are
+tallied. You earn an additional
+Defender life and smart bomb
+every 10,000 points.
+
+HELPFUL HINTS:
+--------------
+1. One of the most important
+strategies to remember is to
+keep moving and firing at the
+same time. Your continuous
+firing will build a wall of fire
+to protect Defender. 
+
+2. Fly low. Most good DEFENDER
+players seldom fly more than two
+inches above the planet. This
+helps to protect the Humanoid.
+
+3. Destroy the Landers, but
+don't shoot your Humanoid.
+
+4. Listen to the game sounds.
+When you hear a Humanoid's cry
+for help, go to their rescue.
+
+5. Learn to use the scanner. Try
+playing DEFENDER using only the
+scanner. When you learn to rely
+on it, it will help you improve
+your score. 
+
+//==============================
 // DIG DUG
 //==============================
 $159AF7F7
@@ -3086,6 +3794,178 @@ BLUE PLATE SPEC.-All You Can Eat
 Non-Flashing Food Ball: 1000 pts
 Flashing Food Ball:
  END OF SPECIAL & LOSS OF 1 TURN
+
+//==============================
+// DONKEY KONG JUNIOR
+//==============================
+$6df61a9f
+DONKEY KONG JUNIOR
+(c)2018 INTELLIVISIONREVOLUTION
+
+Junior to the rescue! Mario has
+locked up Papa Donkey Kong, and
+Junior must hurry through a
+treacherous jungle to free him.
+Racing against time, Junior
+climbs and swings across vines
+and avoids dangerous creatures,
+all to reach a flashing key to
+release his Papa.
+
+Four different scenarios await
+Junior. In his first mission,
+deadly Snapjaws patrol the path.
+In the next phase he must avoid
+the Nitpickers and use a spring-
+board and a moving platform to
+climb chains and retrieve the
+key. Mario's Hideout is an elec-
+trified lair with even more
+highly-charged hazards to
+contend with. In the fourth
+stage, Junior must push keys to
+the top of long chains to open
+six locks, all while avoiding
+clever opponents.
+
+If he completes every scenario,
+he must climb the vines again,
+but this time it's tougher! Can
+you help Junior save his father?
+
+CONTROLS:
+---------
+DISC- Move Junior
+ANY SIDE BUTTON - Jump
+Press 1+9 together to pause game
+
+OBJECT OF THE GAME:
+-------------------
+Navigate all four of the game's
+stages and use the keys to free
+Papa Donkey Kong before the
+timer runs out.
+
+SELECT OPTIONS:
+---------------
+When the game menu appears,
+select the settings you want to
+use when you play.
+
+Level Order -- Choose USA/Japan
+order for the four stages Junior
+must complete to get the keys.
+
+Title -- Select from two differ-
+ent styles of title screens.
+
+Start Lives -- Begin the game
+with 3 to 6 lives.
+
+Bonus Life -- Earn extra lives
+for reaching 10,000, 15,000,
+20,000, or 25,000 points.
+
+Sound Test -- Hear the game's
+music and sound effects.
+
+HOW TO PLAY:
+------------
+Running -- If Junior is on a
+platform, press LEFT or RIGHT on
+the DISC to make him run.
+
+Climbing -- If Junior is on a
+vine or chain, press UP to make
+him climb. Press DOWN to make
+him slide down a vine or chain.
+Tip: Climbing two vines or
+chains at once is faster than
+climbing just one.
+
+Swinging --  Press LEFT or RIGHT
+while Junior is on a vine or
+chain to make him swing.
+
+Jumping -- Press any SIDE ACTION
+BUTTON to make Junior jump while
+he's running or standing still.
+
+THE VINES STAGE:
+----------------
+Junior's first challenge is to
+capture the flashing blue key at
+the top of the screen and unlock
+the cage holding Papa Donkey
+Kong. Make him jump to a vine
+and begin climbing, but watch
+out for the Snapjaws that Mario
+sends to try to stop him. Pluck
+the fruit or drop it on a Snap-
+jaw to earn extra points! While
+he climbs, the Bonus Timer is
+counting down. The number
+remaining when you capture the
+key is added to your score. But
+if time runs out first, Junior
+is eliminated!
+
+THE SPRINGBOARD STAGE:
+----------------------
+A springboard at the bottom of
+the screen can help Junior reach
+the chains hanging from the
+moving platform. If you time his
+jump just right, he can really
+fly! Watch out for the Nitpicker
+birds, who can make Junior fall.
+They also like to drop their
+eggs at the worst possible time.
+
+MARIO'S HIDEOUT:
+----------------
+Mario has Papa Kong locked up in
+his electrically charged
+hideout. The path to the top is
+simple enough, but watch out for
+the Sparks! Yellow Sparks always
+follow their circuit path. Blue
+Sparks, however, take unpredict-
+able paths traveling from
+circuit to circuit. If Junior
+touches any of them, the results
+will be shocking!
+
+THE CHAINS STAGE:
+-----------------
+Junior has to use six keys to
+open six locks to free his Papa.
+He can move two keys up the
+chains at once, but he's got to
+be extra careful. Mario is send-
+ing both Snapjaws and Nitpickers
+out to thwart him! If Junior can
+release Papa Kong, the game
+returns to the Vines Stage and
+continues based on the level
+order selected earlier.
+
+SCORING:
+--------
+Jump over 1 opponent     100 pts
+Jump over 2+ opponents   300 pts
+Place a key into a lock  200 pts
+Pick a fruit             400 pts
+Hit opponent with fruit:
+  1st opponent           800 pts
+  2nd opponent         1,200 pts
+  3rd/4th opponent     1,600 pts
+
+Bonus points for time remaining.
+
+PLAY AGAIN!
+-----------
+Press DISC to start another game.
 
 //==============================
 // DWARVEN MINE
@@ -3728,6 +4608,433 @@ for a full year and reunite with
 your sweetheart?
 
 //==============================
+// GOONINUFF
+//==============================
+$71c2c0bf
+(c)2021 CARLOS MADRUGA,
+COLLECTORVISION
+
+The Gooninuff gang thought they
+had hit it big when they found
+this cave system that supposedly
+had some treasure inside.
+Instead, they found plenty of
+enemies and got captured one by
+one. You are the only Gooninuff
+who managed to escape. However,
+a Gooninuff never leaves others
+behind! It is time to free your
+buddies and escape these haunted
+caves.
+
+CONTROLS:
+---------
+DISC - Move/climb, navigate menu
+TOP SIDE BUTTONS - Jump
+LOWER SIDE BUTTONS - Punch
+[0-9] - Enter code
+
+OBJECT OF THE GAME:
+-------------------
+The game has five stages. Your
+objective in each stage is to
+rescue seven buddies, who are
+locked in cells located through-
+out the cave system. Once every-
+one is rescued, exit the stage
+through a special blue door.
+That door will not open before
+all seven buddies are rescued.
+
+GETTING STARTED:
+----------------
+At the title screen, select
+between START or OPTIONS by
+pressing the DISC. To execute an
+option, press any SIDE BUTTON.
+
+Also while at the title screen,
+use the keypad to enter special
+four-digit codes. Digits entered
+will show up at the bottom of
+the screen. Once the fourth
+digit is entered, the game will
+determine if the code is valid.
+If yes, it will be executed
+immediately. Otherwise, it will
+be ignored.
+
+SPECIAL FOUR-DIGIT CODES:
+-------------------------
+1985 -- Starts game at Stage 2
+1930 -- Starts game at Stage 3
+1946 -- Starts game at Stage 4
+0114 -- Starts game at Stage 5
+1610 -- Shows ending sequence
+1002 -- Activates debug mode and
+        starts game at Stage 1
+
+Using special codes to advance
+levels will NOT automatically
+upgrade the player's HP, XP or
+abilities. That means the game
+will in practice be harder than
+if the player had naturally
+progressed starting from Stage 1.
+
+OPTIONS MENU:
+-------------
+Use DISC to navigate options.
+Press any SIDE BUTTON to change
+skill and music options shown.
+
+Available SKILL Levels:
+
+NORMAL -- Character starts with
+  12 HP, and at Level 0 (can't
+  punch initially).
+HARD -- Character starts with
+  just 8 HP, but at Level 1 (can
+  punch from the start). Charac-
+  ter WILL NOT advance levels,
+  even if XP is accumulated.
+  Skulls and pendulums move fast.
+
+SFX TEST -- Press DISC right or
+  left to select sounds. Press
+  SIDE BUTTON to play them again.
+
+EXIT -- Return to title screen.
+
+KEYS:
+-----
+Pick up yellow blinking keys to
+open cells. Some cells require
+one key to open them, other
+cells require two keys. Either
+way, note that you can only
+carry one key at a time. When a
+cell is opened, it may reveal a
+Gooninuff buddy to be rescued.
+If that's the case, just walk by
+that buddy to rescue them.
+
+The buddy/key indicator on the
+upper right-hand corner of the
+screen will indicate how many
+buddies were rescued and whether
+the protagonist is currently
+carrying a key. It is important
+to familiarize yourself with how
+that indicator works, as it is
+critical to gameplay:
+
+1. If only a number is shown,
+that indicates the number of
+buddies rescued so far, and that
+no keys are being carried.
+Remember your goal is to rescue
+seven buddies on each stage, and
+once that number is reached, the
+indicator will start blinking.
+You should then start looking
+for a blue end of stage door.
+
+2. If a key is being carried, it
+will show as an icon on top of
+the number of rescued buddies.
+
+Keys can sometimes be found
+inside niches. However, niches
+may also contain different
+things. Some may even function
+as spawn points for dangerous
+enemies, so be careful!
+
+HAZARDS:
+--------
+Avoid water drops or your char-
+acter will get injured and lose
+hit points (HP). Waterfalls pre-
+sent another type of hazard.
+Avoid getting caught under them
+by keeping an eye on water ducts
+and assessing the duration and
+frequency of waterfalls. Water-
+falls can be either red or blue,
+but both function the same way
+and are equally harmful. A third
+way in which water can injure
+the protagonist is through water
+pipe leaks. Some screens may
+have pipes running all over the
+place, some in bad shape. Avoid
+the high pressure jets!
+
+Stalactites may also fall from
+the ceiling, but not all of them
+will. Better to err on the side
+of caution and advance slowly
+when walking under a stalactite!
+
+Fire rising from the ground will
+also be a issue on advanced
+levels. There is no good way to
+jump over fire without taking
+damage, so it's better to avoid
+it if possible.
+
+Collapsing walls will also pre-
+sent an additional annoyance on
+advanced levels, blocking your
+way on certain screens.
+Collapses are triggered by
+merely walking by certain spots.
+It is impossible to identify
+those spots beforehand.
+
+Pendulums present on some
+screens are intended to work as
+primitive traps left by former
+cave dwellers. Be careful around
+those! Pendulums can be ridden
+like elevators if your character
+steps on top of them. Just be
+careful not to get crushed and
+die instantly as the pendulum
+approaches the ceiling! Like-
+wise, being crushed underneath a
+pendulum as it hits the ground
+means instant death.
+
+Some screens incorporate one or
+more skull portals. Those enable
+your character to reach differ-
+ent sub-sections of the cave
+system, otherwise not accessible
+by just walking around. To enter
+a skull portal, press DISC up
+while standing in front of it.
+Likewise, an open end of stage
+door can be entered the same
+way. Remember those will only
+open when seven buddies are
+rescued.
+
+HIT POINTS:
+-----------
+Whenever your character gets
+injured, they will quickly blink
+black and white, and a health
+bar will appear temporarily on
+top of them. If you reach zero
+HP, the bar will stay on screen
+and keep blinking. That blinking
+indicates imminent death.
+
+There are three ways to replen-
+ish HP back to the max level:
+
+1. By picking up health potions
+located inside some cells.
+Unfortunately, it is impossible
+to know which cells contain them
+without opening them first.
+
+2. By advancing to next stage.
+
+3. By leveling up your character
+through accumulation of experi-
+ence points (XP). Only applies
+to NORMAL skill level, not HARD.
+
+ITEMS:
+------
+Sometimes when an item is picked
+up, it will trigger the discov-
+ery of a sack. Sacks will give
+your character a boost to
+experience points (XP). Thor-
+oughly explore each stage to
+find all sacks.
+
+ENEMY TYPES:
+------------
+The cave system is unfortunately
+packed with different types of
+enemies, some tougher than
+others.
+
+Skulls -- The most common and
+  basic type of enemy. A good
+  punch will take care of them,
+  and they will not respawn un-
+  less you leave the screen and
+  come back later. The bouncing
+  skull is a variant that can't
+  be jumped over.
+
+Bats -- Will spawn in certain
+  niches and fly around the
+  screen. They will dive and
+  attack the protagonist when-
+  ever they get close to him.
+  Bats can vertically cross
+  platforms by following vines.
+  Bats will respawn quickly if
+  killed.
+
+Skeletons -- Can be found start-
+  ing at Stage 2, and will throw
+  bones at the player whenever
+  they get line of sight. Both
+  bones and skeletons can be
+  destroyed with punches,
+  however, skeletons will
+  quickly respawn.
+
+Ghosts -- The most dangerous
+  type of enemy, and only show
+  up at advanced levels. Ghosts
+  will immediately chase the
+  player while ignoring any ob-
+  stacles. It's not easy to kill
+  them... it takes 3 punches to
+  do so. Once punched, ghosts
+  will switch to yellow, then
+  red, before getting killed. As
+  if those things are not
+  enough, ghosts will also
+  respawn once killed.
+
+Yellow Gangsters -- They are
+  outlaws and generally bad
+  news! They will chase your
+  character around relentlessly.
+  Punches will temporarily stun
+  them, and they can't be killed
+  like other enemy types. Those
+  guys are armed, so watch out
+  for bullets... either jump
+  those or get out of the way.
+
+CHARACTER LEVELING SYSTEM:
+--------------------------
+Please note leveling up does not
+work if playing in HARD skill
+level. The leveling system is
+intended to reward players for
+taking risks and exploring each
+stage really well. On the other
+hand, one can still finish the
+game without a lot of explora-
+tion, but missing out on addi-
+tional HP and abilities.
+
+Lvl    XP Stage Abilities
+--- ----- ----- ----------------
+0       0   -   Can't punch, std
+                 jump, std speed
+1     300   1   +HP, can punch
+2   1,000   2   +HP
+3   2,000   3   +HP, jump longer
+4   3,200   4   +HP
+5   5,000   5   +HP, super speed
+
+For instance, you won't be able
+to upgrade your character all
+the way to level 4 while still
+playing Stage 1. Level 4 can
+only be reached once you reach
+stage 4 at a minimum.
+
+How to gain XP:
+---------------
+Killing Skulls             5 pts
+Killing Bats              10 pts
+Killing Skeletons         10 pts
+Killing Ghosts            30 pts
+Opening Cells             50 pts 
+      (no matter what is inside)
+Picking Up Sacks         100 pts
+
+CONTINUING THE GAME:
+--------------------
+Players get one chance to con-
+tinue the game, regardless of
+skill setting. Press SIDE BUTTON
+before time runs out to continue
+the game. Continuing takes
+players to the beginning of the
+current stage. All rescued
+buddies are lost. If you die
+again, the game will be over.
+
+FINISHING THE GAME:
+-------------------
+Once all five stages are com-
+pleted, enjoy the end of game
+sequence and credits. But... is
+it really the end of the story?
+
+TIPS:
+-----
+1. Best way to evade the Yellow
+Gangsters is to go to the next
+screen as soon as possible. They
+won't come after you. Also
+notice punching them will not
+give you any XP, so don't deal
+with them more than you have to!
+
+2. Ghosts will back away briefly
+when punched... use that to your
+advantage and get out! Ghosts
+are temporarily immune to damage
+once punched, so time your
+defensive moves appropriately.
+
+3. When playing on NORMAL skill
+setting, if your character is
+gaining a level at the beginning
+of each stage, you are probably
+doing it right.
+
+4. Grinding for XP by killing
+skulls or something like that is
+not worth it. The max level you
+can reach at each stage is
+capped.
+
+5. When playing on HARD skill
+level, it's not worth taking
+risks to look for sacks. Those
+will only give you XP, but you
+can't upgrade your character
+anyway.
+
+DEBUG MODE COMMANDS:
+--------------------
+Use these while in game. Will
+only work if special code '1002'
+was entered previously at the
+title screen. Use the KEYPAD to
+execute the following:
+
+1 - Returns to title screen
+2 - Shows player level and XP
+3 - Advances stage and player
+    HP, XP, and abilities in
+    order to simulate typical
+    game progression.
+4 - Goes back one screen
+5 - Goes forward one screen
+6 - Teleports player to random
+    location within curr. screen
+    (useful if stuck)
+7 - Shows stage # and screen #
+
+//==============================
 // GRAIL OF THE GODS
 //==============================
 $ef662b2b
@@ -4164,6 +5471,66 @@ since it is easier than trying
 to go under a lava ceiling.
 
 //==============================
+// INTLE
+//==============================
+$1355cf87
+$7222f6c4
+$2fc602df
+INTLE
+(c)2022 CARLOS MADRUGA,
+PERIPHERAL, FIRST SPEAR
+
+Based on WORDLE by Josh Wardle.
+Original version includes 2,500
+words! "Peripheral" version
+includes over 5,000 words!
+
+CONTROLS:
+---------
+DISC- Move keyboard cursor
+ANY SIDE BUTTON- Apply letter
+CLEAR- Backspace
+ENTER- Submit word
+[1]- Receive one letter as tip
+
+Peripheral Version Only:
+[2]- Toggle blinking cursor
+[3]- Music on/off
+[4]- Move cursor 6 letters left
+[6]- Move cursor 6 letters right
+[7]- Move cursor leftmost pos.
+[9]- Move cursor rightmost pos.
+
+HOW TO PLAY:
+------------
+Guess the INTLE in six tries.
+Each guess must be a valid five
+letter word. Hit ENTER to
+submit. After each guess, the
+color of the tiles will change
+to show how close your guess is
+to the word.
+
+TILE COLORS:
+------------
+GREY -- The letter is not in the
+  word in any spot.
+
+GREEN -- The letter is in the
+  word and in the correct spot.
+
+ORANGE -- The letter is in the
+  word but in the wrong spot.
+
+TIP:
+----
+Enter "1" on the keypad to
+receive one letter as a tip. Can
+be any letter from the hidden
+word. Only one tip allowed per
+game.
+
+//==============================
 // ISTAR
 //==============================
 $8ae91ade
@@ -4403,11 +5770,205 @@ ahead of the ghosts. Anticipate
 turns and press the DISC early
 for fast and efficient cornering.
 
+
+//==============================
+// JUMPKING JUNIOR
+//==============================
+$c412dcde
+(c)2018 INTELLIVISIONREVOLUTION
+
+Jupiter needs your help! On the
+far side of Jupiter lies the
+Jupiter Command Substation, a
+valuable outpost of Earth. The
+Alienators, dreaded enemies from
+beyond our solar system, have
+already attacked Jupiter Command
+Station and are now invading the
+Substation. Can it be saved?
+Jumpking, Jupiter's super secret
+agent, is desperately trying to
+restore communications at the
+Command Station. As his promis-
+ing apprentice, you, Jumpking
+Junior, have received an emer-
+gency request to drive back the
+Alienators from the Substation.
+
+CONTROLS:
+---------
+DISC - Move Jumpking Junior
+ANY SIDE BUTTON - Jump
+[1-8] - Speed,fastest to slowest
+Press 1+9 together to pause game
+
+OBJECT OF THE GAME:
+-------------------
+Diffuse the bombs planted
+throughout the Substation's 12
+levels before they explode,
+crumbling the outpost instantly.
+Your speed, jumping ability, and
+courage are your only weapons
+against the enemy. Move Jumpking
+Junior up and down ladders and
+ropes and across girders to
+reach the bombs. Activate Jump-
+king Junior's jet boosters to
+leap away from dangerous
+enemies, moving walls, and ever-
+present bullets. Score as many
+points as you can. Good Luck!
+Jumpking and the entire planet
+of Jupiter are counting on you.
+
+HOW TO PLAY:
+------------
+Press the DISC to move left or
+right. To jump, press any SIDE
+ACTION BUTTON. Touch every bomb
+to clear each level.
+
+SCORING:
+--------
+Diffuse a bomb           100 pts
+Complete a level:
+  Bonus Pts remaining on counter  
+  Reserve Lives x Level x 25 pts
+Level 8:
+  Diffuse bombs in the correct
+  order to spell J-U-M-P-K-I-N-G
+                  250 pts/letter
+Extra Life       Every 7,500 pts
+
+HELPFUL HINTS:
+--------------
+1. When you first play Jumpking
+Junior, try one of the slower
+speeds (5-8). As you get better,
+increase the speed to score more
+Bonus Points.
+
+2. See how far you can make
+Jumpking Junior leap. He can
+jump fantastic distances, but
+even a small mistake can be
+disastrous.
+
+3. Watch what's happening on the
+entire screen. Objects can shoot
+out from either side or drop
+from above at almost any time.
+
+4. Remembering the name of each
+level can help you keep track of
+each one's action and hazards.
+
+COMPLETE ALL 12 LEVELS!
+=======================
+
+LEVEL 2: FIRE! FIRE!
+--------------------
+Each time a player diffuses a
+bomb, a fire appears in a fixed
+location on the screen. Fires
+are deadly, but they can be
+jumped.
+
+LEVEL 3: SREDDAL
+----------------
+Two ladders move up and down the
+center of the screen, changing
+direction whenever a bomb is
+touched. If a bomb is collected
+when ladders are changing direc-
+tions at the top or bottom of
+the screen, ladders can break
+apart into smaller segments.
+
+LEVEL 4: HELLSTONES
+-------------------
+Instead of originating from the
+sides of the screen, bullets
+fall from the top of the screen
+and bounce on the platforms.
+
+LEVEL 5: FIGURIT'S REVENGE
+--------------------------
+Each time a bomb is collected, a
+fixed piece of the level
+disappears from one spot and
+reappears in another location on
+the screen.
+
+LEVEL 6: WALLS
+--------------
+Colored walls move from one side
+of the screen to the other,
+creating a hazard. Up Ropes or
+Down Ropes appear in the center
+of level when a bomb is diffused.
+The rope types alternate when
+subsequent bombs are touched.
+
+LEVEL 7: ZIG ZAG
+----------------
+Instead of firing in a straight
+line, bullets move in a wave
+pattern. Pieces of the level can
+disappear when bombs are
+diffused.
+
+LEVEL 8: SPELLBOUND
+-------------------
+Each time a bomb is collected, a
+letter appears in the middle of
+the screen. If the player spells
+J-U-M-P-K-I-N-G in the correct
+order, bonus points are awarded.
+
+LEVEL 9: BLACKOUT
+-----------------
+This level starts out completely
+dark. Details are gradually
+revealed in a small area around
+the player as they moves about
+the level.
+
+LEVEL 10: HERETHEREEVERYWHERE
+-----------------------------
+Whenever the player collects a
+bomb, they are teleported
+through a portal to a different
+location in the level. The
+portal moves continously
+throughout all areas of the
+screen in a random fashion.
+
+LEVEL 11: HATCHLINGS
+--------------------
+Collecting a bomb causes an
+ememy bird to hatch. The bird
+pursues the player until the
+next bomb is diffused and a new
+bird hatches.
+
+LEVEL 12: HURRICANE
+-------------------
+A strong wind blows from left to
+right on the screen that the
+player must fight against to
+move. Birds indicate the wind
+and are deadly if touched. When
+a player completes level 12, the
+game continues with previous
+levels repeating randomly.
+
+
 //==============================
 // KILLER BEES+
 //==============================
 $53BC0939
-
 KILLER BEES+
 (c)2018 CARLOS MADRUGA
 
@@ -6678,6 +8239,334 @@ move 20 percent faster.
 best for you. 
 
 //==============================
+// PINBALL
+//==============================
+$d7c5849c
+PINBALL
+(c)1983, 1998 INTELLIVISION
+PRODUCTIONS, INC.
+
+Outscore an opponent or top your
+own best pinball score! There
+are three screens, each with a
+different playing set-up. Try to
+work your way up from screen to
+screen on the same ball. Get
+careless and you fall back
+again! Five balls for each turn.
+Extra ball and bonus points for
+the Big Winners! Aim for
+targets, bounce off the bumpers.
+As in Arcade Pinball, the trick
+is to keep each ball ringing up
+points as long as you can!  
+
+CONTROLS:
+=========
+DISC (UP) - Bump
+DISC (DOWN) - Pull plunger back
+TOP SIDE BUTTONS - All flippers
+LOWER LEFT BTN, [1,4,7,CLEAR]- 
+  Left flippers
+LOWER RIGHT BTN, [3,6,9,ENTER]- 
+  Right flippers
+Press 1+9 together - Pause
+
+TOP OF DISC: Press DISC top once
+  to bump the machine. Careful!
+  Bump once too often and it's a
+  TILT! You lose your turn and
+  bonus points earned. Screen
+  border turns purple!
+BOTTOM OF DISC: Press lower part
+  of DISC to pull plunger back,
+  take your shot. The longer you
+  hold DISC down, the faster
+  ball goes! (In 2nd/3rd playing
+  screens there is no plunger)
+
+Press any KEY to end DEMO.
+Press ENTER to start.
+
+LET'S PLAY!
+===========
+Use DISC bottom to SHOOT BALL.
+FLIPPER KEYS or SIDE BUTTONS
+work the FLIPPERS. Use DISC top
+to BUMP (Watch out for TILTS!).
+Try to keep each ball in play as
+long as you can!
+
+"WHAT BALL IS IT?" Digital disp-
+lay tells you which ball you're
+playing of the five you started
+with. On the BLUE Screen, you
+can win an EXTRA ball and more
+chances to score extra points!
+(Number display will turn RED.)
+
+Whenever you lose all five balls
+(drained away, out of play)
+that's it! Final score totals
+will appear. Press ANY SIDE
+ACTION BUTTON to bring up title
+screen and your TOP SCORE. Press
+ANY key to begin a new game. 
+
+GREEN SCREEN - LOWEST LEVEL:
+============================
+On the green screen you score
+points all these ways: hit the
+spinners, bumpers and tombstone
+targets. Shoot the ball into the
+notches near the center of the
+screen for another way to boost
+your totals.
+
+Hitting the bumpers adds speed
+to the ball and extra points.
+When bumpers are lit, you get
+even more points! Hit each pair
+of drop targets to light a
+bumper. Make blue gate swing by
+shooting ball through it. 
+
+TO INCREASE YOUR SCORE:
+-----------------------
+1. Aim for upper PURPLE targets.
+
+2. Aim for bumper notches to
+make both cartoon animals appear.
+This also causes lane guards to
+appear, blocks the ball from
+"draining" away. Ball will carom
+back into action, keep ringing
+up points 3 times more! Each
+guard can be hit 3 times before
+it disappears. Guard turns RED
+when only 1 hit is left. Get
+ball into notches AGAIN and you
+get 3 more guard rebounds!
+
+3. Knock down a Tombstone Target
+in upper left corner and win a
+bonus! Knock down ALL Tombstone
+Targets and you send the ball
+into a GOLD MINE! Ball turns
+GOLD. All points from then on
+count DOUBLE! 
+
+TO MOVE UP TO RED SCREEN:
+-------------------------
+Work up from screen to screen on
+the SAME ball:
+1. Shoot ball through both
+   V-shaped lanes at screen top.
+2. WHITE CUP will appear. Shoot-
+   ing same ball in to the WHITE
+   CUP automatically moves you
+   up to the NEXT (RED) LEVEL
+   for EXTRA SCORING chances!
+
+RED SCREEN - MIDDLE LEVEL:
+==========================
+Red screen play will give you
+even more chances to score extra
+points and build your game
+totals. Hit bumpers to add
+velocity and extra points, even
+more when lit. 
+
+TO INCREASE YOUR SCORE:
+-----------------------
+1. Take careful aim and spell
+   out "P I N B A L L" in the
+   upper lanes with your shots.
+2. Knock down Twin Drop Targets,
+   light CARTOON CRITTER & CUP.
+3. Knock down QUARTET DROP TAR-
+   GETS to activate MOVING TAR-
+   GET. Hit MOVING TARGET within
+   10 seconds & win 25,000 pts!
+4. Shoot ball into CLAW:
+   1st- one bumper lights up
+   2nd- another bumper lights up
+   3rd- 3rd bumper lights up
+
+TO MOVE UP SCREEN:
+------------------
+1. Hit TWIN drop targets at
+   upper screen right. This
+   makes WHITE CUP appear.
+2. Shoot same ball into WHITE
+   CUP (Arrows guide your aim).
+
+BLUE SCREEN - TOP LEVEL:
+========================
+You've made it the Big League!
+The Blue Screen will offer the
+highest chance of all to roll up
+points, IF you're a sharp enough
+shooter. Bonus opportunities and
+point multipliers really pay off
+on the Blue Screen! 
+
+TO INCREASE YOUR SCORE:
+-----------------------
+1. Aim for the URANIUM bumper.
+2. Aim for the NUMBERED bumpers.
+3. Knock down SIDE red targets.
+4. Knock down TOP red targets.
+5. Knock down YELLOW targets.
+6. Work the PINK flip-up targets.
+
+WIN AN EXTRA BALL! Knock down
+YELLOW drop targets 5 times in a
+row with the SAME ball. WHITE
+CUP will appear. Shoot the ball
+into the WHITE CUP. 
+
+SCORING:
+========
+
+GREEN SCREEN - LOWEST LEVEL
+--------------------------------
+Purple Targets            20 pts
+Blue Gate, Each Spin      10 pts
+Triangle Bumper           30 pts
+Mushroom Bumpers          50 pts
+Mushroom Bumpers, Lit    200 pts	
+Side Drop Targets        100 pts
+  All 4 Down             1 bonus
+Tombstone Targets:
+  1st hit      100 pts + 1 bonus
+  2nd hit      200 pts + 1 bonus
+  3rd hit      300 pts + 1 bonus
+  4th hit      400 pts + 1 bonus
+  5th hit      500 pts + 1 bonus
+  6th hit      600 pts + 1 bonus
+  7th hit      700 pts + 1 bonus
+  All 7 down        1 multiplier
+Gold Mine (Turn Ball Gold,
+  Dbl Score Each Hit)    100 pts
+Ball into Notch           50 pts
+  No Guard, Same Side    1 bonus
+Ball into White Cup    4,000 pts
+
+RED SCREEN - MIDDLE LEVEL
+--------------------------------
+Alternating letters B-A-L-L,
+  When Lit                50 pts
+Spell P-I-N-B-A-L-L,
+  When Lit          1 multiplier
+Green Bumpers             50 pts
+Twin Drop Targets        300 pts
+  Both Down            2 bonuses
+Quad Drop Targets        300 pts
+                      (+1 bonus)
+Ball into Claw:
+  1st Time             1,000 pts
+  2nd Time             2,000 pts
+  3rd Time             3,000 pts
+       (+1 bonus + 1 multiplier)
+Mushroom bumpers          50 pts
+  When Lit               200 pts
+Moving Target         25,000 pts
+                 (+1 multiplier)
+Ball into White Cup    7,000 pts
+
+BLUE SCREEN - TOP LEVEL
+--------------------------------
+Gray Bumpers              50 pts
+Uranium Bumpers          200 pts
+Numbered Bumpers       1,000 pts
+  (pts x times number on bumper)
+Side Red Drop Targets (Each Set)
+           1,000 pts + 3 bonuses
+Top Red Drop Targets(All 4 Down)
+                       1,000 pts
+      (+4 bonuses +1 multiplier)
+Yellow Drop Targets (All 4 Down)
+           1,000 pts + 4 bonuses
+Pink Flip-Up Targets     200 pts
+  All 4 Down, Any Order 
+           5,000 pts + 4 bonuses
+  All 4 Down, LEFT TO RIGHT
+                      50,000 pts
+      (+4 bonuses +1 multiplier)
+ (+Incr. Num. Bumper Value by 1)
+Ball in White Cup
+  1st Time            EXTRA BALL
+  2nd time           AWARD BONUS
+
+BONUSES AND MULTIPLIERS:
+========================
+The small numbers that go up on
+your screen during game play are
+for BONUS (screen right) and
+point MULTIPLIERS (screen left).
+They won't be counted in until
+your turn is over. At the END of
+your turn, BONUS and MULTIPLIERS
+will affect your score!
+
+For example: Let's say you've
+earned 650 points shooting the
+ball. If you have ALSO won 4
+BONUS numbers and 2 MULTIPLIERS,
+your TOTAL SCORE would then be
+8,650 points! (1,000 x4 x2 +650) 
+
+BONUS NUMBER cannot get bigger
+than 30 times. MULTIPLIER cannot
+get bigger than 5 times.
+
+BUT if you get ball into the
+WHITE CUP twice on the BLUE
+screen, BONUS & MULTIPLIERS will
+be awarded immediately. No wait-
+ing! This is the AWARD BONUS!
+Extra scoring opportunity! 
+
+REMEMBER: Bump too often and
+it's a TILT! BONUS POINTS will
+be LOST!
+
+WINNING TIPS:
+=============
+1. Watch the DEMO a couple of
+times. It's worth it to get a
+feel for the finer points of
+this game. 
+
+2. Don't just fire away. Learn
+to TRAP the ball with one of the
+flippers. Cradle the ball until
+you can control it. Now you can
+AIM your shots & make them count. 
+        			
+3. At the start, playing on the
+GREEN screen, the first thing to
+do is get the ball into both
+notches. That drops LANE GUARDS,
+keeps ball in play longer, not
+"drained" away. 
+
+4. Shoot your way up to the
+higher levels right away! RED &
+BLUE screens have the real
+scoring action. Go for it from
+the first ball!
+
+5. Have a game PLAN. The way to
+score big is to start a string.
+Knock down a whole series of
+targets or set up a chance at
+the high-scoring moving target.
+Build points totals with a
+scoring sequence. 	
+
+//==============================
 // POPEYE
 //==============================
 $C51464E0
@@ -7490,6 +9379,155 @@ In Robots, you will hear:
 ...and more!
 
 //==============================
+// RIVER RAID
+//==============================
+$8910c37a
+RIVER RAID
+(c)1983 ACTIVISION
+
+Your mission is to score as many
+points as possible by destroying
+enemy battleships, helicopters,
+fuel depots, jets and bridges
+before your jet crashes or runs
+out of fuel. 
+
+CONTROLS:
+---------
+DISC(LEFT/RIGHT) - Steer jet
+DISC(UP) - Accelerate
+DISC(DOWN) - Slow down
+ANY SIDE BUTTON - Fire missiles
+  (hold for continuous fire)
+[1-8] - Game type
+
+Press DISC to start game.
+
+GAME VARIATIONS:
+----------------
+GAME     START BRIDGE    PLAYERS
+1[1]      Bridge 1         One 
+2[3]      Bridge 1         Two 
+3[4]      Bridge 5         One 
+4[5]      Bridge 5         Two 
+5[7]      Bridge 20        One 
+6[8]      Bridge 20        Two 
+7[CLEAR]  Bridge 50        One 
+8[0]      Bridge 50        Two
+
+ORIENTATION:
+------------
+The River of No Return is
+divided into sections, with a
+bridge at the end of each
+section. You will encounter
+islands, narrow channels, bays,
+trees and lots of enemy air and
+water craft moving in to block
+your path. Also, the farther
+down the river you fly, the more
+harrowing things get.
+
+The current bridge number is
+displayed on-screen and is an
+indication of your progress up
+the river. It is updated when-
+ever a bridge is destroyed.
+Advanced pilots may start the
+game at a later bridges,
+bypassing the easier sections of
+the river.
+
+FUEL GAUGE:
+-----------
+Always keep an eye and an ear on
+your fuel gauge. Fuel is used up
+at a constant rate, regardless
+of speed. When your fuel drops
+below 1/4 full, a warning siren
+sounds to alert you. To refuel,
+fly over a fuel depot. The
+slower you fly over it, the more
+fuel you'll receive. A bell will
+sound while you are refueling.
+This sound changes to a higher
+pitch when your fuel tank is
+full. If you don't need fuel,
+you can blow up the fuel depot.
+But keep in mind that the far-
+ther down the river you fly, the
+fewer fuel depots you'll find.
+
+DEMILITARIZED ZONES:
+--------------------
+Further up, you'll fly over
+barren stretches of river that
+are too narrow for enemy encamp-
+ments. Therein, you may only
+find an occasional fuel depot or
+enemy jet. These demilitarized
+zones range from 1 to 17 bridges
+in length and are both a
+blessing and a curse. Pilots get
+a break but fuel is scarce and
+the river is very narrow.
+
+SCORING:
+--------
+Tanker            30 pts
+Helicopter        60 pts
+Fuel Depot        80 pts
+Enemy Jet        100 pts
+Bridge           500 pts
+
+If you reach a score of 35,000
+points, you have reached the
+official rank of River Raider!
+
+HOW TO RAID THE RIVER:
+----------------------
+Tips from Peter Kaminski and
+Carol Shaw.
+
+1. The River of No Return holds
+many special challenges and
+dangers for would-be River
+Raiders. You'll not only have to
+know your assault jet, but you
+will need to have a good idea of
+your basic flight plan before
+you start.
+
+2. By knowing the river, pin-
+pointing areas with the highest
+concentration of enemy, and the
+most fuel depots, you'll have a
+much better chance of surviving.
+We suggest you use the river
+banks and islands to your
+advantage, since you can fly
+over them, while the helicopters
+and ships can't.
+
+3. Fuel is also a critical
+factor. When you're far up the
+river, fuel is scarce. Hence,
+flying to the next fuel depot
+should be your top priority.
+Also, you'll find you can
+actually blow up a fuel depot
+right in the middle of refueling.
+That way, you can gain points
+and refuel at the same time.
+
+4. The really advanced player
+should practice flying through
+the trees. Not only is it a lot
+of fun, but winging it through
+the forest might get you out of
+a tight spot sometime.
+
+//==============================
 // SHARP SHOT
 //==============================
 $FF7CB79E
@@ -7784,6 +9822,246 @@ run appears at the finish line.
 The best time so far appears at
 the starting gate. After the 3rd
 heat, your best time is shown.
+
+//==============================
+// SHAPE ESCAPE
+//==============================
+$5f6b8076
+SHAPE ESCAPE
+(c)2006 JOHN DOHERTY
+
+CONTROLS:
+---------
+DISC - Move horizontally or
+  vertically around play board
+ANY SIDE BUTTON - Select tile
+
+Press DISC to start game.
+
+HOW TO PLAY:
+------------
+The challenge is to match up
+three tiles of the same shape
+and color, either horizontally
+or vertically. You can only
+switch tiles that are placed
+next to each other and you
+cannot switch diagonally. Move
+quickly, because you are playing
+against a timer and when time
+runs out, so does your game!
+
+Each match you create awards you
+with points and extra time. But
+be warned! Each match also in-
+creases the speed of the timer.
+
+//==============================
+// SPACE PATROL
+//==============================
+$ab5fd8bc
+SPACE PATROL
+(c)2007 JOE ZBICIAK
+
+Welcome to the 24th Century!
+Alien hordes and bands of
+smugglers swarm around man's
+remote outposts throughout the
+solar system. Only the Space
+Patrol can keep them at bay!
+
+CONTROLS:
+---------
+DISC (RIGHT) - Speed, Fast
+DISC (LEFT)  - Speed, Slow
+TOP SIDE BUTTONS - Fire
+LOWER SIDE BUTTONS - Jump
+
+Press DISC to enter menu.
+Press ENTER or any ACTION BUTTON
+ to start game.
+
+SELECT MISSION:
+---------------
+The Space Patrol guards outposts
+on the Moon, Mars, Pluto and
+Mercury. Each locale offers
+different challenges and levels
+of play. At the title screen,
+tap the DISC on either control-
+ler to enter the SELECT MISSION
+menu. Select among worlds by
+pressing left and right on the
+DISC. Press up and down on the
+DISC to select between the
+beginner and champion courses.
+Press ENTER on the keypad or any
+ACTION BUTTON to begin.
+
+OPERATING YOUR TANK:
+--------------------
+Your tank is equipped with the
+latest battlefield technology:
+
+1. Vertical high speed laser
+shoots enemies above
+2. Horizontal cannon shoots
+obstacles and enemies ahead
+3. Anti-grav booster propels
+tank over obstacles and enemies
+
+Either TOP ACTION BUTTON fires
+both the high speed laser and
+the front cannon. The lasers
+recharge quickly, allowing for a
+rapid assault on saucers flying
+overhead whereas the front
+mounted cannon fires more slowly.
+
+Either BOTTOM ACTION BUTTON
+engages the Anti-grav booster,
+propelling your tank over
+obstacles. Use it to jump over
+craters, rocks and enemies.
+
+Use the DISC to control your
+speed. Push to the right to
+drive quickly or to the left to
+drive slowly. Release the DISC
+to drive at medium speed.
+Driving quickly allows you to
+jump over large obstacles.
+Driving slowly allows you to
+navigate difficult terrain such
+as mine fields. Keep moving as
+bonus points await you if you
+clear each stage quickly enough.
+
+WATCH THE DASHBOARD:
+--------------------
+At the bottom of the screen is
+the game dashboard. This shows
+you important information. At
+the left is your current score,
+followed by the most recent
+checkpoint your tank has passed.
+To the right are your remaining
+tanks and elapsed time.
+
+When your tank senses danger
+approaching, it will flash its
+CAUTION lamp where your
+remaining tanks are displayed.
+Your tank signals one of three
+different cautions:
+1. Blue  - Danger from behind.
+2. Pink  - Danger up ahead.
+3. Green - Danger from above.
+
+LEARN THE COURSE:
+-----------------
+Each course is divided into 26
+segments, each ending with a
+checkpoint. Checkpoints are
+labeled A through Z. The terrain
+for each course is fixed, so you
+can use these checkpoints to get
+a fix on your location. With
+practice, you will learn the lay
+of the land and can plan ahead
+for maneuvers.
+
+REMEMBER THE TERRAIN:
+---------------------
+Many obstacles lie ahead:
+craters, rocks, and mines all
+appear in your path, sometimes
+in tricky-to-negotiate clusters.
+Some objects move, such as stal-
+actites and boulders. The rest
+are a fixed part of the terrain.
+
+KNOW YOUR ENEMIES:
+------------------
+Aliens and smugglers are every-
+where! Know what to expect from
+each one. Alien saucers drop
+bombs on and around your tank
+relentlessly. They appear wave
+after wave...after wave.
+
+Alien spinners are closely
+related. However, rather than
+dropping ordinary bombs on your
+tank, they instead shoot special
+crater-makers, adding new
+obstacles in your path.
+
+Smugglers like to sneak up on
+you and try to run you out of
+town. Keep an eye on them and
+you can get the jump on them
+instead. Each type of smuggler
+has a different trick up its
+sleeve. Learn them all and stay
+ahead of the game.
+
+If that weren't enough, you also
+have space plants and auto-
+firing gun turrets to deal with!
+
+WATCH THE TIME:
+---------------
+You have a job to do, but you
+must do it quickly. Checkpoints
+E, J, O, T and Z each show you
+a summary screen indicating your
+stage status. When you reach one
+of these checkpoints, your time
+will be compared against the
+benchmark time for reaching that
+checkpoint. Beat the benchmark
+and get awarded a time bonus.
+
+SCORING BIG:
+------------
+Points are awarded for clearing
+obstacles, destroying enemies,
+and completing your patrol in a
+timely manner. New tanks are
+awarded when your score gets to
+certain levels.
+
+OBJECT      JUMPING     SHOOTING
+------   -------------  --------
+Saucers        -           1,250
+Spinners       -           2,000
+Smugglers      -          Random
+Rocks    500/750/1,000     1,000
+Craters     500/750            -
+Boulders      500            500
+Land Mines    500              -
+Stalactites    -          Random
+Gun Turrets   500          2,000
+Space Plants  500         Random
+
+TIPS:
+-----
+1. Shoot objects instead of
+jumping them for higher scores.
+
+2. Slow tanks are an easy target.
+Put the pedal to the metal!
+
+3. You can not outrun smugglers
+but it sure is fun trying.
+
+4. Saucers and spinners on
+Mercury are so nasty, they
+command a premium!
+
+5. Connect the ECS unit for
+enhanced music and sound FX!
 
 //==============================
 // STAMPEDE
