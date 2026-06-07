@@ -190,6 +190,9 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.3c : 07-June-2026 by wavemotion-dave
+  * Fix for STIC borders that were causing blinking/glitching in games like SafeCracker.
+
 V6.3b : 30-Jan-2026 by wavemotion-dave
   * Fix for Paddle Party which does a half-bank page at $4800.
   * Minor improvement for STIC register handling for improved accuracy.

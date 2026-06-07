@@ -137,28 +137,28 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
             ay38900->colorStackChanged = TRUE;
             break;
         case 0x2C:
-            if (value != 0xFFFF)
+            //if (value != 0xFFFF)
             {
                 value &= 0x000F;
                 ay38900->borderColor = (UINT8)value;
             }
             break;
         case 0x30:
-            if (value != 0xFFFF)
+            //if (value != 0xFFFF)
             {
                 value &= 0x0007;
                 ay38900->horizontalOffset = value;
             }
             break;
         case 0x31:
-            if (value != 0xFFFF)
+            //if (value != 0xFFFF)
             {
                 value &= 0x0007;
                 ay38900->verticalOffset = value;
             }
             break;
         case 0x32:
-            if (value != 0xFFFF)
+            //if (value != 0xFFFF)
             {
                 value &= 0x0003;
                 ay38900->blockLeft = (value & 0x0001) != 0;
@@ -170,7 +170,8 @@ ITCM_CODE void AY38900_Registers::poke(UINT16 location, UINT16 value)
             break;
     }
 
-    if (value != 0xFFFF) stic_memory[location] = value;
+    //if (value != 0xFFFF) 
+        stic_memory[location] = value;
 }
 
 ITCM_CODE UINT16 AY38900_Registers::peek(UINT16 location)
