@@ -32,7 +32,12 @@ void JLP::reset()
 {
     enabled = TRUE;
     for (UINT16 i = 0; i < JLP_RAM_SIZE; i++)
-        jlp_ram[i] = 0xFFFF;
+    {
+        // Initialize JLP RAM to 0x0000. I was using 0xFFFF for a period
+        // but it seems to not work with Dreadline homebrew. It's not clear
+        // what JLP RAM would look like at a cold start... but 0x0000 is fine.
+        jlp_ram[i] = 0x0000;
+    }
     jlp_ram[JLP_RAM_SIZE-1] = 0;                    /* The last byte of jlp RAM reads back as 0 */
     
     jlp_ram[0x23] = 0;                              /* First valid flash row number */

@@ -440,7 +440,7 @@ Rip* Rip::LoadBinCfg(const CHAR* configFile, UINT32 crc, size_t size)
                         }
                         if (cfg_mode == 3)  // [vars] Mode
                         {
-                            if (strstr(ptr, "jlp") || strstr(ptr, "jlp_accel") || strstr(ptr, "jlp_flash"))
+                            if (strstr(ptr, "jlp") || strstr(ptr, "jlp_accel") || strstr(ptr, "jlpaccel") || strstr(ptr, "jlp_flash") || strstr(ptr, "jlpflash"))
                             {
                                 // If we haven't already enabled JLP, see if this config entry turns it on...
                                 if (bUseJLP == 0)

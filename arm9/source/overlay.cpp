@@ -726,7 +726,7 @@ void load_custom_overlay(bool bCustomGeneric)
             {
                 bmulti_LR = 0;
                 multi_ovls = strtoul(ptr, &ptr, 10);
-                if (multi_ovls > 8) multi_ovls = 8; // Limit to something reasonable...
+                if (multi_ovls > 10) multi_ovls = 10; // Limit to something reasonable... Go For The Gold has 10
             }
         }
         

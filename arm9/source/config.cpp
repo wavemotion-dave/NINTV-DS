@@ -290,6 +290,10 @@ static void SetDefaultGameConfig(UINT32 crc, char *filename)
         myConfig.load_options    = LOAD_WITH_IVOICE | LOAD_WITH_JLP; // Not ECS... not needed and slows down too much
     }
 
+    if ((strcasestr(filename, "DREADLINE") != NULL))
+    {
+        myConfig.gramSize = GRAM_2K;
+    }
 
     last_crc = crc;
 }
