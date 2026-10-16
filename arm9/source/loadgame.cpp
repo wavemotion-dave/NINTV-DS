@@ -580,7 +580,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 }
 
 
-#define LOAD_OPTION_MENU_ITEMS 11
+#define LOAD_OPTION_MENU_ITEMS 12
 const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] = 
 {
     "LOAD GAME NORMALLY",  
@@ -593,6 +593,7 @@ const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] =
     "LOAD GAME WITH ECS+IVOICE",
     "LOAD GAME WITH JLP+ECS+IV",
     "LOAD GAME WITH TUTORVISION",
+    "LOAD GAME WITH TUTOR+JLP",
     "EXIT THIS MENU",  
 };
 
@@ -837,6 +838,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
               if (opt == 7) {load_options = LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               if (opt == 8) {load_options = LOAD_WITH_JLP | LOAD_WITH_ECS | LOAD_WITH_IVOICE;}
               if (opt == 9) {load_options = LOAD_WITH_TUTORVISION;}
+              if (opt == 10){load_options = LOAD_WITH_TUTORVISION | LOAD_WITH_JLP;}
               while (keysCurrent() & KEY_X);
               WAITVBL;
           }
