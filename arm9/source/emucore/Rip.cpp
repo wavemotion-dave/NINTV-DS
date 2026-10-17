@@ -666,7 +666,8 @@ Rip* Rip::LoadRom(const CHAR* filename)
                     tag_compatibility[1+i] = read;
                     calcCrc16 = crc16_update(calcCrc16, read);
                     // ------------------------------------------------------------------------
-                    // Optional Byte 4 is of interest to us as that  one has JLP stuff in it 
+                    // Optional Byte 3 is of interest to us as that  one has JLP stuff in it:
+                    //    7     6     5      4     3     2     1     0
                     // +-----+-----+------+-----+-----+-----+-----+-----+
                     // | JLP Accel | LTOM |    reserved     | JLPF[9:8] |    byte 3
                     // +-----+-----+------+-----+-----+-----+-----+-----+
@@ -675,7 +676,7 @@ Rip* Rip::LoadRom(const CHAR* filename)
                     // 10  JLP accel enabled, default to "off"; flash enabled
                     // 11  JLP accel enabled, default to "on";  flash enabled                        
                     // ------------------------------------------------------------------------
-                    if (i == 2) // 4th byte (first byte further above... 0,1,2 = fourth byte)
+                    if (i == 2) // Byte 3 (first byte further above... 0,1,2, JLP byte)
                     {   
                         if ((read & 0xC0) != 0x00) bUseJLP = 1; else bUseJLP = 0;
                     }                    
