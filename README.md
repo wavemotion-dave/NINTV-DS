@@ -193,6 +193,12 @@ Credits :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V6.4 : 17-Oct-2026 by wavemotion-dave
+  * New overlays, max number of custom overlays expanded.
+  * Tweaked JLP RAM initialization so we now clear ram (Dreadline now plays).
+  * New Tutorvision + JLP hardware combination supported.
+  * Minor cleanup across the board.
+
 V6.3c : 07-June-2026 by wavemotion-dave
   * Fix for STIC borders that were causing blinking/glitching in games like SafeCracker.
 
