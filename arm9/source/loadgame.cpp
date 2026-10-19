@@ -1,10 +1,10 @@
 // =====================================================================================
 // Copyright (c) 2021-2026 Dave Bernazzani (wavemotion-dave)
 //
-// Copying and distribution of this emulator, its source code and associated 
-// readme files, with or without modification, are permitted in any medium without 
+// Copying and distribution of this emulator, its source code and associated
+// readme files, with or without modification, are permitted in any medium without
 // royalty provided the this copyright notice is used and wavemotion-dave (NINTV-DS)
-// and Kyle Davis (BLISS) are thanked profusely. 
+// and Kyle Davis (BLISS) are thanked profusely.
 //
 // The NINTV-DS emulator is offered as-is, without any warranty.
 // =====================================================================================
@@ -29,6 +29,10 @@
 #include "debugger.h"
 #include "printf.h"
 
+extern "C" {
+    bool BoxArt_ShowPNG(const char *filename, u8 isDirectory);
+}
+
 // -------------------------------------------------------------
 // We support up to 512 files per directory. More than enough.
 // -------------------------------------------------------------
@@ -47,10 +51,10 @@ extern u8 bShowDisc;
 static UINT8 bFirstTimeLoad = true;
 
 // -------------------------------------------------------------------------------
-// Load the cart from a file on disk. We support .bin/.int (raw binary) and we 
+// Load the cart from a file on disk. We support .bin/.int (raw binary) and we
 // also support .ROM (intellicart). The .bin file must have a matching CRC in
-// our internal database or else must have a matching <filename>.cfg file so 
-// we know how to load the binary into memory. The intellivision allows the 
+// our internal database or else must have a matching <filename>.cfg file so
+// we know how to load the binary into memory. The intellivision allows the
 // ROM to be located in many possible memory segments... the .ROM will give
 // us this information and is easier to deal with as a self-contained file.
 // -------------------------------------------------------------------------------
@@ -58,25 +62,25 @@ BOOL LoadCart(const CHAR* filename)
 {
     if (strlen(filename) < 5)
         return FALSE;
-    
+
     bIsFatalError = false;
     bGameLoaded = FALSE;
     bShowDisc = false;  // Normal overlay to start
     multi_ovls = 0;     // And assume non-multi-overlay
     multi_ovl_idx = 0;  // if the .ovl file indicates we are multi, this will get used to pull in alternate overlay graphics
     bmulti_LR = 0;      // Not a L/R multi-overlay
-    
+
     // Clear out the debug array with every new game loaded
     memset(debug, 0x00, DEBUG_SIZE * (sizeof(UINT32)));
-    
+
     // Load up the configuration based on the CRC32 of the game. Do this early since we need some of those properties to load the RIP
     FindAndLoadConfig(CRC32::getCrc(filename), (char*)filename);
-    
+
     // ----------------------------------------------------------------------
     // Set the RAM Bankers for page-flipping all back to zero on a new load
     // ----------------------------------------------------------------------
     memset(gLastBankers, 0x00, sizeof(gLastBankers));
-    
+
     extern UINT8 gBankerIsMappedHere[16][16];
     memset(gBankerIsMappedHere,0x00, sizeof(gBankerIsMappedHere));
 
@@ -89,7 +93,7 @@ BOOL LoadCart(const CHAR* filename)
     fast_ram16_idx = 0x200; // 512 bytes is more than enough for internal Inty RAM so this is safely above the threshold
 
     const CHAR* extStart = filename + strlen(filename) - 4;
-    
+
     // -------------------------------------------------------------------------------------------------------------------------
     // A .bin is always assumed to be a flat binary file (and may or may not have a .cfg file to go with it).
     // A .rom is always assumed to be a file with extra meta-data that lets us know where to load it in memory.
@@ -101,7 +105,7 @@ BOOL LoadCart(const CHAR* filename)
         // A .int file might or might not be actual .rom format...
         FILE* file = fopen(filename, "rb");
         UINT8 buf[2];
-        if (file == NULL) 
+        if (file == NULL)
         {
             FatalError("BIN FILE DOES NOT EXIST");
             return FALSE;
@@ -110,7 +114,7 @@ BOOL LoadCart(const CHAR* filename)
         if ((firstByte == 0xA8) || (firstByte == 0x41)) bIsROM = true;  // We accept eitehr ICART (0xA8) or CC3 (0x41) as proof that this is probably a ROM file
         fclose(file);
     }
-    
+
     if (bIsROM)
     {
         //load the .rom file as a Rip with meta-data parsed
@@ -129,13 +133,13 @@ BOOL LoadCart(const CHAR* filename)
             return FALSE;   // FatalError() will have already been called
         }
     }
-    
+
     // The Tutorvision adds in some extra 16-bit RAM so we do that here...
     if (bUseTutorvision)
     {
         currentRip->AddRAM(new RAM(0x1a0, 0x360, 0xFFFF, 0xFFFF, 16));
     }
-    
+
     // ------------------------------------------------------------------------------------------------------------------
     // The ECS uses 3 banked ROM areas... so we need to fill those in manually as we clear this array out on every load.
     // ------------------------------------------------------------------------------------------------------------------
@@ -152,15 +156,15 @@ BOOL LoadCart(const CHAR* filename)
     extern UINT16 fudge_timing;
 
     fudge_timing = 500*myConfig.fudgeTiming;
-    
+
     dsShowScreenEmu();
     dsShowScreenMain(false, false);
-    
-    bGameLoaded = TRUE;    
-    bInitEmulator = true;    
-    
+
+    bGameLoaded = TRUE;
+    bInitEmulator = true;
+
     bStartSoundFifo = true;
-    
+
     return TRUE;
 }
 
@@ -194,12 +198,12 @@ void SearchForFile(char *directory, char *szFoundName, UINT16 size, UINT32 crc32
   struct dirent *pent;
 
   CheckFirstTimeLoad();
-   
+
   pdir = opendir(directory);
 
-  if (pdir) 
+  if (pdir)
   {
-    while (((pent=readdir(pdir))!=NULL)) 
+    while (((pent=readdir(pdir))!=NULL))
     {
       if (pent->d_type != DT_DIR)
       {
@@ -224,18 +228,18 @@ void SearchForFile(char *directory, char *szFoundName, UINT16 size, UINT32 crc32
 
 // ---------------------------------------------------------------------------------------------
 // If the exec.bin was not found, we will do a search for it in the current directory
-// to see if we get a match via CRC32.  We keep our search as fast as possible, we 
+// to see if we get a match via CRC32.  We keep our search as fast as possible, we
 // will only look at files that are exactly 8k in size.  This will still take a solid
 // second or two on the NDS - it's better if the user has the right filename to avoid this.
 // ---------------------------------------------------------------------------------------------
 void FindAndLoadExec(char *directory, char *szFoundName)
 {
-    SearchForFile(directory, szFoundName, 8192, 0xcbce86f7); // Look for the normal exec.bin 
+    SearchForFile(directory, szFoundName, 8192, 0xcbce86f7); // Look for the normal exec.bin
 }
 
 void FindAndLoadTutorExec(char *directory, char *szFoundName)
 {
-    SearchForFile(directory, szFoundName, 16384, 0x7558a4cf); // Look for the Tutorvision wbexec.bin 
+    SearchForFile(directory, szFoundName, 16384, 0x7558a4cf); // Look for the Tutorvision wbexec.bin
 }
 
 void FindAndLoadGrom(char *directory, char *szFoundName)
@@ -245,17 +249,17 @@ void FindAndLoadGrom(char *directory, char *szFoundName)
 
 void FindAndLoadTutorGrom(char *directory, char *szFoundName)
 {
-    SearchForFile(directory, szFoundName, 2048, 0x82736456); // Look for the Tutorvision wbgrom.bin 
+    SearchForFile(directory, szFoundName, 2048, 0x82736456); // Look for the Tutorvision wbgrom.bin
 }
 
 void FindAndLoadIVoice(char *directory, char *szFoundName)
 {
-    SearchForFile(directory, szFoundName, 2048, 0x0de7579d); // Look for the Intellivioice ivoice.bin 
+    SearchForFile(directory, szFoundName, 2048, 0x0de7579d); // Look for the Intellivioice ivoice.bin
 }
 
 void FindAndLoadECS(char *directory, char *szFoundName)
 {
-    SearchForFile(directory, szFoundName, (24*1024), 0xea790a06); // Look for the ecs.bin 
+    SearchForFile(directory, szFoundName, (24*1024), 0xea790a06); // Look for the ecs.bin
 }
 
 
@@ -266,7 +270,7 @@ CHAR nextFile[MAX_PATH];
 BOOL LoadPeripheralRoms(Peripheral* peripheral)
 {
     UINT16 count = peripheral->GetROMCount();
-    for (UINT16 i = 0; i < count; i++) 
+    for (UINT16 i = 0; i < count; i++)
     {
         ROM* r = peripheral->GetROM(i);
         if (r->isLoaded()) // If already loaded, we don't need to read the file again...
@@ -291,19 +295,19 @@ BOOL LoadPeripheralRoms(Peripheral* peripheral)
 
         strcpy(directory, nextFile);
         strcat(nextFile, r->getDefaultFileName());
-        
-        if (!r->load(nextFile, r->getDefaultFileOffset())) 
+
+        if (!r->load(nextFile, r->getDefaultFileOffset()))
         {
             if (strstr(nextFile, "wbgrom") != NULL)     FindAndLoadTutorGrom(directory, nextFile);
             else if (strstr(nextFile, "grom") != NULL)  FindAndLoadGrom(directory, nextFile);
-            
+
             if (strstr(nextFile, "wbexec") != NULL)     FindAndLoadTutorExec(directory, nextFile);
-            else if (strstr(nextFile, "exec") != NULL)  FindAndLoadExec(directory, nextFile);            
-            
+            else if (strstr(nextFile, "exec") != NULL)  FindAndLoadExec(directory, nextFile);
+
             if (strstr(nextFile, "ivoice") != NULL)     FindAndLoadIVoice(directory, nextFile);
-            
-            if (strstr(nextFile, "ecs") != NULL)        FindAndLoadECS(directory, nextFile);            
-            
+
+            if (strstr(nextFile, "ecs") != NULL)        FindAndLoadECS(directory, nextFile);
+
             if (!r->load(nextFile, r->getDefaultFileOffset()))
             {
                 return FALSE;
@@ -328,7 +332,7 @@ void dsDisplayLoadInstructions(void)
 // This is our custom sorting compare routine. Directories always sort to the top otherwise
 // we do a case-insensitive sort.
 // ---------------------------------------------------------------------------------------------
-int intvFilescmp (const void *c1, const void *c2) 
+int intvFilescmp (const void *c1, const void *c2)
 {
   FICA_INTV *p1 = (FICA_INTV *) c1;
   FICA_INTV *p2 = (FICA_INTV *) c2;
@@ -341,7 +345,7 @@ int intvFilescmp (const void *c1, const void *c2)
       return -1;
   if (p2->directory && !(p1->directory))
       return 1;
-  return strcasecmp (p1->filename, p2->filename);    
+  return strcasecmp (p1->filename, p2->filename);
 }
 
 #define MAX_FAVS  1024
@@ -442,7 +446,7 @@ void ToggleFavorite(char *name)
 // time we are loading up files, use the global configuration to determine what directory
 // we should be starting in... after the first time we just load up the current directory).
 // ----------------------------------------------------------------------------------------
-void intvFindFiles(void) 
+void intvFindFiles(void)
 {
   DIR *pdir;
   struct dirent *pent;
@@ -463,18 +467,18 @@ void intvFindFiles(void)
          chdir("/ROMS/INTV");
       }
   }
-    
+
   pdir = opendir(".");
 
-  if (pdir) 
+  if (pdir)
   {
-    while (((pent=readdir(pdir))!=NULL)) 
+    while (((pent=readdir(pdir))!=NULL))
     {
       strcpy(szName2,pent->d_name);
       szName2[MAX_PATH-1] = NULL;
       if (pent->d_type == DT_DIR)
       {
-        if (!( (szName2[0] == '.') && (strlen(szName2) == 1))) 
+        if (!( (szName2[0] == '.') && (strlen(szName2) == 1)))
         {
             // Filter out the emulator directories from the list
             if (strcasecmp(szName2, "BIOS") == 0) continue;
@@ -485,13 +489,15 @@ void intvFindFiles(void)
             if (strcasecmp(szName2, "ovl") == 0) continue;
             if (strcasecmp(szName2, "SAV") == 0) continue;
             if (strcasecmp(szName2, "sav") == 0) continue;
-            
+            if (strcasecmp(szName2, "ART") == 0) continue;
+            if (strcasecmp(szName2, "art") == 0) continue;
+
             intvromlist[countintv].directory = true;
             strcpy(intvromlist[countintv].filename,szName2);
             countintv++;
         }
       }
-      else 
+      else
       {
         // ------------------------------------------------
         // Filter out the BIOS files from the list...
@@ -504,8 +510,8 @@ void intvFindFiles(void)
         if (strstr(szName2, "[BIOS]") != NULL)      continue;
         if (strstr(szName2, "[bios]") != NULL)      continue;
         if ((szName2[0] == '.') && (szName2[1] == '_')) continue;    // For MAC files with the underscore starting a name
-        
-        if (strlen(szName2)>4) 
+
+        if (strlen(szName2)>4)
         {
           if ( (strcasecmp(strrchr(szName2, '.'), ".int") == 0) ||
                (strcasecmp(strrchr(szName2, '.'), ".bin") == 0) ||
@@ -520,7 +526,7 @@ void intvFindFiles(void)
     }
     closedir(pdir);
   }
-    
+
   // ----------------------------------------------
   // If we found any files, go sort the list...
   // ----------------------------------------------
@@ -531,7 +537,7 @@ void intvFindFiles(void)
 }
 
 // --------------------------------------------------------------------------
-// Display the files - up to 18 in a page. This is carried over from the 
+// Display the files - up to 18 in a page. This is carried over from the
 // oldest emulators I've worked on and there is some bug in here where
 // it occasinoally gets out of sync... it's minor enough to not be an
 // issue but at some point this routine should be re-written...
@@ -549,8 +555,8 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(31,20,0,(char *) (NoDebGame+14<countintv ? ">" : " "));
 
   dsDisplayLoadInstructions();
-    
-  for (ucBcl=0;ucBcl<17; ucBcl++) 
+
+  for (ucBcl=0;ucBcl<17; ucBcl++)
   {
     ucGame= ucBcl+NoDebGame;
     if (ucGame < countintv)
@@ -581,20 +587,20 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 
 
 #define LOAD_OPTION_MENU_ITEMS 12
-const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] = 
+const char *load_options_menu[LOAD_OPTION_MENU_ITEMS] =
 {
-    "LOAD GAME NORMALLY",  
-    "LOAD GAME WITH STOCK INTY",  
-    "LOAD GAME WITH ONLY JLP",  
-    "LOAD GAME WITH ONLY IVOICE",  
-    "LOAD GAME WITH ONLY ECS",  
-    "LOAD GAME WITH JLP+IVOICE",  
-    "LOAD GAME WITH JLP+ECS",  
+    "LOAD GAME NORMALLY",
+    "LOAD GAME WITH STOCK INTY",
+    "LOAD GAME WITH ONLY JLP",
+    "LOAD GAME WITH ONLY IVOICE",
+    "LOAD GAME WITH ONLY ECS",
+    "LOAD GAME WITH JLP+IVOICE",
+    "LOAD GAME WITH JLP+ECS",
     "LOAD GAME WITH ECS+IVOICE",
     "LOAD GAME WITH JLP+ECS+IV",
     "LOAD GAME WITH TUTORVISION",
     "LOAD GAME WITH TUTOR+JLP",
-    "EXIT THIS MENU",  
+    "EXIT THIS MENU",
 };
 
 UINT8 LoadWithOptions(void)
@@ -610,12 +616,12 @@ UINT8 LoadWithOptions(void)
     {
            dsPrintValue(3,5+i, (i==0 ? 1:0), (char*)load_options_menu[i]);
     }
-    
+
     int last_keys_pressed = -1;
     while (1)
     {
         int keys_pressed = keysCurrent();
-        
+
         if (keys_pressed != last_keys_pressed)
         {
             last_keys_pressed = keys_pressed;
@@ -634,10 +640,10 @@ UINT8 LoadWithOptions(void)
             if (keys_pressed & KEY_A)
             {
                 return current_entry;
-            }            
+            }
             swiWaitForVBlank();
         }
-    }    
+    }
     return (LOAD_OPTION_MENU_ITEMS-1);
 }
 
@@ -650,15 +656,18 @@ unsigned int dsWaitForRom(char *chosen_filename)
   u8 bDone=false, bRet=false;
   u16 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage;
   u16 uLenFic=0, ucFlip=0, ucFlop=0;
+  int last_game_highlighted = -1;
+  u8 scroll_dampen = 20;
+  u8 last_boxart_found = 1;
 
   strcpy(chosen_filename, "tmpz");
   intvFindFiles();   // Initial get of files...
-    
+
   dsShowBannerScreen();
 
   nbRomPerPage = (countintv>=17 ? 17 : countintv);
   uNbRSPage = (countintv>=5 ? 5 : countintv);
-  
+
   if (ucFicAct>countintv-nbRomPerPage)
   {
     firstRomDisplay=countintv-nbRomPerPage;
@@ -670,7 +679,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
     romSelected=0;
   }
   dsDisplayFiles(firstRomDisplay,romSelected);
-    
+
   // -----------------------------------------------------
   // Until the user selects a file or exits the menu...
   // -----------------------------------------------------
@@ -678,6 +687,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
   {
     if (keysCurrent() & KEY_UP)
     {
+      scroll_dampen = 20;
       if (!ucHaut)
       {
         ucFicAct = (ucFicAct>0 ? ucFicAct-1 : countintv-1);
@@ -700,7 +710,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
         ucHaut++;
         if (ucHaut>10) ucHaut=0;
       }
-      uLenFic=0; ucFlip=0; ucFlop=0;     
+      uLenFic=0; ucFlip=0; ucFlop=0;
     }
     else
     {
@@ -708,6 +718,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
     }
     if (keysCurrent() & KEY_DOWN)
     {
+      scroll_dampen = 20;
       if (!ucBas) {
         ucFicAct = (ucFicAct< countintv-1 ? ucFicAct+1 : 0);
         if (romSelected<uNbRSPage-1) { romSelected += 1; }
@@ -729,17 +740,18 @@ unsigned int dsWaitForRom(char *chosen_filename)
         ucBas++;
         if (ucBas>10) ucBas=0;
       }
-      uLenFic=0; ucFlip=0; ucFlop=0;     
+      uLenFic=0; ucFlip=0; ucFlop=0;
     }
     else {
       ucBas = 0;
     }
-      
+
     // -------------------------------------------------------------
     // Left and Right on the D-Pad will scroll 1 page at a time...
     // -------------------------------------------------------------
     if (keysCurrent() & KEY_RIGHT)
     {
+      scroll_dampen = 20;
       if (!ucSBas)
       {
         ucFicAct = (ucFicAct< countintv-nbRomPerPage ? ucFicAct+nbRomPerPage : countintv-nbRomPerPage);
@@ -754,24 +766,25 @@ unsigned int dsWaitForRom(char *chosen_filename)
         ucSBas++;
         if (ucSBas>10) ucSBas=0;
       }
-      uLenFic=0; ucFlip=0; ucFlop=0;     
+      uLenFic=0; ucFlip=0; ucFlop=0;
     }
     else {
       ucSBas = 0;
     }
-      
+
     // -------------------------------------------------------------
     // Left and Right on the D-Pad will scroll 1 page at a time...
     // -------------------------------------------------------------
     if (keysCurrent() & KEY_LEFT)
     {
+      scroll_dampen = 20;
       if (!ucSHaut)
       {
         ucFicAct = (ucFicAct> nbRomPerPage ? ucFicAct-nbRomPerPage : 0);
         if (firstRomDisplay>nbRomPerPage) { firstRomDisplay -= nbRomPerPage; }
         else { firstRomDisplay = 0; }
         if (ucFicAct == 0) romSelected = 0;
-        if (romSelected > ucFicAct) romSelected = ucFicAct;          
+        if (romSelected > ucFicAct) romSelected = ucFicAct;
         ucSHaut=0x01;
         dsDisplayFiles(firstRomDisplay,romSelected);
       }
@@ -780,12 +793,12 @@ unsigned int dsWaitForRom(char *chosen_filename)
         ucSHaut++;
         if (ucSHaut>10) ucSHaut=0;
       }
-      uLenFic=0; ucFlip=0; ucFlop=0;     
+      uLenFic=0; ucFlip=0; ucFlop=0;
     }
     else {
       ucSHaut = 0;
     }
-    
+
     // -------------------------------------------------------------------------
     // They B key will exit out of the ROM selection without picking a new game
     // -------------------------------------------------------------------------
@@ -793,8 +806,16 @@ unsigned int dsWaitForRom(char *chosen_filename)
     {
       bDone=true;
       while (keysCurrent() & KEY_B);
+      if (bGameLoaded) // If there was a game loaded, we need to restore the top screen...
+      {
+          dsShowScreenEmu();
+      }
+      else
+      {
+          dsShowEmulationImage();
+      }      
     }
-      
+
     // -------------------------------------------------------
     // The SELECT key will toggle this game as a 'favorite'
     // -------------------------------------------------------
@@ -811,7 +832,7 @@ unsigned int dsWaitForRom(char *chosen_filename)
             }
         }
     }
-      
+
     // -------------------------------------------------------------------
     // Any of these keys will pick the current ROM and try to load it...
     // -------------------------------------------------------------------
@@ -873,24 +894,25 @@ unsigned int dsWaitForRom(char *chosen_filename)
           romSelected=0;
         }
         dsDisplayFiles(firstRomDisplay,romSelected);
+        last_game_highlighted = -1;
         while (keysCurrent() & KEY_A);
       }
     }
-    
+
     // --------------------------------------------
     // If the filename is too long... scroll it.
     // --------------------------------------------
-    if (strlen(intvromlist[ucFicAct].filename) > 29) 
+    if (strlen(intvromlist[ucFicAct].filename) > 29)
     {
       ucFlip++;
-      if (ucFlip >= 15) 
+      if (ucFlip >= 15)
       {
         ucFlip = 0;
         uLenFic++;
-        if ((uLenFic+29)>strlen(intvromlist[ucFicAct].filename)) 
+        if ((uLenFic+29)>strlen(intvromlist[ucFicAct].filename))
         {
           ucFlop++;
-          if (ucFlop >= 15) 
+          if (ucFlop >= 15)
           {
             uLenFic=0;
             ucFlop = 0;
@@ -903,7 +925,38 @@ unsigned int dsWaitForRom(char *chosen_filename)
         dsPrintValue(1,4+romSelected,1,szName);
       }
     }
-      
+
+    // -----------------------------------------------------------
+    // See if there is any box art PNG file that should be shown.
+    // -----------------------------------------------------------
+    if (last_game_highlighted != ucFicAct)
+    {
+      if (scroll_dampen)
+      {
+          if (--scroll_dampen == 0)
+          {
+              last_game_highlighted = ucFicAct;
+              if (!BoxArt_ShowPNG(intvromlist[ucFicAct].filename, intvromlist[ucFicAct].directory))
+              {
+                  if (last_boxart_found)
+                  {
+                      // Try to show generic art...
+                      if (!BoxArt_ShowPNG("generic-boxart.png", 0))
+                      {
+                          // Otherwise just show normal emulation upper image... legacy mode
+                          dsShowEmulationImage();
+                      }
+                      last_boxart_found = 0;
+                  }
+              }
+              else
+              {
+                  last_boxart_found = 1;
+              }
+          }
+      }
+    }
+
     swiWaitForVBlank();
   }
 

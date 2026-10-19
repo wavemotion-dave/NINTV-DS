@@ -1551,6 +1551,20 @@ void pollInputs(void)
     }
 }
 
+void dsShowEmulationImage(void)
+{
+    videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
+    videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
+    vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
+    bg0 = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
+    bg0b = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
+    bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
+    bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
+
+    decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
+    decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
+    dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
+}
 
 // ------------------------------------------------------------------------------
 // This shows the main upper screen which is where the emulation takes place... 
@@ -1561,17 +1575,7 @@ void dsShowScreenMain(bool bFull, bool bPlayJingle)
     // Init BG mode for 16 bits colors
     if (bFull)
     {
-      videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
-      videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
-      vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
-      bg0 = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
-      bg0b = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
-      bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
-      bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
-
-      decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
-      decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
-      dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
+      dsShowEmulationImage();
       
       if (bPlayJingle)
       {

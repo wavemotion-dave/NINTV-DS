@@ -106,6 +106,7 @@ static void SetDefaultGlobalConfig(void)
         myGlobalConfig.rom_dir              = 2;
         myGlobalConfig.man_dir              = 2;
         myGlobalConfig.ovl_dir              = 2;
+        myGlobalConfig.boxart_dir           = 2;
     }
     else //Same as ROMS
     {
@@ -116,6 +117,7 @@ static void SetDefaultGlobalConfig(void)
             myGlobalConfig.rom_dir          = 1;
             myGlobalConfig.man_dir          = 1;
             myGlobalConfig.ovl_dir          = 1;
+            myGlobalConfig.boxart_dir       = 1;
         }
         else // Set 'Same as ROMs' which is a sensible fall-back default
         {
@@ -123,6 +125,8 @@ static void SetDefaultGlobalConfig(void)
             myGlobalConfig.rom_dir          = 0;
             myGlobalConfig.man_dir          = 0;
             myGlobalConfig.ovl_dir          = 0;
+            myGlobalConfig.boxart_dir       = 0;
+            
         }
     }
     
@@ -134,7 +138,6 @@ static void SetDefaultGlobalConfig(void)
     myGlobalConfig.def_palette              = 0;
     myGlobalConfig.brightness               = 0;
     myGlobalConfig.menu_color               = 1;
-    myGlobalConfig.spare1                   = 0;
     myGlobalConfig.spare2                   = 0;
     myGlobalConfig.spare3                   = 0;
     myGlobalConfig.spare4                   = 0;
@@ -564,11 +567,12 @@ const struct options_t Option_Table[3][20] =
     {   
         {"FPS",         {"OFF", "ON", "ON WITH DEBUG"},                                                                                                 &myGlobalConfig.show_fps,               3},
         {"SAVE STATE",  {"KEEP ON LOAD", "ERASE ON LOAD"},                                                                                              &myGlobalConfig.erase_saves,            2},
+        {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                   &myGlobalConfig.rom_dir,                3},
         {"BIOS DIR",    {"SAME AS ROMS", "/ROMS/BIOS", "/ROMS/INTV/BIOS", "/DATA/BIOS"},                                                                &myGlobalConfig.bios_dir,               4},
         {"SAVE DIR",    {"SAME AS ROMS", "/ROMS/SAV",  "/ROMS/INTV/SAV",  "/DATA/SAV"},                                                                 &myGlobalConfig.save_dir,               4},
         {"OVL DIR",     {"SAME AS ROMS", "/ROMS/OVL",  "/ROMS/INTV/OVL",  "/DATA/OVL"},                                                                 &myGlobalConfig.ovl_dir,                4},
-        {"ROM DIR",     {"SAME AS EMU",  "/ROMS",      "/ROMS/INTV"},                                                                                   &myGlobalConfig.rom_dir,                3},
         {"MAN DIR",     {"SAME AS ROMS", "/ROMS/MAN",  "/ROMS/INTV/MAN",  "/DATA/MAN"},                                                                 &myGlobalConfig.man_dir,                4},    
+        {"BOXART DIR",  {"SAME AS ROMS", "/ROMS/ART",  "/ROMS/INTV/ART",  "/DATA/ART"},                                                                 &myGlobalConfig.boxart_dir,             4},
         {"START DEF",   {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_START_map_default,  30},
         {"SELECT DEF",  {KEY_MAP_OPTIONS},                                                                                                              &myGlobalConfig.key_SELECT_map_default, 30},
         {"DEF SOUND",   {"LOW", "MEDIUM", "HIGH"},                                                                                                      &myGlobalConfig.def_sound_quality,      3},

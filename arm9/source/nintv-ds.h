@@ -47,6 +47,8 @@ extern UINT16 global_frames;
 
 extern UINT16 target_frames[];
 
+extern UINT8 ScratchBuffer[256*1024];
+
 extern UINT8 bIsFatalError;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
@@ -65,5 +67,6 @@ extern void ApplyOptions(void);
 extern void dsShowBannerScreen(void);
 extern void reset_emu_frames(void);
 extern void LoadFavorites(void);
+extern void dsShowEmulationImage(void);
 
 #endif

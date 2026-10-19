@@ -92,7 +92,7 @@ struct GlobalConfig_t
     UINT8  def_palette;
     UINT8  brightness;
     UINT8  menu_color;
-    UINT8  spare1;
+    UINT8  boxart_dir;
     UINT8  spare2;
     UINT8  spare3;
     UINT8  spare4;
@@ -124,7 +124,7 @@ extern struct GlobalConfig_t myGlobalConfig;
 extern struct AllConfig_t    allConfigs;
 
 extern void FindAndLoadConfig(UINT32 crc, char *filename);
-extern void dsChooseOptions(void);
+extern void dsChooseOptions(int global);
 extern void SaveConfig(UINT32 crc, bool bShow);
 
 extern UINT8 bConfigWasFound;

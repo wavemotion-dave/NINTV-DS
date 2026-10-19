@@ -18,9 +18,9 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include "nintv-ds.h"
 #include "screenshot.h"
 #include "printf.h"
-
 
 void write16(void *address, u16 value) {
 
@@ -57,9 +57,8 @@ bool screenshotbmp(const char* filename) {
     if(!file)
         return false;
 
-    extern u8 CartBuffer[];
-    u8 *screenshot_buffer = CartBuffer + (896*1024);     // 128K size (for actual screenshot)
-    u16 *save_buffer = (u16*) (CartBuffer + (768*1024)); // 128K size (for VRAMB save/restore)
+    u8 *screenshot_buffer = ScratchBuffer + (128*1024);     // 128K size (for actual screenshot)
+    u16 *save_buffer = (u16*) (ScratchBuffer + (0*1024));   // 128K size (for VRAMB save/restore)
 
     // Save the VRAM_B area...
     u16 *src = (u16*)0x06820000;

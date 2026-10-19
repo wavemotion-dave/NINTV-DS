@@ -30,6 +30,12 @@ static char file[160];
 // ---------------------------------------------------------------------------
 UINT8 CartBuffer[MAX_ROM_FILE_SIZE];
 
+// -------------------------------------------------
+// Used for Screenshots, Save States and Boxart...
+// -------------------------------------------------
+UINT8 ScratchBuffer[256*1024];
+
+
 volatile int ds_vblank_count __attribute__((section(".dtcm"))) = 0;
 ITCM_CODE void irqVCount(void)
 {
