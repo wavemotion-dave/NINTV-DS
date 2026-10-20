@@ -131,6 +131,17 @@ static int idat_get(PngState *s)
 
 typedef struct { short count[MAXBITS + 1]; short symbol[MAXCODES]; } Huffman;
 
+// 8-bit fast Huffman lookup tables. Entries pack code length in the upper bits
+// and symbol in the lower 9 bits. Long codes use the original slow decoder.
+#define HUFF_FAST_BITS 8
+#define HUFF_FAST_SIZE (1u << HUFF_FAST_BITS)
+#define HUFF_FAST_SYMBOL_MASK 0x01FFu
+#define HUFF_FAST_LEN_SHIFT 9
+static unsigned short fast_lit_table[HUFF_FAST_SIZE];
+static unsigned short fast_dist_table[HUFF_FAST_SIZE];
+static unsigned short fixed_lit_table[HUFF_FAST_SIZE];
+static unsigned short fixed_dist_table[HUFF_FAST_SIZE];
+
 static int bits(PngState *s, int need)
 {
     long val = s->bitbuf;
@@ -188,7 +199,71 @@ static int construct(Huffman *h, const short *length, int n)
     return left;
 }
 
-static int codes(PngState *s, const Huffman *lencode, const Huffman *distcode)
+// Build a low-bit-first lookup table for codes up to HUFF_FAST_BITS long.
+static void build_fast_table(const Huffman *h, const short *length, int n,
+                             unsigned short *table)
+{
+    unsigned next_code[MAXBITS + 1];
+    unsigned code = 0;
+
+    for (int i = 0; i < (int)HUFF_FAST_SIZE; i++) table[i] = 0;
+
+    for (int len = 1; len <= MAXBITS; len++)
+    {
+        // count[0] includes unused symbols in this representation; canonical
+        // code assignment must treat it as zero.
+        code = (code + (len > 1 ? (unsigned)h->count[len - 1] : 0u)) << 1;
+        next_code[len] = code;
+    }
+
+    for (int symbol = 0; symbol < n; symbol++)
+    {
+        int len = length[symbol];
+        if (len <= 0 || len > HUFF_FAST_BITS) continue;
+
+        unsigned c = next_code[len]++;
+        unsigned rev = 0;
+        for (int b = 0; b < len; b++)
+        {
+            rev = (rev << 1) | (c & 1u);
+            c >>= 1;
+        }
+
+        unsigned entry = ((unsigned)len << HUFF_FAST_LEN_SHIFT) | (unsigned)symbol;
+        for (unsigned i = rev; i < HUFF_FAST_SIZE; i += (1u << len))
+            table[i] = (unsigned short)entry;
+    }
+}
+
+static int decode_fast(PngState *s, const Huffman *h, const unsigned short *table)
+{
+    // Fill enough bits to index the table, but allow a short final code to
+    // fall back to the original decoder if the stream ends before 8 bits.
+    while (s->bitcnt < HUFF_FAST_BITS)
+    {
+        int b = idat_get(s);
+        if (b < 0) break;
+        s->bitbuf |= (unsigned)b << s->bitcnt;
+        s->bitcnt += 8;
+    }
+
+    if (s->bitcnt >= HUFF_FAST_BITS)
+    {
+        unsigned entry = table[s->bitbuf & (HUFF_FAST_SIZE - 1)];
+        if (entry)
+        {
+            unsigned len = entry >> HUFF_FAST_LEN_SHIFT;
+            s->bitbuf >>= len;
+            s->bitcnt -= (int)len;
+            return (int)(entry & HUFF_FAST_SYMBOL_MASK);
+        }
+    }
+
+    return decode(s, h);
+}
+
+static int codes(PngState *s, const Huffman *lencode, const Huffman *distcode,
+                 const unsigned short *lit_table, const unsigned short *dist_table)
 {
     static const short lens[29]  = {3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258};
     static const short lext[29]  = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0};
@@ -198,7 +273,7 @@ static int codes(PngState *s, const Huffman *lencode, const Huffman *distcode)
 
     do
     {
-        symbol = decode(s, lencode);
+        symbol = decode_fast(s, lencode, lit_table);
         if (symbol < 0) return symbol;
         if (symbol < 256)
         {
@@ -211,7 +286,7 @@ static int codes(PngState *s, const Huffman *lencode, const Huffman *distcode)
             symbol -= 257;
             if (symbol >= 29) return -10;
             len = (unsigned)(lens[symbol] + bits(s, lext[symbol]));
-            symbol = decode(s, distcode);
+            symbol = decode_fast(s, distcode, dist_table);
             if (symbol < 0) return symbol;
             dist = (unsigned)(dists[symbol] + bits(s, dext[symbol]));
             if (s->err) return -1;
@@ -252,20 +327,27 @@ static int stored_block(PngState *s)
 
 static int fixed_block(PngState *s)
 {
-    Huffman lencode, distcode;
+    static Huffman lencode, distcode;
     static short lengths[FIXLCODES];
+    static int initialized = 0;
     int symbol;
 
-    for (symbol = 0;   symbol < 144; symbol++) lengths[symbol] = 8;
-    for (; symbol < 256; symbol++) lengths[symbol] = 9;
-    for (; symbol < 280; symbol++) lengths[symbol] = 7;
-    for (; symbol < FIXLCODES; symbol++) lengths[symbol] = 8;
-    construct(&lencode, lengths, FIXLCODES);
+    if (!initialized)
+    {
+        for (symbol = 0;   symbol < 144; symbol++) lengths[symbol] = 8;
+        for (; symbol < 256; symbol++) lengths[symbol] = 9;
+        for (; symbol < 280; symbol++) lengths[symbol] = 7;
+        for (; symbol < FIXLCODES; symbol++) lengths[symbol] = 8;
+        construct(&lencode, lengths, FIXLCODES);
+        build_fast_table(&lencode, lengths, FIXLCODES, fixed_lit_table);
 
-    for (symbol = 0; symbol < MAXDCODES; symbol++) lengths[symbol] = 5;
-    construct(&distcode, lengths, MAXDCODES);
+        for (symbol = 0; symbol < MAXDCODES; symbol++) lengths[symbol] = 5;
+        construct(&distcode, lengths, MAXDCODES);
+        build_fast_table(&distcode, lengths, MAXDCODES, fixed_dist_table);
+        initialized = 1;
+    }
 
-    return codes(s, &lencode, &distcode);
+    return codes(s, &lencode, &distcode, fixed_lit_table, fixed_dist_table);
 }
 
 static int dynamic_block(PngState *s)
@@ -317,11 +399,13 @@ static int dynamic_block(PngState *s)
 
     err = construct(&lencode, lengths, nlen);
     if (err && (err < 0 || nlen != lencode.count[0] + lencode.count[1])) return -7;
+    build_fast_table(&lencode, lengths, nlen, fast_lit_table);
 
     err = construct(&distcode, lengths + nlen, ndist);
     if (err && (err < 0 || ndist != distcode.count[0] + distcode.count[1])) return -8;
+    build_fast_table(&distcode, lengths + nlen, ndist, fast_dist_table);
 
-    return codes(s, &lencode, &distcode);
+    return codes(s, &lencode, &distcode, fast_lit_table, fast_dist_table);
 }
 
 static int inflate_stream(PngState *s)
@@ -551,6 +635,7 @@ bool BoxArt_ShowPNG(const char *filename, u8 isDirectory)
 
     // ---- Everything decoded fine: NOW take over the top screen ----
     {
+        swiWaitForVBlank();
         lcdMainOnTop();
         videoSetMode(MODE_5_2D | DISPLAY_BG3_ACTIVE);
         vramSetBankA(BOXART_VRAM_BANK);
